@@ -1,4 +1,4 @@
-<img src="mega5e/logo.png" style="border: none;width:250px;" alt="MEGA Logo">
+<img src="images/logo.png" style="border: none;width:250px;" alt="MEGA Logo">
 
 Le système du jeu de rôle MEGA !!!
 
