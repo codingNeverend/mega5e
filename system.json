@@ -97,7 +97,7 @@
   "primaryTokenAttribute": "health",
   "secondaryTokenAttribute": "power",
   "url": "https://github.com/codingNeverend/mega5e",
-  "manifest": "https://gitlab.com/foundrynet/worldbuilding/raw/master/system.json",
+  "manifest": "https://raw.githubusercontent.com/codingNeverend/mega5e/master/system.json",
   "download": "",
   "license": "LICENSE.txt",
   "readme": "README.md",
