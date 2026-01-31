@@ -1,0 +1,425 @@
+<form class="{{cssClass}}" autocomplete="off">
+	<header class="sheet-header-item">
+		<span class="item-view" value="{{item.img}}"><img class="profile-img" src="{{item.img}}" data-edit="img" title="{{item.name}}"/></span>
+        <div class="header-fields-item">
+            <h1 class="charname"><input name="name" type="text" value="{{item.name}}" placeholder="Name"/></h1>
+			<br><center>
+			<table  class="cartouche_item" style="width:90%">
+				<thead>
+				<tr>
+				<th colspan="3">
+					Caractéristiques principales</th>
+				</tr   style="border-bottom:none;"></thead>
+				<tr>
+					<td><label>Nombre de pouvoirs : </label>
+						<input type="text" class="comb" name="system.nb_onglets" value="{{system.nb_onglets}}" data-dtype="Number"/></td>
+						<td><label>Sphère associée : </label>
+							<input type="text" style="width:150px;text-align: center;" name="system.sphere_associee" value="{{system.sphere_associee}}" data-dtype="text"/></td>
+						
+						</td>	
+						<td>
+							Aide <input type="checkbox" id="aide" class="aide" {{#if system.aide_active}}checked{{/if}}>
+						
+						</td>			
+				</tr>
+
+			</table>
+        </div>
+    </header>
+
+	{{!-- Sheet Tab Navigation --}}
+     <nav class="sheet-tabs tabs" data-group="primary">
+        <a class="item" data-tab="description">DESCRIPTION</a>
+      	<a class="item" data-tab="pouv1">P1</a>
+		{{#ifsuperior system.nb_onglets 1}}<a class="item" data-tab="pouv2">P2</a>{{/ifsuperior}}
+		{{#ifsuperior system.nb_onglets 2}}<a class="item" data-tab="pouv3">P3</a>{{/ifsuperior}}
+		{{#ifsuperior system.nb_onglets 3}}<a class="item" data-tab="pouv4">P4</a>{{/ifsuperior}}
+		{{#if system.aide_active}}<a class="item" data-tab="aide">Aide</a>{{/if}}
+    </nav>
+
+    {{!-- Sheet Body --}}
+    <section class="sheet-body" style="margin:10px; padding: 0 5px;">
+
+	{{!-- DESCRIPTION Tab --}}
+	<div class="tab" data-group="primary" data-tab="description">
+		<table class="item_pouvoir">
+			<thead class="masquer" value="entete" style="border-bottom:none;" >
+			<tr>
+			<th>
+				ENTÊTE</th>
+				</tr></thead>
+		{{#if system.masquer_entete}}
+		<tr><td>
+			<b>Nom : </b><input type="text" name="system.label" value="{{system.label}}">
+			</td></tr>
+			<tr><td>
+				<b>Icône : </b><input type="text" name="system.icon" value="{{system.icon}}">
+			</td></tr>
+		</td></tr>
+		{{/if}}
+		</table>
+		<table class="item_pouvoir">
+			<thead class="masquer" style="border-bottom:none;" value="description">
+				<tr>
+			<th>
+				DESCRIPTION</th>
+			</tr></thead>
+		{{#if system.masquer_description}}
+			<tr><td>
+			{{editor enrichedBiography target="system.description" button=true editable=editable}}
+			</td></tr>	
+		{{/if}}
+		</table>
+	</div>
+			
+	{{!-- Pouv1 Tab --}}
+	<div class="tab" data-group="primary" data-tab="pouv1">
+		
+		<table class="item_pouvoir">
+			<thead class="masquer" value="entete" style="border-bottom:none;" >
+			<tr>
+			<th>
+				ENTÊTE</th>
+				</tr></thead>
+		{{#if system.masquer_entete}}
+		<tr><td>
+			<b>Nom : </b><input type="text" name="system.pouvoir1.label" value="{{system.pouvoir1.label}}">
+			</td></tr>
+			<tr><td>
+				<b>Icône : </b><input type="text" name="system.pouvoir1.icon" value="{{system.pouvoir1.icon}}">
+			</td></tr>
+		</td></tr>
+		{{/if}}
+		</table>
+	<table class="item_pouvoir">
+		<thead class="masquer" style="border-bottom:none;" value="description">
+			<tr>
+		<th>
+			DESCRIPTION</th>
+		</tr></thead>
+	{{#if system.masquer_description}}
+		<tr><td>
+		{{editor pouv1 target="system.pouvoir1.description" button=true editable=editable}}
+		</td></tr>	
+	{{/if}}
+	</table>
+	<table class="item_pouvoir">
+		<thead style="border-bottom:none;" class="masquer" value="grades">
+			<tr>
+		<th colspan="2">
+			GRADES</th>
+		</tr></thead>
+	{{#if system.masquer_grades}}
+
+		<tr><td style="width:70px;">
+		<b>Grade 1 :</td><td><input  type="text" name="system.pouvoir1.grade1" value="{{system.pouvoir1.grade1}}">
+		</td></tr>
+		<tr><td style="width:70px;">
+		<b>Grade 2 :</td><td><input  type="text" name="system.pouvoir1.grade2" value="{{system.pouvoir1.grade2}}">
+		</td></tr>
+		<tr><td style="width:70px;">
+		<b>Grade 3 :</td><td><input  type="text" name="system.pouvoir1.grade3" value="{{system.pouvoir1.grade3}}">
+		</td></tr>
+		<tr><td style="width:70px;">
+			<b>Grade 4 :</td><td><input  type="text" name="system.pouvoir1.grade4" value="{{system.pouvoir1.grade4}}">
+		</td></tr>
+		<tr><td style="width:70px;">
+			<b>Grade 5 :</td><td><input  type="text" name="system.pouvoir1.grade5" value="{{system.pouvoir1.grade5}}">
+		</td></tr>
+		<tr><td style="width:70px;">
+			<b>Grade 6 :</td><td><input  type="text" name="system.pouvoir1.grade6" value="{{system.pouvoir1.grade6}}">
+		</td></tr>
+		<tr><td style="width:70px;">
+			<b>Grade 7 :</td><td><input  type="text" name="system.pouvoir1.grade7" value="{{system.pouvoir1.grade7}}">
+		</td></tr>
+		<tr><td style="width:70px;">
+			<b>Grade 8 :</td><td><input  type="text" name="system.pouvoir1.grade8" value="{{system.pouvoir1.grade8}}">
+		</td></tr>
+		<tr><td style="width:70px;">
+			<b>Grade 9 :</td><td><input  type="text" name="system.pouvoir1.grade9" value="{{system.pouvoir1.grade9}}">
+		</td></tr>
+		<tr><td style="width:70px;">
+			<b>Grade 10 :</td><td><input  type="text" name="system.pouvoir1.grade10" value="{{system.pouvoir1.grade10}}">
+		</td></tr>
+		<tr><td style="width:70px;">
+			<b>Grade 11 :</td><td><input  type="text" name="system.pouvoir1.grade11" value="{{system.pouvoir1.grade11}}">
+		</td></tr>
+		<tr><td style="width:70px;">
+			<b>Grade 12 :</td><td><input  type="text" name="system.pouvoir1.grade12" value="{{system.pouvoir1.grade12}}">
+		</td></tr>
+	{{/if}}
+</table>
+	</div>
+
+	{{!-- Pouv2 Tab --}}
+	<div class="tab" data-group="primary" data-tab="pouv2">
+		
+		<table class="item_pouvoir">
+			<thead class="masquer" value="entete" style="border-bottom:none;" >
+			<tr>
+			<th>
+				ENTÊTE</th>
+				</tr></thead>
+		{{#if system.masquer_entete}}
+		<tr><td>
+			<b>Nom : </b><input type="text" name="system.pouvoir2.label" value="{{system.pouvoir2.label}}">
+			</td></tr>
+			<tr><td>
+				<b>Icône : </b><input type="text" name="system.pouvoir2.icon" value="{{system.pouvoir2.icon}}">
+			</td></tr>
+		</td></tr>
+		{{/if}}
+		</table>
+	<table class="item_pouvoir">
+		<thead class="masquer" style="border-bottom:none;" value="description">
+			<tr>
+		<th>
+			DESCRIPTION</th>
+		</tr></thead>
+	{{#if system.masquer_description}}
+		<tr><td>
+		{{editor pouv2 target="system.pouvoir2.description" button=true editable=editable}}
+		</td></tr>	
+	{{/if}}
+	</table>
+	<table class="item_pouvoir">
+		<thead style="border-bottom:none;" class="masquer" value="grades">
+			<tr>
+		<th colspan="2">
+			GRADES</th>
+		</tr></thead>
+	{{#if system.masquer_grades}}
+
+		<tr><td style="width:70px;">
+		<b>Grade 1 :</td><td><input  type="text" name="system.pouvoir2.grade1" value="{{system.pouvoir2.grade1}}">
+		</td></tr>
+		<tr><td style="width:70px;">
+		<b>Grade 2 :</td><td><input  type="text" name="system.pouvoir2.grade2" value="{{system.pouvoir2.grade2}}">
+		</td></tr>
+		<tr><td style="width:70px;">
+		<b>Grade 3 :</td><td><input  type="text" name="system.pouvoir2.grade3" value="{{system.pouvoir2.grade3}}">
+		</td></tr>
+		<tr><td style="width:70px;">
+			<b>Grade 4 :</td><td><input  type="text" name="system.pouvoir2.grade4" value="{{system.pouvoir2.grade4}}">
+		</td></tr>
+		<tr><td style="width:70px;">
+			<b>Grade 5 :</td><td><input  type="text" name="system.pouvoir2.grade5" value="{{system.pouvoir2.grade5}}">
+		</td></tr>
+		<tr><td style="width:70px;">
+			<b>Grade 6 :</td><td><input  type="text" name="system.pouvoir2.grade6" value="{{system.pouvoir2.grade6}}">
+		</td></tr>
+		<tr><td style="width:70px;">
+			<b>Grade 7 :</td><td><input  type="text" name="system.pouvoir2.grade7" value="{{system.pouvoir2.grade7}}">
+		</td></tr>
+		<tr><td style="width:70px;">
+			<b>Grade 8 :</td><td><input  type="text" name="system.pouvoir2.grade8" value="{{system.pouvoir2.grade8}}">
+		</td></tr>
+		<tr><td style="width:70px;">
+			<b>Grade 9 :</td><td><input  type="text" name="system.pouvoir2.grade9" value="{{system.pouvoir2.grade9}}">
+		</td></tr>
+		<tr><td style="width:70px;">
+			<b>Grade 10 :</td><td><input  type="text" name="system.pouvoir2.grade10" value="{{system.pouvoir2.grade10}}">
+		</td></tr>
+		<tr><td style="width:70px;">
+			<b>Grade 11 :</td><td><input  type="text" name="system.pouvoir2.grade11" value="{{system.pouvoir2.grade11}}">
+		</td></tr>
+		<tr><td style="width:70px;">
+			<b>Grade 12 :</td><td><input  type="text" name="system.pouvoir2.grade12" value="{{system.pouvoir2.grade12}}">
+		</td></tr>
+	{{/if}}
+</table>
+	</div>
+
+	{{!-- Pouv3 Tab --}}
+	<div class="tab" data-group="primary" data-tab="pouv3">
+		
+		<table class="item_pouvoir">
+			<thead class="masquer" value="entete" style="border-bottom:none;" >
+			<tr>
+			<th>
+				ENTÊTE</th>
+				</tr></thead>
+		{{#if system.masquer_entete}}
+		<tr><td>
+			<b>Nom : </b><input type="text" name="system.pouvoir3.label" value="{{system.pouvoir3.label}}">
+			</td></tr>
+			<tr><td>
+				<b>Icône : </b><input type="text" name="system.pouvoir3.icon" value="{{system.pouvoir3.icon}}">
+			</td></tr>
+		</td></tr>
+		{{/if}}
+		</table>
+	<table class="item_pouvoir">
+		<thead class="masquer" style="border-bottom:none;" value="description">
+			<tr>
+		<th>
+			DESCRIPTION</th>
+		</tr></thead>
+	{{#if system.masquer_description}}
+		<tr><td>
+		{{editor pouv3 target="system.pouvoir3.description" button=true editable=editable}}
+		</td></tr>	
+	{{/if}}
+	</table>
+	<table class="item_pouvoir">
+		<thead style="border-bottom:none;" class="masquer" value="grades">
+			<tr>
+		<th colspan="2">
+			GRADES</th>
+		</tr></thead>
+	{{#if system.masquer_grades}}
+
+		<tr><td style="width:70px;">
+		<b>Grade 1 :</td><td><input  type="text" name="system.pouvoir3.grade1" value="{{system.pouvoir3.grade1}}">
+		</td></tr>
+		<tr><td style="width:70px;">
+		<b>Grade 2 :</td><td><input  type="text" name="system.pouvoir3.grade2" value="{{system.pouvoir3.grade2}}">
+		</td></tr>
+		<tr><td style="width:70px;">
+		<b>Grade 3 :</td><td><input  type="text" name="system.pouvoir3.grade3" value="{{system.pouvoir3.grade3}}">
+		</td></tr>
+		<tr><td style="width:70px;">
+			<b>Grade 4 :</td><td><input  type="text" name="system.pouvoir3.grade4" value="{{system.pouvoir3.grade4}}">
+		</td></tr>
+		<tr><td style="width:70px;">
+			<b>Grade 5 :</td><td><input  type="text" name="system.pouvoir3.grade5" value="{{system.pouvoir3.grade5}}">
+		</td></tr>
+		<tr><td style="width:70px;">
+			<b>Grade 6 :</td><td><input  type="text" name="system.pouvoir3.grade6" value="{{system.pouvoir3.grade6}}">
+		</td></tr>
+		<tr><td style="width:70px;">
+			<b>Grade 7 :</td><td><input  type="text" name="system.pouvoir3.grade7" value="{{system.pouvoir3.grade7}}">
+		</td></tr>
+		<tr><td style="width:70px;">
+			<b>Grade 8 :</td><td><input  type="text" name="system.pouvoir3.grade8" value="{{system.pouvoir3.grade8}}">
+		</td></tr>
+		<tr><td style="width:70px;">
+			<b>Grade 9 :</td><td><input  type="text" name="system.pouvoir3.grade9" value="{{system.pouvoir3.grade9}}">
+		</td></tr>
+		<tr><td style="width:70px;">
+			<b>Grade 10 :</td><td><input  type="text" name="system.pouvoir3.grade10" value="{{system.pouvoir3.grade10}}">
+		</td></tr>
+		<tr><td style="width:70px;">
+			<b>Grade 11 :</td><td><input  type="text" name="system.pouvoir3.grade11" value="{{system.pouvoir3.grade11}}">
+		</td></tr>
+		<tr><td style="width:70px;">
+			<b>Grade 12 :</td><td><input  type="text" name="system.pouvoir3.grade12" value="{{system.pouvoir3.grade12}}">
+		</td></tr>
+	{{/if}}
+</table>
+	</div>
+
+	{{!-- Pouv4 Tab --}}
+	<div class="tab" data-group="primary" data-tab="pouv4">
+		
+		<table class="item_pouvoir">
+			<thead class="masquer" value="entete" style="border-bottom:none;" >
+			<tr>
+			<th>
+				ENTÊTE</th>
+				</tr></thead>
+		{{#if system.masquer_entete}}
+		<tr><td>
+			<b>Nom : </b><input type="text" name="system.pouvoir4.label" value="{{system.pouvoir4.label}}">
+			</td></tr>
+			<tr><td>
+				<b>Icône : </b><input type="text" name="system.pouvoir4.icon" value="{{system.pouvoir4.icon}}">
+			</td></tr>
+		</td></tr>
+		{{/if}}
+		</table>
+	<table class="item_pouvoir">
+		<thead class="masquer" style="border-bottom:none;" value="description">
+			<tr>
+		<th>
+			DESCRIPTION</th>
+		</tr></thead>
+	{{#if system.masquer_description}}
+		<tr><td>
+		{{editor pouv4 target="system.pouvoir4.description" button=true editable=editable}}
+		</td></tr>	
+	{{/if}}
+	</table>
+	<table class="item_pouvoir">
+		<thead style="border-bottom:none;" class="masquer" value="grades">
+			<tr>
+		<th colspan="2">
+			GRADES</th>
+		</tr></thead>
+	{{#if system.masquer_grades}}
+
+		<tr><td style="width:70px;">
+		<b>Grade 1 :</td><td><input  type="text" name="system.pouvoir4.grade1" value="{{system.pouvoir4.grade1}}">
+		</td></tr>
+		<tr><td style="width:70px;">
+		<b>Grade 2 :</td><td><input  type="text" name="system.pouvoir4.grade2" value="{{system.pouvoir4.grade2}}">
+		</td></tr>
+		<tr><td style="width:70px;">
+		<b>Grade 3 :</td><td><input  type="text" name="system.pouvoir4.grade3" value="{{system.pouvoir4.grade3}}">
+		</td></tr>
+		<tr><td style="width:70px;">
+			<b>Grade 4 :</td><td><input  type="text" name="system.pouvoir4.grade4" value="{{system.pouvoir4.grade4}}">
+		</td></tr>
+		<tr><td style="width:70px;">
+			<b>Grade 5 :</td><td><input  type="text" name="system.pouvoir4.grade5" value="{{system.pouvoir4.grade5}}">
+		</td></tr>
+		<tr><td style="width:70px;">
+			<b>Grade 6 :</td><td><input  type="text" name="system.pouvoir4.grade6" value="{{system.pouvoir4.grade6}}">
+		</td></tr>
+		<tr><td style="width:70px;">
+			<b>Grade 7 :</td><td><input  type="text" name="system.pouvoir4.grade7" value="{{system.pouvoir4.grade7}}">
+		</td></tr>
+		<tr><td style="width:70px;">
+			<b>Grade 8 :</td><td><input  type="text" name="system.pouvoir4.grade8" value="{{system.pouvoir4.grade8}}">
+		</td></tr>
+		<tr><td style="width:70px;">
+			<b>Grade 9 :</td><td><input  type="text" name="system.pouvoir4.grade9" value="{{system.pouvoir4.grade9}}">
+		</td></tr>
+		<tr><td style="width:70px;">
+			<b>Grade 10 :</td><td><input  type="text" name="system.pouvoir4.grade10" value="{{system.pouvoir4.grade10}}">
+		</td></tr>
+		<tr><td style="width:70px;">
+			<b>Grade 11 :</td><td><input  type="text" name="system.pouvoir4.grade11" value="{{system.pouvoir4.grade11}}">
+		</td></tr>
+		<tr><td style="width:70px;">
+			<b>Grade 12 :</td><td><input  type="text" name="system.pouvoir4.grade12" value="{{system.pouvoir4.grade12}}">
+		</td></tr>
+	{{/if}}
+</table>
+	</div>
+
+		{{!-- Aide Tab --}}
+		
+		<div class="tab" data-group="primary" data-tab="aide">
+		<table class="item_pouvoir">
+			<thead class="masquer" value="entete" style="border-bottom:none;" >
+			<tr>
+			<th>
+				ENTÊTE</th>
+				</tr></thead>
+		{{#if system.masquer_entete}}
+		<tr><td>
+			<b>Nom : </b><input type="text" name="system.aide.label" value="{{system.aide.label}}">
+			</td></tr>
+			<tr><td>
+				<b>Icône : </b><input type="text" name="system.aide.icon" value="{{system.aide.icon}}">
+			</td></tr>
+		</td></tr>
+		{{/if}}
+		</table>
+		<table class="item_pouvoir">
+			<thead class="masquer" style="border-bottom:none;" value="description">
+				<tr>
+			<th>
+				DESCRIPTION</th>
+			</tr></thead>
+		{{#if system.masquer_description}}
+			<tr><td>
+			{{editor aide target="system.aide.description" button=true editable=editable}}
+			</td></tr>	
+		{{/if}}
+		</table>
+	</div>
+
+    </section>
+</form>

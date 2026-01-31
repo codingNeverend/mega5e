@@ -1,0 +1,3754 @@
+{
+  "Actor": {
+    "types": ["PJ", "PNJ"],
+    "PJ": {
+      "biography": "<table style=\"border-style: none; margin-left: auto; margin-right: auto; background-color: rgba(0, 0, 0, 0); width: 99.2806%;\" border=\"0\"><caption>&nbsp;</caption><tbody><tr style=\"height: 10px;\"><td style=\"width: 26.3956%; vertical-align: top;\"><img style=\"border: none;\" src=\"systems/mega/images/silouhetteDesc.png\" alt=\"\" width=\"215\" height=\"403\"></td><td style=\"vertical-align: top; height: 10px; width: 72.8534%;\"><h1><strong>Nom/Surnom</strong></h1><h4>Age :&nbsp;<br>Origine :&nbsp;<br>Langue(s) parl&eacute;e(s) :</h4><h4>Br&egrave;ve description du personnage</h4><h2>Motivations</h2><h4 style=\"color: #191813; font-family: CaviarDreams, sans-serif; box-sizing: border-box;\">Motivation(s) du personnage</h4><h2>Pulsions/Addictions</h2><h4>Pulsion(s)/Addiction(s) du personnage</h4><h2>Hantise</h2><p>&nbsp;Hantise(s) du personnage</p><h2>Jokers &amp; Trucs</h2><h4>Joker(s)/Truc(s) du personnage</h4><p>&nbsp;</p></td></tr></tbody></table>",
+      "desc_pouvoirs": "<h1>T&Eacute;L&Eacute;PATHIE</h1>\n<p>&nbsp;</p>\n<h2>Communication t&eacute;l&eacute;pathique</h2>\n<h3>Grade 1.&nbsp;</h3>\n<p>&nbsp;</p>\n<h2>Percevoir des pr&eacute;sences, des sentiments, des pens&eacute;es, anticiper une conduite</h2>\n<h3>Grade 1.&nbsp;</h3>\n<p>&nbsp;</p>",
+      "couverture": "",
+      "verouille": 0,
+      "combat_large": false,
+      "type_acteur": "MEGA",
+      "health": {
+        "value": 0,
+        "min": 0,
+        "max": 0
+      },
+      "power": {
+        "value": 0,
+        "min": 0,
+        "max": 0
+      },
+      "touche": "",
+      "experience": {
+        "value": 0
+      },
+      "pts_ardence": {
+        "value": 4,
+        "min": 0,
+        "max": 4
+      },
+      "pts_resonnance": {
+        "value": 4,
+        "min": 0,
+        "max": 4
+      },
+      "voie": {
+        "value": "",
+        "min": 0,
+        "max": 0
+      },
+      "sphere": {
+        "value": "",
+        "min": 0,
+        "max": 0
+      },
+      "sphere2": {
+        "value": "",
+        "present": false,
+        "min": 0,
+        "max": 0
+      },
+      "cumul_defi": {
+        "value": 0,
+        "min": 0,
+        "max": 60
+      },
+      "vie_hrecup_sans_activite": {
+        "value": 0
+      },
+      "vie_hrecup_repos_total": {
+        "value": 0
+      },
+      "vie_jrecup_sans_activite": {
+        "value": 0
+      },
+      "vie_jrecup_repos_total": {
+        "value": 0
+      },
+      "recup_ardence_1": {
+        "value": 0,
+        "value_j": "0"
+      },
+      "recup_ardence_2": {
+        "value": 0,
+        "value_j": "0"
+      },
+      "recup_ardence_3": {
+        "value": 0,
+        "value_j": "0"
+      },
+      "recup_ardence_4": {
+        "value": 0,
+        "value_j": "0"
+      },
+      "recup_ardence_5": {
+        "value": 0,
+        "value_j": "0"
+      },
+      "recup_ardence_6": {
+        "value": 0,
+        "value_j": "0"
+      },
+      "recup_ardence_7": {
+        "value": 0,
+        "value_j": "0"
+      },
+      "recup_ardence_8": {
+        "value": 0,
+        "value_j": "0"
+      },
+      "recup_ardence_9": {
+        "value": 0,
+        "value_j": "0"
+      },
+      "recup_ardence_10": {
+        "value": 0,
+        "value_j": "0"
+      },
+      "recup_ardence_11": {
+        "value": 0,
+        "value_j": "0"
+      },
+      "recup_ardence_12": {
+        "value": 0,
+        "value_j": "0"
+      },
+      "recup_resonnance_1": {
+        "value": 0,
+        "value_j": "0"
+      },
+      "recup_resonnance_2": {
+        "value": 0,
+        "value_j": "0"
+      },
+      "recup_resonnance_3": {
+        "value": 0,
+        "value_j": "0"
+      },
+      "recup_resonnance_4": {
+        "value": 0,
+        "value_j": "0"
+      },
+      "recup_resonnance_5": {
+        "value": 0,
+        "value_j": "0"
+      },
+      "recup_resonnance_6": {
+        "value": 0,
+        "value_j": "0"
+      },
+      "recup_resonnance_7": {
+        "value": 0,
+        "value_j": "0"
+      },
+      "recup_resonnance_8": {
+        "value": 0,
+        "value_j": "0"
+      },
+      "recup_resonnance_9": {
+        "value": 0,
+        "value_j": "0"
+      },
+      "recup_resonnance_10": {
+        "value": 0,
+        "value_j": "0"
+      },
+      "recup_resonnance_11": {
+        "value": 0,
+        "value_j": "0"
+      },
+      "recup_resonnance_12": {
+        "value": 0,
+        "value_j": "0"
+      },
+      "masquer_pv": false,
+      "masquer_ardence": false,
+      "masquer_resonnance": false,
+      "masquer_melee": false,
+      "masquer_avantage_charge": false,
+      "masquer_effet_charge": false,
+      "masquer_avantage_bagarre": false,
+      "masquer_effet_bagarre": false,
+      "masquer_avantage_mainsnues1": false,
+      "masquer_effet_mainsnues1": false,
+      "masquer_avantage_mainsnues2": false,
+      "masquer_effet_mainsnues2": false,
+      "def": {
+        "value": 0,
+        "min": 0,
+        "max": 0
+      },
+      "def_modif": {
+        "value": 0
+      },
+      "combat_modif": {
+        "value": 0
+      },
+      "protect_choc": {
+        "value": 0
+      },
+      "protect_lame": {
+        "value": 0
+      },
+      "protect_balle": {
+        "value": 0
+      },
+      "protect_feu": {
+        "value": 0
+      },
+      "protect_froid": {
+        "value": 0
+      },
+      "protect_acide": {
+        "value": 0
+      },
+      "protect_rayon": {
+        "value": 0
+      },
+      "equip_def_1": {
+        "value": ""
+      },
+      "bonus_equip_def_1": {
+        "value": 0
+      },
+      "equip_def_2": {
+        "value": ""
+      },
+      "bonus_equip_def_2": {
+        "value": 0
+      },
+      "equip_def_3": {
+        "value": ""
+      },
+      "bonus_equip_def_3": {
+        "value": 0
+      },
+      "equip_def_4": {
+        "value": ""
+      },
+      "bonus_equip_def_4": {
+        "value": 0
+      },
+      "equip_def_5": {
+        "value": ""
+      },
+      "bonus_equip_def_5": {
+        "value": 0
+      },
+      "equip_def_6": {
+        "value": ""
+      },
+      "bonus_equip_def_6": {
+        "value": 0
+      },
+      "effet": "",
+      "effet_precedent": "aucun",
+      "protections": {
+        "p1": {
+          "label": "",
+          "def_chocs": 0,
+          "def_lame": 0,
+          "def_balle": 0,
+          "def_feu": 0,
+          "def_froid": 0,
+          "def_acide": 0,
+          "def_rayon": 0,
+          "effet": "",
+          "selection": false
+        },
+        "p2": {
+          "label": "",
+          "def_chocs": 0,
+          "def_lame": 0,
+          "def_balle": 0,
+          "def_feu": 0,
+          "def_froid": 0,
+          "def_acide": 0,
+          "def_rayon": 0,
+          "effet": "",
+          "selection": false
+        },
+        "p3": {
+          "label": "",
+          "def_chocs": 0,
+          "def_lame": 0,
+          "def_balle": 0,
+          "def_feu": 0,
+          "def_froid": 0,
+          "def_acide": 0,
+          "def_rayon": 0,
+          "effet": "",
+          "selection": false
+        },
+        "p4": {
+          "label": "",
+          "def_chocs": 0,
+          "def_lame": 0,
+          "def_balle": 0,
+          "def_feu": 0,
+          "def_froid": 0,
+          "def_acide": 0,
+          "def_rayon": 0,
+          "effet": "",
+          "selection": false
+        },
+        "p5": {
+          "label": "",
+          "def_chocs": 0,
+          "def_lame": 0,
+          "def_balle": 0,
+          "def_feu": 0,
+          "def_froid": 0,
+          "def_acide": 0,
+          "def_rayon": 0,
+          "effet": "",
+          "selection": false
+        },
+        "p6": {
+          "label": "",
+          "def_chocs": 0,
+          "def_lame": 0,
+          "def_balle": 0,
+          "def_feu": 0,
+          "def_froid": 0,
+          "def_acide": 0,
+          "def_rayon": 0,
+          "effet": "",
+          "selection": false
+        }
+      },
+      "attributes": {},
+      "spes": {
+        "spe1": {
+          "value": "",
+          "description": "Aucune description"
+        },
+        "rg_spe1": {
+          "value": 0,
+          "min": 0,
+          "max": 0
+        },
+        "spe2": {
+          "value": "",
+          "description": "Aucune description"
+        },
+        "rg_spe2": {
+          "value": 0,
+          "min": 0,
+          "max": 0
+        },
+        "spe3": {
+          "value": "",
+          "description": "Aucune description"
+        },
+        "rg_spe3": {
+          "value": 0,
+          "min": 0,
+          "max": 0
+        },
+        "spe4": {
+          "value": "",
+          "description": "Aucune description"
+        },
+        "rg_spe4": {
+          "value": 0,
+          "min": 0,
+          "max": 0
+        },
+        "spe5": {
+          "value": ""
+        },
+        "rg_spe5": {
+          "value": 0,
+          "min": 0,
+          "max": 0
+        },
+        "spe6": {
+          "value": ""
+        },
+        "rg_spe6": {
+          "value": 0,
+          "min": 0,
+          "max": 0
+        },
+        "spe7": {
+          "value": ""
+        },
+        "rg_spe7": {
+          "value": 0,
+          "min": 0,
+          "max": 0
+        },
+        "spe8": {
+          "value": ""
+        },
+        "rg_spe8": {
+          "value": 0,
+          "min": 0,
+          "max": 0
+        },
+        "spe9": {
+          "value": ""
+        },
+        "rg_spe9": {
+          "value": 0,
+          "min": 0,
+          "max": 0
+        },
+        "spe10": {
+          "value": ""
+        },
+        "rg_spe10": {
+          "value": 0,
+          "min": 0,
+          "max": 0
+        }
+      },
+      "caracs": {
+        "vivacite": {
+          "label": "VIVACITÉ",
+          "description": "Capacité de décision rapide, d'improvisation, de réaction immédiate sans trop réfléchir ou avec peu d'informations ; qui entraîne une réponse aussi appropriée que possible (pas forcément la meilleure à long terme). Elle sert autant à anticiper les actions d'un agresseur qu'à trouver la bonne répartie dans une discussion vive ou imaginer un comportement créatif. Le personnage qui réussit une action de cette façon peut être incapable d'expliquer ce qu'il a fait.",
+          "value": 0,
+          "min": 0,
+          "max": 0,
+          "debut_col": true,
+          "fin_col": false
+        },
+        "sens": {
+          "label": "SENS",
+          "description": "Capacité à détecter (mais pas forcément comprendre) les détails subtils ou les modifications de l'environnement (physique ou émotionnel), qui s'appuie sur les 5 sens, mais aussi sur un 6e sens, une curiosité naturelle ou une capacité à se focaliser sur un sujet précis.",
+          "value": 0,
+          "min": 0,
+          "max": 0,
+          "debut_col": false,
+          "fin_col": false
+        },
+        "adresse": {
+          "label": "ADRESSE",
+          "description": "Finesse et rapidité de mouvement, corporel ou manuel.",
+          "value": 0,
+          "min": 0,
+          "max": 0,
+          "debut_col": false,
+          "fin_col": true
+        },
+        "reflexion": {
+          "label": "RÉFLEXION",
+          "description": "Capacité à réunir, organiser, comprendre ou mémoriser des informations complexes, nombreuses ou abstraites. Nécessite le temps de la réflexion, sauf pour se rappeler un souvenir précis.",
+          "value": 0,
+          "min": 0,
+          "max": 0,
+          "debut_col": true,
+          "fin_col": false
+        },
+        "ardence": {
+          "label": "ARDENCE",
+          "description": "Feu intérieur du personnage, qu'il peut utiliser pour se surpasser, mais qui parfois le pousse à des actions guidées par l'émotion.",
+          "value": 0,
+          "min": 0,
+          "max": 0,
+          "debut_col": false,
+          "fin_col": false
+        },
+        "force": {
+          "label": "FORCE",
+          "description": "Pure tonicité musculaire, pour agir ou pour soutenir un effort intense.",
+          "value": 0,
+          "min": 0,
+          "max": 0,
+          "debut_col": false,
+          "fin_col": true
+        },
+        "caractere": {
+          "label": "CARACTÈRE",
+          "description": "Volonté face à la difficulté ou à l'échec, mais aussi cohérence de pensée, maîtrise de soi et résistance à l'hébétude ou la panique lors d'une scène choquante. Ce Trait peut traduire aussi bien la force de caractère du personnage que son enracinement dans une conviction qui le soutient mais le conditionne.",
+          "value": 0,
+          "min": 0,
+          "max": 0,
+          "debut_col": true,
+          "fin_col": false
+        },
+        "resonnance": {
+          "label": "RÉSONNANCE",
+          "description": "Capacité à ressentir, à entrer en résonance et à influer sur les ondes et les flux du continuum, et ainsi interagir avec des êtres, des esprits, des objets et des lieux, quel que soit leur éloignement dans les univers. Ce « 7e sens » est à double tranchant : il peut autant provoquer un pressentiment utile que des cauchemars envahissants.",
+          "value": 0,
+          "min": 0,
+          "max": 0,
+          "debut_col": false,
+          "fin_col": false
+        },
+        "endurance": {
+          "label": "ENDURANCE",
+          "description": "Résistance aux coups et aux blessures, aux maladies et aux poisons, aux conditions extrêmes et à la fatigue.",
+          "value": 0,
+          "min": 0,
+          "max": 0,
+          "debut_col": false,
+          "fin_col": true
+        }
+      },
+      "bonus_initiative": 0,
+      "bonus_esquive": 0,
+      "derives": {
+        "initiative": {
+          "label": "Initiative",
+          "d1": 0,
+          "d2": 0,
+          "value": "",
+          "jet": ""
+        },
+        "esquive": {
+          "label": "Esquive",
+          "value": "",
+          "d1": 0,
+          "d2": 0,
+          "d3": 0,
+          "jet": ""
+        }
+      },
+      "domaines": {
+        "communication": {
+          "label": "Communication",
+          "value": 0,
+          "min": 0,
+          "max": 12
+        },
+        "pratique": {
+          "label": "Pratique",
+          "value": 0,
+          "min": 0,
+          "max": 12
+        },
+        "culture_milieux": {
+          "label": "Culture des milieux...",
+          "value": 0,
+          "min": 0,
+          "max": 12
+        },
+        "combat": {
+          "label": "Combat",
+          "value": 6,
+          "min": 0,
+          "max": 12
+        }
+      },
+      "pouvoirs": {
+        "pouvoir_psi_1": {
+          "label": "",
+          "grade": 1,
+          "rg": 4,
+          "selection": false,
+          "num_item": 5
+        },
+        "pouvoir_psi_2": {
+          "label": "",
+          "grade": 1,
+          "rg": 4,
+          "selection": false,
+          "num_item": 5
+        },
+        "pouvoir_transit": {
+          "label": "",
+          "grade": 1,
+          "rg": 5,
+          "selection": false,
+          "num_item": 5
+        },
+        "pouvoir_transfert": {
+          "label": "",
+          "grade": 1,
+          "rg": 5,
+          "selection": false,
+          "num_item": 5
+        }
+      },
+      "talents_combat": {
+        "charge": {
+          "label": "Charge",
+          "score": "0",
+          "av0": 1,
+          "av1": 2,
+          "av2": 3,
+          "av3": 5,
+          "av4": 7,
+          "effet_ac_0_1": "",
+          "effet_ac_0_2": "",
+          "effet_ac_0_3": "",
+          "effet_ac_1_1": "",
+          "effet_ac_1_2": "R",
+          "effet_ac_1_3": "",
+          "effet_ac_2_1": "R",
+          "effet_ac_2_2": "",
+          "effet_ac_2_3": "",
+          "effet_ac_3_1": "R",
+          "effet_ac_3_2": "S",
+          "effet_ac_3_3": "",
+          "effet_ac_4_1": "A",
+          "effet_ac_4_2": "",
+          "effet_ac_4_3": ""
+        },
+        "mainsnues": {
+          "label": "Bagarre",
+          "score": "0",
+          "def_actif": false,
+          "def": 0,
+          "av0": 1,
+          "av1": 2,
+          "av2": 3,
+          "av3": 5,
+          "av4": 7,
+          "effet_ac_0_1": "",
+          "effet_ac_0_2": "",
+          "effet_ac_0_3": "",
+          "effet_ac_1_1": "P",
+          "effet_ac_1_2": "",
+          "effet_ac_1_3": "",
+          "effet_ac_2_1": "S",
+          "effet_ac_2_2": "",
+          "effet_ac_2_3": "",
+          "effet_ac_3_1": "I",
+          "effet_ac_3_2": "",
+          "effet_ac_3_3": "",
+          "effet_ac_4_1": "A",
+          "effet_ac_4_2": "",
+          "effet_ac_4_3": "",
+          "bonus": "adr",
+          "selection": false
+        },
+        "mainsnues1": {
+          "label": "",
+          "score": "0",
+          "def_actif": false,
+          "def": 0,
+          "av0": 1,
+          "av1": 2,
+          "av2": 3,
+          "av3": 5,
+          "av4": 7,
+          "effet_ac_0_1": "",
+          "effet_ac_0_2": "",
+          "effet_ac_0_3": "",
+          "effet_ac_1_1": "",
+          "effet_ac_1_2": "",
+          "effet_ac_1_3": "",
+          "effet_ac_2_1": "S",
+          "effet_ac_2_2": "",
+          "effet_ac_2_3": "",
+          "effet_ac_3_1": "R",
+          "effet_ac_3_2": "",
+          "effet_ac_3_3": "",
+          "effet_ac_4_1": "A",
+          "effet_ac_4_2": "",
+          "effet_ac_4_3": "",
+          "bonus": "adr",
+          "selection": false,
+          "modifiable": true
+        },
+        "mainsnues2": {
+          "label": "",
+          "score": "0",
+          "def_actif": false,
+          "def": 0,
+          "av0": 1,
+          "av1": 2,
+          "av2": 3,
+          "av3": 5,
+          "av4": 7,
+          "effet_ac_0_1": "",
+          "effet_ac_0_2": "",
+          "effet_ac_0_3": "",
+          "effet_ac_1_1": "",
+          "effet_ac_1_2": "",
+          "effet_ac_1_3": "",
+          "effet_ac_2_1": "S",
+          "effet_ac_2_2": "",
+          "effet_ac_2_3": "",
+          "effet_ac_3_1": "R",
+          "effet_ac_3_2": "",
+          "effet_ac_3_3": "",
+          "effet_ac_4_1": "A",
+          "effet_ac_4_2": "",
+          "effet_ac_4_3": "",
+          "bonus": "adr",
+          "selection": false,
+          "modifiable": true
+        },
+        "mainsnues3": {
+          "label": "",
+          "score": "0",
+          "def_actif": false,
+          "def": 0,
+          "av0": 1,
+          "av1": 2,
+          "av2": 3,
+          "av3": 5,
+          "av4": 7,
+          "effet_ac_0_1": "",
+          "effet_ac_0_2": "",
+          "effet_ac_0_3": "",
+          "effet_ac_1_1": "",
+          "effet_ac_1_2": "",
+          "effet_ac_1_3": "",
+          "effet_ac_2_1": "S",
+          "effet_ac_2_2": "",
+          "effet_ac_2_3": "",
+          "effet_ac_3_1": "R",
+          "effet_ac_3_2": "",
+          "effet_ac_3_3": "",
+          "effet_ac_4_1": "A",
+          "effet_ac_4_2": "",
+          "effet_ac_4_3": "",
+          "bonus": "adr",
+          "selection": false,
+          "modifiable": true
+        },
+        "armescourtes_1": {
+          "label": "",
+          "score": 0,
+          "def_actif": false,
+          "def": 0,
+          "av0": 0,
+          "av1": 0,
+          "av2": 0,
+          "av3": 0,
+          "av4": 0,
+          "effet_ac_0_1": "",
+          "effet_ac_0_2": "",
+          "effet_ac_0_3": "",
+          "effet_ac_1_1": "",
+          "effet_ac_1_2": "",
+          "effet_ac_1_3": "",
+          "effet_ac_2_1": "",
+          "effet_ac_2_2": "",
+          "effet_ac_2_3": "",
+          "effet_ac_3_1": "",
+          "effet_ac_3_2": "",
+          "effet_ac_3_3": "",
+          "effet_ac_4_1": "",
+          "effet_ac_4_2": "",
+          "effet_ac_4_3": "",
+          "bonus": "adr",
+          "modifiable": true,
+          "selection": false
+        },
+        "armescourtes_2": {
+          "label": "",
+          "score": 0,
+          "def_actif": false,
+          "def": 0,
+          "av0": 0,
+          "av1": 0,
+          "av2": 0,
+          "av3": 0,
+          "av4": 0,
+          "effet_ac_0_1": "",
+          "effet_ac_0_2": "",
+          "effet_ac_0_3": "",
+          "effet_ac_1_1": "",
+          "effet_ac_1_2": "",
+          "effet_ac_1_3": "",
+          "effet_ac_2_1": "",
+          "effet_ac_2_2": "",
+          "effet_ac_2_3": "",
+          "effet_ac_3_1": "",
+          "effet_ac_3_2": "",
+          "effet_ac_3_3": "",
+          "effet_ac_4_1": "",
+          "effet_ac_4_2": "",
+          "effet_ac_4_3": "",
+          "bonus": "adr",
+          "modifiable": true,
+          "selection": false
+        },
+        "armeslongues_1": {
+          "label": "",
+          "score": 0,
+          "def_actif": false,
+          "def": 0,
+          "av0": 0,
+          "av1": 0,
+          "av2": 0,
+          "av3": 0,
+          "av4": 0,
+          "effet_ac_0_1": "",
+          "effet_ac_0_2": "",
+          "effet_ac_0_3": "",
+          "effet_ac_1_1": "",
+          "effet_ac_1_2": "",
+          "effet_ac_1_3": "",
+          "effet_ac_2_1": "",
+          "effet_ac_2_2": "",
+          "effet_ac_2_3": "",
+          "effet_ac_3_1": "",
+          "effet_ac_3_2": "",
+          "effet_ac_3_3": "",
+          "effet_ac_4_1": "",
+          "effet_ac_4_2": "",
+          "effet_ac_4_3": "",
+          "bonus": "adr",
+          "modifiable": true,
+          "selection": false
+        },
+        "armeslongues_2": {
+          "label": "",
+          "score": 0,
+          "def_actif": false,
+          "def": 0,
+          "av0": 0,
+          "av1": 0,
+          "av2": 0,
+          "av3": 0,
+          "av4": 0,
+          "effet_ac_0_1": "",
+          "effet_ac_0_2": "",
+          "effet_ac_0_3": "",
+          "effet_ac_1_1": "",
+          "effet_ac_1_2": "",
+          "effet_ac_1_3": "",
+          "effet_ac_2_1": "",
+          "effet_ac_2_2": "",
+          "effet_ac_2_3": "",
+          "effet_ac_3_1": "",
+          "effet_ac_3_2": "",
+          "effet_ac_3_3": "",
+          "effet_ac_4_1": "",
+          "effet_ac_4_2": "",
+          "effet_ac_4_3": "",
+          "bonus": "adr",
+          "modifiable": true,
+          "selection": false
+        },
+        "lancer_1": {
+          "label": "",
+          "score": 0,
+          "def_actif": false,
+          "quantity": 1,
+          "def": 0,
+          "av0": 0,
+          "av1": 0,
+          "av2": 0,
+          "av3": 0,
+          "av4": 0,
+          "effet_ac_0_1": "",
+          "effet_ac_0_2": "",
+          "effet_ac_0_3": "",
+          "effet_ac_1_1": "",
+          "effet_ac_1_2": "",
+          "effet_ac_1_3": "",
+          "effet_ac_2_1": "",
+          "effet_ac_2_2": "",
+          "effet_ac_2_3": "",
+          "effet_ac_3_1": "",
+          "effet_ac_3_2": "",
+          "effet_ac_3_3": "",
+          "effet_ac_4_1": "",
+          "effet_ac_4_2": "",
+          "effet_ac_4_3": "",
+          "bonus": "sens",
+          "modifiable": true,
+          "selection": false
+        },
+        "lancer_2": {
+          "label": "",
+          "score": 0,
+          "def_actif": false,
+          "quantity": 1,
+          "def": 0,
+          "av0": 0,
+          "av1": 0,
+          "av2": 0,
+          "av3": 0,
+          "av4": 0,
+          "effet_ac_0_1": "",
+          "effet_ac_0_2": "",
+          "effet_ac_0_3": "",
+          "effet_ac_1_1": "",
+          "effet_ac_1_2": "",
+          "effet_ac_1_3": "",
+          "effet_ac_2_1": "",
+          "effet_ac_2_2": "",
+          "effet_ac_2_3": "",
+          "effet_ac_3_1": "",
+          "effet_ac_3_2": "",
+          "effet_ac_3_3": "",
+          "effet_ac_4_1": "",
+          "effet_ac_4_2": "",
+          "effet_ac_4_3": "",
+          "bonus": "sens",
+          "modifiable": true,
+          "selection": false
+        },
+        "tir_1": {
+          "label": "",
+          "score": 0,
+          "def_actif": false,
+          "def": 0,
+          "av0": 0,
+          "av1": 0,
+          "av2": 0,
+          "av3": 0,
+          "av4": 0,
+          "effet_ac_0_1": "",
+          "effet_ac_0_2": "",
+          "effet_ac_0_3": "",
+          "effet_ac_1_1": "",
+          "effet_ac_1_2": "",
+          "effet_ac_1_3": "",
+          "effet_ac_2_1": "",
+          "effet_ac_2_2": "",
+          "effet_ac_2_3": "",
+          "effet_ac_3_1": "",
+          "effet_ac_3_2": "",
+          "effet_ac_3_3": "",
+          "effet_ac_4_1": "",
+          "effet_ac_4_2": "",
+          "effet_ac_4_3": "",
+          "charge": 0,
+          "portee": 150,
+          "bonus": "sens",
+          "modifiable": true,
+          "selection": false
+        },
+        "tir_2": {
+          "label": "",
+          "score": 0,
+          "def_actif": false,
+          "def": 0,
+          "av0": 0,
+          "av1": 0,
+          "av2": 0,
+          "av3": 0,
+          "av4": 0,
+          "effet_ac_0_1": "",
+          "effet_ac_0_2": "",
+          "effet_ac_0_3": "",
+          "effet_ac_1_1": "",
+          "effet_ac_1_2": "",
+          "effet_ac_1_3": "",
+          "effet_ac_2_1": "",
+          "effet_ac_2_2": "",
+          "effet_ac_2_3": "",
+          "effet_ac_3_1": "",
+          "effet_ac_3_2": "",
+          "effet_ac_3_3": "",
+          "effet_ac_4_1": "",
+          "effet_ac_4_2": "",
+          "effet_ac_4_3": "",
+          "portee": 150,
+          "charge": 0,
+          "bonus": "sens",
+          "modifiable": true,
+          "selection": false
+        }
+      },
+      "talents1_visible": true,
+      "talents2_visible": true,
+      "talents3_visible": true,
+      "talents4_visible": true,
+      "talents5_visible": true,
+      "talents": {
+        "interpreter": {
+          "label": "INTERPRÉTER",
+          "description": "Ce Talent peut servir dans les deux sens du terme : décrypter les signaux émis par les autres (attitudes, discours, œuvres d'art, codes secrets) ou maîtriser ses propres expressions. Dans le second cas, soit pour être « indéchiffrable », soit au contraire pour briller au cours d'une interprétation artistique.",
+          "value": 0,
+          "debut_col": true,
+          "fin_col": false,
+          "generique": true,
+          "domaine": "communication",
+          "bas": false
+        },
+        "observer": {
+          "label": "OBSERVER",
+          "description": "Talent de détecter et remarquer les détails, qu'ils soient inattendus, bizarres, difficiles à percevoir, dissimulés au milieu d'une foule d'informations ou d'objets perturbant l'attention.",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": false,
+          "generique": true,
+          "domaine": "pratique",
+          "bas": false
+        },
+        "habites": {
+          "label": "...HABITÉS",
+          "description": "Connaissance ou capacité à rapidement reconnaître et comprendre l'organisation et l'administration d'une zone, ses ressources, les méthodes d'approche des divers groupes sociaux, les légendes urbaines, les lieux notables, s'y orienter. Le personnage peut avoir des réseaux de contacts s'il a déjà résidé dans un lieu. Un bon score peut faciliter l'infiltration dans un groupe ou la découverte fortuite de détails occultés.",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": true,
+          "generique": true,
+          "domaine": "culture_milieux",
+          "bas": false
+        },
+        "langage_corporel": {
+          "label": "Langage Corporel",
+          "description": "Détection et interprétation des attitudes, regards, voire des micro-expressions, qui trahissent les pensées secrètes des gens. Et contrôle de ses propres signaux.",
+          "value": 0,
+          "debut_col": true,
+          "fin_col": false,
+          "generique": false,
+          "domaine": "communication",
+          "bas": false
+        },
+        "chercher_objet": {
+          "label": "Chercher objet",
+          "description": "Surveiller ou fouiller un lieu pour repérer un objet, un type de personne ou d'évènement précis.",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": false,
+          "generique": false,
+          "domaine": "pratique",
+          "bas": false
+        },
+        "megalopoles": {
+          "label": "Mégalopoles",
+          "description": "Concerne les villes tentaculaires.",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": true,
+          "generique": false,
+          "domaine": "culture_milieux",
+          "bas": false
+        },
+        "codes": {
+          "label": "Codes",
+          "description": "Repérage et interprétation des codes secrets de communication (messages codés, signes manuels et faciaux, graffitis, objets déplacés, petites annonces...)",
+          "value": 0,
+          "debut_col": true,
+          "fin_col": false,
+          "generique": false,
+          "domaine": "communication",
+          "bas": false
+        },
+        "remarquer_detail": {
+          "label": "Remarquer détail",
+          "description": "Surveiller ou fouiller un lieu et détecter la présence ou la coïncidence d'objets, de détails ou d'évènements imprévus, sérendipité.",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": false,
+          "generique": false,
+          "domaine": "pratique",
+          "bas": false
+        },
+        "cites": {
+          "label": "Cités",
+          "description": "Concerne plutôt les villes « à visage humain ».",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": true,
+          "generique": false,
+          "domaine": "culture_milieux",
+          "bas": false
+        },
+        "expressions_artistiques": {
+          "label": "Expression artistique",
+          "description": "Capacité à critiquer, mais aussi à créer soi-même, des objets et évènements artistiques. Ce Talent n'a de sens créatif qu'associé à une ou deux Spés plus précises (danse, sculpture...).",
+          "value": 0,
+          "debut_col": true,
+          "fin_col": false,
+          "generique": false,
+          "domaine": "communication",
+          "bas": false
+        },
+        "veille_vigilance": {
+          "label": "Veille Vigilance",
+          "description": "Capacité à rester parfaitement attentif sur une longue période en surveillant un lieu, une zone ou en épluchant des documents, pour réagir sitôt que survient un détail alertant.",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": false,
+          "generique": false,
+          "domaine": "pratique",
+          "bas": false
+        },
+        "rural": {
+          "label": "Rural",
+          "description": "Concerne les zones peu habitées, y compris les détails relatifs aux cultures, mais aussi la vie sauvage (animale et végétale) qui partage le territoire avec les habitants.",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": true,
+          "generique": false,
+          "domaine": "culture_milieux",
+          "bas": false
+        },
+        "paraitre": {
+          "label": "PARAITRE",
+          "description": "Art de se faire passer pour ce que l'on n'est pas grâce à un déguisement physique, à une imitation vocale, à une expression ou une humeur feinte, à un bon bagout.",
+          "value": 0,
+          "debut_col": true,
+          "fin_col": false,
+          "generique": true,
+          "domaine": "communication",
+          "bas": false
+        },
+        "furtivite": {
+          "label": "FURTIVITÉ",
+          "description": "Capacité à agir sans se faire remarquer ou repérer.",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": false,
+          "generique": true,
+          "domaine": "pratique",
+          "bas": false
+        },
+        "sauvages": {
+          "label": "SAUVAGES",
+          "description": "Connaissance des ressources et des dangers, des bonnes attitudes à avoir en cas de rencontres, et savoir s'y orienter.",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": true,
+          "generique": true,
+          "domaine": "culture_milieux",
+          "bas": false
+        },
+        "bluffer_deguisement": {
+          "label": "Bluffer Déguisement",
+          "description": "Passer pour une autre personne ou pour un vrai représentant d'une caste ou d'un métier, imiter une voix, une attitude, simuler une humeur.",
+          "value": 0,
+          "debut_col": true,
+          "fin_col": false,
+          "generique": false,
+          "domaine": "communication",
+          "bas": false
+        },
+        "agir_sans_bruit": {
+          "label": "Agir sans bruit",
+          "description": "Repérer (Sens), deviner (Réflexion) les détails capables de trahir sa présence, ou du moins ne pas les faire résonner ou craquer (Adresse).",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": false,
+          "generique": false,
+          "domaine": "pratique",
+          "bas": false
+        },
+        "foret_jungle": {
+          "label": "Forêt Jungle",
+          "description": "Ressources et dangers des zones à végétation dense.",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": true,
+          "generique": false,
+          "domaine": "culture_milieux",
+          "bas": false
+        },
+        "impressionner": {
+          "label": "Impressionner",
+          "description": "Effrayer ou marquer les esprits par la force de sa présence, son attitude ou son discours.",
+          "value": 0,
+          "debut_col": true,
+          "fin_col": false,
+          "generique": false,
+          "domaine": "communication",
+          "bas": false
+        },
+        "se_disimuler_filer": {
+          "label": "Se dissimuler Filer",
+          "description": "Profiter de tous les recoins pour ne pas être vu, mais aussi anticiper les méfiances possibles de sa cible pour la suivre sans être repéré.",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": false,
+          "generique": false,
+          "domaine": "pratique",
+          "bas": false
+        },
+        "savane_steppe_marecages": {
+          "label": "Savane Steppe Marécages",
+          "description": "Ressources et dangers des zones à végétation clairsemée.",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": true,
+          "generique": false,
+          "domaine": "culture_milieux",
+          "bas": false
+        },
+        "paraitre_sans_interet": {
+          "label": "Paraître sans intérêt",
+          "description": "Cumul d'attitudes et de choix vestimentaire ou de placement dans un lieu, une assistance, permettant d'être peu remarquable et de passer pour insignifiant.",
+          "value": 0,
+          "debut_col": true,
+          "fin_col": false,
+          "generique": false,
+          "domaine": "communication",
+          "bas": false
+        },
+        "camouflage": {
+          "label": "Camouflage",
+          "description": "Se vêtir ou créer une cachette de façon à ne pas être repérable dans un milieu.",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": false,
+          "generique": false,
+          "domaine": "pratique",
+          "bas": false
+        },
+        "desert": {
+          "label": "Déserts",
+          "description": "Ressources et dangers des zones arides, chaudes ou froides.",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": true,
+          "generique": false,
+          "domaine": "culture_milieux",
+          "bas": false
+        },
+        "persuader": {
+          "label": "PERSUADER",
+          "description": "Capacité à amener ses interlocuteurs à partager ses idées, ses plans, ses décisions, à accepter ses conseils, à croire ce que l'on affirme.",
+          "value": 0,
+          "debut_col": true,
+          "fin_col": false,
+          "generique": true,
+          "domaine": "communication",
+          "bas": false
+        },
+        "acrobaties": {
+          "label": "ACROBATIES",
+          "description": "Tonicité, aisance et coordination corporelle pour toutes les actions en mouvement ou en force escalader, transporter des charges, éviter un rocher qui dévale, et bien sûr les épreuves sportives simples ou la danse. Les sports techniques et les numéros de cirque demandent une Spé pour être exécutés correctement.",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": false,
+          "generique": true,
+          "domaine": "pratique",
+          "bas": false
+        },
+        "scientechs": {
+          "label": "SCIENTECHS",
+          "description": "Connaissance des infrastructures liées aux sciences, aux techniques et aux industries, et de l'organisation des personnes qui y évoluent. Le Talent générique inclut les infrastructures militaires. Les Talents Série doivent être associés à une ou plusieurs Spés (vaisseaux maritimes, petits astronefs...).",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": true,
+          "generique": true,
+          "domaine": "culture_milieux",
+          "bas": false
+        },
+        "convaincre_expliquer": {
+          "label": "Convaincre Expliquer",
+          "description": "Persuader par l'argumentation et la pédagogie ; inclut un talent certain pour la patience.",
+          "value": 0,
+          "debut_col": true,
+          "fin_col": false,
+          "generique": false,
+          "domaine": "communication",
+          "bas": false
+        },
+        "minutie": {
+          "label": "Minutie",
+          "description": "Capacité de précision, de fluidité et de calme dans les efforts corporels, dans la danse.",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": false,
+          "generique": false,
+          "domaine": "pratique",
+          "bas": false
+        },
+        "indus": {
+          "label": "Indus",
+          "description": "Connaissance des bâtiments industriels ou de recherche scientifique d'époques diverses, et de l'organisation de ceux qui y évoluent. Architectures et matériaux, métiers divers, hiérarchie, sécurité, etc...",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": true,
+          "generique": false,
+          "domaine": "culture_milieux",
+          "bas": false
+        },
+        "baratiner_tromper_culot": {
+          "label": "Baratiner Tromper Culot",
+          "description": "Improviser des histoires ou des comportements et les assumer avec assurance.",
+          "value": 0,
+          "debut_col": true,
+          "fin_col": false,
+          "generique": false,
+          "domaine": "communication",
+          "bas": false
+        },
+        "acrobatie": {
+          "label": "Acrobatie",
+          "description": "Capacité à gérer et contrôler les actions demandant des efforts violents.",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": false,
+          "generique": false,
+          "domaine": "pratique",
+          "bas": false
+        },
+        "militaire": {
+          "label": "Militaire",
+          "description": "Connaissance des installations militaires d'époques diverses et de ceux qui y évoluent.",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": true,
+          "generique": false,
+          "domaine": "culture_milieux",
+          "bas": false
+        },
+        "imposer_ses_vues": {
+          "label": "Imposer ses vues",
+          "description": "Ordonner, directement ou en manipulant habilement un donneur d'ordres.",
+          "value": 0,
+          "debut_col": true,
+          "fin_col": false,
+          "generique": false,
+          "domaine": "communication",
+          "bas": false
+        },
+        "effort_prolonge": {
+          "label": "Efforts prolongés",
+          "description": "Capacité à gérer son effort sur le long terme, économiser ses forces, mais aussi garder de l'énergie pour d'autres actions (Observer, etc.). ",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": false,
+          "generique": false,
+          "domaine": "pratique",
+          "bas": false
+        },
+        "vaisseaux": {
+          "label": "Vaisseaux",
+          "description": "Connaissance des vaisseaux maritimes (ou spatiaux pour les Megas) d'époques diverses, matériaux, capacités, qualités et défauts de navigation.",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": true,
+          "generique": false,
+          "domaine": "culture_milieux",
+          "bas": false
+        },
+        "tisser_des_liens": {
+          "label": "TISSER DES LIENS",
+          "description": "Faculté et aisance du personnage pour créer une relation privilégiée avec des individus divers et pour constituer des réseaux.",
+          "value": 0,
+          "debut_col": true,
+          "fin_col": false,
+          "generique": true,
+          "domaine": "communication",
+          "bas": false
+        },
+        "manips": {
+          "label": "MANIPS",
+          "description": "Le personnage est habile, rapide et précis en diverses manipulations faciles. Il peut pratiquer des soins simples sur des êtres vivants ou des démontages et réparations de niveau bricolage sur des objets et appareils. Les manipulations plus complexes ou nécessitant un savoir pointu exigent une Spé associée.",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": false,
+          "generique": true,
+          "domaine": "pratique",
+          "bas": false
+        },
+        "pouvoir": {
+          "label": "...POUVOIRS",
+          "description": "Connaissance des institutions, des cercles et des lieux où s'exerce le pouvoir et des usages de ceux qui y évoluent.",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": true,
+          "generique": true,
+          "domaine": "culture_milieux",
+          "bas": false
+        },
+        "charmer_captiver_apprivoiser": {
+          "label": "Charmer Captiver Apprivoiser",
+          "description": "Créer une relation en jouant plutôt sur l'affectif.",
+          "value": 0,
+          "debut_col": true,
+          "fin_col": false,
+          "generique": false,
+          "domaine": "communication",
+          "bas": false
+        },
+        "vivant": {
+          "label": "Vivant",
+          "description": "Diagnostic et premiers soins sur les êtres humains (et humanoïdes). Diagnostic, élevage, culture, soins et usages.",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": false,
+          "generique": false,
+          "domaine": "pratique",
+          "bas": false
+        },
+        "business": {
+          "label": "Business",
+          "description": "Connaissance des mécanismes et des usages dans les milieux d'affaires « en général ». La connaissance de corporations très fermées ou des plus hautes sphères peut demander une Spé.",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": true,
+          "generique": false,
+          "domaine": "culture_milieux",
+          "bas": false
+        },
+        "inspirer_fidelite": {
+          "label": "Inspirer fidélité",
+          "description": "Rallier des gens grâce à la rectitude de son comportement et des idées que l'on professe (ou que l'on fait semblant de...).",
+          "value": 0,
+          "debut_col": true,
+          "fin_col": false,
+          "generique": false,
+          "domaine": "communication",
+          "bas": false
+        },
+        "mecanique": {
+          "label": "Mécanique",
+          "description": "Réparation et fabrication d'objets techniques.",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": false,
+          "generique": false,
+          "domaine": "pratique",
+          "bas": false
+        },
+        "autorites": {
+          "label": "Autorité",
+          "description": "Connaissance des mécanismes et des usages dans les milieux des hautes autorités, politiques, administratives ou de sécurité.",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": true,
+          "generique": false,
+          "domaine": "culture_milieux",
+          "bas": false
+        },
+        "assujettir_dompter": {
+          "label": "Assujettir Dompter",
+          "description": "Prendre l'ascendant par l'autorité ou la menace.",
+          "value": 0,
+          "debut_col": true,
+          "fin_col": false,
+          "generique": false,
+          "domaine": "communication",
+          "bas": false
+        },
+        "electronique": {
+          "label": "Électronique",
+          "description": "Connaissance, réparation et fabrication d'objets électronique.",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": false,
+          "generique": false,
+          "domaine": "pratique",
+          "bas": false
+        },
+        "spirituel": {
+          "label": "Spirituel",
+          "description": "Connaissance des mécanismes et des usages dans les milieux traitant de la spiritualité, de la foi.",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": true,
+          "generique": false,
+          "domaine": "culture_milieux",
+          "bas": false
+        },
+        "diriger": {
+          "label": "DIRIGER",
+          "description": "Capacité à faire agir de concert un groupe plus ou moins grand de personnes, qu'elles y soient habituées ou pas, et à maintenir la cohésion et l'efficacité de ce groupe dans l'action.",
+          "value": 0,
+          "debut_col": true,
+          "fin_col": false,
+          "generique": true,
+          "domaine": "communication",
+          "bas": true
+        },
+        "conduire": {
+          "label": "CONDUIRE",
+          "description": "Connaissance ou apprentissage rapide de la conduite de véhicules mécaniques ou animés par des animaux, Maîtrise relative de leur maniabilité et de leur vitesse, et connaissance générique de leur mécanisme. Selon les usages locaux, certains véhicules ne peuvent être conduits sans autorisation ou apprentissage complexe (et donc exiger une Spé).",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": false,
+          "generique": true,
+          "domaine": "pratique",
+          "bas": true
+        },
+        "clandestins": {
+          "label": "...CLANDESTINS",
+          "description": "Connaissance, ou capacité à être vite informé, des groupes agissant dans la clandestinité, de leurs buts et modes d'action, qu'ils s'agissent d'opposants au pouvoir, de gens voulant vivre en marge ou de la pègre.",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": true,
+          "generique": true,
+          "domaine": "culture_milieux",
+          "bas": true
+        },
+        "coordonner": {
+          "label": "Coordonner",
+          "description": "Permet d'augmenter les chances de réussite d'un groupe désorganisé, en proposant une organisation claire et bien pensée, en direct, en différé ou via des intermédiaires tant que les consignes données sont applicables.",
+          "value": 0,
+          "debut_col": true,
+          "fin_col": false,
+          "generique": false,
+          "domaine": "communication",
+          "bas": true
+        },
+        "animal": {
+          "label": "Animal",
+          "description": "Permet de savoir (ou vite apprendre à...) diriger les animaux de monte ou les véhicules tractés par des animaux. Connaissance de ces véhicules (matériaux, solidité, maniabilité).",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": false,
+          "generique": false,
+          "domaine": "pratique",
+          "bas": true
+        },
+        "pegre": {
+          "label": "Pègre",
+          "description": "Connaissance des mécanismes et des usages dans le Milieu (avec un grand M).",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": true,
+          "generique": false,
+          "domaine": "culture_milieux",
+          "bas": true
+        },
+        "commander": {
+          "label": "Commander",
+          "description": "Permet d'augmenter les chances de réussite d'un groupe désorganisé et de faire taire (momentanément) les dissensions entre participants, de préférence en contact direct ou vocal avec les personnes commandées.",
+          "value": 0,
+          "debut_col": true,
+          "fin_col": false,
+          "generique": false,
+          "domaine": "communication",
+          "bas": true
+        },
+        "vehicules_legers": {
+          "label": "Véhicules légers",
+          "description": "Permet de conduire ou piloter les engins légers destinés à quelques passagers. Connaissance (seIon score) de leur mécanisme et des artisans ou industries qui les fabriquent. Selon les usages locaux, certains véhicules ne peuvent être conduits sans autorisation ou apprentissage complexe (et donc exiger une Spé).",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": false,
+          "generique": false,
+          "domaine": "pratique",
+          "bas": true
+        },
+        "contestations": {
+          "label": "Contestation",
+          "description": "Connaissance des mécanismes et des usages dans les milieux investis dans la vie publique ou politique, sous une forme contestataire incluant une part d'action clandestine.",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": true,
+          "generique": false,
+          "domaine": "culture_milieux",
+          "bas": true
+        },
+        "former": {
+          "label": "Former",
+          "description": "Apprendre à d'autres un Talent que l'on maîtrise (logiquement avec une Spé liée), en mêlant théorie et exemples.",
+          "value": 0,
+          "debut_col": true,
+          "fin_col": false,
+          "generique": false,
+          "domaine": "communication",
+          "bas": true
+        },
+        "vehicules_lourds": {
+          "label": "Véhicules lourds",
+          "description": "Permet de conduire ou piloter les engins lourds et très lourds, transportant de nombreux passagers ou du fret (camions, navires, vaisseaux). Connaissance (selon score) de leur mécanisme et des industries qui les fabriquent.",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": false,
+          "generique": false,
+          "domaine": "pratique",
+          "bas": true
+        },
+        "marge": {
+          "label": "Marge",
+          "description": "Connaissance des mécanismes et des usages dans les milieux marginaux, tant ceux qui vivent en marge mais au cœur des sociétés que ceux qui s'en éloignent pour en être oubliés.",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": true,
+          "generique": false,
+          "domaine": "culture_milieux",
+          "bas": true
+        }
+      }
+    },
+    "PNJ": {
+      "biography": "",
+      "pnj_infos_mj": "",
+      "reduit": 1,
+      "resistance_transfert": 24,
+      "desc_pouvoirs": "<h1>T&Eacute;L&Eacute;PATHIE</h1>\n<p>&nbsp;</p>\n<h2>Communication t&eacute;l&eacute;pathique</h2>\n<h3>Grade 1.&nbsp;</h3>\n<p>&nbsp;</p>\n<h2>Percevoir des pr&eacute;sences, des sentiments, des pens&eacute;es, anticiper une conduite</h2>\n<h3>Grade 1.&nbsp;</h3>\n<p>&nbsp;</p>",
+      "health": {
+        "value": 0,
+        "min": 0,
+        "max": 0
+      },
+      "power": {
+        "value": 0,
+        "min": 0,
+        "max": 0
+      },
+      "def": {
+        "value": 6,
+        "min": 0,
+        "max": 0
+      },
+      "pts_ardence": {
+        "value": 0,
+        "min": 0,
+        "max": 12
+      },
+      "pts_resonnance": {
+        "value": 0,
+        "min": 0,
+        "max": 6
+      },
+      "def_modif": {
+        "value": 0
+      },
+      "combat_modif": {
+        "value": 0
+      },
+      "protect_choc": {
+        "value": 0
+      },
+      "protect_lame": {
+        "value": 0
+      },
+      "protect_balle": {
+        "value": 0
+      },
+      "protect_feu": {
+        "value": 0
+      },
+      "protect_froid": {
+        "value": 0
+      },
+      "protect_acide": {
+        "value": 0
+      },
+      "protect_rayon": {
+        "value": 0
+      },
+      "talent_simp1": {
+        "value": ""
+      },
+      "rg_talent_simp1": {
+        "value": 0,
+        "min": 0,
+        "max": 0
+      },
+      "talent_simp2": {
+        "value": ""
+      },
+      "rg_talent_simp2": {
+        "value": 0,
+        "min": 0,
+        "max": 0
+      },
+      "talent_simp3": {
+        "value": ""
+      },
+      "rg_talent_simp3": {
+        "value": 0,
+        "min": 0,
+        "max": 0
+      },
+      "talent_simp4": {
+        "value": ""
+      },
+      "rg_talent_simp4": {
+        "value": 0,
+        "min": 0,
+        "max": 0
+      },
+      "talent_simp5": {
+        "value": ""
+      },
+      "rg_talent_simp5": {
+        "value": 0,
+        "min": 0,
+        "max": 0
+      },
+      "talent_simp6": {
+        "value": ""
+      },
+      "rg_talent_simp6": {
+        "value": 0,
+        "min": 0,
+        "max": 0
+      },
+      "talent_simp7": {
+        "value": ""
+      },
+      "rg_talent_simp7": {
+        "value": 0,
+        "min": 0,
+        "max": 0
+      },
+      "protections": {
+        "p1": {
+          "label": "",
+          "def_chocs": 0,
+          "def_lame": 0,
+          "def_balle": 0,
+          "def_feu": 0,
+          "def_froid": 0,
+          "def_acide": 0,
+          "def_rayon": 0,
+          "effet": "",
+          "selection": false
+        },
+        "p2": {
+          "label": "",
+          "def_chocs": 0,
+          "def_lame": 0,
+          "def_balle": 0,
+          "def_feu": 0,
+          "def_froid": 0,
+          "def_acide": 0,
+          "def_rayon": 0,
+          "effet": "",
+          "selection": false
+        },
+        "p3": {
+          "label": "",
+          "def_chocs": 0,
+          "def_lame": 0,
+          "def_balle": 0,
+          "def_feu": 0,
+          "def_froid": 0,
+          "def_acide": 0,
+          "def_rayon": 0,
+          "def_rayon_bras": 0,
+          "effet": "",
+          "selection": false
+        },
+        "p4": {
+          "label": "",
+          "def_chocs": 0,
+          "def_lame": 0,
+          "def_balle": 0,
+          "def_feu": 0,
+          "def_froid": 0,
+          "def_acide": 0,
+          "def_rayon": 0,
+          "def_rayon_bras": 0,
+          "effet": "",
+          "selection": false
+        },
+        "p5": {
+          "label": "",
+          "def_chocs": 0,
+          "def_lame": 0,
+          "def_balle": 0,
+          "def_feu": 0,
+          "def_froid": 0,
+          "def_acide": 0,
+          "def_rayon": 0,
+          "def_rayon_bras": 0,
+          "effet": "",
+          "selection": false
+        },
+        "p6": {
+          "label": "",
+          "def_chocs": 0,
+          "def_lame": 0,
+          "def_balle": 0,
+          "def_feu": 0,
+          "def_froid": 0,
+          "def_acide": 0,
+          "def_rayon": 0,
+          "def_rayon_bras": 0,
+          "effet": "",
+          "selection": false
+        }
+      },
+      "equip_def_1": {
+        "value": ""
+      },
+      "bonus_equip_def_1": {
+        "value": 0
+      },
+      "equip_def_2": {
+        "value": ""
+      },
+      "bonus_equip_def_2": {
+        "value": 0
+      },
+      "equip_def_3": {
+        "value": ""
+      },
+      "bonus_equip_def_3": {
+        "value": 0
+      },
+      "equip_def_4": {
+        "value": ""
+      },
+      "bonus_equip_def_4": {
+        "value": 0
+      },
+      "equip_def_5": {
+        "value": ""
+      },
+      "bonus_equip_def_5": {
+        "value": 0
+      },
+      "equip_def_6": {
+        "value": ""
+      },
+      "bonus_equip_def_6": {
+        "value": 0
+      },
+      "attributes": {},
+      "spes": {
+        "spe1": {
+          "value": ""
+        },
+        "rg_spe1": {
+          "value": 0,
+          "min": 0,
+          "max": 0
+        },
+        "spe2": {
+          "value": ""
+        },
+        "rg_spe2": {
+          "value": 0,
+          "min": 0,
+          "max": 0
+        },
+        "spe3": {
+          "value": ""
+        },
+        "rg_spe3": {
+          "value": 0,
+          "min": 0,
+          "max": 0
+        },
+        "spe4": {
+          "value": ""
+        },
+        "rg_spe4": {
+          "value": 0,
+          "min": 0,
+          "max": 0
+        },
+        "spe5": {
+          "value": ""
+        },
+        "rg_spe5": {
+          "value": 0,
+          "min": 0,
+          "max": 0
+        },
+        "spe6": {
+          "value": ""
+        },
+        "rg_spe6": {
+          "value": 0,
+          "min": 0,
+          "max": 0
+        }
+      },
+      "caracs": {
+        "vivacite": {
+          "label": "VIVACITÉ",
+          "description": "Capacité de décision rapide, d'improvisation, de réaction immédiate sans trop réfléchir ou avec peu d'informations ; qui entraîne une réponse aussi appropriée que possible (pas forcément la meilleure à long terme). Elle sert autant à anticiper les actions d'un agresseur qu'à trouver la bonne répartie dans une discussion vive ou imaginer un comportement créatif. Le personnage qui réussit une action de cette façon peut être incapable d'expliquer ce qu'il a fait.",
+          "value": 0,
+          "min": 0,
+          "max": 0,
+          "debut_col": true,
+          "fin_col": false
+        },
+        "sens": {
+          "label": "SENS",
+          "description": "Capacité à détecter (mais pas forcément comprendre) les détails subtils ou les modifications de l'environnement (physique ou émotionnel), qui s'appuie sur les 5 sens, mais aussi sur un 6e sens, une curiosité naturelle ou une capacité à se focaliser sur un sujet précis.",
+          "value": 0,
+          "min": 0,
+          "max": 0,
+          "debut_col": false,
+          "fin_col": false
+        },
+        "adresse": {
+          "label": "ADRESSE",
+          "description": "Finesse et rapidité de mouvement, corporel ou manuel.",
+          "value": 0,
+          "min": 0,
+          "max": 0,
+          "debut_col": false,
+          "fin_col": true
+        },
+        "reflexion": {
+          "label": "RÉFLEXION",
+          "description": "Capacité à réunir, organiser, comprendre ou mémoriser des informations complexes, nombreuses ou abstraites. Nécessite le temps de la réflexion, sauf pour se rappeler un souvenir précis.",
+          "value": 0,
+          "min": 0,
+          "max": 0,
+          "debut_col": true,
+          "fin_col": false
+        },
+        "ardence": {
+          "label": "ARDENCE",
+          "description": "Feu intérieur du personnage, qu'il peut utiliser pour se surpasser, mais qui parfois le pousse à des actions guidées par l'émotion.",
+          "value": 0,
+          "min": 0,
+          "max": 0,
+          "debut_col": false,
+          "fin_col": false
+        },
+        "force": {
+          "label": "FORCE",
+          "description": "Pure tonicité musculaire, pour agir ou pour soutenir un effort intense.",
+          "value": 0,
+          "min": 0,
+          "max": 0,
+          "debut_col": false,
+          "fin_col": true
+        },
+        "caractere": {
+          "label": "CARACTÈRE",
+          "description": "Volonté face à la difficulté ou à l'échec, mais aussi cohérence de pensée, maîtrise de soi et résistance à l'hébétude ou la panique lors d'une scène choquante. Ce Trait peut traduire aussi bien la force de caractère du personnage que son enracinement dans une conviction qui le soutient mais le conditionne.",
+          "value": 0,
+          "min": 0,
+          "max": 0,
+          "debut_col": true,
+          "fin_col": false
+        },
+        "resonnance": {
+          "label": "RÉSONNANCE",
+          "description": "Capacité à ressentir, à entrer en résonance et à influer sur les ondes et les flux du continuum, et ainsi interagir avec des êtres, des esprits, des objets et des lieux, quel que soit leur éloignement dans les univers. Ce « 7e sens » est à double tranchant : il peut autant provoquer un pressentiment utile que des cauchemars envahissants.",
+          "value": 0,
+          "min": 0,
+          "max": 0,
+          "debut_col": false,
+          "fin_col": false
+        },
+        "endurance": {
+          "label": "ENDURANCE",
+          "description": "Résistance aux coups et aux blessures, aux maladies et aux poisons, aux conditions extrêmes et à la fatigue.",
+          "value": 0,
+          "min": 0,
+          "max": 0,
+          "debut_col": false,
+          "fin_col": true
+        }
+      },
+      "bonus_initiative": 0,
+      "bonus_esquive": 0,
+      "derives": {
+        "initiative": {
+          "label": "Initiative",
+          "d1": 0,
+          "d2": 0,
+          "value": "",
+          "jet": ""
+        },
+        "esquive": {
+          "label": "Esquive",
+          "value": "",
+          "d1": 0,
+          "d2": 0,
+          "d3": 0,
+          "jet": ""
+        }
+      },
+      "domaines": {
+        "communication": {
+          "label": "Communication",
+          "value": 0,
+          "min": 0,
+          "max": 12
+        },
+        "pratique": {
+          "label": "Pratique",
+          "value": 0,
+          "min": 0,
+          "max": 12
+        },
+        "culture_milieux": {
+          "label": "Culture des milieux...",
+          "value": 0,
+          "min": 0,
+          "max": 12
+        },
+        "combat": {
+          "label": "Combat",
+          "value": 0,
+          "min": 0,
+          "max": 12
+        }
+      },
+      "pouvoirs": {
+        "pouvoir_psi_1": "",
+        "grade_pouvoir_psi_1": {
+          "value": 1,
+          "min": 0,
+          "max": 12
+        },
+        "rg_pouvoir_psi_1": {
+          "value": 4,
+          "min": 0,
+          "max": 12
+        },
+        "transit": {
+          "value": 4,
+          "min": 0,
+          "max": 12
+        },
+        "spe_transit": {
+          "value": 5,
+          "min": 0,
+          "max": 12
+        },
+        "transfert": {
+          "value": 4,
+          "min": 0,
+          "max": 12
+        },
+        "spe_transfert": {
+          "value": 2,
+          "min": 0,
+          "max": 12
+        }
+      },
+      "talents_combat": {
+        "charge": {
+          "label": "Charge",
+          "score": "0",
+          "av0": 1,
+          "av1": 2,
+          "av2": 3,
+          "av3": 5,
+          "av4": 7,
+          "effet_ac_0_1": "",
+          "effet_ac_0_2": "",
+          "effet_ac_0_3": "",
+          "effet_ac_1_1": "R",
+          "effet_ac_1_2": "",
+          "effet_ac_1_3": "",
+          "effet_ac_2_1": "R",
+          "effet_ac_2_2": "",
+          "effet_ac_2_3": "",
+          "effet_ac_3_1": "R",
+          "effet_ac_3_2": "S",
+          "effet_ac_3_3": "",
+          "effet_ac_4_1": "",
+          "effet_ac_4_2": "",
+          "effet_ac_4_3": "A"
+        },
+        "mainsnues": {
+          "label": "Bagarre",
+          "score": "0",
+          "def_actif": false,
+          "def": 0,
+          "av0": 1,
+          "av1": 2,
+          "av2": 3,
+          "av3": 5,
+          "av4": 7,
+          "effet_ac_0_1": "",
+          "effet_ac_0_2": "",
+          "effet_ac_0_3": "",
+          "effet_ac_1_1": "P",
+          "effet_ac_1_2": "",
+          "effet_ac_1_3": "",
+          "effet_ac_2_1": "S",
+          "effet_ac_2_2": "",
+          "effet_ac_2_3": "",
+          "effet_ac_3_1": "I",
+          "effet_ac_3_2": "",
+          "effet_ac_3_3": "",
+          "effet_ac_4_1": "A",
+          "effet_ac_4_2": "",
+          "effet_ac_4_3": "",
+          "bonus": "adr",
+          "selection": false
+        },
+        "mainsnues1": {
+          "label": "",
+          "score": "0",
+          "def_actif": false,
+          "def": 0,
+          "av0": 1,
+          "av1": 2,
+          "av2": 3,
+          "av3": 5,
+          "av4": 7,
+          "effet_ac_0_1": "",
+          "effet_ac_0_2": "",
+          "effet_ac_0_3": "",
+          "effet_ac_1_1": "",
+          "effet_ac_1_2": "",
+          "effet_ac_1_3": "",
+          "effet_ac_2_1": "S",
+          "effet_ac_2_2": "",
+          "effet_ac_2_3": "",
+          "effet_ac_3_1": "R",
+          "effet_ac_3_2": "",
+          "effet_ac_3_3": "",
+          "effet_ac_4_1": "A",
+          "effet_ac_4_2": "",
+          "effet_ac_4_3": "",
+          "bonus": "adr",
+          "selection": false,
+          "modifiable": true
+        },
+        "mainsnues2": {
+          "label": "",
+          "score": "0",
+          "def_actif": false,
+          "def": 0,
+          "av0": 1,
+          "av1": 2,
+          "av2": 3,
+          "av3": 5,
+          "av4": 7,
+          "effet_ac_0_1": "",
+          "effet_ac_0_2": "",
+          "effet_ac_0_3": "",
+          "effet_ac_1_1": "",
+          "effet_ac_1_2": "",
+          "effet_ac_1_3": "",
+          "effet_ac_2_1": "S",
+          "effet_ac_2_2": "",
+          "effet_ac_2_3": "",
+          "effet_ac_3_1": "R",
+          "effet_ac_3_2": "",
+          "effet_ac_3_3": "",
+          "effet_ac_4_1": "A",
+          "effet_ac_4_2": "",
+          "effet_ac_4_3": "",
+          "bonus": "adr",
+          "selection": false,
+          "modifiable": true
+        },
+        "mainsnues3": {
+          "label": "",
+          "score": "0",
+          "def_actif": false,
+          "def": 0,
+          "av0": 1,
+          "av1": 2,
+          "av2": 3,
+          "av3": 5,
+          "av4": 7,
+          "effet_ac_0_1": "",
+          "effet_ac_0_2": "",
+          "effet_ac_0_3": "",
+          "effet_ac_1_1": "",
+          "effet_ac_1_2": "",
+          "effet_ac_1_3": "",
+          "effet_ac_2_1": "S",
+          "effet_ac_2_2": "",
+          "effet_ac_2_3": "",
+          "effet_ac_3_1": "R",
+          "effet_ac_3_2": "",
+          "effet_ac_3_3": "",
+          "effet_ac_4_1": "A",
+          "effet_ac_4_2": "",
+          "effet_ac_4_3": "",
+          "bonus": "adr",
+          "selection": false,
+          "modifiable": true
+        },
+        "armescourtes_1": {
+          "label": "",
+          "score": 0,
+          "def_actif": false,
+          "def": 0,
+          "av0": 0,
+          "av1": 0,
+          "av2": 0,
+          "av3": 0,
+          "av4": 0,
+          "effet_ac_0_1": "",
+          "effet_ac_0_2": "",
+          "effet_ac_0_3": "",
+          "effet_ac_1_1": "",
+          "effet_ac_1_2": "",
+          "effet_ac_1_3": "",
+          "effet_ac_2_1": "",
+          "effet_ac_2_2": "",
+          "effet_ac_2_3": "",
+          "effet_ac_3_1": "",
+          "effet_ac_3_2": "",
+          "effet_ac_3_3": "",
+          "effet_ac_4_1": "",
+          "effet_ac_4_2": "",
+          "effet_ac_4_3": "",
+          "bonus": "adr",
+          "modifiable": true,
+          "selection": false
+        },
+        "armescourtes_2": {
+          "label": "",
+          "score": 0,
+          "def_actif": false,
+          "def": 0,
+          "av0": 0,
+          "av1": 0,
+          "av2": 0,
+          "av3": 0,
+          "av4": 0,
+          "effet_ac_0_1": "",
+          "effet_ac_0_2": "",
+          "effet_ac_0_3": "",
+          "effet_ac_1_1": "",
+          "effet_ac_1_2": "",
+          "effet_ac_1_3": "",
+          "effet_ac_2_1": "",
+          "effet_ac_2_2": "",
+          "effet_ac_2_3": "",
+          "effet_ac_3_1": "",
+          "effet_ac_3_2": "",
+          "effet_ac_3_3": "",
+          "effet_ac_4_1": "",
+          "effet_ac_4_2": "",
+          "effet_ac_4_3": "",
+          "bonus": "adr",
+          "modifiable": true,
+          "selection": false
+        },
+        "armeslongues_1": {
+          "label": "",
+          "score": 0,
+          "def_actif": false,
+          "def": 0,
+          "av0": 0,
+          "av1": 0,
+          "av2": 0,
+          "av3": 0,
+          "av4": 0,
+          "effet_ac_0_1": "",
+          "effet_ac_0_2": "",
+          "effet_ac_0_3": "",
+          "effet_ac_1_1": "",
+          "effet_ac_1_2": "",
+          "effet_ac_1_3": "",
+          "effet_ac_2_1": "",
+          "effet_ac_2_2": "",
+          "effet_ac_2_3": "",
+          "effet_ac_3_1": "",
+          "effet_ac_3_2": "",
+          "effet_ac_3_3": "",
+          "effet_ac_4_1": "",
+          "effet_ac_4_2": "",
+          "effet_ac_4_3": "",
+          "bonus": "adr",
+          "modifiable": true,
+          "selection": false
+        },
+        "armeslongues_2": {
+          "label": "",
+          "score": 0,
+          "def_actif": false,
+          "def": 0,
+          "av0": 0,
+          "av1": 0,
+          "av2": 0,
+          "av3": 0,
+          "av4": 0,
+          "effet_ac_0_1": "",
+          "effet_ac_0_2": "",
+          "effet_ac_0_3": "",
+          "effet_ac_1_1": "",
+          "effet_ac_1_2": "",
+          "effet_ac_1_3": "",
+          "effet_ac_2_1": "",
+          "effet_ac_2_2": "",
+          "effet_ac_2_3": "",
+          "effet_ac_3_1": "",
+          "effet_ac_3_2": "",
+          "effet_ac_3_3": "",
+          "effet_ac_4_1": "",
+          "effet_ac_4_2": "",
+          "effet_ac_4_3": "",
+          "bonus": "adr",
+          "modifiable": true,
+          "selection": false
+        },
+        "lancer_1": {
+          "label": "",
+          "score": 0,
+          "quantity": 0,
+          "def_actif": false,
+          "def": 0,
+          "av0": 0,
+          "av1": 0,
+          "av2": 0,
+          "av3": 0,
+          "av4": 0,
+          "effet_ac_0_1": "",
+          "effet_ac_0_2": "",
+          "effet_ac_0_3": "",
+          "effet_ac_1_1": "",
+          "effet_ac_1_2": "",
+          "effet_ac_1_3": "",
+          "effet_ac_2_1": "",
+          "effet_ac_2_2": "",
+          "effet_ac_2_3": "",
+          "effet_ac_3_1": "",
+          "effet_ac_3_2": "",
+          "effet_ac_3_3": "",
+          "effet_ac_4_1": "",
+          "effet_ac_4_2": "",
+          "effet_ac_4_3": "",
+          "bonus": "sens",
+          "modifiable": true,
+          "selection": false
+        },
+        "lancer_2": {
+          "label": "",
+          "score": 0,
+          "quantity": 0,
+          "def_actif": false,
+          "def": 0,
+          "av0": 0,
+          "av1": 0,
+          "av2": 0,
+          "av3": 0,
+          "av4": 0,
+          "effet_ac_0_1": "",
+          "effet_ac_0_2": "",
+          "effet_ac_0_3": "",
+          "effet_ac_1_1": "",
+          "effet_ac_1_2": "",
+          "effet_ac_1_3": "",
+          "effet_ac_2_1": "",
+          "effet_ac_2_2": "",
+          "effet_ac_2_3": "",
+          "effet_ac_3_1": "",
+          "effet_ac_3_2": "",
+          "effet_ac_3_3": "",
+          "effet_ac_4_1": "",
+          "effet_ac_4_2": "",
+          "effet_ac_4_3": "",
+          "bonus": "sens",
+          "modifiable": true,
+          "selection": false
+        },
+        "tir_1": {
+          "label": "",
+          "score": 0,
+          "def_actif": false,
+          "def": 0,
+          "av0": 0,
+          "av1": 0,
+          "av2": 0,
+          "av3": 0,
+          "av4": 0,
+          "effet_ac_0_1": "",
+          "effet_ac_0_2": "",
+          "effet_ac_0_3": "",
+          "effet_ac_1_1": "",
+          "effet_ac_1_2": "",
+          "effet_ac_1_3": "",
+          "effet_ac_2_1": "",
+          "effet_ac_2_2": "",
+          "effet_ac_2_3": "",
+          "effet_ac_3_1": "",
+          "effet_ac_3_2": "",
+          "effet_ac_3_3": "",
+          "effet_ac_4_1": "",
+          "effet_ac_4_2": "",
+          "effet_ac_4_3": "",
+          "bonus": "sens",
+          "modifiable": true,
+          "selection": false
+        },
+        "tir_2": {
+          "label": "",
+          "score": 0,
+          "def_actif": false,
+          "def": 0,
+          "av0": 0,
+          "av1": 0,
+          "av2": 0,
+          "av3": 0,
+          "av4": 0,
+          "effet_ac_0_1": "",
+          "effet_ac_0_2": "",
+          "effet_ac_0_3": "",
+          "effet_ac_1_1": "",
+          "effet_ac_1_2": "",
+          "effet_ac_1_3": "",
+          "effet_ac_2_1": "",
+          "effet_ac_2_2": "",
+          "effet_ac_2_3": "",
+          "effet_ac_3_1": "",
+          "effet_ac_3_2": "",
+          "effet_ac_3_3": "",
+          "effet_ac_4_1": "",
+          "effet_ac_4_2": "",
+          "effet_ac_4_3": "",
+          "bonus": "sens",
+          "modifiable": true,
+          "selection": false
+        }
+      },
+      "talents": {
+        "interpreter": {
+          "label": "INTERPRÉTER",
+          "description": "Ce Talent peut servir dans les deux sens du terme : décrypter les signaux émis par les autres (attitudes, discours, œuvres d'art, codes secrets) ou maîtriser ses propres expressions. Dans le second cas, soit pour être « indéchiffrable », soit au contraire pour briller au cours d'une interprétation artistique.",
+          "value": 0,
+          "debut_col": true,
+          "fin_col": false,
+          "generique": true,
+          "domaine": "communication",
+          "bas": false
+        },
+        "observer": {
+          "label": "OBSERVER",
+          "description": "Talent de détecter et remarquer les détails, qu'ils soient inattendus, bizarres, difficiles à percevoir, dissimulés au milieu d'une foule d'informations ou d'objets perturbant l'attention.",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": false,
+          "generique": true,
+          "domaine": "pratique",
+          "bas": false
+        },
+        "habites": {
+          "label": "...HABITÉS",
+          "description": "Connaissance ou capacité à rapidement reconnaître et comprendre l'organisation et l'administration d'une zone, ses ressources, les méthodes d'approche des divers groupes sociaux, les légendes urbaines, les lieux notables, s'y orienter. Le personnage peut avoir des réseaux de contacts s'il a déjà résidé dans un lieu. Un bon score peut faciliter l'infiltration dans un groupe ou la découverte fortuite de détails occultés.",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": true,
+          "generique": true,
+          "domaine": "culture_milieux",
+          "bas": false
+        },
+        "langage_corporel": {
+          "label": "Langage corporel",
+          "description": "Détection et interprétation des attitudes, regards, voire des micro-expressions, qui trahissent les pensées secrètes des gens. Et contrôle de ses propres signaux.",
+          "value": 0,
+          "debut_col": true,
+          "fin_col": false,
+          "generique": false,
+          "domaine": "communication",
+          "bas": false
+        },
+        "chercher_objet": {
+          "label": "Chercher objet",
+          "description": "Surveiller ou fouiller un lieu pour repérer un objet, un type de personne ou d'évènement précis.",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": false,
+          "generique": false,
+          "domaine": "pratique",
+          "bas": false
+        },
+        "megalopoles": {
+          "label": "Mégalopoles",
+          "description": "Concerne les villes tentaculaires.",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": true,
+          "generique": false,
+          "domaine": "culture_milieux",
+          "bas": false
+        },
+        "codes": {
+          "label": "Codes",
+          "description": "Repérage et interprétation des codes secrets de communication (messages codés, signes manuels et faciaux, graffitis, objets déplacés, petites annonces...)",
+          "value": 0,
+          "debut_col": true,
+          "fin_col": false,
+          "generique": false,
+          "domaine": "communication",
+          "bas": false
+        },
+        "remarquer_detail": {
+          "label": "Remarquer détail",
+          "description": "Surveiller ou fouiller un lieu et détecter la présence ou la coïncidence d'objets, de détails ou d'évènements imprévus, sérendipité.",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": false,
+          "generique": false,
+          "domaine": "pratique",
+          "bas": false
+        },
+        "cites": {
+          "label": "Cités",
+          "description": "Concerne plutôt les villes « à visage humain ».",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": true,
+          "generique": false,
+          "domaine": "culture_milieux",
+          "bas": false
+        },
+        "expressions_artistiques": {
+          "label": "Expression artistique",
+          "description": "Capacité à critiquer, mais aussi à créer soi-même, des objets et évènements artistiques. Ce Talent n'a de sens créatif qu'associé à une ou deux Spés plus précises (danse, sculpture...).",
+          "value": 0,
+          "debut_col": true,
+          "fin_col": false,
+          "generique": false,
+          "domaine": "communication",
+          "bas": false
+        },
+        "veille_vigilance": {
+          "label": "Veille Vigilance",
+          "description": "Capacité à rester parfaitement attentif sur une longue période en surveillant un lieu, une zone ou en épluchant des documents, pour réagir sitôt que survient un détail alertant.",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": false,
+          "generique": false,
+          "domaine": "pratique",
+          "bas": false
+        },
+        "rural": {
+          "label": "Rural",
+          "description": "Concerne les zones peu habitées, y compris les détails relatifs aux cultures, mais aussi la vie sauvage (animale et végétale) qui partage le territoire avec les habitants.",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": true,
+          "generique": false,
+          "domaine": "culture_milieux",
+          "bas": false
+        },
+        "paraitre": {
+          "label": "PARAITRE",
+          "description": "Art de se faire passer pour ce que l'on n'est pas grâce à un déguisement physique, à une imitation vocale, à une expression ou une humeur feinte, à un bon bagout.",
+          "value": 0,
+          "debut_col": true,
+          "fin_col": false,
+          "generique": true,
+          "domaine": "communication",
+          "bas": false
+        },
+        "furtivite": {
+          "label": "FURTIVITÉ",
+          "description": "Capacité à agir sans se faire remarquer ou repérer.",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": false,
+          "generique": true,
+          "domaine": "pratique",
+          "bas": false
+        },
+        "sauvages": {
+          "label": "SAUVAGES",
+          "description": "Connaissance des ressources et des dangers, des bonnes attitudes à avoir en cas de rencontres, et savoir s'y orienter.",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": true,
+          "generique": true,
+          "domaine": "culture_milieux",
+          "bas": false
+        },
+        "bluffer_deguisement": {
+          "label": "Bluffer Déguisement",
+          "description": "Passer pour une autre personne ou pour un vrai représentant d'une caste ou d'un métier, imiter une voix, une attitude, simuler une humeur.",
+          "value": 0,
+          "debut_col": true,
+          "fin_col": false,
+          "generique": false,
+          "domaine": "communication",
+          "bas": false
+        },
+        "agir_sans_bruit": {
+          "label": "Agir sans bruit",
+          "description": "Repérer (Sens), deviner (Réflexion) les détails capables de trahir sa présence, ou du moins ne pas les faire résonner ou craquer (Adresse).",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": false,
+          "generique": false,
+          "domaine": "pratique",
+          "bas": false
+        },
+        "foret_jungle": {
+          "label": "Forêt Jungle",
+          "description": "Ressources et dangers des zones à végétation dense.",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": true,
+          "generique": false,
+          "domaine": "culture_milieux",
+          "bas": false
+        },
+        "impressionner": {
+          "label": "Impressionner",
+          "description": "Effrayer ou marquer les esprits par la force de sa présence, son attitude ou son discours.",
+          "value": 0,
+          "debut_col": true,
+          "fin_col": false,
+          "generique": false,
+          "domaine": "communication",
+          "bas": false
+        },
+        "se_disimuler_filer": {
+          "label": "Se dissimuler Filer",
+          "description": "Profiter de tous les recoins pour ne pas être vu, mais aussi anticiper les méfiances possibles de sa cible pour la suivre sans être repéré.",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": false,
+          "generique": false,
+          "domaine": "pratique",
+          "bas": false
+        },
+        "savane_steppe_marecages": {
+          "label": "Savane Steppe Marécages",
+          "description": "Ressources et dangers des zones à végétation clairsemée.",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": true,
+          "generique": false,
+          "domaine": "culture_milieux",
+          "bas": false
+        },
+        "paraitre_sans_interet": {
+          "label": "Paraître sans intérêt",
+          "description": "Cumul d'attitudes et de choix vestimentaire ou de placement dans un lieu, une assistance, permettant d'être peu remarquable et de passer pour insignifiant.",
+          "value": 0,
+          "debut_col": true,
+          "fin_col": false,
+          "generique": false,
+          "domaine": "communication",
+          "bas": false
+        },
+        "camouflage": {
+          "label": "Camouflage",
+          "description": "Se vêtir ou créer une cachette de façon à ne pas être repérable dans un milieu.",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": false,
+          "generique": false,
+          "domaine": "pratique",
+          "bas": false
+        },
+        "desert": {
+          "label": "Déserts",
+          "description": "Ressources et dangers des zones arides, chaudes ou froides.",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": true,
+          "generique": false,
+          "domaine": "culture_milieux",
+          "bas": false
+        },
+        "persuader": {
+          "label": "PERSUADER",
+          "description": "Capacité à amener ses interlocuteurs à partager ses idées, ses plans, ses décisions, à accepter ses conseils, à croire ce que l'on affirme.",
+          "value": 0,
+          "debut_col": true,
+          "fin_col": false,
+          "generique": true,
+          "domaine": "communication",
+          "bas": false
+        },
+        "acrobaties": {
+          "label": "ACROBATIES",
+          "description": "Tonicité, aisance et coordination corporelle pour toutes les actions en mouvement ou en force escalader, transporter des charges, éviter un rocher qui dévale, et bien sûr les épreuves sportives simples ou la danse. Les sports techniques et les numéros de cirque demandent une Spé pour être exécutés correctement.",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": false,
+          "generique": true,
+          "domaine": "pratique",
+          "bas": false
+        },
+        "scientechs": {
+          "label": "SCIENTECHS",
+          "description": "Connaissance des infrastructures liées aux sciences, aux techniques et aux industries, et de l'organisation des personnes qui y évoluent. Le Talent générique inclut les infrastructures militaires. Les Talents Série doivent être associés à une ou plusieurs Spés (vaisseaux maritimes, petits astronefs...).",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": true,
+          "generique": true,
+          "domaine": "culture_milieux",
+          "bas": false
+        },
+        "convaincre_expliquer": {
+          "label": "Convaincre Expliquer",
+          "description": "Persuader par l'argumentation et la pédagogie ; inclut un talent certain pour la patience.",
+          "value": 0,
+          "debut_col": true,
+          "fin_col": false,
+          "generique": false,
+          "domaine": "communication",
+          "bas": false
+        },
+        "minutie": {
+          "label": "Minutie",
+          "description": "Capacité de précision, de fluidité et de calme dans les efforts corporels, dans la danse.",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": false,
+          "generique": false,
+          "domaine": "pratique",
+          "bas": false
+        },
+        "indus": {
+          "label": "Indus",
+          "description": "Connaissance des bâtiments industriels ou de recherche scientifique d'époques diverses, et de l'organisation de ceux qui y évoluent. Architectures et matériaux, métiers divers, hiérarchie, sécurité, etc...",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": true,
+          "generique": false,
+          "domaine": "culture_milieux",
+          "bas": false
+        },
+        "baratiner_tromper_culot": {
+          "label": "Baratiner Tromper Culot",
+          "description": "Improviser des histoires ou des comportements et les assumer avec assurance.",
+          "value": 0,
+          "debut_col": true,
+          "fin_col": false,
+          "generique": false,
+          "domaine": "communication",
+          "bas": false
+        },
+        "acrobatie": {
+          "label": "Acrobatie",
+          "description": "Capacité à gérer et contrôler les actions demandant des efforts violents.",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": false,
+          "generique": false,
+          "domaine": "pratique",
+          "bas": false
+        },
+        "militaire": {
+          "label": "Militaire",
+          "description": "Connaissance des installations militaires d'époques diverses et de ceux qui y évoluent.",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": true,
+          "generique": false,
+          "domaine": "culture_milieux",
+          "bas": false
+        },
+        "imposer_ses_vues": {
+          "label": "Imposer ses vues",
+          "description": "Ordonner, directement ou en manipulant habilement un donneur d'ordres.",
+          "value": 0,
+          "debut_col": true,
+          "fin_col": false,
+          "generique": false,
+          "domaine": "communication",
+          "bas": false
+        },
+        "effort_prolonge": {
+          "label": "Efforts prolongés",
+          "description": "Capacité à gérer son effort sur le long terme, économiser ses forces, mais aussi garder de l'énergie pour d'autres actions (Observer, etc.). ",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": false,
+          "generique": false,
+          "domaine": "pratique",
+          "bas": false
+        },
+        "vaisseaux": {
+          "label": "Vaisseaux",
+          "description": "Connaissance des vaisseaux maritimes (ou spatiaux pour les Megas) d'époques diverses, matériaux, capacités, qualités et défauts de navigation.",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": true,
+          "generique": false,
+          "domaine": "culture_milieux",
+          "bas": false
+        },
+        "tisser_des_liens": {
+          "label": "TISSER DES LIENS",
+          "description": "Faculté et aisance du personnage pour créer une relation privilégiée avec des individus divers et pour constituer des réseaux.",
+          "value": 0,
+          "debut_col": true,
+          "fin_col": false,
+          "generique": true,
+          "domaine": "communication",
+          "bas": false
+        },
+        "manips": {
+          "label": "MANIPS",
+          "description": "Le personnage est habile, rapide et précis en diverses manipulations faciles. Il peut pratiquer des soins simples sur des êtres vivants ou des démontages et réparations de niveau bricolage sur des objets et appareils. Les manipulations plus complexes ou nécessitant un savoir pointu exigent une Spé associée.",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": false,
+          "generique": true,
+          "domaine": "pratique",
+          "bas": false
+        },
+        "pouvoir": {
+          "label": "...POUVOIRS",
+          "description": "Connaissance des institutions, des cercles et des lieux où s'exerce le pouvoir et des usages de ceux qui y évoluent.",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": true,
+          "generique": true,
+          "domaine": "culture_milieux",
+          "bas": false
+        },
+        "charmer_captiver_apprivoiser": {
+          "label": "Charmer Captiver Apprivoiser",
+          "description": "Créer une relation en jouant plutôt sur l'affectif.",
+          "value": 0,
+          "debut_col": true,
+          "fin_col": false,
+          "generique": false,
+          "domaine": "communication",
+          "bas": false
+        },
+        "vivant": {
+          "label": "Vivant",
+          "description": "Diagnostic et premiers soins sur les êtres humains (et humanoïdes). Diagnostic, élevage, culture, soins et usages.",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": false,
+          "generique": false,
+          "domaine": "pratique",
+          "bas": false
+        },
+        "business": {
+          "label": "Business",
+          "description": "Connaissance des mécanismes et des usages dans les milieux d'affaires « en général ». La connaissance de corporations très fermées ou des plus hautes sphères peut demander une Spé.",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": true,
+          "generique": false,
+          "domaine": "culture_milieux",
+          "bas": false
+        },
+        "inspirer_fidelite": {
+          "label": "Inspirer fidélité",
+          "description": "Rallier des gens grâce à la rectitude de son comportement et des idées que l'on professe (ou que l'on fait semblant de...).",
+          "value": 0,
+          "debut_col": true,
+          "fin_col": false,
+          "generique": false,
+          "domaine": "communication",
+          "bas": false
+        },
+        "mecanique": {
+          "label": "Mécanique",
+          "description": "Réparation et fabrication d'objets techniques.",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": false,
+          "generique": false,
+          "domaine": "pratique",
+          "bas": false
+        },
+        "autorites": {
+          "label": "Autorité",
+          "description": "Connaissance des mécanismes et des usages dans les milieux des hautes autorités, politiques, administratives ou de sécurité.",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": true,
+          "generique": false,
+          "domaine": "culture_milieux",
+          "bas": false
+        },
+        "assujettir_dompter": {
+          "label": "Assujettir Dompter",
+          "description": "Prendre l'ascendant par l'autorité ou la menace.",
+          "value": 0,
+          "debut_col": true,
+          "fin_col": false,
+          "generique": false,
+          "domaine": "communication",
+          "bas": false
+        },
+        "electronique": {
+          "label": "Électronique",
+          "description": "Connaissance, réparation et fabrication d'objets électronique.",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": false,
+          "generique": false,
+          "domaine": "pratique",
+          "bas": false
+        },
+        "spirituel": {
+          "label": "Spirituel",
+          "description": "Connaissance des mécanismes et des usages dans les milieux traitant de la spiritualité, de la foi.",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": true,
+          "generique": false,
+          "domaine": "culture_milieux",
+          "bas": false
+        },
+        "diriger": {
+          "label": "DIRIGER",
+          "description": "Capacité à faire agir de concert un groupe plus ou moins grand de personnes, qu'elles y soient habituées ou pas, et à maintenir la cohésion et l'efficacité de ce groupe dans l'action.",
+          "value": 0,
+          "debut_col": true,
+          "fin_col": false,
+          "generique": true,
+          "domaine": "communication",
+          "bas": true
+        },
+        "conduire": {
+          "label": "CONDUIRE",
+          "description": "Connaissance ou apprentissage rapide de la conduite de véhicules mécaniques ou animés par des animaux, Maîtrise relative de leur maniabilité et de leur vitesse, et connaissance générique de leur mécanisme. Selon les usages locaux, certains véhicules ne peuvent être conduits sans autorisation ou apprentissage complexe (et donc exiger une Spé).",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": false,
+          "generique": true,
+          "domaine": "pratique",
+          "bas": true
+        },
+        "clandestins": {
+          "label": "...CLANDESTINS",
+          "description": "Connaissance, ou capacité à être vite informé, des groupes agissant dans la clandestinité, de leurs buts et modes d'action, qu'ils s'agissent d'opposants au pouvoir, de gens voulant vivre en marge ou de la pègre.",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": true,
+          "generique": true,
+          "domaine": "culture_milieux",
+          "bas": true
+        },
+        "coordonner": {
+          "label": "Coordonner",
+          "description": "Permet d'augmenter les chances de réussite d'un groupe désorganisé, en proposant une organisation claire et bien pensée, en direct, en différé ou via des intermédiaires tant que les consignes données sont applicables.",
+          "value": 0,
+          "debut_col": true,
+          "fin_col": false,
+          "generique": false,
+          "domaine": "communication",
+          "bas": true
+        },
+        "animal": {
+          "label": "Animal",
+          "description": "Permet de savoir (ou vite apprendre à...) diriger les animaux de monte ou les véhicules tractés par des animaux. Connaissance de ces véhicules (matériaux, solidité, maniabilité).",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": false,
+          "generique": false,
+          "domaine": "pratique",
+          "bas": true
+        },
+        "pegre": {
+          "label": "Pègre",
+          "description": "Connaissance des mécanismes et des usages dans le Milieu (avec un grand M).",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": true,
+          "generique": false,
+          "domaine": "culture_milieux",
+          "bas": true
+        },
+        "commander": {
+          "label": "Commander",
+          "description": "Permet d'augmenter les chances de réussite d'un groupe désorganisé et de faire taire (momentanément) les dissensions entre participants, de préférence en contact direct ou vocal avec les personnes commandées.",
+          "value": 0,
+          "debut_col": true,
+          "fin_col": false,
+          "generique": false,
+          "domaine": "communication",
+          "bas": true
+        },
+        "vehicules_legers": {
+          "label": "Véhicules légers",
+          "description": "Permet de conduire ou piloter les engins légers destinés à quelques passagers. Connaissance (seIon score) de leur mécanisme et des artisans ou industries qui les fabriquent. Selon les usages locaux, certains véhicules ne peuvent être conduits sans autorisation ou apprentissage complexe (et donc exiger une Spé).",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": false,
+          "generique": false,
+          "domaine": "pratique",
+          "bas": true
+        },
+        "contestations": {
+          "label": "Contestation",
+          "description": "Connaissance des mécanismes et des usages dans les milieux investis dans la vie publique ou politique, sous une forme contestataire incluant une part d'action clandestine.",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": true,
+          "generique": false,
+          "domaine": "culture_milieux",
+          "bas": true
+        },
+        "former": {
+          "label": "Former",
+          "description": "Apprendre à d'autres un Talent que l'on maîtrise (logiquement avec une Spé liée), en mêlant théorie et exemples.",
+          "value": 0,
+          "debut_col": true,
+          "fin_col": false,
+          "generique": false,
+          "domaine": "communication",
+          "bas": true
+        },
+        "vehicules_lourds": {
+          "label": "Véhicules lourds",
+          "description": "Permet de conduire ou piloter les engins lourds et très lourds, transportant de nombreux passagers ou du fret (camions, navires, vaisseaux). Connaissance (selon score) de leur mécanisme et des industries qui les fabriquent.",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": false,
+          "generique": false,
+          "domaine": "pratique",
+          "bas": true
+        },
+        "marge": {
+          "label": "Marge",
+          "description": "Connaissance des mécanismes et des usages dans les milieux marginaux, tant ceux qui vivent en marge mais au cœur des sociétés que ceux qui s'en éloignent pour en être oubliés.",
+          "value": 0,
+          "debut_col": false,
+          "fin_col": true,
+          "generique": false,
+          "domaine": "culture_milieux",
+          "bas": true
+        }
+      }
+    }
+  },
+  "Item": {
+    "types": [
+      "Objet",
+      "Arme de tir",
+      "Arme courte",
+      "Arme de lancer",
+      "Arme longue",
+      "Protection",
+      "Attaque spéciale",
+      "Pouvoir"
+    ],
+    "Objet": {
+      "description": "",
+      "type": {
+        "value": "",
+        "label": "Type"
+      },
+      "types": {
+        "arme": {
+          "label": "Arme",
+          "dtype": "String"
+        },
+        "protection": {
+          "label": "Protection",
+          "dtype": "String"
+        },
+        "medical": {
+          "label": "Medical",
+          "dtype": "String"
+        },
+        "vehicule": {
+          "label": "Véhicule",
+          "dtype": "String"
+        },
+        "autre": {
+          "label": "Autre",
+          "dtype": "String"
+        },
+        "technologie": {
+          "label": "Technologie",
+          "dtype": "String"
+        }
+      },
+      "quantity": 1,
+      "weight": 0,
+      "prize": 0,
+      "nt": "5",
+      "attributes": {},
+      "caracs": {
+        "def_choc": 0,
+        "def_lame": 0,
+        "def_balle": 0,
+        "def_feu": 0,
+        "def_froid": 0,
+        "def_acide": 0,
+        "def_rayon": 0
+      }
+    },
+    "Pouvoir": {
+      "label": "",
+      "description": "",
+      "icon": "",
+      "description_grades": "",
+      "aide_active": true,
+      "pouvoir1": {
+        "icon": "",
+        "label": "",
+        "description": "",
+        "grade1": "",
+        "grade2": "",
+        "grade3": "",
+        "grade4": "",
+        "grade5": "",
+        "grade6": "",
+        "grade7": "",
+        "grade8": "",
+        "grade9": "",
+        "grade10": "",
+        "grade11": "",
+        "grade12": "",
+        "masquer_entete": false,
+        "masquer_description": false,
+        "masquer_grades": false
+      },
+      "pouvoir2": {
+        "icon": "",
+        "label": "",
+        "description": "",
+        "grade1": "",
+        "grade2": "",
+        "grade3": "",
+        "grade4": "",
+        "grade5": "",
+        "grade6": "",
+        "grade7": "",
+        "grade8": "",
+        "grade9": "",
+        "grade10": "",
+        "grade11": "",
+        "grade12": "",
+        "masquer_entete": false,
+        "masquer_description": false,
+        "masquer_grades": false
+      },
+      "pouvoir3": {
+        "icon": "",
+        "label": "",
+        "description": "",
+        "grade1": "",
+        "grade2": "",
+        "grade3": "",
+        "grade4": "",
+        "grade5": "",
+        "grade6": "",
+        "grade7": "",
+        "grade8": "",
+        "grade9": "",
+        "grade10": "",
+        "grade11": "",
+        "grade12": "",
+        "masquer_entete": false,
+        "masquer_description": false,
+        "masquer_grades": false
+      },
+      "pouvoir4": {
+        "icon": "",
+        "label": "",
+        "description": "",
+        "grade1": "",
+        "grade2": "",
+        "grade3": "",
+        "grade4": "",
+        "grade5": "",
+        "grade6": "",
+        "grade7": "",
+        "grade8": "",
+        "grade9": "",
+        "grade10": "",
+        "grade11": "",
+        "grade12": "",
+        "masquer_entete": false,
+        "masquer_description": false,
+        "masquer_grades": false
+      },
+      "aide": {
+        "icon": "",
+        "label": "",
+        "description": "",
+        "masquer_entete": false,
+        "masquer_description": false,
+        "masquer_grades": false
+      },
+      "nb_onglets": 1,
+      "sphere_associee": "",
+      "type": {
+        "value": "",
+        "label": "Type"
+      },
+      "quantity": 1
+    },
+    "Arme de tir": {
+      "description": "<table style='background-color: var(--opacity-color);' border='0'><tbody><tr><td><ul><li><strong>Type :</strong>&nbsp;</li><li><strong>Calibre :</strong>&nbsp;.</li><li><strong>Capacit&eacute; du chargeur :</strong>&nbsp;</li><li><strong>Poids :</strong>&nbsp; kg</li><li><strong>Longueur totale :</strong>&nbsp;</li><li><strong>Longueur du canon :</strong></li><li><strong>Port&eacute;e effective :</strong> m</li></ul></td></tr></tbody></table><p>...</p>",
+      "letale": {
+        "value": true,
+        "labelHit": "Lancer 1d6 de dégâts"
+      },
+      "effet_arme": {
+        "value": "",
+        "label": "Effet"
+      },
+      "effet_thumb": {
+        "value": ""
+      },
+      "sound": {
+        "value": "",
+        "label": "Son"
+      },
+      "type": {
+        "value": "-",
+        "label": "Famille"
+      },
+      "type_degats": {
+        "rayon": {
+          "etat": false,
+          "label": "Rayon",
+          "dtype": "String"
+        },
+        "balles": {
+          "etat": false,
+          "label": "Balles",
+          "dtype": "String"
+        },
+        "feu": {
+          "etat": false,
+          "label": "Feu",
+          "dtype": "String"
+        },
+        "froid": {
+          "etat": false,
+          "label": "Froid",
+          "dtype": "String"
+        },
+        "acide": {
+          "etat": false,
+          "label": "Acide",
+          "dtype": "String"
+        },
+        "choc": {
+          "etat": false,
+          "label": "Choc",
+          "dtype": "String"
+        },
+        "lame": {
+          "label": "Lame",
+          "dtype": "String"
+        }
+      },
+      "types": {
+        "etat": false,
+        "nd": {
+          "label": "--Non défini--",
+          "dtype": "String"
+        },
+        "appui": {
+          "label": "Appui (bipied, crosse)",
+          "dtype": "String"
+        },
+        "automatique": {
+          "label": "Automatique",
+          "dtype": "String"
+        },
+        "Baionnette": {
+          "label": "Baïonnette",
+          "dtype": "String"
+        },
+        "coups": {
+          "label": "Coup par coup",
+          "dtype": "String"
+        },
+        "rayon": {
+          "label": "Rayon",
+          "dtype": "String"
+        },
+        "silencieux": {
+          "label": "Silencieux",
+          "dtype": "String"
+        },
+        "trait": {
+          "label": "Trait",
+          "dtype": "String"
+        },
+        "viseur": {
+          "label": "Viseur (lunette, viseur laser)",
+          "dtype": "String"
+        }
+      },
+      "charge": 0,
+      "portee": 150,
+      "def": 0,
+      "av0": 2,
+      "av1": 3,
+      "av2": 7,
+      "av3": 11,
+      "av4": 15,
+      "effet_ac_0_1": "",
+      "effet_ac_0_2": "",
+      "effet_ac_0_3": "",
+      "effet_ac_1_1": "",
+      "effet_ac_1_2": "",
+      "effet_ac_1_3": "",
+      "effet_ac_2_1": "",
+      "effet_ac_2_2": "",
+      "effet_ac_2_3": "",
+      "effet_ac_3_1": "",
+      "effet_ac_3_2": "",
+      "effet_ac_3_3": "",
+      "effet_ac_4_1": "",
+      "effet_ac_4_2": "",
+      "effet_ac_4_3": "",
+      "quantity": 1,
+      "weight": 0,
+      "prize": 0,
+      "nt": "5",
+      "tirparround": 1,
+      "recharge": 1,
+      "munitions": 0,
+      "effet": "",
+      "son": "",
+      "masquer_avantage": false,
+      "masquer_effets_optionnels": false,
+      "masquer_effets_armes": false,
+      "masquer_famille": false,
+      "masquer_degats": false,
+      "attributes": {}
+    },
+    "Arme de lancer": {
+      "description": "<table style='background-color: var(--opacity-color);' border='0'><tbody><tr><td><ul><li><strong>Type d&rsquo;arme </strong>:&nbsp;</li><li><strong>Longueur totale </strong>: m</li><li><strong>Poids</strong>: kg</li></ul></td></tr></tbody></table><p>...</p><table style='background-color: var(--opacity-color);' border='0'><tbody><tr><td><ul><li><strong>Port&eacute;e</strong>:&nbsp;</li><li><strong>Vitesse d&rsquo;attaque</strong>:&nbsp;</li><li><strong>Maniabilit&eacute;</strong>:&nbsp;</li><li><strong>Fiabilit&eacute;</strong>:&nbsp;</li></ul></td></tr></tbody></table>",
+      "letale": {
+        "value": true,
+        "labelHit": "Lancer 1d6 de dégâts"
+      },
+      "type": {
+        "value": "",
+        "label": "Famille"
+      },
+      "effet_arme": {
+        "value": "",
+        "label": "Effet"
+      },
+      "effet_thumb": {
+        "value": ""
+      },
+      "sound": {
+        "value": "",
+        "label": "Son"
+      },
+      "type_degats": {
+        "rayon": {
+          "etat": false,
+          "label": "Rayon",
+          "dtype": "String"
+        },
+        "balles": {
+          "etat": false,
+          "label": "Balles",
+          "dtype": "String"
+        },
+        "feu": {
+          "etat": false,
+          "label": "Feu",
+          "dtype": "String"
+        },
+        "froid": {
+          "etat": false,
+          "label": "Froid",
+          "dtype": "String"
+        },
+        "acide": {
+          "etat": false,
+          "label": "Acide",
+          "dtype": "String"
+        },
+        "choc": {
+          "etat": false,
+          "label": "Choc",
+          "dtype": "String"
+        },
+        "lame": {
+          "label": "Lame",
+          "dtype": "String"
+        }
+      },
+      "types": {
+        "nd": {
+          "label": "--Non défini--",
+          "dtype": "String"
+        },
+        "lame": {
+          "label": "Lame",
+          "dtype": "String"
+        },
+        "javelot": {
+          "label": "Javelot",
+          "dtype": "String"
+        },
+        "choc": {
+          "label": "Arme de choc",
+          "dtype": "String"
+        }
+      },
+      "portee": 150,
+      "def": 0,
+      "av0": 2,
+      "av1": 3,
+      "av2": 7,
+      "av3": 11,
+      "av4": 15,
+      "effet_ac_0_1": "",
+      "effet_ac_0_2": "",
+      "effet_ac_0_3": "",
+      "effet_ac_1_1": "",
+      "effet_ac_1_2": "",
+      "effet_ac_1_3": "",
+      "effet_ac_2_1": "",
+      "effet_ac_2_2": "",
+      "effet_ac_2_3": "",
+      "effet_ac_3_1": "",
+      "effet_ac_3_2": "",
+      "effet_ac_3_3": "",
+      "effet_ac_4_1": "",
+      "effet_ac_4_2": "",
+      "effet_ac_4_3": "",
+      "quantity": 1,
+      "weight": 0,
+      "prize": 0,
+      "nt": "5",
+      "effet": "",
+      "son": "",
+      "masquer_avantage": false,
+      "masquer_effets_optionnels": false,
+      "masquer_effets_armes": false,
+      "masquer_famille": false,
+      "masquer_degats": false,
+      "attributes": {}
+    },
+    "Attaque spéciale": {
+      "description": "",
+      "letale": {
+        "value": true,
+        "labelHit": ""
+      },
+      "effet_arme": {
+        "value": "",
+        "label": "Effet"
+      },
+      "effet_thumb": {
+        "value": ""
+      },
+      "sound": {
+        "value": "",
+        "label": "Son"
+      },
+      "type_degats": {
+        "rayon": {
+          "etat": false,
+          "label": "Rayon",
+          "dtype": "String"
+        },
+        "balles": {
+          "etat": false,
+          "label": "Balles",
+          "dtype": "String"
+        },
+        "feu": {
+          "etat": false,
+          "label": "Feu",
+          "dtype": "String"
+        },
+        "froid": {
+          "etat": false,
+          "label": "Froid",
+          "dtype": "String"
+        },
+        "acide": {
+          "etat": false,
+          "label": "Acide",
+          "dtype": "String"
+        },
+        "choc": {
+          "etat": false,
+          "label": "Choc",
+          "dtype": "String"
+        },
+        "lame": {
+          "label": "Lame",
+          "dtype": "String"
+        }
+      },
+      "types": {
+        "nd": {
+          "label": "--Non défini--",
+          "dtype": "String"
+        },
+        "Art_martial": {
+          "label": "Art martial",
+          "dtype": "String"
+        },
+        "Attaque_spe": {
+          "label": "Attaque spéciale",
+          "dtype": "String"
+        }
+      },
+      "av0": 1,
+      "av1": 2,
+      "av2": 3,
+      "av3": 5,
+      "av4": 7,
+      "effet_ac_0_1": "",
+      "effet_ac_0_2": "",
+      "effet_ac_0_3": "",
+      "effet_ac_1_1": "",
+      "effet_ac_1_2": "",
+      "effet_ac_1_3": "",
+      "effet_ac_2_1": "",
+      "effet_ac_2_2": "",
+      "effet_ac_2_3": "",
+      "effet_ac_3_1": "",
+      "effet_ac_3_2": "",
+      "effet_ac_3_3": "",
+      "effet_ac_4_1": "",
+      "effet_ac_4_2": "",
+      "effet_ac_4_3": "",
+      "quantity": 1,
+      "prize": 0,
+      "nt": "-",
+      "effet": "",
+      "son": "",
+      "def": 0,
+      "masquer_avantage": false,
+      "masquer_effets_optionnels": false,
+      "masquer_effets_armes": false,
+      "masquer_famille": false,
+      "masquer_degats": false,
+      "weight": 0,
+      "attributes": {}
+    },
+    "Arme courte": {
+      "description": "<table style='background-color: var(--opacity-color);' border='0'><tbody><tr><td><ul><li><strong>Type d&rsquo;arme </strong>:&nbsp;</li><li><strong>Longueur totale </strong>: m</li><li><strong>Poids</strong>: kg</li></ul></td></tr></tbody></table><p>...</p><table style='background-color: var(--opacity-color);' border='0'><tbody><tr><td><ul><li><strong>Port&eacute;e</strong>:&nbsp;</li><li><strong>Vitesse d&rsquo;attaque</strong>:&nbsp;</li><li><strong>Maniabilit&eacute;</strong>:&nbsp;</li><li><strong>Fiabilit&eacute;</strong>:&nbsp;</li></ul></td></tr></tbody></table>",
+      "letale": {
+        "value": true,
+        "labelHit": "Lancer 1d6 de dégâts"
+      },
+      "effet_arme": {
+        "value": "",
+        "label": "Effet"
+      },
+      "effet_thumb": {
+        "value": ""
+      },
+      "sound": {
+        "value": "",
+        "label": "Son"
+      },
+      "type_degats": {
+        "rayon": {
+          "etat": false,
+          "label": "Rayon",
+          "dtype": "String"
+        },
+        "balles": {
+          "etat": false,
+          "label": "Balles",
+          "dtype": "String"
+        },
+        "feu": {
+          "etat": false,
+          "label": "Feu",
+          "dtype": "String"
+        },
+        "froid": {
+          "etat": false,
+          "label": "Froid",
+          "dtype": "String"
+        },
+        "acide": {
+          "etat": false,
+          "label": "Acide",
+          "dtype": "String"
+        },
+        "choc": {
+          "etat": false,
+          "label": "Choc",
+          "dtype": "String"
+        },
+        "lame": {
+          "etat": false,
+          "label": "Lame",
+          "dtype": "String"
+        }
+      },
+      "types": {
+        "nd": {
+          "label": "--Non défini--",
+          "dtype": "String"
+        },
+        "articulee": {
+          "label": "Arme articulée courte",
+          "dtype": "String"
+        },
+        "baton": {
+          "label": "Baton court",
+          "dtype": "String"
+        },
+        "hache": {
+          "label": "Hâche courte",
+          "dtype": "String"
+        },
+        "katana_court": {
+          "label": "Katana court",
+          "dtype": "String"
+        },
+        "lame": {
+          "label": "Lame courte",
+          "dtype": "String"
+        },
+        "marteau": {
+          "label": "Marteau court",
+          "dtype": "String"
+        }
+      },
+      "av0": 1,
+      "av1": 2,
+      "av2": 3,
+      "av3": 5,
+      "av4": 7,
+      "effet_ac_0_1": "",
+      "effet_ac_0_2": "",
+      "effet_ac_0_3": "",
+      "effet_ac_1_1": "",
+      "effet_ac_1_2": "",
+      "effet_ac_1_3": "",
+      "effet_ac_2_1": "",
+      "effet_ac_2_2": "",
+      "effet_ac_2_3": "",
+      "effet_ac_3_1": "",
+      "effet_ac_3_2": "",
+      "effet_ac_3_3": "",
+      "effet_ac_4_1": "",
+      "effet_ac_4_2": "",
+      "effet_ac_4_3": "",
+      "quantity": 1,
+      "prize": 0,
+      "nt": "5",
+      "effet": "",
+      "son": "",
+      "def": 0,
+      "masquer_avantage": false,
+      "masquer_effets_optionnels": false,
+      "masquer_effets_armes": false,
+      "masquer_famille": false,
+      "masquer_degats": false,
+      "masquer_letale": false,
+      "weight": 0,
+      "attributes": {}
+    },
+    "Arme longue": {
+      "description": "<table style='background-color: var(--opacity-color);' border='0'><tbody><tr><td><ul><li><strong>Type d&rsquo;arme </strong>:&nbsp;</li><li><strong>Longueur totale </strong>: m</li><li><strong>Poids</strong>: kg</li></ul></td></tr></tbody></table><p>...</p><table style='background-color: var(--opacity-color);' border='0'><tbody><tr><td><ul><li><strong>Port&eacute;e</strong>:&nbsp;</li><li><strong>Vitesse d&rsquo;attaque</strong>:&nbsp;</li><li><strong>Maniabilit&eacute;</strong>:&nbsp;</li><li><strong>Fiabilit&eacute;</strong>:&nbsp;</li></ul></td></tr></tbody></table>",
+      "letale": {
+        "value": true,
+        "labelHit": "Lancer 1d6 de dégâts"
+      },
+      "effet_arme": {
+        "value": "",
+        "label": "Effet"
+      },
+      "sound": {
+        "value": "",
+        "label": "Son"
+      },
+      "type_degats": {
+        "rayon": {
+          "etat": false,
+          "label": "Rayon",
+          "dtype": "String"
+        },
+        "balles": {
+          "etat": false,
+          "label": "Balles",
+          "dtype": "String"
+        },
+        "feu": {
+          "etat": false,
+          "label": "Feu",
+          "dtype": "String"
+        },
+        "froid": {
+          "etat": false,
+          "label": "Froid",
+          "dtype": "String"
+        },
+        "acide": {
+          "etat": false,
+          "label": "Acide",
+          "dtype": "String"
+        },
+        "choc": {
+          "etat": false,
+          "label": "Choc",
+          "dtype": "String"
+        },
+        "lame": {
+          "etat": false,
+          "label": "Lame",
+          "dtype": "String"
+        }
+      },
+      "types": {
+        "nd": {
+          "label": "--Non défini--",
+          "dtype": "String"
+        },
+        "articulee": {
+          "label": "Arme articulée longue",
+          "dtype": "String"
+        },
+        "hast": {
+          "label": "Arme d'Hast",
+          "dtype": "String"
+        },
+        "baton": {
+          "label": "Bâton long",
+          "dtype": "String"
+        },
+        "hache": {
+          "label": "Hâche longue",
+          "dtype": "String"
+        },
+        "hache_deux_mains": {
+          "label": "Hâche à deux mains",
+          "dtype": "String"
+        },
+        "katana": {
+          "label": "Katana",
+          "dtype": "String"
+        },
+        "lame": {
+          "label": "Lame longue",
+          "dtype": "String"
+        },
+        "lance": {
+          "label": "Lance",
+          "dtype": "String"
+        },
+        "marteau": {
+          "label": "Marteau long",
+          "dtype": "String"
+        }
+      },
+      "def": 0,
+      "av0": 1,
+      "av1": 2,
+      "av2": 3,
+      "av3": 5,
+      "av4": 7,
+      "effet_ac_0_1": "",
+      "effet_ac_0_2": "",
+      "effet_ac_0_3": "",
+      "effet_ac_1_1": "",
+      "effet_ac_1_2": "",
+      "effet_ac_1_3": "",
+      "effet_ac_2_1": "",
+      "effet_ac_2_2": "",
+      "effet_ac_2_3": "",
+      "effet_ac_3_1": "",
+      "effet_ac_3_2": "",
+      "effet_ac_3_3": "",
+      "effet_ac_4_1": "",
+      "effet_ac_4_2": "",
+      "effet_ac_4_3": "",
+      "quantity": 1,
+      "prize": 0,
+      "nt": "5",
+      "effet": "",
+      "son": "",
+      "weight": 0,
+      "masquer_avantage": false,
+      "masquer_effets_optionnels": false,
+      "masquer_effets_armes": false,
+      "masquer_famille": false,
+      "masquer_degats": false,
+      "attributes": {}
+    },
+    "Protection": {
+      "description": "",
+      "effet": "bevel",
+      "quantity": 1,
+      "weight": 0,
+      "attributes": {},
+      "masquer_effets": false,
+      "masquer_bonusdef": false,
+      "masquer_localisation": false,
+      "caracs": {
+        "def_choc": 0,
+        "def_lame": 0,
+        "def_balle": 0,
+        "def_feu": 0,
+        "def_froid": 0,
+        "def_acide": 0,
+        "def_rayon": 0,
+        "def_bras_g": 0,
+        "def_bras_d": 0,
+        "def_main_g": 0,
+        "def_main_d": 0,
+        "def_jambes_g": 0,
+        "def_jambes_d": 0,
+        "def_pied_g": 0,
+        "def_pied_d": 0,
+        "def_ventre": 0,
+        "def_poitrine": 0,
+        "def_tete": 0
+      }
+    }
+  }
+}

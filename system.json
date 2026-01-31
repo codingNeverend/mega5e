@@ -1,0 +1,92 @@
+{
+  "id": "mega",
+  "title": "MEGA 5e Paradigme",
+  "description": "Le jeu de rôle des Messagers Galactiques!",
+  "version": 13,
+  "compatibility": {
+    "minimum": "12",
+    "verified": "13"
+  },
+  "authors": [
+    {
+      "name": "Maxtor",
+      "url": "https://www.youtube.com/@maxtormj5638",
+      "flags": {}
+    }
+  ],
+  "esmodules": [
+    "module/socket.js",
+    "module/mega-utils.js",
+    "module/mega.js",
+    "module/color-picker.js",
+    "module/compatibility.js"
+  ],
+  "styles": ["styles/mega.css"],
+
+  "media": [
+    {
+      "type": "cover",
+      "url": "https://gitlab.com/riccisi/foundryvtt-dice-so-nice/-/raw/master/cover.jpg"
+    },
+    {
+      "type": "video",
+      "url": "https://www.youtube.com/watch?v=4b_C5R3t6iw"
+    }
+  ],
+  "socket": true,
+  "languages": [
+    {
+      "lang": "fr",
+      "name": "French",
+      "path": "lang/fr.json"
+    },
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "lang/en.json"
+    }
+  ],
+  "packs": [
+    {
+      "name": "mega-macros",
+      "label": "MEGA - Macros",
+      "path": "packs/Macros",
+      "type": "Macro",
+      "system": "mega",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      }
+    },
+    {
+      "name": "mega-tables",
+      "label": "Mega - Tables",
+      "path": "packs/Tables",
+      "type": "RollTable",
+      "system": "mega",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      }
+    },
+    {
+      "name": "mega-pouvoirs",
+      "label": "MEGA - Pouvoirs",
+      "path": "packs/Pouvoirs",
+      "type": "Item",
+      "ownership": {
+        "PLAYER": "OBSERVER",
+        "ASSISTANT": "OWNER"
+      },
+      "system": "mega"
+    }
+  ],
+  "background": "systems/mega/images/background.png",
+  "primaryTokenAttribute": "health",
+  "secondaryTokenAttribute": "power",
+  "url": "https://www.youtube.com/@maxtormj5638",
+  "manifest": "https://gitlab.com/foundrynet/worldbuilding/raw/master/system.json",
+  "download": "https://gitlab.com/foundrynet/worldbuilding/-/archive/release-036/worldbuilding-release-036.zip",
+  "license": "LICENSE.txt",
+  "readme": "README.md"
+}

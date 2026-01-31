@@ -1,0 +1,61 @@
+<div
+  class="dialog-content"
+  style="
+    background-image: url('systems/mega/images/fond.png');
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    font-family: 'Mega', sans-serif;
+  "
+>
+  <script>
+    function setActive(element) {
+      // Supprimer la classe active de tous les éléments de classe svg
+      const images = document.querySelectorAll(".svg");
+      images.forEach((img) => img.classList.remove("active"));
+
+      // Ajouter la classe active à l'image cliquée
+      element.classList.add("active");
+    }
+  </script>
+  <div style="margin:10px; margin-bottom:2px; padding-right:15px;padding-bottom:15px;border:1px;border-radius:50px;background-color: var(--opacity-clear-color); border-image: linear-gradient(90deg, rgba(60,74,83,0.90), rgba(60,74,83,.00)) 1; border-left:none; border-top:none; border-right:none;">
+  <nav class="tabs" data-group="primary-tabs">
+    {{#each tabs}}
+    <!-- <b><center><a class="item" data-tab="{{id}}"><i class="{{icon}}" style="color:#e6a418"></i><br>{{title}}</a></center></b> -->
+    <b><center>
+        <a data-tab="{{id}}" onclick="setActive(this.querySelector('img'))">
+          <img
+            onclick="setActive(this)"
+            class="svg {{#if (eq id 'tab1')}}active{{/if}}"
+            width="32px"
+            style ="border:2px var(--accent-color) solid; box-shadow: 0 0 10px rgba(0, 0, 0, 0.452);"
+            src="{{icon}}"
+          />
+          <br />{{title}}</a
+        >
+      </center></b
+    >
+    {{/each}}
+  </nav>
+</div>
+  <br />
+  <div class="dialog-header">{{{header}}}</div>
+
+  <section class="tab-content">
+    {{#each tabs}}
+    <div  class="tab" data-tab="{{id}}" data-group="primary-tabs">
+      {{{content}}}
+    </div>
+    {{/each}}
+  </section>
+
+  <div class="dialog-footer">{{{footer}}}</div>
+</div>
+
+<div class="dialog-buttons">
+  {{#each buttons as |button id|}}
+  <button class="dialog-button {{cssClass}}" data-button="{{id}}">
+    {{{button.icon}}} {{{button.label}}}
+  </button>
+  {{/each}}
+</div>

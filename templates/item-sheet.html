@@ -1,0 +1,77 @@
+<form class="{{cssClass}}" autocomplete="off">
+    {{!-- Sheet Tab Navigation --}}
+	<header class="sheet-header-item">
+        <span class="item-view" value="{{item.img}}"><img class="profile-img" src="{{item.img}}" data-edit="img" title="{{item.name}}"/></span>
+        <div class="header-fields-item">
+            <h2 class="charname"><input name="name" type="text" value="{{item.name}}" placeholder="Name"/></h2><br>
+            <table class="cartouche_item" style="width:90%">
+				<thead style="border-bottom:none;">
+				<tr>
+				<th colspan="3">
+					Caractéristiques principales</th>
+				</tr></thead>
+				<tr>
+					<td><label>Quantité : </label>
+						<input type="text" class="comb" name="system.quantity" value="{{system.quantity}}" data-dtype="Number"/></td>
+					<td><label>NT : </label>
+						<input style="width:40px" type="text" class="comb" name="system.nt" value="{{system.nt}}"/></td>
+						<td><label>Prix : </label>
+							<input style="width:60px" type="text" class="comb" name="system.prize" value="{{system.prize}}"/> Σ</td>
+				</tr>
+				<tr>
+					<td>Poids : <input type="text" style="width:50px" class="comb" name="system.weight" value="{{system.weight}}" data-dtype="Number"/> Kg</td>
+					<td></td>
+					<td></td>
+				</tr>
+
+			</table>
+        </div>
+    </header>
+
+    {{#if GM}} <nav class="sheet-tabs tabs" data-group="primary">
+        <a class="item" data-tab="description">DESCRIPTION</a>
+      <!-- <a class="item" data-tab="attributes">PARAMETRES</a> -->
+    </nav>{{/if}}
+
+    {{!-- Sheet Body --}}
+    <section class="sheet-body" style="margin:10px; padding: 0 5px;">
+
+        {{!-- Description Tab --}}
+       {{#if GM}} <div class="tab" data-group="primary" data-tab="description">{{/if}}
+        {{editor enrichedBiography target="system.description" button=true editable=editable}}
+        {{#if GM}} </div>{{/if}}
+		
+        {{!-- Attributes Tab --}}
+        <div class="tab attributes" data-group="primary" data-tab="attributes">
+            <!-- <header class="attributes-header flexrow"> -->
+                <!-- <span class="attribute-key">Clé</span> -->
+                <!-- <span class="attribute-value">Valeur</span> -->
+                <!-- <span class="attribute-label">Label</span> -->
+                <!-- <span class="attribute-dtype">Type</span> -->
+                <!-- <a class="attribute-control" data-action="create"><i class="fas fa-plus"></i></a> -->
+            <!-- </header> -->
+
+            <ol class="attributes-list">
+            {{#each system.attributes as |attr key|}}
+                <li class="attribute flexrow" data-attribute="{{key}}">
+                    <input class="attribute-key" type="text" name="data.attributes.{{key}}.key" value="{{key}}"/>
+                    {{#if attr.isCheckbox}}
+                    <label class="attribute-value checkbox"><input type="checkbox" name="data.attributes.{{key}}.value" {{checked attr.value}}/></label>
+                    {{else}}
+                    <input class="attribute-value" type="text" name="data.attributes.{{key}}.value" value="{{attr.value}}" data-dtype="{{attr.dtype}}"/>
+                    {{/if}}
+                    <input class="attribute-label" type="text" name="data.attributes.{{key}}.label" value="{{attr.label}}"/>
+                    <select class="attribute-dtype" name="data.attributes.{{key}}.dtype">
+                        {{#select attr.dtype}}
+                        {{#each ../dtypes as |t|}}
+                        <option value="{{t}}">{{t}}</option>
+                        {{/each}}
+                        {{/select}}
+                    </select>
+                    <a class="attribute-control" data-action="delete"><i class="fas fa-trash"></i></a>
+                </li>
+            {{/each}}
+            </ol>
+        </div>
+    </section>
+</form>

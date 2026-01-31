@@ -1,0 +1,1069 @@
+ <form class="{{cssClass}} {{actor.type}}" autocomplete="off">
+	<style>
+        .container {
+            display: flex;
+        }
+        .column1 {
+            width: 60%;
+            padding: 10px;
+
+        }
+		.column2 {
+            width: 40%;
+            padding: 10px;
+
+        }
+
+    </style>
+    {{!-- Sheet Header --}}
+    <header class="sheet-header">
+        <div class="header-fields">
+		<table class="entete" style="height:1%">
+		<tr style="height:100%">
+			<!-- <td rowspan="2" width="12%" style="vertical-align: bottom; text-align:center;" ><span class="actor-view" value="{{actor.img}}"><img src="{{actor.img}}" data-edit="img" title="{{actor.name}}" class="img" style="{{#if system.combat_modif.value}}border: 1px solid #FF0000; box-shadow: 0px 0px 8px 3px #FF0000; {{else}}border: 0px solid #555;  box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;{{/if}} width:90px; height:90px;"/></span></td> -->
+			<td rowspan="2" width="12%" style="vertical-align: bottom; text-align:center;" ><span class="actor-view" value="{{actor.img}}"><img src="{{actor.img}}" data-edit="img" title="{{actor.name}}" class="img" {{#if system.combat_modif.value}}style="border: 1px solid #FF0000; box-shadow: 0px 0px 8px 3px #FF0000; width:90px; height:90px;" {{else}} style="border: 0px solid #555;  box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px; width:90px; height:90px;"{{/if}}/></span></td>
+			<td width="48%">
+				<!-- <span class="charname"><input {{#if system.verouille}}disabled="disabled"{{/if}} name="name" type="text" value="{{actor.name}}" placeholder="Nom"/><span> -->
+				<span class="charname"><input {{#if system.verouille}}disabled="disabled"{{/if}} name="name" type="text" value="{{actor.name}}" placeholder="Nom"/><span></span>
+				
+			</td>
+			<td style="text-align:center;" width="20%" height="100%" rowspan="2">
+				<span class="resource">	
+					<div title="Points de Vie" style="height:100%; background-image: url('systems/mega/images/triangle_petit.png'); background-repeat: no-repeat; background-position:center;">
+						<img {{#ifinferior system.health.value 5}}src="systems/mega/images/health-red2.png"{{else}}src="systems/mega/images/health-normal2.png" {{/ifinferior}} alt="Points de Vie" style="border:none;width:32px;height:32px;"><br>
+						<!-- <meter value="{{system.health.value}}" low="6"  min="{{system.health.min}}" max="{{system.health.max}}"></meter><br> -->
+						<input type="text" class="comb" name="system.health.value" value="{{system.health.value}}" data-dtype="Number"/>/<input class="comb" {{#if system.verouille}}disabled="disabled"{{/if}} type="text" name="system.health.max" value="{{system.health.max}}" data-dtype="Number"/>
+					</div>
+				</span>
+			</td>
+			<td style="text-align:center"  width="20%" rowspan="2">
+				<span class="resource">
+					<div title="Points de Mêlée" style="height:100%; background-image: url('systems/mega/images/triangle_petit.png'); background-repeat: no-repeat; background-position:center;">
+						<img {{#ifinferior system.power.value 5}}src="systems/mega/images/melee-red2.png"{{else}}src="systems/mega/images/melee2.png" {{/ifinferior}} alt="Points de Mêlée" style="border:none;width:32px;height:32px;"><br>
+						<!-- <meter value="{{system.power.value}}" low="6" min="{{system.power.min}}" max="{{system.power.max}}"></meter><br> -->
+						<input class="comb" type="text" name="system.power.value" value="{{system.power.value}}" data-dtype="Number"/>/<input type="text" name="system.power.max" {{#if system.verouille}}disabled="disabled"{{/if}}  class="comb" value="{{system.power.max}}" data-dtype="Number"/>
+					</div>
+				</span>
+			</td>
+		</tr>
+
+
+		<tr>
+			<td>
+				{{#ifequal system.type_acteur "MEGA"}}
+					<span class="sphere">
+						<!-- <input class="voie" name="system.voie.value" {{#if system.verouille}}disabled="disabled"{{/if}} type="text" value="{{system.voie.value}}" {{#ifequal system.type_acteur "MEGA"}}placeholder="Voie"{{else}}placeholder="Métier"{{/ifequal}}> -->
+						{{#unless system.verouille}}
+							<input class="comb2 autoselect" list="voie" type="text" id="choix_voie" style="width:160px;" name="system.voie.value" value="{{system.voie.value}}" placeholder="Voie">
+							<datalist id="voie">
+								<option value="Biocyb">
+								<option value="Conceptech">
+								<option value="Escorteur">
+								<option value="Fouineur">
+								<option value="Médian">
+								<option value="Ethnoranger">
+								<option value="Patrouilleur">
+								<option value="Sensit">
+							</datalist>
+						{{else}}
+							<input class="sphere" name="system.voie.value" readonly  type="text" value="{{system.voie.value}}">
+						{{/unless}}
+						<br>
+					</span>
+					<span class="sphere">
+						<!-- <input  name="system.sphere.value" {{#if system.verouille}}disabled="disabled"{{/if}} type="text" value="{{system.sphere.value}}" placeholder="Sphere"/> -->
+						{{#unless system.verouille}}
+							<!-- <select style="width:200px;" class="sphere" name="system.sphere.value" {{#if system.verouille}}disabled="disabled"{{/if}}>
+								<option selected disabled>Choisissez votre sphère</option>
+								<option value="Invisible" {{#ifequal system.sphere.value "Invisible"}}selected{{/ifequal}}>Invisible</option>
+								<option value="Relations" {{#ifequal system.sphere.value "Relations"}}selected{{/ifequal}}>Relations</option>
+							</select> -->
+							<input class="comb2 autoselect" list="sphere" class="comb2" l type="text" id="choix_sphere" style="width:140px;" name="system.sphere.value" value="{{system.sphere.value}}" placeholder="Sphère">
+							<datalist id="sphere">
+								<option value="Relations">
+								<option value="Vivant">
+								<option value="Matière">
+								<option value="Logique">
+								<option value="Invisible">
+							</datalist>
+							<input class="comb2 autoselect" list="sphere2" class="comb2" l type="text" id="choix_sphere2" style="width:140px;" name="system.sphere2.value" value="{{system.sphere2.value}}" placeholder="Sphère n°2">
+							<datalist id="sphere2">
+								<option value="Relations">
+								<option value="Vivant">
+								<option value="Matière">
+								<option value="Logique">
+								<option value="Invisible">
+							</datalist>
+						{{else}}
+							<input class="sphere" style="width:140px;" name="system.sphere.value" readonly  type="text" value="{{system.sphere.value}}">f
+							<input class="sphere" style="width:140px;" name="system.sphere2.value" readonly  type="text" value="{{system.sphere2.value}}">
+						{{/unless}}
+					</span>
+				{{else}}
+				<span class="sphere">
+					<!-- <input class="voie" name="system.voie.value" {{#if system.verouille}}disabled="disabled"{{/if}} type="text" value="{{system.voie.value}}" {{#ifequal system.type_acteur "MEGA"}}placeholder="Voie"{{else}}placeholder="Métier"{{/ifequal}}> -->
+					{{#unless system.verouille}}
+					<input class="autoselect" list="voie" type="text" id="choix_voie" style="width:250px;" name="system.voie.value" value="{{system.voie.value}}" placeholder="Métier">
+					<datalist id="voie">	
+						<option value="Soignant">
+						<option value="Homme d'affaire">
+						<option value="Chauffeur, pilote">
+						<option value="Ecclésiastique">
+						<option value="Clerc, notaire">
+						<option value="Intendant, connétable">
+						<option value="Artisan">
+						<option value="Moine guerrier">
+						<option value="Chevalier">
+						<option value="Artiste">
+						<option value="Militaire, milicien, policier">
+						<option value="Agent de sécurité, garde du corps">
+						<option value="Infiltrateur">
+					</datalist>
+					{{else}}
+						<!-- <input class="voie" name="system.voie.value" disabled="disabled" type="text" value="{{system.voie.value}}"> -->
+						<!-- <textarea readonly class="sphere" style="resize: none" >{{system.voie.value}}</textarea> -->
+						<input class="sphere" name="system.voie.value" readonly  type="text" value="{{system.voie.value}}">
+					{{/unless}}
+					<br>
+				</span>
+				<span class="sphere">
+					<!-- <input  name="system.sphere.value" {{#if system.verouille}}disabled="disabled"{{/if}} type="text" value="{{system.sphere.value}}" placeholder="Sphere"/> -->
+					{{#unless system.verouille}}
+						<!-- <select style="width:200px;" class="sphere" name="system.sphere.value" {{#if system.verouille}}disabled="disabled"{{/if}}>
+							<option selected disabled>Choisissez votre sphère</option>
+							<option value="Invisible" {{#ifequal system.sphere.value "Invisible"}}selected{{/ifequal}}>Invisible</option>
+							<option value="Relations" {{#ifequal system.sphere.value "Relations"}}selected{{/ifequal}}>Relations</option>
+						</select> -->
+						<input class="comb2 autoselect" list="sphere" class="comb2" l type="text" id="choix_sphere" style="width:140px;" name="system.sphere.value" value="{{system.sphere.value}}" placeholder="Sphère">
+						<datalist id="sphere">
+							<option value="Relations">
+							<option value="Vivant">
+							<option value="Matière">
+							<option value="Logique">
+							<option value="Invisible">
+						</datalist>
+						<input class="comb2 autoselect" list="sphere2" class="comb2" l type="text" id="choix_sphere2" style="width:140px;" name="system.sphere2.value" value="{{system.sphere2.value}}" placeholder="Sphère n°2">
+						<datalist id="sphere2">
+							<option value="Relations">
+							<option value="Vivant">
+							<option value="Matière">
+							<option value="Logique">
+							<option value="Invisible">
+						</datalist>
+					{{else}}
+						<input class="sphere" style="width:140px;" name="system.sphere.value" readonly  type="text" value="{{system.sphere.value}}">f
+						<input class="sphere" style="width:140px;" name="system.sphere2.value" readonly  type="text" value="{{system.sphere2.value}}">
+					{{/unless}}
+				</span>
+				{{/ifequal}}
+			</td>
+		</tr>
+		</table>
+        </div>
+    </header>
+
+    {{!-- Sheet Tab Navigation --}}
+    <nav class="sheet-tabs tabs" style="border-top: none; border-bottom: none;margin:0;padding:0;" data-group="primary">
+		<a class="item" data-tab="description">DESCRIPTION</a>
+		<a class="item" data-tab="attributes">ATTRIBUTS</a>
+		<a class="item" data-tab="combat">COMBAT</a>
+		<a class="item" data-tab="items">INVENTAIRE</a>
+		{{#if GM}}<a class="item" data-tab="MJ">MJ</a>{{/if}}
+    </nav>
+
+    {{!-- Sheet Body --}}
+    <section class="sheet-body">
+
+        {{!-- Biography Tab --}}
+        <div class="tab biography" data-group="primary" data-tab="description">
+			{{editor enrichedBiography target="system.biography" button=true editable=editable height="5px"}}
+        </div>
+
+		{{!-- Owned Items Tab --}}
+        <div class="tab items" data-group="primary" data-tab="items" style="margin:10px; padding: 0 5px;">
+
+			<center>
+				<div class="container">
+					<div class="column1">
+						{{#if actor.objet}}
+						<table class="objets_items">
+							<thead style="text-align:center;border:none;width:98%;"><tr><th>OBJETS</th></tr></thead>
+							<tr><td style="text-align:center;">
+								{{#each actor.objet as |item id|}}
+
+								<div class="item-container" style="position: relative; display: inline-block;padding-left: 18px;">
+									<img style="box-shadow: inset 0px 2px 10px 29px var(--opacity-clear-color);border-radius:var(--corner-radius);border-color:#555;width:60px;height:60px;" id="{{item._id}}" class="item-name item-edit items_rollable" src="{{item.img}}" title="{{item.name}}">
+									{{#ifsuperior item.system.quantity 1}}<span class="item-quantity" style="position: absolute; bottom: 0; right: 0; background: rgba(0, 0, 0, 0.5); color: white; padding: 2px;">{{item.system.quantity}}</span>{{/ifsuperior}}
+								</div>
+								{{/each}}
+						{{/if}}
+							</td></tr>
+						</table>
+						{{#if actor.tirs}}
+						<table class="armes_items" style="width:65%">
+							<thead style="text-align:center;border:none;width:98%;"><tr><th>ARMES DE TIR</th></tr></thead>
+							<tr><td>{{#each actor.tirs as |item id|}}
+								<div class="item-container" style="position: relative; display: inline-block;padding-left: 18px;">
+									<img style="box-shadow: inset 0px 2px 10px 29px var(--opacity-clear-color);border-radius:var(--corner-radius);border-color:#555; width:60px;height:60px;" id="{{item._id}}" class="item-name item-edit items_rollable" src="{{item.img}}" title="{{item.name}}">
+									{{#ifsuperior item.system.quantity 1}}<span class="item-quantity" style="position: absolute; bottom: 0; right: 0; font-size:12px;background: rgba(0, 0, 0, 0.5); color: white; padding: 2px;">{{item.system.quantity}}</span>{{/ifsuperior}}
+									<span class="item-charge" style="position: absolute; font-size:12px;top: 0; right: 0; background: rgba(0, 0, 0, 0.5); color: white; padding: 2px;"><i class="fas fa-bolt"></i>{{item.system.charge}}</span>
+								  </div>
+								{{/each}}
+							</td></tr>
+						</table>
+						{{/if}}
+						{{#if actor.courtes}}
+						<table class="armes_items" style="width:65%">
+							<thead style="text-align:center;border:none;width:98%;"><tr><th>ARMES COURTES</th></tr></thead>
+							<tr><td>{{#each actor.courtes as |item id|}}
+								<div class="item-container" style="position: relative; display: inline-block;padding-left: 18px;">
+									<img style="box-shadow: inset 0px 2px 10px 29px var(--opacity-clear-color);border-color:#555;border-radius:var(--corner-radius);width:60px;height:60px;" id="{{item._id}}" class="item-name item-edit items_rollable" src="{{item.img}}" title="{{item.name}}">
+									{{#ifsuperior item.system.quantity 1}}<span class="item-quantity" style="position: absolute; bottom: 0; right: 0; font-size:12px;background: rgba(0, 0, 0, 0.5); color: white; padding: 2px;">{{item.system.quantity}}</span>{{/ifsuperior}}
+								  </div>
+								{{/each}}
+							</td></tr>
+						</table>
+						{{/if}}
+						{{#if actor.longues}}
+						<table class="armes_items" style="width:65%">
+							<thead style="text-align:center;border:none;width:98%;"><tr><th>ARMES LONGUES</th></tr></thead>
+							<tr><td>{{#each actor.longues as |item id|}}
+								<div class="item-container" style="position: relative; display: inline-block;padding-left: 18px;">
+									<img style="box-shadow: inset 0px 2px 10px 29px var(--opacity-clear-color);border-color:#555;border-radius:var(--corner-radius);width:60px;height:60px;" id="{{item._id}}" class="item-name item-edit items_rollable" src="{{item.img}}" title="{{item.name}}">
+									{{#ifsuperior item.system.quantity 1}}<span class="item-quantity" style="position: absolute; bottom: 0; right: 0; font-size:12px;background: rgba(0, 0, 0, 0.5); color: white; padding: 2px;">{{item.system.quantity}}</span>{{/ifsuperior}}
+								  </div>
+								{{/each}}
+							</td></tr>
+						</table>
+						{{/if}}
+						{{#if actor.lancer}}
+						<table class="armes_items" style="width:65%">
+							<thead style="text-align:center;border:none;width:98%;"><tr><th>ARMES DE LANCER</th></tr></thead>
+							<tr><td>{{#each actor.lancer as |item id|}}
+								<div class="item-container" style="position: relative; display: inline-block;padding-left: 18px;">
+									<img style="box-shadow: inset 0px 2px 10px 29px var(--opacity-clear-color);border-color:#555;border-radius:var(--corner-radius);width:60px;height:60px;" id="{{item._id}}" class="item-name item-edit items_rollable" src="{{item.img}}" title="{{item.name}}">
+									{{#ifsuperior item.system.quantity 1}}<span class="item-quantity" style="position: absolute; bottom: 0; right: 0; font-size:12px;background: rgba(0, 0, 0, 0.5); color: white; padding: 2px;">{{item.system.quantity}}</span>{{/ifsuperior}}
+								  </div>
+								{{/each}}
+							</td></tr>
+						</table>
+						{{/if}}
+						{{#if actor.protections}}
+						<table class="protections_items" style="width:65%">
+							<thead style="text-align:center;border:none;width:98%;"><tr><th>PROTECTIONS</th></tr></thead>
+							<tr><td>{{#each actor.protections as |item id|}}
+								<div class="item-container" style="position: relative; display: inline-block;padding-left: 18px;">
+									<img style="box-shadow: inset 0px 2px 10px 29px var(--opacity-clear-color);border-color:#555;border-radius:var(--corner-radius);width:60px;height:60px;" id="{{item._id}}" class="item-name item-edit items_rollable" src="{{item.img}}" title="{{item.name}}">
+									{{#ifsuperior item.system.quantity 1}}<span class="item-quantity" style="position: absolute; bottom: 0; right: 0; font-size:12px;background: rgba(0, 0, 0, 0.5); color: white; padding: 2px;">{{item.system.quantity}}</span>{{/ifsuperior}}
+								  </div>
+								{{/each}}
+							</td></tr>
+						</table>
+						{{/if}}
+					</div>
+					<div class="column2">
+						{{#if actor.pouvoir}}
+						<table class="pouvoirs_items">
+							<thead style="text-align:center;border:none;width:98%;"><tr><th>POUVOIRS</th></tr></thead>
+							<tr><td style="text-align:center;">{{#each actor.pouvoir as |item id|}}
+								<div class="item-container" style="position: relative; display: inline-block;padding-left: 18px;">
+									<img style="box-shadow: inset 0px 2px 10px 29px var(--opacity-clear-color);border-color:#555;border-radius:var(--corner-radius);width:60px;height:60px;" id="{{item._id}}" class="item-name item-edit items_rollable" src="{{item.img}}" title="{{item.name}}">
+									{{#ifsuperior item.system.quantity 1}}<span class="item-quantity" style="position: absolute; bottom: 0; right: 0; font-size:12px;background: rgba(0, 0, 0, 0.5); color: white; padding: 2px;">{{item.system.quantity}}</span>{{/ifsuperior}}
+								  </div>
+								{{/each}}
+							</td></tr>
+						</table>
+						{{/if}}
+						{{#if actor.melee}}
+						<table class="pouvoirs_items">
+							<thead  style="text-align:center;border:none;width:98%;"><tr><th>ATTAQUES SPÉCIALES</th></tr></thead>
+							<tr><td>{{#each actor.melee as |item id|}}
+								<div class="item-container" style="position: relative; display: inline-block;padding-left: 18px;">
+									<img style="box-shadow: inset 0px 2px 10px 29px var(--opacity-clear-color);border-color:#555;border-radius:var(--corner-radius);width:60px;height:60px;" id="{{item._id}}" class="item-name item-edit items_rollable" src="{{item.img}}" title="{{item.name}}">
+									{{#ifsuperior item.system.quantity 1}}<span class="item-quantity" style="position: absolute; bottom: 0; right: 0; font-size:12px;background: rgba(0, 0, 0, 0.5); color: white; padding: 2px;">{{item.system.quantity}}</span>{{/ifsuperior}}
+								  </div>
+								{{/each}}</td></tr>
+						</table>
+						{{/if}}
+					</div>
+				</div>
+        </div>
+		
+		{{!-- MJ Tab --}}
+        <div class="tab" data-group="primary" data-tab="MJ" style="margin:10px; padding: 0 5px;">
+		<div>
+		
+			<br><center>
+
+			<table class="tablemj">
+				<thead  style="border:none;" >
+				<th class="masquer" style="text-align:center" value="vie">Récupération des points de Vie</th>
+				</thead>
+				<tr><td>
+				{{#if system.masquer_pv}}
+			<center>
+			<table class="tftable" border="1">
+			<tr><td style="font-weight:bold">PV Total</td><th>PV Actuels</th><th>Sans activité intense</th><td style="font-weight:bold">Repos total</td></tr>
+			<tr><td>{{system.health.max}}</td><td>{{system.health.value}}</td><td>{{system.vie_hrecup_sans_activite.value}} h</td><td>{{system.vie_hrecup_repos_total.value}} h</td></tr>
+			<tr><td> </td><td> </td><td>{{system.vie_jrecup_sans_activite.value}} j</td><td>{{system.vie_jrecup_repos_total.value}} j</td></tr>
+			</table>
+			{{/if}}
+			</td></tr></table>
+
+			<table class="tablemj">
+				<thead style="border:none;">
+				<th class="masquer" style="text-align:center" value="ardence">Récupération des points d'Ardence</i></th>
+				</thead>
+				<tr><td>
+				{{#if system.masquer_ardence}}
+			<center>
+			<table class="tftable" border="1">
+			<tr><td style="font-weight:bold">Point perdus</td>{{#if system.recup_ardence_1.value}}<th>1er</th>{{/if}}{{#if system.recup_ardence_2.value}}<td style="font-weight:bold">2ème</td>{{/if}}{{#if system.recup_ardence_3.value}}<th>3ème</th>{{/if}}{{#if system.recup_ardence_4.value}}<th>4ème</th>{{/if}}{{#if system.recup_ardence_5.value}}<th>5ème</th>{{/if}}{{#if system.recup_ardence_6.value}}<th>6ème</th>{{/if}}{{#if system.recup_ardence_7.value}}<th>7ème</th>{{/if}}{{#if system.recup_ardence_8.value}}<th>8ème</th>{{/if}}{{#if system.recup_ardence_9.value}}<th>9ème</th>{{/if}}{{#if system.recup_ardence_10.value}}<th>10ème</th>{{/if}}</tr>
+			<!-- <tr><td>15</td><td>30</td><td>45</td><td>60</td><td>75</td><td>90</td><td>105</td><td>120</td><td>135</td><td>150</td></tr> -->
+			<tr><td>Récupérés dans</td>{{#if system.recup_ardence_1.value}}<td>{{system.recup_ardence_1.value}} mn</td>{{/if}}{{#if system.recup_ardence_2.value}}<td>{{system.recup_ardence_2.value}} mn</td>{{/if}}{{#if system.recup_ardence_3.value}}<td>{{system.recup_ardence_3.value}} mn</td>{{/if}}{{#if system.recup_ardence_4.value}}<td>{{system.recup_ardence_4.value}} mn</td>{{/if}}{{#if system.recup_ardence_5.value}}<td>{{system.recup_ardence_5.value}} mn</td>{{/if}}{{#if system.recup_ardence_6.value}}<td>{{system.recup_ardence_6.value}} mn</td>{{/if}}{{#if system.recup_ardence_7.value}}<td>{{system.recup_ardence_7.value}} mn</td>{{/if}}{{#if system.recup_ardence_8.value}}<td>{{system.recup_ardence_8.value}} mn</td>{{/if}}{{#if system.recup_ardence_9.value}}<td>{{system.recup_ardence_9.value}} mn</td>{{/if}}{{#if system.recup_ardence_10.value}}<td>{{system.recup_ardence_10.value}} mn</td>{{/if}}</tr>
+			<tr><td>Heures de récup</td>{{#if system.recup_ardence_1.value}}<td><input style="width:45px" type="text" name="system.recup_ardence_1.value_j" value="{{system.recup_ardence_1.value_j}}"/></td>{{/if}}{{#if system.recup_ardence_2.value}}<td><input style="width:45px" type="text" name="system.recup_ardence_2.value_j" value="{{system.recup_ardence_2.value_j}}"/></td>{{/if}}{{#if system.recup_ardence_3.value}}<td><input style="width:45px" type="text" name="system.recup_ardence_3.value_j" value="{{system.recup_ardence_3.value_j}}"/></td>{{/if}}{{#if system.recup_ardence_4.value}}<td><input style="width:45px" type="text" name="system.recup_ardence_4.value_j" value="{{system.recup_ardence_4.value_j}}"/></td>{{/if}}{{#if system.recup_ardence_5.value}}<td><input style="width:45px" type="text" name="system.recup_ardence_5.value_j" value="{{system.recup_ardence_5.value_j}}"/></td>{{/if}}{{#if system.recup_ardence_6.value}}<td><input style="width:45px" type="text" name="system.recup_ardence_6.value_j" value="{{system.recup_ardence_6.value_j}}"/></td>{{/if}}{{#if system.recup_ardence_7.value}}<td><input style="width:45px" type="text" name="system.recup_ardence_7.value_j" value="{{system.recup_ardence_7.value_j}}"/></td>{{/if}}{{#if system.recup_ardence_8.value}}<td><input style="width:45px" type="text" name="system.recup_ardence_8.value_j" value="{{system.recup_ardence_8.value_j}}"/></td>{{/if}}{{#if system.recup_ardence_9.value}}<td><input style="width:45px" type="text" name="system.recup_ardence_9.value_j" value="{{system.recup_ardence_9.value_j}}"/></td>{{/if}}{{#if system.recup_ardence_10.value}}<td><input style="width:45px" type="text" name="system.recup_ardence_10.value_j" value="{{system.recup_ardence_10.value_j}}"/></td>{{/if}}</tr></table>
+			</table>
+			{{/if}}
+			</td></tr></table>
+
+			<table class="tablemj">
+				<thead style="border:none;">
+				<th class="masquer" style="text-align:center" value="resonnance">Récupération des points de Résonnance</th>
+				</thead>
+				<tr><td>
+			{{#if system.masquer_resonnance}}
+				<center>
+			<table class="tftable" border="1">
+			<tr><td style="font-weight:bold">Point perdus</td>{{#if system.recup_resonnance_1.value}}<th>1er</th>{{/if}}{{#if system.recup_resonnance_2.value}}<td style="font-weight:bold">2ème</td>{{/if}}{{#if system.recup_resonnance_3.value}}<th>3ème</th>{{/if}}{{#if system.recup_resonnance_4.value}}<th>4ème</th>{{/if}}{{#if system.recup_resonnance_5.value}}<th>5ème</th>{{/if}}{{#if system.recup_resonnance_6.value}}<th>6ème</th>{{/if}}{{#if system.recup_resonnance_7.value}}<th>7ème</th>{{/if}}{{#if system.recup_resonnance_8.value}}<th>8ème</th>{{/if}}{{#if system.recup_resonnance_9.value}}<th>9ème</th>{{/if}}{{#if system.recup_resonnance_10.value}}<th>10ème</th>{{/if}}</tr>
+			<!-- <tr><td>15</td><td>30</td><td>45</td><td>60</td><td>75</td><td>90</td><td>105</td><td>120</td><td>135</td><td>150</td></tr> -->
+			<tr><td style="font-weight:bold">Récupérés dans</td>{{#if system.recup_resonnance_1.value}}<td>{{system.recup_resonnance_1.value}} h</td>{{/if}}{{#if system.recup_resonnance_2.value}}<td>{{system.recup_resonnance_2.value}} h</td>{{/if}}{{#if system.recup_resonnance_3.value}}<td>{{system.recup_resonnance_3.value}} h</td>{{/if}}{{#if system.recup_resonnance_4.value}}<td>{{system.recup_resonnance_4.value}} h</td>{{/if}}{{#if system.recup_resonnance_5.value}}<td>{{system.recup_resonnance_5.value}} h</td>{{/if}}{{#if system.recup_resonnance_6.value}}<td>{{system.recup_resonnance_6.value}} h</td>{{/if}}{{#if system.recup_resonnance_7.value}}<td>{{system.recup_resonnance_7.value}} h</td>{{/if}}{{#if system.recup_resonnance_8.value}}<td>{{system.recup_resonnance_8.value}} h</td>{{/if}}{{#if system.recup_resonnance_9.value}}<td>{{system.recup_resonnance_9.value}} h</td>{{/if}}{{#if system.recup_resonnance_10.value}}<td>{{system.recup_resonnance_10.value}} h</td>{{/if}}</tr>
+			<tr><td style="font-weight:bold">Heures de récup</td>{{#if system.recup_resonnance_1.value}}<td><input style="width:45px" type="text" name="system.recup_resonnance_1.value_j" value="{{system.recup_resonnance_1.value_j}}"/></td>{{/if}}{{#if system.recup_resonnance_2.value}}<td><input style="width:45px" type="text" name="system.recup_resonnance_2.value_j" value="{{system.recup_resonnance_2.value_j}}"/></td>{{/if}}{{#if system.recup_resonnance_3.value}}<td><input style="width:45px" type="text" name="system.recup_resonnance_3.value_j" value="{{system.recup_resonnance_3.value_j}}"/></td>{{/if}}{{#if system.recup_resonnance_4.value}}<td><input style="width:45px" type="text" name="system.recup_resonnance_4.value_j" value="{{system.recup_resonnance_4.value_j}}"/></td>{{/if}}{{#if system.recup_resonnance_5.value}}<td><input style="width:45px" type="text" name="system.recup_resonnance_5.value_j" value="{{system.recup_resonnance_5.value_j}}"/></td>{{/if}}{{#if system.recup_resonnance_6.value}}<td><input style="width:45px" type="text" name="system.recup_resonnance_6.value_j" value="{{system.recup_resonnance_6.value_j}}"/></td>{{/if}}{{#if system.recup_resonnance_7.value}}<td><input style="width:45px" type="text" name="system.recup_resonnance_7.value_j" value="{{system.recup_resonnance_7.value_j}}"/></td>{{/if}}{{#if system.recup_resonnance_8.value}}<td><input style="width:45px" type="text" name="system.recup_resonnance_8.value_j" value="{{system.recup_resonnance_8.value_j}}"/></td>{{/if}}{{#if system.recup_resonnance_9.value}}<td><input style="width:45px" type="text" name="system.recup_resonnance_9.value_j" value="{{system.recup_resonnance_9.value_j}}"/></td>{{/if}}{{#if system.recup_resonnance_10.value}}<td><input style="width:45px" type="text" name="system.recup_resonnance_10.value_j" value="{{system.recup_resonnance_10.value_j}}"/></td>{{/if}}</tr></table>
+			</table>
+			{{/if}}
+			</td></tr></table>
+
+			<table class="tablemj">
+				<thead style="border:none;">
+				<th class="masquer" style="text-align:center" value="melee">Récupération des points de Mêlée</th>
+				</thead>
+				<tr><td>
+			{{#if system.masquer_melee}}
+			<b>Récupération des points de Mêlée : 1d{{actor.system.caracs.adresse.value}} toutes les h</b>
+			{{/if}}
+				</tr></td></table>
+					<table class="tablemj">
+						<thead style="border:none;">
+						<th class="masquer" value="charge">Paramétrer la Charge</th>
+						</thead>
+					<tr><td>
+					{{#if system.masquer_avantage_charge}}
+					<center><table style="width:60%" class="equipement">
+						<tr>
+							<thead><tr>
+								<td></td><td>Av0</td><td>Av1</td><td>Av2</td><td>Av3</td><td>Av4</td>
+							</tr></thead>
+							<td>Points de Mêlée</td>
+							<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.charge.av0" value="{{system.talents_combat.charge.av0}}" data-dtype="Number"/></td>
+							<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.charge.av1" value="{{system.talents_combat.charge.av1}}" data-dtype="Number"/></td>
+							<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.charge.av2" value="{{system.talents_combat.charge.av2}}" data-dtype="Number"/></td>
+							<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.charge.av3" value="{{system.talents_combat.charge.av3}}" data-dtype="Number"/></td>
+							<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.charge.av4" value="{{system.talents_combat.charge.av4}}" data-dtype="Number"/></td>
+						</tr>
+						<tr>
+							<td>1er Effet</td>
+							<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.charge.effet_ac_0_1" value="{{system.talents_combat.charge.effet_ac_0_1}}" /></td>
+							<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.charge.effet_ac_1_1" value="{{system.talents_combat.charge.effet_ac_1_1}}" /></td>
+							<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.charge.effet_ac_2_1" value="{{system.talents_combat.charge.effet_ac_2_1}}" /></td>
+							<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.charge.effet_ac_3_1" value="{{system.talents_combat.charge.effet_ac_3_1}}" /></td>
+							<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.charge.effet_ac_4_1" value="{{system.talents_combat.charge.effet_ac_4_1}}" /></td>
+						</tr>
+						<tr>
+							<td>2ème Effet</td>
+							<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.charge.effet_ac_0_2" value="{{system.talents_combat.charge.effet_ac_0_2}}" /></td>
+							<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.charge.effet_ac_1_2" value="{{system.talents_combat.charge.effet_ac_1_2}}" /></td>
+							<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.charge.effet_ac_2_2" value="{{system.talents_combat.charge.effet_ac_2_2}}" /></td>
+							<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.charge.effet_ac_3_2" value="{{system.talents_combat.charge.effet_ac_3_2}}" /></td>
+							<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.charge.effet_ac_4_2" value="{{system.talents_combat.charge.effet_ac_4_2}}" /></td>
+						</tr>
+						<tr>
+							<td>3ème Effet</td>
+							<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.charge.effet_ac_0_3" value="{{system.talents_combat.charge.effet_ac_0_3}}" /></td>
+							<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.charge.effet_ac_1_3" value="{{system.talents_combat.charge.effet_ac_1_3}}" /></td>
+							<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.charge.effet_ac_2_3" value="{{system.talents_combat.charge.effet_ac_2_3}}" /></td>
+							<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.charge.effet_ac_3_3" value="{{system.talents_combat.charge.effet_ac_3_3}}" /></td>
+							<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.charge.effet_ac_4_3" value="{{system.talents_combat.charge.effet_ac_4_3}}" /></td>
+						</tr>
+						<tfoot>
+							<tr>
+							<td colspan="8">H=HANDICAPER, A=ASSOMMER, S=SONNER, R=RENVERSER, I=IMMOBILISER, P=POSITIONNEMENT, T=TENIR A DISTANCE, D=DÉFAUT DE LA CUIRASSE
+							</td>
+							</tr>
+						</tfoot>
+					</table>
+					{{/if}}
+				</td></tr></table>
+					<table class="tablemj">
+						<thead style="border:none;">
+						<th class="masquer" value="bagarre">Paramétrer la Bagarre</th>
+						</thead>
+					<tr><td>
+					{{#if system.masquer_avantage_bagarre}}
+					<center><table style="width:60%" class="equipement">
+						<tr>
+							<thead><tr>
+								<td></td><td>Av0</td><td>Av1</td><td>Av2</td><td>Av3</td><td>Av4</td>
+							</tr></thead>
+							<td>Points de Mêlée</td>
+							<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.mainsnues.av0" value="{{system.talents_combat.mainsnues.av0}}" data-dtype="Number"/></td>
+							<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.mainsnues.av1" value="{{system.talents_combat.mainsnues.av1}}" data-dtype="Number"/></td>
+							<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.mainsnues.av2" value="{{system.talents_combat.mainsnues.av2}}" data-dtype="Number"/></td>
+							<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.mainsnues.av3" value="{{system.talents_combat.mainsnues.av3}}" data-dtype="Number"/></td>
+							<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.mainsnues.av4" value="{{system.talents_combat.mainsnues.av4}}" data-dtype="Number"/></td>
+						</tr>
+						<tr>
+							<td>1er Effet</td>
+							<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.mainsnues.effet_ac_0_1" value="{{system.talents_combat.mainsnues.effet_ac_0_1}}" /></td>
+							<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.mainsnues.effet_ac_1_1" value="{{system.talents_combat.mainsnues.effet_ac_1_1}}" /></td>
+							<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.mainsnues.effet_ac_2_1" value="{{system.talents_combat.mainsnues.effet_ac_2_1}}" /></td>
+							<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.mainsnues.effet_ac_3_1" value="{{system.talents_combat.mainsnues.effet_ac_3_1}}" /></td>
+							<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.mainsnues.effet_ac_4_1" value="{{system.talents_combat.mainsnues.effet_ac_4_1}}" /></td>
+						</tr>
+						<tr>
+							<td>2ème Effet</td>
+							<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.mainsnues.effet_ac_0_2" value="{{system.talents_combat.mainsnues.effet_ac_0_2}}" /></td>
+							<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.mainsnues.effet_ac_1_2" value="{{system.talents_combat.mainsnues.effet_ac_1_2}}" /></td>
+							<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.mainsnues.effet_ac_2_2" value="{{system.talents_combat.mainsnues.effet_ac_2_2}}" /></td>
+							<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.mainsnues.effet_ac_3_2" value="{{system.talents_combat.mainsnues.effet_ac_3_2}}" /></td>
+							<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.mainsnues.effet_ac_4_2" value="{{system.talents_combat.mainsnues.effet_ac_4_2}}" /></td>
+						</tr>
+						<tr>
+							<td>3ème Effet</td>
+							<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.mainsnues.effet_ac_0_3" value="{{system.talents_combat.mainsnues.effet_ac_0_3}}" /></td>
+							<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.mainsnues.effet_ac_1_3" value="{{system.talents_combat.mainsnues.effet_ac_1_3}}" /></td>
+							<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.mainsnues.effet_ac_2_3" value="{{system.talents_combat.mainsnues.effet_ac_2_3}}" /></td>
+							<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.mainsnues.effet_ac_3_3" value="{{system.talents_combat.mainsnues.effet_ac_3_3}}" /></td>
+							<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.mainsnues.effet_ac_4_3" value="{{system.talents_combat.mainsnues.effet_ac_4_3}}" /></td>
+						</tr>
+						<tfoot>
+							<tr>
+							<td colspan="8">H=HANDICAPER, A=ASSOMMER, S=SONNER, R=RENVERSER, I=IMMOBILISER, P=POSITIONNEMENT, T=TENIR A DISTANCE, D=DÉFAUT DE LA CUIRASSE
+							</td>
+							</tr>
+						</tfoot>
+					</table>
+					{{/if}}	
+				</td></tr></table>
+			</div>
+        </div>
+
+		{{!-- Combat Tab --}}
+        <div class="tab attributes" data-group="primary" data-tab="combat">
+			<div class="bandeau_combat">
+				<div>
+					<table class="equipement">
+						<thead style="border:none;">
+							<th align="center" colspan="9">COMBAT<input class="comb" type="text" name="system.domaines.combat.value" value="{{system.domaines.combat.value}}" data-dtype="Number"/> <i class="fas fa-plus-circle"></i>{{#if system.combat_modif.value}}<input class="comb bonus_combat" style="background-color: red;" type="text" name="system.combat_modif.value" value="{{system.combat_modif.value}}" data-dtype="Number">{{else}}<input class="comb" type="text" name="system.combat_modif.value" value="{{system.combat_modif.value}}" data-dtype="Number">{{/if}} Rg</th></thead>
+						
+						<tr>
+							<td style="text-align:center" colspan="8" ><b>DEF Niv. {{system.def.value}} (<i class="fas fa-plus-circle"></i>{{#if system.def_modif.value}}<input class="comb" type="text" name="system.def_modif.value" style="background-color: red;" value="{{system.def_modif.value}}" data-dtype="Number">{{else}}<input class="comb" type="text" name="system.def_modif.value" value="{{system.def_modif.value}}" data-dtype="Number">{{/if}})</b></td><td><span class="masquer_combat"><i class="fa fa-expand" aria-hidden="true"></i></span></td></tr></thead>
+						</tr>
+						{{#unless (courtMetrage)}}
+						<tr>
+						<td  style="text-align:right" colspan="2">PROTECTION (+x Niv) : </TD><td style="text-align:center">Choc</td><td style="text-align:center">Lame</td><td style="text-align:center">Balle</td><td style="text-align:center">Feu</td><td style="text-align:center">Froid</td><td style="text-align:center">Acide</td><td style="text-align:center">Rayon</td>
+						</tr>
+						<tr>
+						<td style="text-align:right" colspan="2">DEF : </TD><td style="text-align:center">{{system.protect_choc.value}}</td><td style="text-align:center">{{system.protect_lame.value}}</td><td style="text-align:center">{{system.protect_balle.value}}</td><td style="text-align:center">{{system.protect_feu.value}}</td><td style="text-align:center">{{system.protect_froid.value}}</td><td style="text-align:center">{{system.protect_acide.value}}</td><td style="text-align:center">{{system.protect_rayon.value}}</td>
+						</tr>
+						{{/unless}}
+						<td colspan="4" style="text-align:center">
+							<span class="combat_rollable" data-type="{{system.derives.initiative.label}}" value="{{system.derives.initiative.value}}"><b>Init </b></span>{{system.derives.initiative.jet}}<span> <i class="fas fa-plus-circle"></i>{{#if system.bonus_initiative.value}}<input class="comb" type="text" name="system.bonus_initiative.value" style="background-color: red;" value="{{system.bonus_initiative.value}}" data-dtype="Number">{{else}}<input class="comb" type="text" name="system.bonus_initiative.value" value="{{system.bonus_initiative.value}}" data-dtype="Number">{{/if}}</span>
+						</td>
+						<td colspan="5">
+							<span class="combat_rollable" data-type="{{system.derives.esquive.label}}" value="{{system.derives.esquive.value}}"><b>Esquive </b></span>{{system.derives.esquive.jet}}<span> <i class="fas fa-plus-circle"></i>{{#if system.bonus_esquive.value}}<input class="comb" type="text" name="system.bonus_esquive.value" style="background-color: red;" value="{{system.bonus_esquive.value}}" data-dtype="Number">{{else}}<input class="comb" type="text" name="system.bonus_esquive.value" value="{{system.bonus_esquive.value}}" data-dtype="Number">{{/if}}</span>
+						</td>
+						<tr>
+							<td></td><td align="center"><b>Technique de combat</b></b></td><td><b>Score</td><td><b>DEF</b></td><td><b>0Av</b></td><td><b>1Av</b></td><td><b>2Av</b></td><td><b>3Av</b></td><td><b>4Av+</b></td>
+							<!-- <td><b><i class="fas fa-hand-rock"></i></b></td> -->
+						</tr>
+						<!--Initial-->						
+						<tr style="background-color: rgba(0,0,0, 0.1);">
+								<td rowspan="2" class="rotation180" width="2px"><b><font size="0.5">Mains nues</font></b></td><td align="left"><span label="Charge" class="clic_mainsnues" value="charge"><b>Charge <i class="fas fa-running"></i></b></span></td>
+								<td ><input class="comb" type="text" name="system.talents_combat.charge.score" value="{{system.talents_combat.charge.score}}" data-dtype="Number"/></td><td style="text-align:left;">X</td><td>{{system.talents_combat.charge.av0}}{{system.talents_combat.charge.effet_ac_0_1}}{{system.talents_combat.charge.effet_ac_0_2}}{{system.talents_combat.charge.effet_ac_0_3}}<td>{{system.talents_combat.charge.av1}}{{system.talents_combat.charge.effet_ac_1_1}}{{system.talents_combat.charge.effet_ac_1_2}}{{system.talents_combat.charge.effet_ac_1_3}}</td><td>{{system.talents_combat.charge.av2}}{{system.talents_combat.charge.effet_ac_2_1}}{{system.talents_combat.charge.effet_ac_2_2}}{{system.talents_combat.charge.effet_ac_2_3}}</td><td>{{system.talents_combat.charge.av3}}{{system.talents_combat.charge.effet_ac_3_1}}{{system.talents_combat.charge.effet_ac_3_2}}{{system.talents_combat.charge.effet_ac_3_3}}</td><td>{{system.talents_combat.charge.av4}}{{system.talents_combat.charge.effet_ac_4_1}}{{system.talents_combat.charge.effet_ac_4_2}}{{system.talents_combat.charge.effet_ac_4_3}}</td>
+							</tr>
+							<tr style="background-color: rgba(0,0,0, 0.1);"><td align="left"><span label="Bagarre" class="clic_mainsnues" value="mainsnues">{{#if system.talents_combat.mainsnues.modifiable}}<input class="equipement" type="text" name="system.talents_combat.mainsnues.label" value="{{system.talents_combat.mainsnues.label}}" data-dtype="text"/>{{else}}<b>{{system.talents_combat.mainsnues.label}} </b>{{/if}}</span></td>
+								<td ><input class="comb" type="text" name="system.talents_combat.mainsnues.score" value="{{system.talents_combat.mainsnues.score}}" data-dtype="Number"/></td><td><span class="clic_def" value="mainsnues"><input class="comb" {{#if system.talents_combat.mainsnues.def_actif}} style="background-color: green;"{{/if}} readonly type="text" name="system.talents_combat.mainsnues.def" value="{{system.talents_combat.mainsnues.def}}" data-dtype="Number"/></span></td><td>{{system.talents_combat.mainsnues.av0}}{{system.talents_combat.mainsnues.effet_ac_0_1}}{{system.talents_combat.mainsnues.effet_ac_0_2}}{{system.talents_combat.mainsnues.effet_ac_0_3}}<td>{{system.talents_combat.mainsnues.av1}}{{system.talents_combat.mainsnues.effet_ac_1_1}}{{system.talents_combat.mainsnues.effet_ac_1_2}}{{system.talents_combat.mainsnues.effet_ac_1_3}}</td><td>{{system.talents_combat.mainsnues.av2}}{{system.talents_combat.mainsnues.effet_ac_2_1}}{{system.talents_combat.mainsnues.effet_ac_2_2}}{{system.talents_combat.mainsnues.effet_ac_2_3}}</td><td>{{system.talents_combat.mainsnues.av3}}{{system.talents_combat.mainsnues.effet_ac_3_1}}{{system.talents_combat.mainsnues.effet_ac_3_2}}{{system.talents_combat.mainsnues.effet_ac_3_3}}</td><td>{{system.talents_combat.mainsnues.av4}}{{system.talents_combat.mainsnues.effet_ac_4_1}}{{system.talents_combat.mainsnues.effet_ac_4_2}}{{system.talents_combat.mainsnues.effet_ac_4_3}}</td style="text-align: center; vertical-align: middle;">
+							</tr>
+								{{#or system.talents_combat.mainsnues1.label system.combat_large}}
+								<tr style="background-color: rgba(255, 255, 255, 0.1);">
+									<td {{#unless (courtMetrage)}} rowspan="3"{{/unless}} class="rotation180"><font size="0.5"><b>Attaques spéciales</b></font></td>
+									<td align="left"><span class="clic_mainsnues" value="mainsnues1" label="{{system.talents_combat.mainsnues1.label}}"  name="{{system.talents_combat.mainsnues1.label}}"><b>{{system.talents_combat.mainsnues1.label}}</b></span></td>
+									<td><input class="comb" type="text" name="system.talents_combat.mainsnues1.score" value="{{system.talents_combat.mainsnues1.score}}" data-dtype="Number"/></td><td><span class="clic_def" value="mainsnues1"><input class="comb" {{#if system.talents_combat.mainsnues1.def_actif}} style="background-color: green;"{{/if}} readonly type="text" name="system.talents_combat.mainsnues1.def" value="{{system.talents_combat.mainsnues1.def}}" data-dtype="Number"/></span></td><td>{{system.talents_combat.mainsnues1.av0}}{{system.talents_combat.mainsnues1.effet_ac_0_1}}{{system.talents_combat.mainsnues1.effet_ac_0_2}}{{system.talents_combat.mainsnues1.effet_ac_0_3}}</td><td>{{system.talents_combat.mainsnues1.av1}}{{system.talents_combat.mainsnues1.effet_ac_1_1}}{{system.talents_combat.mainsnues1.effet_ac_1_2}}{{system.talents_combat.mainsnues1.effet_ac_1_3}}</td><td>{{system.talents_combat.mainsnues1.av2}}{{system.talents_combat.mainsnues1.effet_ac_2_1}}{{system.talents_combat.mainsnues1.effet_ac_2_2}}{{system.talents_combat.mainsnues1.effet_ac_2_3}}</td><td>{{system.talents_combat.mainsnues1.av3}}{{system.talents_combat.mainsnues1.effet_ac_3_1}}{{system.talents_combat.mainsnues1.effet_ac_3_2}}{{system.talents_combat.mainsnues1.effet_ac_3_3}}</td><td>{{system.talents_combat.mainsnues1.av4}}{{system.talents_combat.mainsnues1.effet_ac_4_1}}{{system.talents_combat.mainsnues1.effet_ac_4_2}}{{system.talents_combat.mainsnues1.effet_ac_4_3}}</td style="text-align: center; vertical-align: middle;">
+								</tr>
+								{{#unless (courtMetrage)}}
+								<tr style="background-color: rgba(255, 255, 255, 0.1);">
+									<td align="left"><span class="clic_mainsnues" value="mainsnues2" label="{{system.talents_combat.mainsnues2.label}}"><b>{{system.talents_combat.mainsnues2.label}}</b></span></td>
+									<td><input class="comb" type="text" name="system.talents_combat.mainsnues2.score" value="{{system.talents_combat.mainsnues2.score}}" data-dtype="Number"/></td><td><span class="clic_def" value="mainsnues2"><input class="comb" {{#if system.talents_combat.mainsnues2.def_actif}} style="background-color: green;"{{/if}} readonly type="text" name="system.talents_combat.mainsnues2.def" value="{{system.talents_combat.mainsnues2.def}}" data-dtype="Number"/></span></td><td>{{system.talents_combat.mainsnues2.av0}}{{system.talents_combat.mainsnues2.effet_ac_0_1}}{{system.talents_combat.mainsnues2.effet_ac_0_2}}{{system.talents_combat.mainsnues2.effet_ac_0_3}}</td><td>{{system.talents_combat.mainsnues2.av1}}{{system.talents_combat.mainsnues2.effet_ac_1_1}}{{system.talents_combat.mainsnues2.effet_ac_1_2}}{{system.talents_combat.mainsnues2.effet_ac_1_3}}</td><td>{{system.talents_combat.mainsnues2.av2}}{{system.talents_combat.mainsnues2.effet_ac_2_1}}{{system.talents_combat.mainsnues2.effet_ac_2_2}}{{system.talents_combat.mainsnues2.effet_ac_2_3}}</td><td>{{system.talents_combat.mainsnues2.av3}}{{system.talents_combat.mainsnues2.effet_ac_3_1}}{{system.talents_combat.mainsnues2.effet_ac_3_2}}{{system.talents_combat.mainsnues2.effet_ac_3_3}}</td><td>{{system.talents_combat.mainsnues2.av4}}{{system.talents_combat.mainsnues2.effet_ac_4_1}}{{system.talents_combat.mainsnues2.effet_ac_4_2}}{{system.talents_combat.mainsnues2.effet_ac_4_3}}</td style="text-align: center; vertical-align: middle;">
+								</tr>
+								<tr style="background-color: rgba(255, 255, 255, 0.1);">
+									<td align="left"><span class="clic_mainsnues" value="mainsnues3" label="{{system.talents_combat.mainsnues3.label}}"><b>{{system.talents_combat.mainsnues3.label}}</b></span></td>
+									<td><input class="comb" type="text" name="system.talents_combat.mainsnues3.score" value="{{system.talents_combat.mainsnues3.score}}" data-dtype="Number"/></td><td><span class="clic_def" value="mainsnues3"><input class="comb" {{#if system.talents_combat.mainsnues3.def_actif}} style="background-color: green;"{{/if}} readonly type="text" name="system.talents_combat.mainsnues3.def" value="{{system.talents_combat.mainsnues3.def}}" data-dtype="Number"/></span></td><td>{{system.talents_combat.mainsnues3.av0}}{{system.talents_combat.mainsnues3.effet_ac_0_1}}{{system.talents_combat.mainsnues3.effet_ac_0_2}}{{system.talents_combat.mainsnues3.effet_ac_0_3}}</td><td>{{system.talents_combat.mainsnues3.av1}}{{system.talents_combat.mainsnues3.effet_ac_1_1}}{{system.talents_combat.mainsnues3.effet_ac_1_2}}{{system.talents_combat.mainsnues3.effet_ac_1_3}}</td><td>{{system.talents_combat.mainsnues3.av2}}{{system.talents_combat.mainsnues3.effet_ac_2_1}}{{system.talents_combat.mainsnues3.effet_ac_2_2}}{{system.talents_combat.mainsnues3.effet_ac_2_3}}</td><td>{{system.talents_combat.mainsnues3.av3}}{{system.talents_combat.mainsnues3.effet_ac_3_1}}{{system.talents_combat.mainsnues3.effet_ac_3_2}}{{system.talents_combat.mainsnues3.effet_ac_3_3}}</td><td>{{system.talents_combat.mainsnues3.av4}}{{system.talents_combat.mainsnues3.effet_ac_4_1}}{{system.talents_combat.mainsnues3.effet_ac_4_2}}{{system.talents_combat.mainsnues3.effet_ac_4_3}}</td style="text-align: center; vertical-align: middle;">
+								</tr>
+								{{/unless}}
+								{{/or}}
+								{{#or system.talents_combat.armescourtes_1.label system.combat_large}}
+								<tr style="background-color: rgba(0, 0, 0, 0.1);">
+									<td {{#unless (courtMetrage)}}rowspan="2"{{/unless}} class="rotation180"><font size="0.5"><b>Armes courtes</b></font></td>
+									<!-- <td align="left"><span id="span_clic_ac1" class="clic_technique_combat" value="armescourtes_1">{{#if system.talents_combat.armescourtes_1.modifiable}}<input id="equipement_ac1" readonly="true" class="equipement_equip" type="text" name="system.talents_combat.armescourtes_1.label" value="{{system.talents_combat.armescourtes_1.label}}" data-dtype="text"/>{{else}}<b>{{system.talents_combat.armescourtes_1.label}}</b>{{/if}}</span></td> -->
+									<td align="left"><span id="span_clic_ac1" class="clic_technique_combat" label="{{system.talents_combat.armescourtes_1.label}}" value="armescourtes_1"><b>{{system.talents_combat.armescourtes_1.label}}</b></span></td>
+									<td><input class="comb" type="text" name="system.talents_combat.armescourtes_1.score" value="{{system.talents_combat.armescourtes_1.score}}" data-dtype="Number"/></td><td><span class="clic_def"  value="armescourtes_1"><input class="comb" {{#if system.talents_combat.armescourtes_1.def_actif}} style="background-color: green;"{{/if}} readonly type="text" name="system.talents_combat.armescourtes_1.def" value="{{system.talents_combat.armescourtes_1.def}}" data-dtype="Number"/></span></td><td>{{system.talents_combat.armescourtes_1.av0}}{{system.talents_combat.armescourtes_1.effet_ac_0_1}}{{system.talents_combat.armescourtes_1.effet_ac_0_2}}{{system.talents_combat.armescourtes_1.effet_ac_0_3}}</td><td>{{system.talents_combat.armescourtes_1.av1}}{{system.talents_combat.armescourtes_1.effet_ac_1_1}}{{system.talents_combat.armescourtes_1.effet_ac_1_2}}{{system.talents_combat.armescourtes_1.effet_ac_1_3}}</td><td>{{system.talents_combat.armescourtes_1.av2}}{{system.talents_combat.armescourtes_1.effet_ac_2_1}}{{system.talents_combat.armescourtes_1.effet_ac_2_2}}{{system.talents_combat.armescourtes_1.effet_ac_2_3}}</td><td>{{system.talents_combat.armescourtes_1.av3}}{{system.talents_combat.armescourtes_1.effet_ac_3_1}}{{system.talents_combat.armescourtes_1.effet_ac_3_2}}{{system.talents_combat.armescourtes_1.effet_ac_3_3}}</td><td>{{system.talents_combat.armescourtes_1.av4}}{{system.talents_combat.armescourtes_1.effet_ac_4_1}}{{system.talents_combat.armescourtes_1.effet_ac_4_2}}{{system.talents_combat.armescourtes_1.effet_ac_4_3}}</td style="text-align: center; vertical-align: middle;">
+								</tr>
+								{{#unless (courtMetrage)}}
+								<tr style="background-color: rgba(0, 0, 0, 0.1);">
+									<td align="left"><span class="clic_technique_combat" value="armescourtes_2" label="{{system.talents_combat.armescourtes_2.label}}"><b>{{system.talents_combat.armescourtes_2.label}}</b></span></td>
+									<td><input class="comb" type="text" name="system.talents_combat.armescourtes_2.score" value="{{system.talents_combat.armescourtes_2.score}}" data-dtype="Number"/></td><td><span class="clic_def" value="armescourtes_2"><input class="comb" {{#if system.talents_combat.armescourtes_2.def_actif}} style="background-color: green;"{{/if}} readonly type="text" name="system.talents_combat.armescourtes_2.def" value="{{system.talents_combat.armescourtes_2.def}}" data-dtype="Number"/></span></td><td>{{system.talents_combat.armescourtes_2.av0}}{{system.talents_combat.armescourtes_2.effet_ac_0_1}}{{system.talents_combat.armescourtes_2.effet_ac_0_2}}{{system.talents_combat.armescourtes_2.effet_ac_0_3}}</td><td>{{system.talents_combat.armescourtes_2.av1}}{{system.talents_combat.armescourtes_2.effet_ac_1_1}}{{system.talents_combat.armescourtes_2.effet_ac_1_2}}{{system.talents_combat.armescourtes_2.effet_ac_1_3}}</td><td>{{system.talents_combat.armescourtes_2.av2}}{{system.talents_combat.armescourtes_2.effet_ac_2_1}}{{system.talents_combat.armescourtes_2.effet_ac_2_2}}{{system.talents_combat.armescourtes_2.effet_ac_2_3}}</td><td>{{system.talents_combat.armescourtes_2.av3}}{{system.talents_combat.armescourtes_2.effet_ac_3_1}}{{system.talents_combat.armescourtes_2.effet_ac_3_2}}{{system.talents_combat.armescourtes_2.effet_ac_3_3}}</td><td>{{system.talents_combat.armescourtes_2.av4}}{{system.talents_combat.armescourtes_2.effet_ac_4_1}}{{system.talents_combat.armescourtes_2.effet_ac_4_2}}{{system.talents_combat.armescourtes_2.effet_ac_4_3}}</td style="text-align: center; vertical-align: middle;">
+								</tr>
+								{{/unless}}
+								{{/or}}
+								{{#or system.talents_combat.armeslongues_1.label system.combat_large}}
+								<tr style="background-color: rgba(255, 255, 255, 0.1);" >
+									<td {{#unless (courtMetrage)}} rowspan="2"{{/unless}} class="rotation180"><font size="0.5"><b>Armes longues</b></font></td>
+									<td align="left"><span class="clic_technique_combat" value="armeslongues_1" label="{{system.talents_combat.armeslongues_1.label}}"><b>{{system.talents_combat.armeslongues_1.label}}</b></span></td>
+									<td><input class="comb" type="text" name="system.talents_combat.armeslongues_1.score" value="{{system.talents_combat.armeslongues_1.score}}" data-dtype="Number"/></td><td><span class="clic_def" value="armeslongues_1"><input class="comb" {{#if system.talents_combat.armeslongues_1.def_actif}} style="background-color: green;"{{/if}} readonly type="text" name="system.talents_combat.armeslongues_1.def" value="{{system.talents_combat.armeslongues_1.def}}" data-dtype="Number"/></span></td><td>{{system.talents_combat.armeslongues_1.av0}}{{system.talents_combat.armeslongues_1.effet_ac_0_1}}{{system.talents_combat.armeslongues_1.effet_ac_0_2}}{{system.talents_combat.armeslongues_1.effet_ac_0_3}}</td><td>{{system.talents_combat.armeslongues_1.av1}}{{system.talents_combat.armeslongues_1.effet_ac_1_1}}{{system.talents_combat.armeslongues_1.effet_ac_1_2}}{{system.talents_combat.armeslongues_1.effet_ac_1_3}}</td><td>{{system.talents_combat.armeslongues_1.av2}}{{system.talents_combat.armeslongues_1.effet_ac_2_1}}{{system.talents_combat.armeslongues_1.effet_ac_2_2}}{{system.talents_combat.armeslongues_1.effet_ac_2_3}}</td><td>{{system.talents_combat.armeslongues_1.av3}}{{system.talents_combat.armeslongues_1.effet_ac_3_1}}{{system.talents_combat.armeslongues_1.effet_ac_3_2}}{{system.talents_combat.armeslongues_1.effet_ac_3_3}}</td><td>{{system.talents_combat.armeslongues_1.av4}}{{system.talents_combat.armeslongues_1.effet_ac_4_1}}{{system.talents_combat.armeslongues_1.effet_ac_4_2}}{{system.talents_combat.armeslongues_1.effet_ac_4_3}}</td style="text-align: center; vertical-align: middle;">
+									<!-- <td>{{#if system.talents_combat.armeslongues_1.label}}<input type="checkbox" checked id="btn_al1"><label for="btn_al1"></label>{{/if}}</td> -->
+								</tr>
+								{{#unless (courtMetrage)}}
+								<tr style="background-color: rgba(255, 255, 255, 0.1);">
+									<td align="left"><span class="clic_technique_combat" value="armeslongues_2" label="{{system.talents_combat.armeslongues_2.label}}"><b>{{system.talents_combat.armeslongues_2.label}}</b></span></td>
+									<td><input class="comb" type="text" name="system.talents_combat.armeslongues_2.score" value="{{system.talents_combat.armeslongues_2.score}}" data-dtype="Number"/></td><td><span class="clic_def" value="armeslongues_2"><input class="comb" {{#if system.talents_combat.armeslongues_2.def_actif}} style="background-color: green;"{{/if}} readonly type="text" name="system.talents_combat.armeslongues_2.def" value="{{system.talents_combat.armeslongues_2.def}}" data-dtype="Number"/></span></td><td>{{system.talents_combat.armeslongues_2.av0}}{{system.talents_combat.armeslongues_2.effet_ac_0_1}}{{system.talents_combat.armeslongues_2.effet_ac_0_2}}{{system.talents_combat.armeslongues_2.effet_ac_0_3}}</td><td>{{system.talents_combat.armeslongues_2.av1}}{{system.talents_combat.armeslongues_2.effet_ac_1_1}}{{system.talents_combat.armeslongues_2.effet_ac_1_2}}{{system.talents_combat.armeslongues_2.effet_ac_1_3}}</td><td>{{system.talents_combat.armeslongues_2.av2}}{{system.talents_combat.armeslongues_2.effet_ac_2_1}}{{system.talents_combat.armeslongues_2.effet_ac_2_2}}{{system.talents_combat.armeslongues_2.effet_ac_2_3}}</td><td>{{system.talents_combat.armeslongues_2.av3}}{{system.talents_combat.armeslongues_2.effet_ac_3_1}}{{system.talents_combat.armeslongues_2.effet_ac_3_2}}{{system.talents_combat.armeslongues_2.effet_ac_3_3}}</td><td>{{system.talents_combat.armeslongues_2.av4}}{{system.talents_combat.armeslongues_2.effet_ac_4_1}}{{system.talents_combat.armeslongues_2.effet_ac_4_2}}{{system.talents_combat.armeslongues_2.effet_ac_4_3}}</td style="text-align: center; vertical-align: middle;">
+									<!-- <td>{{#if system.talents_combat.armeslongues_2.label}}<input type="checkbox" checked id="btn_al2"><label for="btn_al2"></label>{{/if}}</td> -->
+								</tr>
+								{{/unless}}
+								{{/or}}
+								{{#or system.talents_combat.lancer_1.label system.combat_large}}
+								<tr style="background-color: rgba(0, 0, 0, 0.1);">
+									<td {{#unless (courtMetrage)}} rowspan="2"{{/unless}} class="rotation180"><font size="0.5"><b>Armes de lancer</b></font></td>
+									<td align="left"><span class="clic_technique_combat" value="lancer_1" label="{{system.talents_combat.lancer_1.label}}">{{#ifequal system.talents_combat.lancer_1.quantity 0}}<s>{{/ifequal}}{{system.talents_combat.lancer_1.label}}{{#ifequal system.talents_combat.lancer_1.quantity 0}}</s>{{/ifequal}}</span>{{#if system.talents_combat.lancer_1.label}}<br><i class="fa fa fa-caret-right"></i> {{system.talents_combat.lancer_1.quantity}}{{/if}}</td>
+									<td><input class="comb" type="text" name="system.talents_combat.lancer_1.score" value="{{system.talents_combat.lancer_1.score}}" data-dtype="Number"/></td><td><span class="clic_def"  value="lancer_1"><input class="comb" {{#if system.talents_combat.lancer_1.def_actif}} style="background-color: green;"{{/if}} readonly type="text" name="system.talents_combat.lancer_1.def" value="{{system.talents_combat.lancer_1.def}}" data-dtype="Number"/></span></td><td>{{system.talents_combat.lancer_1.av0}}{{system.talents_combat.lancer_1.effet_ac_0_1}}{{system.talents_combat.lancer_1.effet_ac_0_2}}{{system.talents_combat.lancer_1.effet_ac_0_3}}</td><td>{{system.talents_combat.lancer_1.av1}}{{system.talents_combat.lancer_1.effet_ac_1_1}}{{system.talents_combat.lancer_1.effet_ac_1_2}}{{system.talents_combat.lancer_1.effet_ac_1_3}}</td><td>{{system.talents_combat.lancer_1.av2}}{{system.talents_combat.lancer_1.effet_ac_2_1}}{{system.talents_combat.lancer_1.effet_ac_2_2}}{{system.talents_combat.lancer_1.effet_ac_2_3}}</td><td>{{system.talents_combat.lancer_1.av3}}{{system.talents_combat.lancer_1.effet_ac_3_1}}{{system.talents_combat.lancer_1.effet_ac_3_2}}{{system.talents_combat.lancer_1.effet_ac_3_3}}</td><td>{{system.talents_combat.lancer_1.av4}}{{system.talents_combat.lancer_1.effet_ac_4_1}}{{system.talents_combat.lancer_1.effet_ac_4_2}}{{system.talents_combat.lancer_1.effet_ac_4_3}}</td style="text-align: center; vertical-align: middle;">
+									<!-- <td>{{#if system.talents_combat.lancer_1.label}}<input type="checkbox" checked id="btn_la1"><label for="btn_la1"></label>{{/if}}</td> -->
+								</tr>
+								{{#unless (courtMetrage)}}
+								<tr style="background-color: rgba(0, 0, 0, 0.1);">
+									<td align="left"><span class="clic_technique_combat" value="lancer_2" label="{{system.talents_combat.lancer_2.label}}">{{#ifequal system.talents_combat.lancer_2.quantity 0}}<s>{{/ifequal}}{{system.talents_combat.lancer_2.label}}{{#ifequal system.talents_combat.lancer_2.quantity 0}}</s>{{/ifequal}}</span>{{#if system.talents_combat.lancer_2.label}}<br><i class="fa fa fa-caret-right"></i> {{system.talents_combat.lancer_2.quantity}}{{/if}}</td>
+									<td><input class="comb" type="text" name="system.talents_combat.lancer_2.score" value="{{system.talents_combat.lancer_2.score}}" data-dtype="Number"/></td><td><input class="comb" {{#if system.talents_combat.lancer_2.def_actif}} style="background-color: green;"{{/if}} readonly type="text" name="system.talents_combat.lancer_2.def" value="{{system.talents_combat.lancer_2.def}}" data-dtype="Number"/></span></td><td>{{system.talents_combat.lancer_2.av0}}{{system.talents_combat.lancer_2.effet_ac_0_1}}{{system.talents_combat.lancer_2.effet_ac_0_2}}{{system.talents_combat.lancer_2.effet_ac_0_3}}</td><td>{{system.talents_combat.lancer_2.av1}}{{system.talents_combat.lancer_2.effet_ac_1_1}}{{system.talents_combat.lancer_2.effet_ac_1_2}}{{system.talents_combat.lancer_2.effet_ac_1_3}}</td><td>{{system.talents_combat.lancer_2.av2}}{{system.talents_combat.lancer_2.effet_ac_2_1}}{{system.talents_combat.lancer_2.effet_ac_2_2}}{{system.talents_combat.lancer_2.effet_ac_2_3}}</td><td>{{system.talents_combat.lancer_2.av3}}{{system.talents_combat.lancer_2.effet_ac_3_1}}{{system.talents_combat.lancer_2.effet_ac_3_2}}{{system.talents_combat.lancer_2.effet_ac_3_3}}</td><td>{{system.talents_combat.lancer_2.av4}}{{system.talents_combat.lancer_2.effet_ac_4_1}}{{system.talents_combat.lancer_2.effet_ac_4_2}}{{system.talents_combat.lancer_2.effet_ac_4_3}}</td style="text-align: center; vertical-align: middle;">
+									<!-- <td>{{#if system.talents_combat.lancer_2.label}}<input type="checkbox" checked id="btn_la2"><label for="btn_la2"></label>{{/if}}</td> -->
+								</tr>
+								{{/unless}}
+								{{/or}}
+								{{#or system.talents_combat.tir_1.label system.combat_large}}
+								<tr style="background-color: rgba(255, 255, 255, 0.1);">
+									<td {{#unless (courtMetrage)}} rowspan="2"{{/unless}} class="rotation180"><font size="0.5"><b>Armes de tir</b></font></td>
+									<td align="left"><span class="clic_technique_combat" value="tir_1" label="{{system.talents_combat.tir_1.label}}"><b>{{system.talents_combat.tir_1.label}}</b><input type="hidden" name="system.talents_combat.tir_1.selection" value="" data-dtype="Number"/></span>{{#if system.talents_combat.tir_1.label}}<br><i class="fas fa-bolt"></i>{{system.talents_combat.tir_1.charge}} / <i class="fas fa-ruler-horizontal"></i> {{system.talents_combat.tir_1.portee}} m{{/if}}</td>
+									<td><input class="comb" type="text" name="system.talents_combat.tir_1.score" value="{{system.talents_combat.tir_1.score}}" data-dtype="Number"/></td><td><span class="clic_def"  value="tir_1"><input class="comb" {{#if system.talents_combat.tir_1.def_actif}} style="background-color: green;"{{/if}} readonly type="text" name="system.talents_combat.tir_1.def" value="{{system.talents_combat.tir_1.def}}" data-dtype="Number"/></span></td><td>{{system.talents_combat.tir_1.av0}}{{system.talents_combat.tir_1.effet_ac_0_1}}{{system.talents_combat.tir_1.effet_ac_0_2}}{{system.talents_combat.tir_1.effet_ac_0_3}}</td><td>{{system.talents_combat.tir_1.av1}}{{system.talents_combat.tir_1.effet_ac_1_1}}{{system.talents_combat.tir_1.effet_ac_1_2}}{{system.talents_combat.tir_1.effet_ac_1_3}}</td><td>{{system.talents_combat.tir_1.av2}}{{system.talents_combat.tir_1.effet_ac_2_1}}{{system.talents_combat.tir_1.effet_ac_2_2}}{{system.talents_combat.tir_1.effet_ac_2_3}}</td><td>{{system.talents_combat.tir_1.av3}}{{system.talents_combat.tir_1.effet_ac_3_1}}{{system.talents_combat.tir_1.effet_ac_3_2}}{{system.talents_combat.tir_1.effet_ac_3_3}}</td><td>{{system.talents_combat.tir_1.av4}}{{system.talents_combat.tir_1.effet_ac_4_1}}{{system.talents_combat.tir_1.effet_ac_4_2}}{{system.talents_combat.tir_1.effet_ac_4_3}}</td style="text-align: center; vertical-align: middle;">
+									<!-- <td>{{#if system.talents_combat.tir_1.label}}<input type="checkbox" checked id="btn_t1"><label for="btn_t1"></label>{{/if}}</td> -->
+								</tr>
+								{{#unless (courtMetrage)}}
+								<tr style="background-color: rgba(255, 255, 255, 0.1);">
+									<td align="left"><span class="clic_technique_combat" value="tir_2" label="{{system.talents_combat.tir_2.label}}"><b>{{system.talents_combat.tir_2.label}}</b><input  type="hidden" name="system.talents_combat.tir_2.selection" value="" data-dtype="Number"/></span>{{#if system.talents_combat.tir_2.label}}<br><i class="fas fa-bolt"></i>{{system.talents_combat.tir_2.charge}} / <i class="fas fa-ruler-horizontal"></i> {{system.talents_combat.tir_2.portee}} m{{/if}}</td>
+									<td><input class="comb" type="text" name="system.talents_combat.tir_2.score" value="{{system.talents_combat.tir_2.score}}" data-dtype="Number"/></td><td><span class="clic_def"  value="tir_2"><input class="comb" {{#if system.talents_combat.tir_2.def_actif}} style="background-color: green;"{{/if}} readonly type="text" name="system.talents_combat.tir_2.def" value="{{system.talents_combat.tir_2.def}}" data-dtype="Number"/></span></td><td>{{system.talents_combat.tir_2.av0}}{{system.talents_combat.tir_2.effet_ac_0_1}}{{system.talents_combat.tir_2.effet_ac_0_2}}{{system.talents_combat.tir_2.effet_ac_0_3}}</td><td>{{system.talents_combat.tir_2.av1}}{{system.talents_combat.tir_2.effet_ac_1_1}}{{system.talents_combat.tir_2.effet_ac_1_2}}{{system.talents_combat.tir_2.effet_ac_1_3}}</td><td>{{system.talents_combat.tir_2.av2}}{{system.talents_combat.tir_2.effet_ac_2_1}}{{system.talents_combat.tir_2.effet_ac_2_2}}{{system.talents_combat.tir_2.effet_ac_2_3}}</td><td>{{system.talents_combat.tir_2.av3}}{{system.talents_combat.tir_2.effet_ac_3_1}}{{system.talents_combat.tir_2.effet_ac_3_2}}{{system.talents_combat.tir_2.effet_ac_3_3}}</td><td>{{system.talents_combat.tir_2.av4}}{{system.talents_combat.tir_2.effet_ac_4_1}}{{system.talents_combat.tir_2.effet_ac_4_2}}{{system.talents_combat.tir_2.effet_ac_4_3}}</td style="text-align: center; vertical-align: middle;">
+									<!-- <td>{{#if system.talents_combat.tir_2.label}}<input type="checkbox" checked id="btn_t2"><label for="btn_t2"></label>{{/if}}</td> -->
+								</tr>
+								{{/unless}}
+								{{/or}}
+							<tfoot>
+								<tr></tr><td align="center" colspan="10">H Handicaper, A Assommer, S Sonner, R Renverser, I Immobiliser, V Vitesse<br>P Positionnement, T Tenir à distance, D Défaut de la cuirasse<span class="info_effets_speciaux" value="">&nbsp<img class="icon_info" src="systems/mega/images/info.svg"></span></td></tr>
+							</tfoot>
+					</table>
+				</div>
+				<span class="ml9">
+					<span class="letters-container">
+						<span class="letters letters-left2">Jet de Combat</span>
+						<!-- <span class="letters bang">!</span> -->
+					</span>
+					<span class="circle circle-white"></span>
+					<span class="circle circle-dark"></span>
+					<span class="circle circle-container"><span class="circle circle-dark-dashed"></span></span>
+				</span>
+				<div>
+					{{#unless (courtMetrage)}}
+					<table class="protections">
+						<thead  style="border:none;"><tr>
+							<th align="center" colspan="9"><font color="white">PROTECTIONS</th>
+						</tr>
+						</thead>
+						<td>PROTECTION</TD><td>Choc</td><td>Lame</td><td>Balle</td><td>Feu</td><td>Froid</td><td>Acide</td><td>Rayon</td>
+						<tr>
+							<td align="left"><span class="active_protection_p1" data-type="text" value="p1">{{#if system.protections.p1.selection}}<b><span title="Désactiver">{{system.protections.p1.label}}</span></b>{{else}}<span title="Activer">{{system.protections.p1.label}}{{/if}}</span></div></td>
+							<td>{{system.protections.p1.def_chocs}}</td><td>{{system.protections.p1.def_lame}}</td><td>{{system.protections.p1.def_balle}}</td><td>{{system.protections.p1.def_feu}}</td><td>{{system.protections.p1.def_froid}}</td><td>{{system.protections.p1.def_acide}}</td><td>{{system.protections.p1.def_rayon}}</td>
+							<td></td>
+						</tr>
+						<tr>
+							<td align="left"><span class="active_protection_p2" data-type="text" value="p2">{{#if system.protections.p2.selection}}<b><span title="Désactiver">{{system.protections.p2.label}}</span></b>{{else}}<span title="Activer">{{system.protections.p2.label}}{{/if}}</span></div></td>
+							<td>{{system.protections.p2.def_chocs}}</td><td>{{system.protections.p2.def_lame}}</td><td>{{system.protections.p2.def_balle}}</td><td>{{system.protections.p2.def_feu}}</td><td>{{system.protections.p2.def_froid}}</td><td>{{system.protections.p2.def_acide}}</td><td>{{system.protections.p2.def_rayon}}</td>
+							<td></td>
+						</tr>
+						<tr>
+							<td align="left"><span class="active_protection_p3" data-type="text" value="p3">{{#if system.protections.p3.selection}}<b>{{system.protections.p3.label}}</b>{{else}}{{system.protections.p3.label}}{{/if}}</span></td>
+							<td>{{system.protections.p3.def_chocs}}</td><td>{{system.protections.p3.def_lame}}</td><td>{{system.protections.p3.def_balle}}</td><td>{{system.protections.p3.def_feu}}</td><td>{{system.protections.p3.def_froid}}</td><td>{{system.protections.p3.def_acide}}</td><td>{{system.protections.p3.def_rayon}}</td>
+							<td></td>
+						</tr>
+					</table>
+					{{/unless}}
+					<table class="tablemj2">
+						<thead style="border:none;">
+						<tr>
+							<th>
+								SEQUENCE DE COMBAT
+							</th>
+						</tr>
+						</thead>
+						<tr>
+							<td>
+								<p><strong>Initiative</strong></p>
+								<ul>
+								<li>Uniquement en d&eacute;but de combat
+								<li>les personnages d&eacute;j&agrave; en position ont +2 &agrave; l'Init
+								</ul>
+							</td>
+						</tr>
+						<tr>
+							<td align="left">
+								<p><strong>Un round = Une action</strong></p>
+								<ul>
+								<li>Porter une attaque normale (arme d&eacute;j&agrave; en main)</li>
+								<li>Se d&eacute;placer d'1 ou 2&nbsp; pas puis porter imm&eacute;diatement une attaque<br> normale &agrave; -4Rg</li>
+								<li>D&eacute;gainer une arme et porter une attaque normale &agrave; -4Rg</li>
+								<li>Charger de 3 ou 4m en ligne droite, porter une attaque en force à +2Rg</li>
+								<li>Esquiver pour rompre l'engagement</li>
+								<li>Tenter une action autre (coh&eacute;rente/tient en 6-8s)</li>
+							</ul>
+						</tr>
+						<tr>
+							<td align="left">
+								<p><strong>Avantages</strong></p>
+								Un avantage peut être consommé pour :
+								<ul>
+								<li>Augmenter de +2Rg sa prochaine ATT</li>
+								<li>OU Augmenter de +1 sa prochaine DÉF</li>
+								
+							</ul>
+						</tr>
+						</thead>
+					</table>
+				</div>
+			</div>
+	     </div>
+
+		{{!-- Attributes Tab --}}
+		<div class="tab attributes" data-group="primary" data-tab="attributes"  >
+			<div class="bandeau_attributs" >
+				<div style="width:42%;"> <!--Tableaux Colonne de gauche-->
+					<table class="traits">
+						<thead style="border:none;"><tr><th align="center" colspan="6">TRAITS</th></tr></thead>
+						<tr><td align="center" colspan="2" style="border-right: 0.1rem solid; font-weight: bold; border-color: cadetblue;">ESPRIT</td><td align="center" colspan="2" style="font-weight: bold; border-right: 0.1rem solid; border-color: cadetblue;">ÉVEIL</td><td align="center" style="font-weight: bold;" colspan="2">CORPS</td></tr>
+						<tr>
+							<!-- <td align="left" style="padding-left: 4px;"><div class="tooltip_r"><span class="traits_rollable" value="vivacite"><b>{{system.caracs.vivacite.label}}</b></span><span class="tooltiptext_r">{{system.caracs.vivacite.description}}</span></div></td><td style="border-right: 0.1rem solid; border-color: cadetblue;"><input {{#if system.verouille}}disabled="disabled"{{/if}} class="level" type="text" name="system.caracs.vivacite.value" value="{{system.caracs.vivacite.value}}" data-dtype="Number" list="defaultNumbers"/></td> -->
+							<td align="left" style="padding-left: 4px;"><b><div class="tooltip_r"><span class="traits_rollable" value="vivacite">{{system.caracs.vivacite.label}}</span></b><span class="tooltiptext_r">{{system.caracs.vivacite.description}}</span></div></td><td style="border-right: 0.1rem solid; border-color: cadetblue;"><input {{#if system.verouille}}disabled="disabled"{{/if}} class="comb" type="text" name="system.caracs.vivacite.value" value="{{system.caracs.vivacite.value}}" data-dtype="Number" list="defaultNumbers"/></td>
+							<td align="left" style="padding-left: 4px;"><b><div class="tooltip_r"><span class="traits_rollable" value="sens">{{system.caracs.sens.label}}</span></b><span class="tooltiptext_r">{{system.caracs.sens.description}}</span></div></td><td style="border-right: 0.1rem solid; border-color: cadetblue;"><input {{#if system.verouille}}disabled="disabled"{{/if}} class="comb" type="text" name="system.caracs.sens.value" value="{{system.caracs.sens.value}}" data-dtype="Number" list="defaultNumbers"/></td>
+							<td align="left" style="padding-left: 4px;"><b><div class="tooltip_r"><span class="traits_rollable" value="adresse">{{system.caracs.adresse.label}}</span></b><span class="tooltiptext_r">{{system.caracs.adresse.description}}</span></div></div></td><td><input {{#if system.verouille}}disabled="disabled"{{/if}} class="comb" type="text" name="system.caracs.adresse.value" value="{{system.caracs.adresse.value}}" data-dtype="Number" list="defaultNumbers"/></td>
+						</tr>
+						<tr>
+							<td align="left" style="padding-left: 4px;"><b><div class="tooltip_r"><span class="traits_rollable" value="reflexion">{{system.caracs.reflexion.label}}</span></b><span class="tooltiptext_r">{{system.caracs.reflexion.description}}</span></div></td><td style="border-right: 0.1rem solid; border-color: cadetblue;"><input {{#if system.verouille}}disabled="disabled"{{/if}} class="comb" type="text" name="system.caracs.reflexion.value" value="{{system.caracs.reflexion.value}}" data-dtype="Number" list="defaultNumbers"/></td>
+							<td align="left" style="padding-left: 4px;"><b><div class="tooltip_r"><span class="traits_rollable" value="ardence">{{system.caracs.ardence.label}}</span></b><span class="tooltiptext_r">{{system.caracs.ardence.description}}</span></div></td><td style="border-right: 0.1rem solid; border-color: cadetblue;"><input {{#if system.verouille}}disabled="disabled"{{/if}} class="comb" type="text" name="system.caracs.ardence.value" value="{{system.caracs.ardence.value}}" data-dtype="Number" list="defaultNumbers"/></td>
+							<td align="left" style="padding-left: 4px;"><b><div class="tooltip_r"><span class="traits_rollable" value="force">{{system.caracs.force.label}}</span></b><span class="tooltiptext_r">{{system.caracs.force.description}}</span></div></td><td><input {{#if system.verouille}}disabled="disabled"{{/if}} class="comb" type="text" name="system.caracs.force.value" value="{{system.caracs.force.value}}" data-dtype="Number" list="defaultNumbers"/></td>
+						</tr>
+						<tr>
+							<td align="left" style="padding-left: 4px;"><b><div class="tooltip_r"><span class="traits_rollable" value="caractere">{{system.caracs.caractere.label}}</span></b><span class="tooltiptext_r">{{system.caracs.caractere.description}}</span></div></td><td style="border-right: 0.1rem solid; border-color: cadetblue;"><input {{#if system.verouille}}disabled="disabled"{{/if}} class="comb" type="text" name="system.caracs.caractere.value" value="{{system.caracs.caractere.value}}" data-dtype="Number" list="defaultNumbers"/></td>
+							<td align="left" style="padding-left: 4px;"><b><div class="tooltip_r"><span class="traits_rollable" value="resonnance">{{system.caracs.resonnance.label}}</span></b><span class="tooltiptext_r">{{system.caracs.resonnance.description}}</span></div></td><td style="border-right: 0.1rem solid; border-color: cadetblue;"><input {{#if system.verouille}}disabled="disabled"{{/if}} class="comb" type="text" name="system.caracs.resonnance.value" value="{{system.caracs.resonnance.value}}" data-dtype="Number" list="defaultNumbers"/></td>
+							<td align="left" style="padding-left: 4px;"><b><div class="tooltip_r"><span class="traits_rollable" value="endurance">{{system.caracs.endurance.label}}</span></b><span class="tooltiptext_r">{{system.caracs.endurance.description}}</span></div></td><td><input {{#if system.verouille}}disabled="disabled"{{/if}} class="comb" type="text" name="system.caracs.endurance.value" value="{{system.caracs.endurance.value}}" data-dtype="Number" list="defaultNumbers"/></td>
+						</tr>
+						<!-- <tfoot> -->
+							<tr>
+							<td style="text-align:center" colspan="6">Pts Ardence 
+								<input style="color:rgba(25 5, 255, 255, 0.8)" class="comb" type="text" name="system.pts_ardence.value" value="{{system.pts_ardence.value}}" data-dtype="Number"/>/<input {{#if system.verouille}}disabled="disabled"{{/if}} style="color:rgba(255, 255, 255, 0.8)" class="comb" type="text" name="system.pts_ardence.max" value="{{system.pts_ardence.max}}" data-dtype="Number"/>
+	
+								&nbsp&nbsp&nbsp&nbsp{{#ifequal system.type_acteur "MEGA"}}Pts Réson.<input style="color:rgba(255, 255, 255, 0.8)" class="comb" type="text" name="system.pts_resonnance.value" value="{{system.pts_resonnance.value}}" data-dtype="Number"/>/<input {{#if system.verouille}}disabled="disabled"{{/if}} style="color:rgba(255, 255, 255, 0.8)" class="comb" type="text" name="system.pts_resonnance.max" value="{{system.pts_resonnance.max}}" data-dtype="Number"/>{{/ifequal}}
+							</td>
+							</tr>
+						<!-- </tfoot> -->
+					</table>
+					{{#ifequal system.type_acteur "MEGA"}}
+					<center><table class="pouvoir" style="width:80%;">
+					<thead style="border:none;"><tr><th align="center" colspan="9">POUVOIRS PSI et MEGA</th></tr></thead>
+					<tr>
+					<td style="width:180px;" class="pouvoir">{{#if system.pouvoirs.pouvoir_psi_1.label}}<span class="pouvoir_psi" data-type="pouvoir_psi" value="pouvoir_psi">{{/if}}<b>
+						{{#if system.pouvoirs.pouvoir_psi_1.label}}
+						{{system.pouvoirs.pouvoir_psi_1.label}}
+					{{else}}
+						{{#ifequal system.sphere.value "Vivant"}}
+						<span style="color:#a1a1a1 ">CHAKRAS</span>
+						{{/ifequal}}
+						{{#ifequal system.sphere.value "Relations"}}
+							<span style="color: gray;">TÉLÉPATHIE</span>
+						{{/ifequal}}
+						{{#ifequal system.sphere.value "Invisible"}}
+							<span style="color: gray;">PRÉSENCE D'ESPRIT</span>
+						{{/ifequal}}
+						{{#ifequal system.sphere.value "Logique"}}
+							<span style="color: gray;">FLUX DE NEXUS</span>
+						{{/ifequal}}
+						{{#ifequal system.sphere.value "Matière"}}
+							<span style="color: gray;">TÉLÉKINÉSIE</span>
+						{{/ifequal}}					
+					{{/if}}
+					</b></span>{{#if system.pouvoirs.pouvoir_psi_1.label}}<span class="info_pouvoir" value="info_pouvoir_psi_1">&nbsp<img class="icon_info" src="systems/mega/images/info.svg"></span>{{/if}}</td><td style="width:30%; font-weight: bold;">d<input {{#if system.verouille}}disabled="disabled" style="text-align:left;"{{else}}style="text-align:center;"{{/if}} class="comb" type="text" name="system.pouvoirs.pouvoir_psi_1.rg" value="{{system.pouvoirs.pouvoir_psi_1.rg}}" data-dtype="text"/></td><td style="text-align:right"><span style="text-align:right">Gr.</span></td><td><input {{#if system.verouille}}disabled="disabled" style="text-align:left;"{{else}}style="text-align:center;"{{/if}} class="comb" type="text" name="system.pouvoirs.pouvoir_psi_1.grade" value="{{system.pouvoirs.pouvoir_psi_1.grade}}" data-dtype="Number"/></td>
+					</tr>
+					{{#if system.sphere2.present}}
+					<tr>
+					<td style="width:180px;" class="pouvoir">{{#if system.pouvoirs.pouvoir_psi_2.label}}<span class="pouvoir_psi" data-type="pouvoir_psi2" value="pouvoir_psi2">{{/if}}<b>
+						{{#if system.pouvoirs.pouvoir_psi_2.label}}
+						{{system.pouvoirs.pouvoir_psi_2.label}}
+					{{else}}
+						{{#ifequal system.sphere2.value "Vivant"}}
+						<span style="color:#a1a1a1 ">CHAKRAS</span>
+						{{/ifequal}}
+						{{#ifequal system.sphere2.value "Relations"}}
+							<span style="color: gray;">TÉLÉPATHIE</span>
+						{{/ifequal}}
+						{{#ifequal system.sphere2.value "Invisible"}}
+							<span style="color: gray;">PRÉSENCE D'ESPRIT</span>
+						{{/ifequal}}
+						{{#ifequal system.sphere2.value "Logique"}}
+							<span style="color: gray;">FLUX DE NEXUS</span>
+						{{/ifequal}}
+						{{#ifequal system.sphere2.value "Matière"}}
+							<span style="color: gray;">TÉLÉKINÉSIE</span>
+						{{/ifequal}}					
+					{{/if}}
+					</b></span>{{#if system.pouvoirs.pouvoir_psi_2.label}}<span class="info_pouvoir" value="info_pouvoir_psi_2">&nbsp<img class="icon_info" src="systems/mega/images/info.svg"></span>{{/if}}</td><td style="width:30%; font-weight: bold;">d<input {{#if system.verouille}}disabled="disabled" style="text-align:left;"{{else}}style="text-align:center;"{{/if}} class="comb" type="text" name="system.pouvoirs.pouvoir_psi_2.rg" value="{{system.pouvoirs.pouvoir_psi_2.rg}}" data-dtype="text"/></td><td style="text-align:right"><span style="text-align:right">Gr.</span></td><td><input {{#if system.verouille}}disabled="disabled" style="text-align:left;"{{else}}style="text-align:center;"{{/if}} class="comb" type="text" name="system.pouvoirs.pouvoir_psi_2.grade" value="{{system.pouvoirs.pouvoir_psi_2.grade}}" data-dtype="Number"/></td>
+					</tr>
+					{{/if}}
+					<tr>
+						<td style="width:180px;" class="pouvoir">{{#if system.pouvoirs.transit.label}}<span class="pouvoir_psi" data-type="Transit" value="pouvoir_transit">{{/if}}<b>
+							{{#if system.pouvoirs.pouvoir_transit.label}}
+							<span class="pouvoir_rollable" data-type="Transit" value="{{system.pouvoirs.pouvoir_transit.rg}}">{{system.pouvoirs.pouvoir_transit.label}}</span>
+						{{else}}	
+						<span style="color: gray;">TRANSIT</span>		
+						{{/if}}
+						</b></span>{{#if system.pouvoirs.pouvoir_transit.label}}<span class="info_pouvoir" value="info_pouvoir_transit">&nbsp<img class="icon_info" src="systems/mega/images/info.svg"></span>{{/if}}</td><td style="width:30%; font-weight: bold;">d<input {{#if system.verouille}}disabled="disabled" style="text-align:left;"{{else}}style="text-align:center;"{{/if}} class="comb" type="text" name="system.pouvoirs.pouvoir_transit.rg" value="{{system.pouvoirs.pouvoir_transit.rg}}" data-dtype="text"/></td><td style="text-align:right"><span style="text-align:right">Gr.</span></td><td><input {{#if system.verouille}}disabled="disabled" style="text-align:left;"{{else}}style="text-align:center;"{{/if}} class="comb" type="text" name="system.pouvoirs.pouvoir_transit.grade" value="{{system.pouvoirs.pouvoir_transit.grade}}" data-dtype="Number"/></td>
+						</tr>
+						<tr>
+							<td style="width:180px;" class="pouvoir">{{#if system.pouvoirs.transfert.label}}<span class="pouvoir_psi" data-type="Transfert" value="pouvoir_transfert">{{/if}}<b>
+								{{#if system.pouvoirs.pouvoir_transfert.label}}
+								<span class="pouvoir_rollable" data-type="Transfert" value="{{system.pouvoirs.pouvoir_transfert.rg}}">{{system.pouvoirs.pouvoir_transfert.label}}</span>
+							{{else}}	
+							<span style="color: gray;">TRANSFERT</span>		
+							{{/if}}
+							</b></span>{{#if system.pouvoirs.pouvoir_transfert.label}}<span class="info_pouvoir" value="info_pouvoir_transfert">&nbsp<img class="icon_info" src="systems/mega/images/info.svg"></span>{{/if}}</td><td style="width:30%; font-weight: bold;">d<input {{#if system.verouille}}disabled="disabled" style="text-align:left;"{{else}}style="text-align:center;"{{/if}} class="comb" type="text" name="system.pouvoirs.pouvoir_transfert.rg" value="{{system.pouvoirs.pouvoir_transfert.rg}}" data-dtype="text"/></td><td style="text-align:right"><span style="text-align:right">Gr.</span></td><td><input {{#if system.verouille}}disabled="disabled" style="text-align:left;"{{else}}style="text-align:center;"{{/if}} class="comb" type="text" name="system.pouvoirs.pouvoir_transfert.grade" value="{{system.pouvoirs.pouvoir_transfert.grade}}" data-dtype="Number"/></td>
+							</tr>		
+					</table>
+					{{/ifequal}}
+					{{#unless (courtMetrage)}}
+					<table class="spes2" >
+						<thead style="border:none;"><tr ><th style="text-align:center;"  colspan="3" >SPES</th></tr></thead>
+						<tr>
+						<!-- <td>1.</td><td><input class="spes" {{#if system.verouille}}disabled="disabled"{{/if}} type="text" name="system.spe1.value" value="{{system.spe1.value}}"  placeholder="............................................................................................................................................................................"/></td><td align="center">+<input {{#if system.verouille}}disabled="disabled"{{/if}} class="comb" type="text" name="system.rg_spe_1.value" value="{{system.rg_spe_1.value}}" data-dtype="Number"/></td> -->
+						<!-- <td>1.</td><td style="text-align:left">{{#if system.verouille}}<div class="tooltip_spe" value="spe1|{{system.spe1.value}}"><b>{{system.spe1.value}}</b><span class="tooltiptext_r">{{system.spe1.description}}</span></div>{{else}}<input class="spes" type="text" name="system.spe1.value" value="{{system.spe1.value}}"  placeholder="............................................................................................................................................................................"/>{{/if}}</td><td align="center">+<input {{#if system.verouille}}disabled="disabled"{{/if}} class="comb" type="text" name="system.rg_spe_1.value" value="{{system.rg_spe_1.value}}" data-dtype="Number"/></td> -->
+						<!-- <td>1.</td><td style="text-align:left">{{#if system.verouille}}<div class="tooltip_spe" value="spe1|{{system.spe1.value}}"><b>{{system.spe1.value}}</b><span class="tooltiptext_r">{{system.spe1.description}}</span></div>{{else}}<div class="autocomplete" style="width:300px"><input class="spes" type="text" name="system.spe1.value" value="{{system.spe1.value}}"  placeholder="............................................................................................................................................................................"/></div>{{/if}}</td><td align="center">+<input {{#if system.verouille}}disabled="disabled"{{/if}} class="comb" type="text" name="system.rg_spe_1.value" value="{{system.rg_spe_1.value}}" data-dtype="Number"/></td> -->
+						<td >1.</td><td style="text-align:left; width: 300px; max-width: 300px;">
+							{{#unless system.verouille}}
+							<input class="spes_edit	 autoselect" list="spes" id="spes-input" name="system.spe1.value" value="{{system.spe1.value}}" placeholder="Sélectionnez une SPÉ" style="max-width: 280px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+  							<datalist id="spes"></datalist>
+							{{else}}
+							<!-- <div class="tooltip_spe" value="spe1|{{system.spe1.value}}"><b><input class="spes" style="font-family:'MEGA';cursor:inherit;" readonly name="system.spe1.value" value="{{system.spe1.value}}"></b>{{#ifequal system.spe1.value ""}}{{else}}<span class="tooltiptext_r"><b>{{system.spe1.value}}</b><br>{{system.spe1.description}}</span>{{/ifequal}}</div> -->
+							<span class="tooltip_spe" value="spe1|{{system.spe1.value}}" style="position: relative;"><font style="font-size: 1.2em; display: inline-block; max-width: 280px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{system.spe1.value}}</font>{{#ifequal system.spe1.value ""}}{{else}}<span class="tooltiptext_r"><b>{{system.spe1.value}}</b><br>{{system.spe1.description}}</span>{{/ifequal}}</span>
+							{{/unless}}	
+						</td><td align="center">+<input {{#if system.verouille}}disabled="disabled"{{/if}} class="comb" type="text" name="system.rg_spe_1.value" value="{{system.rg_spe_1.value}}" data-dtype="Number"/></td>
+						</tr>
+						<tr>
+						<!-- <td>2.</td><td style="text-align:left">{{#if system.verouille}}<div class="tooltip_spe" value="spe2|{{system.spe2.value}}"><b>{{system.spe2.value}}</b><span class="tooltiptext_r">{{system.spe2.description}}</span></div>{{else}}<div class="autocomplete" style="width:300px"><input class="spes" type="text" name="system.spe2.value" value="{{system.spe2.value}}"  placeholder="............................................................................................................................................................................"/></div>{{/if}}</td><td align="center">+<input {{#if system.verouille}}disabled="disabled"{{/if}} class="comb" type="text" name="system.rg_spe_2.value" value="{{system.rg_spe_2.value}}" data-dtype="Number"/></td> -->
+						<td>2.</td><td style="text-align:left; width: 300px; max-width: 300px;">
+							{{#unless system.verouille}}
+							<input class="spes_edit autoselect" list="spes" id="spes-input" name="system.spe2.value" value="{{system.spe2.value}}" placeholder="Sélectionnez une SPÉ" style="max-width: 280px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+  							<datalist id="spes"></datalist>
+							{{else}}
+							<div class="tooltip_spe" value="spe2|{{system.spe2.value}}" style="position: relative;"><font style="font-size: 1.2em; display: inline-block; max-width: 280px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{system.spe2.value}}</font>{{#ifequal system.spe2.value ""}}{{else}}<span class="tooltiptext_r"><b>{{system.spe2.value}}</b><br>{{system.spe2.description}}</span>{{/ifequal}}</div>
+							{{/unless}}
+						</td><td align="center">+<input {{#if system.verouille}}disabled="disabled"{{/if}} class="comb" type="text" name="system.rg_spe_2.value" value="{{system.rg_spe_2.value}}" data-dtype="Number"/></td>
+						</tr>
+						<tr>
+							<td>3.</td><td style="text-align:left; width: 300px; max-width: 300px;">
+								{{#unless system.verouille}}
+								<input class="spes_edit autoselect" list="spes" id="spes-input" name="system.spe3.value" value="{{system.spe3.value}}" placeholder="Sélectionnez une SPÉ" style="max-width: 280px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+								  <datalist id="spes"></datalist>
+								{{else}}
+								<div class="tooltip_spe" value="spe3|{{system.spe3.value}}" style="position: relative;"><font style="font-size: 1.2em; display: inline-block; max-width: 280px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{system.spe3.value}}</font>{{#ifequal system.spe3.value ""}}{{else}}<span class="tooltiptext_r"><b>{{system.spe3.value}}</b><br>{{system.spe3.description}}</span>{{/ifequal}}</div>
+								{{/unless}}
+							</td><td align="center">+<input {{#if system.verouille}}disabled="disabled"{{/if}} class="comb" type="text" name="system.rg_spe_3.value" value="{{system.rg_spe_3.value}}" data-dtype="Number"/></td>
+						</tr>
+						<tr>
+							<td>4.</td><td style="text-align:left; width: 300px; max-width: 300px;">
+								{{#unless system.verouille}}
+								<input class="spes_edit autoselect" list="spes" id="spes-input" name="system.spe4.value" value="{{system.spe4.value}}" placeholder="Sélectionnez une SPÉ" style="max-width: 280px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+								  <datalist id="spes"></datalist>
+								{{else}}
+								<div class="tooltip_spe" value="spe4|{{system.spe4.value}}" style="position: relative;"><font style="font-size: 1.2em; display: inline-block; max-width: 280px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{system.spe4.value}}</font>{{#ifequal system.spe4.value ""}}{{else}}<span class="tooltiptext_r"><b>{{system.spe4.value}}</b><br>{{system.spe4.description}}</span>{{/ifequal}}</div>
+								{{/unless}}
+							</td><td align="center">+<input {{#if system.verouille}}disabled="disabled"{{/if}} class="comb" type="text" name="system.rg_spe_4.value" value="{{system.rg_spe_4.value}}" data-dtype="Number"/></td>
+						</tr>
+						<tr>
+							<td>5.</td><td style="text-align:left; width: 300px; max-width: 300px;">
+								{{#unless system.verouille}}
+								<input class="spes_edit autoselect" list="spes" id="spes-input" name="system.spe5.value" value="{{system.spe5.value}}" placeholder="Sélectionnez une SPÉ" style="max-width: 280px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+								  <datalist id="spes"></datalist>
+								{{else}}
+								<div class="tooltip_spe" value="spe5|{{system.spe5.value}}" style="position: relative;"><font style="font-size: 1.2em; display: inline-block; max-width: 280px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{system.spe5.value}}</font>{{#ifequal system.spe5.value ""}}{{else}}<span class="tooltiptext_r"><b>{{system.spe5.value}}</b><br>{{system.spe5.description}}</span>{{/ifequal}}</div>
+								{{/unless}}
+							</td><td align="center">+<input {{#if system.verouille}}disabled="disabled"{{/if}} class="comb" type="text" name="system.rg_spe_5.value" value="{{system.rg_spe_5.value}}" data-dtype="Number"/></td>
+						</tr>
+						<tr>
+							<td>6.</td><td style="text-align:left; width: 300px; max-width: 300px;">
+								{{#unless system.verouille}}
+								<input class="spes_edit autoselect" list="spes" id="spes-input" name="system.spe6.value" value="{{system.spe6.value}}" placeholder="Sélectionnez une SPÉ" style="max-width: 280px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+								  <datalist id="spes"></datalist>
+								{{else}}
+								<div class="tooltip_spe" value="spe6|{{system.spe6.value}}" style="position: relative;"><font style="font-size: 1.2em; display: inline-block; max-width: 280px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{system.spe6.value}}</font>{{#ifequal system.spe6.value ""}}{{else}}<span class="tooltiptext_r"><b>{{system.spe6.value}}</b><br>{{system.spe6.description}}</span>{{/ifequal}}</div>
+								{{/unless}}
+							</td><td align="center">+<input {{#if system.verouille}}disabled="disabled"{{/if}} class="comb" type="text" name="system.rg_spe_6.value" value="{{system.rg_spe_6.value}}" data-dtype="Number"/></td>
+						</tr>
+					</table>
+					{{/unless}}
+					<table class="cumul">
+						<thead  style="border:none;"><tr><th align="center" colspan="4">CUMUL et DÉFIS</th></tr></thead>
+						<tr>
+							<td><span><meter style="width: 260px;" value="{{system.cumul_defi.value}}"  min="{{system.cumul_defi.min}}" max="{{system.cumul_defi.max}}"></meter></span></td>
+							<td ><input type="text" name="system.cumul_defi.value" value="{{system.cumul_defi.value}}" data-dtype="Number"/></td>
+							<td>/</td>
+							<td ><input type="text" name="system.cumul_defi.max" value="{{system.cumul_defi.max}}" data-dtype="Number"/></td></tr>
+					</table>
+					<!-- {{#unless (courtMetrage)}}
+					<table class="equipement" style="border:none; width:100%;box-shadow: -1px 2px 5px 1px rgba(0, 0, 0, 0.7); ">
+						<thead><tr><td align="center">STOCK de POINTS XP<span class="infoXP" value="transfert">&nbsp<img class="icon_info" src="systems/mega/images/info.svg"></span></td><td><input {{#if system.verouille}}disabled="disabled"{{/if}} class="traits" type="text" name="system.experience.value" value="{{system.experience.value}}" data-dtype="Number"/></td></tr></thead>
+					</table>
+					{{/unless}} -->
+									
+				</div>
+					<span class="ml8">
+						<span class="letters-container">
+							<span class="letters letters-left">Jet de Talent</span>
+							<span class="letters bang">!</span>
+						</span>
+						<span class="circle circle-white"></span>
+						<span class="circle circle-dark"></span>
+						<span class="circle circle-container"><span class="circle circle-dark-dashed"></span></span>
+					</span>
+				  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/2.0.2/anime.min.js"></script>
+
+				<!--Tableau Domaines et Talents-->
+				<div>
+
+					<table class="talents">
+						<thead  style="border:none;"><tr><th align="center" colspan="6">DOMAINES et TALENTS<span class="info_talents" value="talents">&nbsp<img class="icon_info" src="systems/mega/images/info.svg"></span></th></tr></thead>
+						<tr> 
+						<th align="center" colspan="2">{{comp.label}}COMMUNICATION <input class="comb" {{#if system.verouille}}disabled="disabled"{{/if}} type="text" name="system.domaines.communication.value" value="{{system.domaines.communication.value}}" data-dtype="Number"/></th>
+						<th align="center"  colspan="2">{{comp.label}}PRATIQUE <input class="comb" {{#if system.verouille}}disabled="disabled"{{/if}} type="text" name="system.domaines.pratique.value" value="{{system.domaines.pratique.value}}" data-dtype="Number"/></th>
+						<th align="center"  colspan="2">{{comp.label}}CULTURE MILIEU... <input class="comb" {{#if system.verouille}}disabled="disabled"{{/if}} type="text" name="system.domaines.culture_milieux.value" value="{{system.domaines.culture_milieux.value}}" data-dtype="Number"/></font></th>
+						<tr>
+							<td align="left"><div class="tooltip"><span class="talents_rollable" value="interpreter"><b>{{system.talents.interpreter.label}}</b></span><span class="tooltiptext">{{system.talents.interpreter.description}}</span></div></td>								
+							<td align="center">{{#if system.verouille}}{{#ifequal system.talents.interpreter.value 99}}X{{else}}<input disabled="disabled" class="comb" type="text" name="system.talents.interpreter.value" value="{{system.talents.interpreter.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb" type="text" name="system.talents.interpreter.value" value="{{system.talents.interpreter.value}}" data-dtype="Number" />{{/if}}</td>
+							<td align="left"><div class="tooltip"><span class="talents_rollable" value="observer"><b>{{system.talents.observer.label}}</b></span><span class="tooltiptext">{{system.talents.observer.description}}</span></div></td>	
+							<td align="center">{{#if system.verouille}}{{#ifequal system.talents.observer.value 99}}X{{else}}<input disabled="disabled" class="comb" type="text" name="system.talents.observer.value" value="{{system.talents.observer.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb" type="text" name="system.talents.observer.value" value="{{system.talents.observer.value}}" data-dtype="Number" />{{/if}}</td>
+							<td align="left"><div class="tooltip"><span class="talents_rollable" value="habites"><b>{{system.talents.habites.label}}</b></span><span class="tooltiptext">{{system.talents.habites.description}}</span></div></td>	
+							<td align="center">{{#if system.verouille}}{{#ifequal system.talents.habites.value 99}}X{{else}}<input disabled="disabled" class="comb" type="text" name="system.talents.habites.value" value="{{system.talents.habites.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb" type="text" name="system.talents.habites.value" value="{{system.talents.habites.value}}" data-dtype="Number" />{{/if}}</td>
+						</tr>
+						{{#unless (courtMetrage)}}
+						<tr>
+							<td align="left"><div class="tooltip"><span class="talents_rollable" value="langage_corporel">{{system.talents.langage_corporel.label}}</span><span class="tooltiptext">{{system.talents.langage_corporel.description}}</span></div></td>	
+							<td align="center">{{#if system.verouille}}{{#ifequal system.talents.langage_corporel.value 99}}X{{else}}<input disabled="disabled" class="comb" type="text" name="system.talents.langage_corporel.value" value="{{system.talents.langage_corporel.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb" type="text" name="system.talents.langage_corporel.value" value="{{system.talents.langage_corporel.value}}" data-dtype="Number" />{{/if}}</td>
+							<td align="left"><div class="tooltip"><span class="talents_rollable" value="chercher_objet">{{system.talents.chercher_objet.label}}</span><span class="tooltiptext">{{system.talents.chercher_objet.description}}</span></div></td>	
+							<td align="center">{{#if system.verouille}}{{#ifequal system.talents.chercher_objet.value 99}}X{{else}}<input disabled="disabled" class="comb" type="text" name="system.talents.chercher_objet.value" value="{{system.talents.chercher_objet.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb" type="text" name="system.talents.chercher_objet.value" value="{{system.talents.chercher_objet.value}}" data-dtype="Number" />{{/if}}</td>
+							<td align="left"><div class="tooltip"><span class="talents_rollable" value="megalopoles">{{system.talents.megalopoles.label}}</span><span class="tooltiptext">{{system.talents.megalopoles.description}}</span></div></td>	
+							<td align="center">{{#if system.verouille}}{{#ifequal system.talents.megalopoles.value 99}}X{{else}}<input disabled="disabled" class="comb" type="text" name="system.talents.megalopoles.value" value="{{system.talents.megalopoles.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb" type="text" name="system.talents.megalopoles.value" value="{{system.talents.megalopoles.value}}" data-dtype="Number" />{{/if}}</td>
+						</tr>
+						
+						<tr>
+							<td align="left"><div class="tooltip"><span class="talents_rollable" value="codes">{{system.talents.codes.label}}</span><span class="tooltiptext">{{system.talents.codes.description}}</span></div></td>	
+							<td align="center">{{#if system.verouille}}{{#ifequal system.talents.codes.value 99}}X{{else}}<input disabled="disabled" class="comb" type="text" name="system.talents.codes.value" value="{{system.talents.codes.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb" type="text" name="system.talents.codes.value" value="{{system.talents.codes.value}}" data-dtype="Number" />{{/if}}</td>
+							<td align="left"><div class="tooltip"><span class="talents_rollable" value="remarquer_detail">{{system.talents.remarquer_detail.label}}</span><span class="tooltiptext">{{system.talents.remarquer_detail.description}}</span></div></td>	
+							<td align="center">{{#if system.verouille}}{{#ifequal system.talents.remarquer_detail.value 99}}X{{else}}<input disabled="disabled" class="comb" type="text" name="system.talents.remarquer_detail.value" value="{{system.talents.remarquer_detail.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb" type="text" name="system.talents.remarquer_detail.value" value="{{system.talents.remarquer_detail.value}}" data-dtype="Number" />{{/if}}</td>
+							<td align="left"><div class="tooltip"><span class="talents_rollable" value="cites">{{system.talents.cites.label}}</span><span class="tooltiptext">{{system.talents.cites.description}}</span></div></td>	
+							<td align="center">{{#if system.verouille}}{{#ifequal system.talents.cites.value 99}}X{{else}}<input disabled="disabled" class="comb" type="text" name="system.talents.cites.value" value="{{system.talents.cites.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb" type="text" name="system.talents.cites.value" value="{{system.talents.cites.value}}" data-dtype="Number" />{{/if}}</td>
+						</tr>
+
+						<tr>
+							<td align="left"><div class="tooltip"><span class="talents_rollable" value="expressions_artistiques">{{system.talents.expressions_artistiques.label}}</span><span class="tooltiptext">{{system.talents.expressions_artistiques.description}}</span></div></td>	
+							<td align="center">{{#if system.verouille}}{{#ifequal system.talents.expressions_artistiques.value 99}}X{{else}}<input disabled="disabled" class="comb" type="text" name="system.talents.expressions_artistiques.value" value="{{system.talents.expressions_artistiques.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb" type="text" name="system.talents.expressions_artistiques.value" value="{{system.talents.expressions_artistiques.value}}" data-dtype="Number" />{{/if}}</td>
+							<td align="left"><div class="tooltip"><span class="talents_rollable" value="veille_vigilance">{{system.talents.veille_vigilance.label}}</span><span class="tooltiptext">{{system.talents.veille_vigilance.description}}</span></div></td>	
+							<td align="center">{{#if system.verouille}}{{#ifequal system.talents.veille_vigilance.value 99}}X{{else}}<input disabled="disabled" class="comb" type="text" name="system.talents.veille_vigilance.value" value="{{system.talents.veille_vigilance.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb" type="text" name="system.talents.veille_vigilance.value" value="{{system.talents.veille_vigilance.value}}" data-dtype="Number" />{{/if}}</td>
+							<td align="left"><div class="tooltip"><span class="talents_rollable" value="rural">{{system.talents.rural.label}}</span><span class="tooltiptext">{{system.talents.rural.description}}</span></div></td>	
+							<td align="center">{{#if system.verouille}}{{#ifequal system.talents.rural.value 99}}X{{else}}<input disabled="disabled" class="comb" type="text" name="system.talents.rural.value" value="{{system.talents.rural.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb" type="text" name="system.talents.rural.value" value="{{system.talents.rural.value}}" data-dtype="Number" />{{/if}}</td>
+						</tr>
+						{{/unless}}
+						<tr>
+							<td align="left"><div class="tooltip"><span class="talents_rollable" value="paraitre"><b>{{system.talents.paraitre.label}}</b></span><span class="tooltiptext">{{system.talents.paraitre.description}}</span></div></td>	
+							<td align="center">{{#if system.verouille}}{{#ifequal system.talents.paraitre.value 99}}X{{else}}<input disabled="disabled" class="comb" type="text" name="system.talents.paraitre.value" value="{{system.talents.paraitre.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb" type="text" name="system.talents.paraitre.value" value="{{system.talents.paraitre.value}}" data-dtype="Number" />{{/if}}</td>
+							<td align="left"><div class="tooltip"><span class="talents_rollable" value="furtivite"><b>{{system.talents.furtivite.label}}</b></span><span class="tooltiptext">{{system.talents.furtivite.description}}</span></div></td>	
+							<td align="center">{{#if system.verouille}}{{#ifequal system.talents.furtivite.value 99}}X{{else}}<input disabled="disabled" class="comb" type="text" name="system.talents.furtivite.value" value="{{system.talents.furtivite.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb" type="text" name="system.talents.furtivite.value" value="{{system.talents.furtivite.value}}" data-dtype="Number" />{{/if}}</td>
+							<td align="left"><div class="tooltip"><span class="talents_rollable" value="sauvages"><b>{{system.talents.sauvages.label}}</b></span><span class="tooltiptext">{{system.talents.sauvages.description}}</span></div></td>	
+							<td align="center">{{#if system.verouille}}{{#ifequal system.talents.sauvages.value 99}}X{{else}}<input disabled="disabled" class="comb" type="text" name="system.talents.sauvages.value" value="{{system.talents.sauvages.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb" type="text" name="system.talents.sauvages.value" value="{{system.talents.sauvages.value}}" data-dtype="Number" />{{/if}}</td>
+						</tr>
+						{{#unless (courtMetrage)}}
+						<tr>
+							<td align="left"><div class="tooltip"><span class="talents_rollable" value="bluffer_deguisement">{{system.talents.bluffer_deguisement.label}}</span><span class="tooltiptext">{{system.talents.bluffer_deguisement.description}}</span></div></td>	
+							<td align="center">{{#if system.verouille}}{{#ifequal system.talents.bluffer_deguisement.value 99}}X{{else}}<input disabled="disabled" class="comb" type="text" name="system.talents.bluffer_deguisement.value" value="{{system.talents.bluffer_deguisement.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb" type="text" name="system.talents.bluffer_deguisement.value" value="{{system.talents.bluffer_deguisement.value}}" data-dtype="Number" />{{/if}}</td>
+							<td align="left"><div class="tooltip"><span class="talents_rollable" value="agir_sans_bruit">{{system.talents.agir_sans_bruit.label}}</span><span class="tooltiptext">{{system.talents.agir_sans_bruit.description}}</span></div></td>	
+							<td align="center">{{#if system.verouille}}{{#ifequal system.talents.agir_sans_bruit.value 99}}X{{else}}<input disabled="disabled" class="comb" type="text" name="system.talents.agir_sans_bruit.value" value="{{system.talents.agir_sans_bruit.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb" type="text" name="system.talents.agir_sans_bruit.value" value="{{system.talents.agir_sans_bruit.value}}" data-dtype="Number" />{{/if}}</td>
+							<td align="left"><div class="tooltip"><span class="talents_rollable" value="foret_jungle">{{system.talents.foret_jungle.label}}</span><span class="tooltiptext">{{system.talents.foret_jungle.description}}</span></div></td>	
+							<td align="center">{{#if system.verouille}}{{#ifequal system.talents.foret_jungle.value 99}}X{{else}}<input disabled="disabled" class="comb" type="text" name="system.talents.foret_jungle.value" value="{{system.talents.foret_jungle.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb" type="text" name="system.talents.foret_jungle.value" value="{{system.talents.foret_jungle.value}}" data-dtype="Number" />{{/if}}</td>
+						</tr>
+
+						<tr>
+							<td align="left"><div class="tooltip"><span class="talents_rollable" value="impressionner">{{system.talents.impressionner.label}}</span><span class="tooltiptext">{{system.talents.impressionner.description}}</span></div></td>	
+							<td align="center">{{#if system.verouille}}{{#ifequal system.talents.impressionner.value 99}}X{{else}}<input disabled="disabled" class="comb" type="text" name="system.talents.impressionner.value" value="{{system.talents.impressionner.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb" type="text" name="system.talents.impressionner.value" value="{{system.talents.impressionner.value}}" data-dtype="Number" />{{/if}}</td>
+							<td align="left"><div class="tooltip"><span class="talents_rollable" value="se_disimuler_filer">{{system.talents.se_disimuler_filer.label}}</span><span class="tooltiptext">{{system.talents.se_disimuler_filer.description}}</span></div></td>	
+							<td align="center">{{#if system.verouille}}{{#ifequal system.talents.se_disimuler_filer.value 99}}X{{else}}<input disabled="disabled" class="comb" type="text" name="system.talents.se_disimuler_filer.value" value="{{system.talents.se_disimuler_filer.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb" type="text" name="system.talents.se_disimuler_filer.value" value="{{system.talents.se_disimuler_filer.value}}" data-dtype="Number" />{{/if}}</td>
+							<td align="left"><div class="tooltip"><span class="talents_rollable" value="savane_steppe_marecages">{{system.talents.savane_steppe_marecages.label}}</span><span class="tooltiptext">{{system.talents.savane_steppe_marecages.description}}</span></div></td>	
+							<td align="center">{{#if system.verouille}}{{#ifequal system.talents.savane_steppe_marecages.value 99}}X{{else}}<input disabled="disabled" class="comb" type="text" name="system.talents.savane_steppe_marecages.value" value="{{system.talents.savane_steppe_marecages.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb" type="text" name="system.talents.savane_steppe_marecages.value" value="{{system.talents.savane_steppe_marecages.value}}" data-dtype="Number" />{{/if}}</td>
+						</tr>
+
+						<tr>
+							<td align="left"><div class="tooltip"><span class="talents_rollable" value="paraitre_sans_interet">{{system.talents.paraitre_sans_interet.label}}</span><span class="tooltiptext">{{system.talents.paraitre_sans_interet.description}}</span></div></td>	
+							<td align="center">{{#if system.verouille}}{{#ifequal system.talents.paraitre_sans_interet.value 99}}X{{else}}<input disabled="disabled" class="comb" type="text" name="system.talents.paraitre_sans_interet.value" value="{{system.talents.paraitre_sans_interet.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb" type="text" name="system.talents.paraitre_sans_interet.value" value="{{system.talents.paraitre_sans_interet.value}}" data-dtype="Number" />{{/if}}</td>
+							<td align="left"><div class="tooltip"><span class="talents_rollable" value="camouflage">{{system.talents.camouflage.label}}</span><span class="tooltiptext">{{system.talents.camouflage.description}}</span></div></td>	
+							<td align="center">{{#if system.verouille}}{{#ifequal system.talents.camouflage.value 99}}X{{else}}<input disabled="disabled" class="comb" type="text" name="system.talents.camouflage.value" value="{{system.talents.camouflage.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb" type="text" name="system.talents.camouflage.value" value="{{system.talents.camouflage.value}}" data-dtype="Number" />{{/if}}</td>
+							<td align="left"><div class="tooltip"><span class="talents_rollable" value="desert">{{system.talents.desert.label}}</span><span class="tooltiptext">{{system.talents.desert.description}}</span></div></td>	
+							<td align="center">{{#if system.verouille}}{{#ifequal system.talents.desert.value 99}}X{{else}}<input disabled="disabled" class="comb" type="text" name="system.talents.desert.value" value="{{system.talents.desert.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb" type="text" name="system.talents.desert.value" value="{{system.talents.desert.value}}" data-dtype="Number" />{{/if}}</td>
+						</tr>
+						{{/unless}}
+						<tr>
+							<td align="left"><div class="tooltip"><span class="talents_rollable" value="persuader"><b>{{system.talents.persuader.label}}</b></span><span class="tooltiptext">{{system.talents.persuader.description}}</span></div></td>	
+							<td align="center">{{#if system.verouille}}{{#ifequal system.talents.persuader.value 99}}X{{else}}<input disabled="disabled" class="comb" type="text" name="system.talents.persuader.value" value="{{system.talents.persuader.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb" type="text" name="system.talents.persuader.value" value="{{system.talents.persuader.value}}" data-dtype="Number" />{{/if}}</td>
+							<td align="left"><div class="tooltip"><span class="talents_rollable" value="acrobaties"><b>{{system.talents.acrobaties.label}}</b></span><span class="tooltiptext">{{system.talents.acrobaties.description}}</span></div></td>	
+							<td align="center">{{#if system.verouille}}{{#ifequal system.talents.acrobaties.value 99}}X{{else}}<input disabled="disabled" class="comb" type="text" name="system.talents.acrobaties.value" value="{{system.talents.acrobaties.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb" type="text" name="system.talents.acrobaties.value" value="{{system.talents.acrobaties.value}}" data-dtype="Number" />{{/if}}</td>
+							<td align="left"><div class="tooltip"><span class="talents_rollable" value="scientechs"><b>{{system.talents.scientechs.label}}</b></span><span class="tooltiptext">{{system.talents.scientechs.description}}</span></div></td>	
+							<td align="center">{{#if system.verouille}}{{#ifequal system.talents.scientechs.value 99}}X{{else}}<input disabled="disabled" class="comb" type="text" name="system.talents.scientechs.value" value="{{system.talents.scientechs.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb" type="text" name="system.talents.scientechs.value" value="{{system.talents.scientechs.value}}" data-dtype="Number" />{{/if}}</td>
+						</tr>
+						{{#unless (courtMetrage)}}
+						<tr>
+							<td align="left"><div class="tooltip"><span class="talents_rollable" value="convaincre_expliquer">{{system.talents.convaincre_expliquer.label}}</span><span class="tooltiptext">{{system.talents.convaincre_expliquer.description}}</span></div></td>	
+							<td align="center">{{#if system.verouille}}{{#ifequal system.talents.convaincre_expliquer.value 99}}X{{else}}<input disabled="disabled" class="comb" type="text" name="system.talents.convaincre_expliquer.value" value="{{system.talents.convaincre_expliquer.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb" type="text" name="system.talents.convaincre_expliquer.value" value="{{system.talents.convaincre_expliquer.value}}" data-dtype="Number" />{{/if}}</td>
+							<td align="left"><div class="tooltip"><span class="talents_rollable" value="minutie">{{system.talents.minutie.label}}</span><span class="tooltiptext">{{system.talents.minutie.description}}</span></div></td>	
+							<td align="center">{{#if system.verouille}}{{#ifequal system.talents.minutie.value 99}}X{{else}}<input disabled="disabled" class="comb" type="text" name="system.talents.minutie.value" value="{{system.talents.minutie.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb" type="text" name="system.talents.minutie.value" value="{{system.talents.minutie.value}}" data-dtype="Number" />{{/if}}</td>
+							<td align="left"><div class="tooltip"><span class="talents_rollable" value="indus">{{system.talents.indus.label}}</span><span class="tooltiptext">{{system.talents.indus.description}}</span></div></td>	
+							<td align="center">{{#if system.verouille}}{{#ifequal system.talents.indus.value 99}}X{{else}}<input disabled="disabled" class="comb" type="text" name="system.talents.indus.value" value="{{system.talents.indus.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb" type="text" name="system.talents.indus.value" value="{{system.talents.indus.value}}" data-dtype="Number" />{{/if}}</td>
+						</tr>
+
+						<tr>
+							<td align="left"><div class="tooltip"><span class="talents_rollable" value="baratiner_tromper_culot">{{system.talents.baratiner_tromper_culot.label}}</span><span class="tooltiptext">{{system.talents.baratiner_tromper_culot.description}}</span></div></td>	
+							<td align="center">{{#if system.verouille}}{{#ifequal system.talents.baratiner_tromper_culot.value 99}}X{{else}}<input disabled="disabled" class="comb" type="text" name="system.talents.baratiner_tromper_culot.value" value="{{system.talents.baratiner_tromper_culot.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb" type="text" name="system.talents.baratiner_tromper_culot.value" value="{{system.talents.baratiner_tromper_culot.value}}" data-dtype="Number" />{{/if}}</td>
+							<td align="left"><div class="tooltip"><span class="talents_rollable" value="acrobatie">{{system.talents.acrobatie.label}}</span><span class="tooltiptext">{{system.talents.acrobatie.description}}</span></div></td>	
+							<td align="center">{{#if system.verouille}}{{#ifequal system.talents.acrobatie.value 99}}X{{else}}<input disabled="disabled" class="comb" type="text" name="system.talents.acrobatie.value" value="{{system.talents.acrobatie.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb" type="text" name="system.talents.acrobatie.value" value="{{system.talents.acrobatie.value}}" data-dtype="Number" />{{/if}}</td>
+							<td align="left"><div class="tooltip"><span class="talents_rollable" value="militaire">{{system.talents.militaire.label}}</span><span class="tooltiptext">{{system.talents.militaire.description}}</span></div></td>	
+							<td align="center">{{#if system.verouille}}{{#ifequal system.talents.militaire.value 99}}X{{else}}<input disabled="disabled" class="comb" type="text" name="system.talents.militaire.value" value="{{system.talents.militaire.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb" type="text" name="system.talents.militaire.value" value="{{system.talents.militaire.value}}" data-dtype="Number" />{{/if}}</td>
+						</tr>
+
+						<tr>
+							<td align="left"><div class="tooltip"><span class="talents_rollable" value="imposer_ses_vues">{{system.talents.imposer_ses_vues.label}}</span><span class="tooltiptext">{{system.talents.imposer_ses_vues.description}}</span></div></td>	
+							<td align="center">{{#if system.verouille}}{{#ifequal system.talents.imposer_ses_vues.value 99}}X{{else}}<input disabled="disabled" class="comb" type="text" name="system.talents.imposer_ses_vues.value" value="{{system.talents.imposer_ses_vues.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb" type="text" name="system.talents.imposer_ses_vues.value" value="{{system.talents.imposer_ses_vues.value}}" data-dtype="Number" />{{/if}}</td>
+							<td align="left"><div class="tooltip"><span class="talents_rollable" value="effort_prolonge">{{system.talents.effort_prolonge.label}}</span><span class="tooltiptext">{{system.talents.effort_prolonge.description}}</span></div></td>	
+							<td align="center">{{#if system.verouille}}{{#ifequal system.talents.effort_prolonge.value 99}}X{{else}}<input disabled="disabled" class="comb" type="text" name="system.talents.effort_prolonge.value" value="{{system.talents.effort_prolonge.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb" type="text" name="system.talents.effort_prolonge.value" value="{{system.talents.effort_prolonge.value}}" data-dtype="Number" />{{/if}}</td>
+							<td align="left"><div class="tooltip"><span class="talents_rollable" value="vaisseaux">{{system.talents.vaisseaux.label}}</span><span class="tooltiptext">{{system.talents.vaisseaux.description}}</span></div></td>	
+							<td align="center">{{#if system.verouille}}{{#ifequal system.talents.vaisseaux.value 99}}X{{else}}<input disabled="disabled" class="comb" type="text" name="system.talents.vaisseaux.value" value="{{system.talents.vaisseaux.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb" type="text" name="system.talents.vaisseaux.value" value="{{system.talents.vaisseaux.value}}" data-dtype="Number" />{{/if}}</td>
+						</tr>
+						{{/unless}}
+						<tr>
+							<td align="left"><div class="tooltip"><span class="talents_rollable" value="tisser_des_liens"><b>{{system.talents.tisser_des_liens.label}}</b></span><span class="tooltiptext">{{system.talents.tisser_des_liens.description}}</span></div></td>	
+							<td align="center">{{#if system.verouille}}{{#ifequal system.talents.tisser_des_liens.value 99}}X{{else}}<input disabled="disabled" class="comb" type="text" name="system.talents.tisser_des_liens.value" value="{{system.talents.tisser_des_liens.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb" type="text" name="system.talents.tisser_des_liens.value" value="{{system.talents.tisser_des_liens.value}}" data-dtype="Number" />{{/if}}</td>
+							<td align="left"><div class="tooltip"><span class="talents_rollable" value="manips"><b>{{system.talents.manips.label}}</b></span><span class="tooltiptext">{{system.talents.manips.description}}</span></div></td>	
+							<td align="center">{{#if system.verouille}}{{#ifequal system.talents.manips.value 99}}X{{else}}<input disabled="disabled" class="comb" type="text" name="system.talents.manips.value" value="{{system.talents.manips.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb" type="text" name="system.talents.manips.value" value="{{system.talents.manips.value}}" data-dtype="Number" />{{/if}}</td>
+							<td align="left"><div class="tooltip"><span class="talents_rollable" value="pouvoir"><b>{{system.talents.pouvoir.label}}</b></span><span class="tooltiptext">{{system.talents.pouvoir.description}}</span></div></td>	
+							<td align="center">{{#if system.verouille}}{{#ifequal system.talents.pouvoir.value 99}}X{{else}}<input disabled="disabled" class="comb" type="text" name="system.talents.pouvoir.value" value="{{system.talents.pouvoir.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb" type="text" name="system.talents.pouvoir.value" value="{{system.talents.pouvoir.value}}" data-dtype="Number" />{{/if}}</td>
+						</tr>
+						{{#unless (courtMetrage)}}
+						<tr>
+							<td align="left"><div class="tooltip"><span class="talents_rollable" value="charmer_captiver_apprivoiser">{{system.talents.charmer_captiver_apprivoiser.label}}</span><span class="tooltiptext">{{system.talents.charmer_captiver_apprivoiser.description}}</span></div></td>	
+							<td align="center">{{#if system.verouille}}{{#ifequal system.talents.charmer_captiver_apprivoiser.value 99}}X{{else}}<input disabled="disabled" class="comb" type="text" name="system.talents.charmer_captiver_apprivoiser.value" value="{{system.talents.charmer_captiver_apprivoiser.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb" type="text" name="system.talents.charmer_captiver_apprivoiser.value" value="{{system.talents.charmer_captiver_apprivoiser.value}}" data-dtype="Number" />{{/if}}</td>
+							<td align="left"><div class="tooltip"><span class="talents_rollable" value="vivant">{{system.talents.vivant.label}}</span><span class="tooltiptext">{{system.talents.vivant.description}}</span></div></td>	
+							<td align="center">{{#if system.verouille}}{{#ifequal system.talents.vivant.value 99}}X{{else}}<input disabled="disabled" class="comb" type="text" name="system.talents.vivant.value" value="{{system.talents.vivant.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb" type="text" name="system.talents.vivant.value" value="{{system.talents.vivant.value}}" data-dtype="Number" />{{/if}}</td>
+							<td align="left"><div class="tooltip"><span class="talents_rollable" value="business">{{system.talents.business.label}}</span><span class="tooltiptext">{{system.talents.business.description}}</span></div></td>	
+							<td align="center">{{#if system.verouille}}{{#ifequal system.talents.business.value 99}}X{{else}}<input disabled="disabled" class="comb" type="text" name="system.talents.business.value" value="{{system.talents.business.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb" type="text" name="system.talents.business.value" value="{{system.talents.business.value}}" data-dtype="Number" />{{/if}}</td>
+						</tr>
+
+						<tr>
+							<td align="left"><div class="tooltip"><span class="talents_rollable" value="inspirer_fidelite">{{system.talents.inspirer_fidelite.label}}</span><span class="tooltiptext">{{system.talents.inspirer_fidelite.description}}</span></div></td>	
+							<td align="center">{{#if system.verouille}}{{#ifequal system.talents.inspirer_fidelite.value 99}}X{{else}}<input disabled="disabled" class="comb" type="text" name="system.talents.inspirer_fidelite.value" value="{{system.talents.inspirer_fidelite.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb" type="text" name="system.talents.inspirer_fidelite.value" value="{{system.talents.inspirer_fidelite.value}}" data-dtype="Number" />{{/if}}</td>
+							<td align="left"><div class="tooltip"><span class="talents_rollable" value="mecanique">{{system.talents.mecanique.label}}</span><span class="tooltiptext">{{system.talents.mecanique.description}}</span></div></td>	
+							<td align="center">{{#if system.verouille}}{{#ifequal system.talents.mecanique.value 99}}X{{else}}<input disabled="disabled" class="comb" type="text" name="system.talents.mecanique.value" value="{{system.talents.mecanique.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb" type="text" name="system.talents.mecanique.value" value="{{system.talents.mecanique.value}}" data-dtype="Number" />{{/if}}</td>
+							<td align="left"><div class="tooltip"><span class="talents_rollable" value="autorites">{{system.talents.autorites.label}}</span><span class="tooltiptext">{{system.talents.autorites.description}}</span></div></td>	
+							<td align="center">{{#if system.verouille}}{{#ifequal system.talents.autorites.value 99}}X{{else}}<input disabled="disabled" class="comb" type="text" name="system.talents.autorites.value" value="{{system.talents.autorites.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb" type="text" name="system.talents.autorites.value" value="{{system.talents.autorites.value}}" data-dtype="Number" />{{/if}}</td>
+						</tr>
+
+						<tr>
+							<td align="left"><div class="tooltip"><span class="talents_rollable" value="assujettir_dompter">{{system.talents.assujettir_dompter.label}}</span><span class="tooltiptext">{{system.talents.assujettir_dompter.description}}</span></div></td>	
+							<td align="center">{{#if system.verouille}}{{#ifequal system.talents.assujettir_dompter.value 99}}X{{else}}<input disabled="disabled" class="comb" type="text" name="system.talents.assujettir_dompter.value" value="{{system.talents.assujettir_dompter.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb" type="text" name="system.talents.assujettir_dompter.value" value="{{system.talents.assujettir_dompter.value}}" data-dtype="Number" />{{/if}}</td>
+							<td align="left"><div class="tooltip"><span class="talents_rollable" value="electronique">{{system.talents.electronique.label}}</span><span class="tooltiptext">{{system.talents.electronique.description}}</span></div></td>	
+							<td align="center">{{#if system.verouille}}{{#ifequal system.talents.electronique.value 99}}X{{else}}<input disabled="disabled" class="comb" type="text" name="system.talents.electronique.value" value="{{system.talents.electronique.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb" type="text" name="system.talents.electronique.value" value="{{system.talents.electronique.value}}" data-dtype="Number" />{{/if}}</td>
+							<td align="left"><div class="tooltip"><span class="talents_rollable" value="spirituel">{{system.talents.spirituel.label}}</span><span class="tooltiptext">{{system.talents.spirituel.description}}</span></div></td>	
+							<td align="center">{{#if system.verouille}}{{#ifequal system.talents.spirituel.value 99}}X{{else}}<input disabled="disabled" class="comb" type="text" name="system.talents.spirituel.value" value="{{system.talents.spirituel.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb" type="text" name="system.talents.spirituel.value" value="{{system.talents.spirituel.value}}" data-dtype="Number" />{{/if}}</td>
+						</tr>
+						{{/unless}}
+						<tr>
+							<td align="left"><div class="tooltip"><span class="talents_rollable" value="diriger"><b>{{system.talents.diriger.label}}</b></span><span class="tooltiptext">{{system.talents.diriger.description}}</span></div></td>	
+							<td align="center">{{#if system.verouille}}{{#ifequal system.talents.diriger.value 99}}X{{else}}<input disabled="disabled" class="comb" type="text" name="system.talents.diriger.value" value="{{system.talents.diriger.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb" type="text" name="system.talents.diriger.value" value="{{system.talents.diriger.value}}" data-dtype="Number" />{{/if}}</td>
+							<td align="left"><div class="tooltip_h"><span class="talents_rollable" value="conduire"><b>{{system.talents.conduire.label}}</b></span><span class="tooltiptext_h">{{system.talents.conduire.description}}</span></div></td>	
+							<td align="center">{{#if system.verouille}}{{#ifequal system.talents.conduire.value 99}}X{{else}}<input disabled="disabled" class="comb" type="text" name="system.talents.conduire.value" value="{{system.talents.conduire.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb" type="text" name="system.talents.conduire.value" value="{{system.talents.conduire.value}}" data-dtype="Number" />{{/if}}</td>
+							<td align="left"><div class="tooltip_h"><span class="talents_rollable" value="clandestins"><b>{{system.talents.clandestins.label}}</b></span><span class="tooltiptext_h">{{system.talents.clandestins.description}}</span></div></td>	
+							<td align="center">{{#if system.verouille}}{{#ifequal system.talents.clandestins.value 99}}X{{else}}<input disabled="disabled" class="comb" type="text" name="system.talents.clandestins.value" value="{{system.talents.clandestins.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb" type="text" name="system.talents.clandestins.value" value="{{system.talents.clandestins.value}}" data-dtype="Number" />{{/if}}</td>
+						</tr>
+						{{#unless (courtMetrage)}}
+						<tr>
+							<td align="left"><div class="tooltip_h"><span class="talents_rollable" value="coordonner">{{system.talents.coordonner.label}}</span><span class="tooltiptext_h">{{system.talents.coordonner.description}}</span></div></td>	
+							<td align="center">{{#if system.verouille}}{{#ifequal system.talents.coordonner.value 99}}X{{else}}<input disabled="disabled" class="comb" type="text" name="system.talents.coordonner.value" value="{{system.talents.coordonner.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb" type="text" name="system.talents.coordonner.value" value="{{system.talents.coordonner.value}}" data-dtype="Number" />{{/if}}</td>
+							<td align="left"><div class="tooltip_h"><span class="talents_rollable" value="animal">{{system.talents.animal.label}}</span><span class="tooltiptext_h">{{system.talents.animal.description}}</span></div></td>	
+							<td align="center">{{#if system.verouille}}{{#ifequal system.talents.animal.value 99}}X{{else}}<input disabled="disabled" class="comb" type="text" name="system.talents.animal.value" value="{{system.talents.animal.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb" type="text" name="system.talents.animal.value" value="{{system.talents.animal.value}}" data-dtype="Number" />{{/if}}</td>
+							<td align="left"><div class="tooltip_h"><span class="talents_rollable" value="pegre">{{system.talents.pegre.label}}</span><span class="tooltiptext_h">{{system.talents.pegre.description}}</span></div></td>	
+							<td align="center">{{#if system.verouille}}{{#ifequal system.talents.pegre.value 99}}X{{else}}<input disabled="disabled" class="comb" type="text" name="system.talents.pegre.value" value="{{system.talents.pegre.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb" type="text" name="system.talents.pegre.value" value="{{system.talents.pegre.value}}" data-dtype="Number" />{{/if}}</td>
+						</tr>
+
+						<tr>
+							<td align="left"><div class="tooltip_h"><span class="talents_rollable" value="commander">{{system.talents.commander.label}}</span><span class="tooltiptext_h">{{system.talents.commander.description}}</span></div></td>	
+							<td align="center">{{#if system.verouille}}{{#ifequal system.talents.commander.value 99}}X{{else}}<input disabled="disabled" class="comb" type="text" name="system.talents.commander.value" value="{{system.talents.commander.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb" type="text" name="system.talents.commander.value" value="{{system.talents.commander.value}}" data-dtype="Number" />{{/if}}</td>
+							<td align="left"><div class="tooltip_h"><span class="talents_rollable" value="vehicules_legers">{{system.talents.vehicules_legers.label}}</span><span class="tooltiptext_h">{{system.talents.vehicules_legers.description}}</span></div></td>	
+							<td align="center">{{#if system.verouille}}{{#ifequal system.talents.vehicules_legers.value 99}}X{{else}}<input disabled="disabled" class="comb" type="text" name="system.talents.vehicules_legers.value" value="{{system.talents.vehicules_legers.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb" type="text" name="system.talents.vehicules_legers.value" value="{{system.talents.vehicules_legers.value}}" data-dtype="Number" />{{/if}}</td>
+							<td align="left"><div class="tooltip_h"><span class="talents_rollable" value="contestations">{{system.talents.contestations.label}}</span><span class="tooltiptext_h">{{system.talents.contestations.description}}</span></div></td>	
+							<td align="center">{{#if system.verouille}}{{#ifequal system.talents.contestations.value 99}}X{{else}}<input disabled="disabled" class="comb" type="text" name="system.talents.contestations.value" value="{{system.talents.contestations.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb" type="text" name="system.talents.contestations.value" value="{{system.talents.contestations.value}}" data-dtype="Number" />{{/if}}</td>
+						</tr>
+
+						<tr>
+							<td align="left"><div class="tooltip_h"><span class="talents_rollable" value="former">{{system.talents.former.label}}</span><span class="tooltiptext_h">{{system.talents.former.description}}</span></div></td>	
+							<td align="center">{{#if system.verouille}}{{#ifequal system.talents.former.value 99}}X{{else}}<input disabled="disabled" class="comb" type="text" name="system.talents.former.value" value="{{system.talents.former.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb" type="text" name="system.talents.former.value" value="{{system.talents.former.value}}" data-dtype="Number" />{{/if}}</td>
+							<td align="left"><div class="tooltip_h"><span class="talents_rollable" value="vehicules_lourds">{{system.talents.vehicules_lourds.label}}</span><span class="tooltiptext_h">{{system.talents.vehicules_lourds.description}}</span></div></td>	
+							<td align="center">{{#if system.verouille}}{{#ifequal system.talents.vehicules_lourds.value 99}}X{{else}}<input disabled="disabled" class="comb" type="text" name="system.talents.vehicules_lourds.value" value="{{system.talents.vehicules_lourds.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb" type="text" name="system.talents.vehicules_lourds.value" value="{{system.talents.vehicules_lourds.value}}" data-dtype="Number" />{{/if}}</td>
+							<td align="left"><div class="tooltip_h"><span class="talents_rollable" value="marge">{{system.talents.marge.label}}</span><span class="tooltiptext_h">{{system.talents.marge.description}}</span></div></td>	
+							<td align="center">{{#if system.verouille}}{{#ifequal system.talents.marge.value 99}}X{{else}}<input disabled="disabled" class="comb" type="text" name="system.talents.marge.value" value="{{system.talents.marge.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb" type="text" name="system.talents.marge.value" value="{{system.talents.marge.value}}" data-dtype="Number" />{{/if}}</td>
+						</tr>
+						{{/unless}}
+					</table>
+					{{#if (courtMetrage)}}
+					<table class="spes2" style="width:500px;">
+						<thead  style="border:none;"><tr><th align="center" colspan="3">SPES</th></tr></thead>
+						<tr>
+						<!-- <td>1.</td><td><input class="spes" {{#if system.verouille}}disabled="disabled"{{/if}} type="text" name="system.spe1.value" value="{{system.spe1.value}}"  placeholder="............................................................................................................................................................................"/></td><td align="center">+<input {{#if system.verouille}}disabled="disabled"{{/if}} class="comb" type="text" name="system.rg_spe_1.value" value="{{system.rg_spe_1.value}}" data-dtype="Number"/></td> -->
+						<!-- <td>1.</td><td style="text-align:left">{{#if system.verouille}}<div class="tooltip_spe" value="spe1|{{system.spe1.value}}"><b>{{system.spe1.value}}</b><span class="tooltiptext_r">{{system.spe1.description}}</span></div>{{else}}<input class="spes" type="text" name="system.spe1.value" value="{{system.spe1.value}}"  placeholder="............................................................................................................................................................................"/>{{/if}}</td><td align="center">+<input {{#if system.verouille}}disabled="disabled"{{/if}} class="comb" type="text" name="system.rg_spe_1.value" value="{{system.rg_spe_1.value}}" data-dtype="Number"/></td> -->
+						<td>1.</td><td style="text-align:left">{{#if system.verouille}}<div class="tooltip_spe" value="spe1|{{system.spe1.value}}"><b>{{system.spe1.value}}</b><span class="tooltiptext_r">{{system.spe1.description}}</span></div>{{else}}<div class="autocomplete" style="width:300px"><input class="spes" type="text" name="system.spe1.value" value="{{system.spe1.value}}"  placeholder="............................................................................................................................................................................"/></div>{{/if}}</td><td align="center">+<input {{#if system.verouille}}disabled="disabled"{{/if}} class="comb" type="text" name="system.rg_spe_1.value" value="{{system.rg_spe_1.value}}" data-dtype="Number"/></td>
+						</tr>
+						<tr>
+						<td>2.</td><td style="text-align:left">{{#if system.verouille}}<div class="tooltip_spe" value="spe2|{{system.spe2.value}}"><b>{{system.spe2.value}}</b><span class="tooltiptext_r">{{system.spe2.description}}</span></div>{{else}}<div class="autocomplete" style="width:300px"><input class="spes" type="text" name="system.spe2.value" value="{{system.spe2.value}}"  placeholder="............................................................................................................................................................................"/></div>{{/if}}</td><td align="center">+<input {{#if system.verouille}}disabled="disabled"{{/if}} class="comb" type="text" name="system.rg_spe_2.value" value="{{system.rg_spe_2.value}}" data-dtype="Number"/></td>
+						</tr>
+						<tr>
+						<td>3.</td><td style="text-align:left">{{#if system.verouille}}<div class="tooltip_spe" value="spe3|{{system.spe3.value}}"><b>{{system.spe3.value}}</b><span class="tooltiptext_r">{{system.spe3.description}}</span></div>{{else}}<div class="autocomplete" style="width:300px"><input class="spes" type="text" name="system.spe3.value" value="{{system.spe3.value}}"  placeholder="............................................................................................................................................................................"/></div>{{/if}}</td><td align="center">+<input {{#if system.verouille}}disabled="disabled"{{/if}} class="comb" type="text" name="system.rg_spe_3.value" value="{{system.rg_spe_3.value}}" data-dtype="Number"/></td>
+						</tr>
+						<tr>
+					</table>
+					{{/if}}
+				</div>
+			</div>	
+		</div>
+      
+    </section>
+</form>
+
