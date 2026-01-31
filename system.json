@@ -96,9 +96,9 @@
   "background": "systems/mega/images/background.png",
   "primaryTokenAttribute": "health",
   "secondaryTokenAttribute": "power",
-  "url": "https://github.com/codingNeverend/mega5e",
-  "manifest": "https://raw.githubusercontent.com/codingNeverend/mega5e/master/system.json",
-  "download": "",
+  "url": "https://www.youtube.com/@maxtormj5638",
+  "manifest": "https://gitlab.com/foundrynet/worldbuilding/raw/master/system.json",
+  "download": "https://gitlab.com/foundrynet/worldbuilding/-/archive/release-036/worldbuilding-release-036.zip",
   "license": "LICENSE.txt",
   "readme": "README.md",
   "flags": {}
