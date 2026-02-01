@@ -9,8 +9,8 @@
   },
   "authors": [
     {
-      "name": "Maxtor",
-      "url": "https://www.youtube.com/@maxtormj5638",
+      "name": "codingNeverend",
+      "url": "https://github.com/codingNeverend",
       "flags": {}
     }
   ],
@@ -29,13 +29,17 @@
   "media": [
     {
       "type": "cover",
-      "url": "https://gitlab.com/riccisi/foundryvtt-dice-so-nice/-/raw/master/cover.jpg",
       "loop": false,
       "flags": {}
     },
     {
+      "type": "setup",
+      "url": "systems/mega/images/mega-repo.jpg",
+      "thumbnail": "systems/mega/images/mega-thumbnail.jpg"
+    },
+    {
       "type": "video",
-      "url": "https://www.youtube.com/watch?v=4b_C5R3t6iw",
+      "url": "https://www.youtube.com/@Mega5eVTT",
       "loop": false,
       "flags": {}
     }
@@ -96,9 +100,9 @@
   "background": "systems/mega/images/background.png",
   "primaryTokenAttribute": "health",
   "secondaryTokenAttribute": "power",
-  "url": "https://www.youtube.com/@maxtormj5638",
-  "manifest": "https://gitlab.com/foundrynet/worldbuilding/raw/master/system.json",
-  "download": "",
+  "url": "https://github.com/codingNeverend/mega5e",
+  "manifest": "https://raw.githubusercontent.com/codingNeverend/mega5e/master/system.json",
+  "download": "https://github.com/codingNeverend/mega5e/archive/refs/heads/main.zip",
   "license": "LICENSE.txt",
   "readme": "README.md",
   "flags": {}
