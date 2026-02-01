@@ -57,7 +57,7 @@
 		<div class="tab attributes" data-group="primary" data-tab="attributes">
 		{{#if GM}}
 		<table class="tablemj">
-			<thead style="border-bottom:none;" class="masquer" value="letale">
+			<thead style="border:none;" class="masquer" value="letale">
 			<tr>
 			<th>
 				Retrait de points / Message</th>
@@ -75,7 +75,7 @@
 		</table>
 		{{/if}}
 			<table class="tablemj">
-				<thead style="border-bottom:none;" class="masquer" value="famille">
+				<thead style="border:none;" class="masquer" value="famille">
 				<tr>
 				<th>
 					Equipement / Personnalisation</th>
@@ -90,7 +90,7 @@
 			{{/if}}
 		</table>
 			<table class="tablemj">
-				<thead  style="border-bottom:none;" class="masquer" value="degats">
+				<thead style="border:none;" class="masquer" value="degats">
 				<tr>
 				<th colspan="7">
 					Type de dégâts
@@ -152,14 +152,14 @@
 			</center>
 			{{/if}}
 			<table class="tablemj">
-				<thead style="border-bottom:none;" class="masquer" value="avantage">
+				<thead style="border:none;" class="masquer" value="avantage">
 				<tr>
 				<th colspan="6">Paramétrages Avantages & Effets optionnels</th>
 				</tr>
 				</thead>
 
 			{{#if system.masquer_avantage}}
-				<thead>
+				<thead style="border:none;">
 				  <tr>
 					<td></td>
 					<td>Av0</td>
@@ -201,7 +201,7 @@
 				  <td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.effet_ac_3_3" value="{{system.effet_ac_3_3}}" /></td>
 				  <td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.effet_ac_4_3" value="{{system.effet_ac_4_3}}" /></td>
 				</tr>
-				<tfoot>
+				<tfoot style="border:none;">
 				  <tr>
 					<td colspan="8">H Handicaper, A Assommer, S Sonner, R Renverser, I Immobiliser, V Vitesse<br>P Positionnement, T Tenir à distance, D Défaut de la cuirasse<span class="info_effets_speciaux" value="">&nbsp<sup><img class="icon_info" src="systems/mega/images/info.svg"></sup></span>
 					</td>
@@ -212,7 +212,7 @@
 			
 			{{#if GM}}
 			<table class="tablemj">
-				<thead  style="border-bottom:none;" class="masquer" value="effets_armes">
+				<thead style="border:none;" class="masquer" value="effets_armes">
 				<tr >
 				<th colspan="7">Effets Vidéos et Bruitages
 				</th>

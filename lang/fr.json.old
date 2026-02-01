@@ -1,0 +1,185 @@
+{
+  "MEGA.Voie": "Voie !",
+
+  "SETTINGS": {
+    "MegaTitle": "Paramètres MEGA",
+    "MegaLabel": "Configuration MEGA",
+    "MegaHint": "Ouvrir l'interface de configuration avancée du système MEGA",
+
+    "Tabs": {
+      "Gameplay": "Gameplay",
+      "Visual": "Interface",
+      "Colors": "Couleurs",
+      "Effects": "Effets",
+      "Advanced": "Avancé"
+    },
+
+    "Sections": {
+      "GameRules": "Règles de jeu",
+      "Interface": "Interface utilisateur",
+      "TableColors": "Couleurs des tables",
+      "AttackEffects": "Effets d'attaque",
+      "Advanced": "Paramètres avancés"
+    },
+
+    "CourtMetrage": {
+      "Name": "Mode Court Métrage",
+      "Hint": "Si coché, la liste des talents est simplifiée pour les parties courtes."
+    },
+
+    "RetraitAuto": {
+      "Name": "Retrait automatique des points",
+      "Hint": "Si coché, les dégâts, points de vie, d'ardence et de résonance seront retirés automatiquement."
+    },
+
+    "EffetsSpeciaux": {
+      "Name": "Effets spéciaux",
+      "Hint": "Si coché, les effets visuels et sonores de combat seront joués. Nécessite le module Sequencer."
+    },
+
+    "ThemeMode": {
+      "Name": "Thème d'interface",
+      "Hint": "Choisissez le thème de couleur de l'interface.",
+      "Auto": "Automatique (selon le système)",
+      "Light": "Clair",
+      "Dark": "Sombre"
+    },
+
+    "AccentColorPrimary": {
+      "Name": "Couleur principale",
+      "Hint": "Couleur principale utilisée pour l'accentuation de l'interface."
+    },
+
+    "AccentColorSecondary": {
+      "Name": "Couleur secondaire",
+      "Hint": "Couleur secondaire pour compléter la palette de couleurs."
+    },
+
+    "CornerRadius": {
+      "Name": "Arrondis des coins",
+      "Hint": "Contrôle l'arrondi des coins des éléments d'interface."
+    },
+
+    "GlassEffect": {
+      "Name": "Effet de verre",
+      "Hint": "Active les effets de transparence et de flou pour un look moderne."
+    },
+
+    "AnimationSpeed": {
+      "Name": "Vitesse des animations",
+      "Hint": "Contrôle la vitesse des animations d'interface.",
+      "Instant": "Instantané",
+      "Fast": "Rapide",
+      "Normal": "Normal",
+      "Slow": "Lent"
+    },
+
+    "TableTraitColor": {
+      "Name": "Table des Traits"
+    },
+
+    "TableTalentColor": {
+      "Name": "Table des Talents"
+    },
+
+    "TablePouvoirColor": {
+      "Name": "Table des Pouvoirs"
+    },
+
+    "TableSpesColor": {
+      "Name": "Table des Spes"
+    },
+
+    "TableCombatColor": {
+      "Name": "Table de Combat"
+    },
+
+    "TableProtectionColor": {
+      "Name": "Table des Protections"
+    },
+
+    "InventoryColor": {
+      "Name": "Inventaire"
+    },
+
+    "BagarreEffects": "Effets de Bagarre",
+    "ChargeEffects": "Effets de Charge",
+    "PouvoirEffects": "Effets de Pouvoir",
+
+    "BagarreVideo": {
+      "Name": "Vidéo de bagarre",
+      "Hint": "Fichier vidéo joué lors des attaques de bagarre."
+    },
+
+    "BagarreAudio": {
+      "Name": "Audio de bagarre",
+      "Hint": "Fichier audio joué lors des attaques de bagarre."
+    },
+
+    "ChargeVideo": {
+      "Name": "Vidéo de charge",
+      "Hint": "Fichier vidéo joué lors des attaques de charge."
+    },
+
+    "ChargeAudio": {
+      "Name": "Audio de charge",
+      "Hint": "Fichier audio joué lors des attaques de charge."
+    },
+
+    "PouvoirVideo": {
+      "Name": "Vidéo de pouvoir",
+      "Hint": "Fichier vidéo joué lors de l'utilisation de pouvoirs psychiques."
+    },
+
+    "PouvoirAudio": {
+      "Name": "Audio de pouvoir",
+      "Hint": "Fichier audio joué lors de l'utilisation de pouvoirs psychiques."
+    },
+
+    "DebugMode": {
+      "Name": "Mode débogage",
+      "Hint": "Active des informations de débogage supplémentaires dans la console."
+    },
+
+    "HideWindow": {
+      "Name": "Masquer la fenêtre personnalisée",
+      "Hint": "Masque certaines fenêtres personnalisées du système."
+    },
+
+    "SystemInfo": "Informations système",
+    "SystemVersion": "Version du système",
+    "FoundryVersion": "Version de Foundry",
+    "SequencerStatus": "État de Sequencer",
+    "Active": "Actif",
+    "Inactive": "Inactif",
+
+    "ResetColors": {
+      "Title": "Réinitialiser les couleurs",
+      "Content": "Êtes-vous sûr de vouloir réinitialiser toutes les couleurs aux valeurs par défaut ?",
+      "Button": "Réinitialiser les couleurs"
+    },
+
+    "Export": {
+      "Button": "Exporter la configuration"
+    },
+
+    "Import": {
+      "Button": "Importer la configuration",
+      "WrongSystem": "Ce fichier n'est pas une configuration MEGA valide.",
+      "Success": "Configuration importée avec succès.",
+      "ParseError": "Erreur lors de la lecture du fichier de configuration."
+    },
+
+    "TestEffects": {
+      "Button": "Tester les effets",
+      "Running": "Test des effets en cours..."
+    },
+
+    "Save": "Sauvegarder",
+    "SaveSuccess": "Paramètres sauvegardés avec succès."
+  },
+
+  "WARNINGS": {
+    "SequencerRequired": "Le module Sequencer est requis pour les effets spéciaux."
+  }
+}

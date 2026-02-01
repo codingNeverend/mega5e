@@ -67,7 +67,7 @@
 		<div class="tab attributes" data-group="primary" data-tab="attributes">
 		{{#if GM}}
 		<table class="tablemj">
-			<thead style="border-bottom:none;" class="masquer" value="letale">
+			<thead style="border:none;" class="masquer" value="letale">
 			<tr>
 			<th>
 				Retrait de points / Message</th>
@@ -77,7 +77,7 @@
 			<span class="letale" style="text-align: center;"><img style="vertical-align: middle;" src="systems/mega/images/heart-minus.svg" {{#if system.letale.value}} title="Pas de retraits de points"  class="icon_letale_active"{{else}} title="Retraits de points" class="icon_letale"{{/if}}></span>
 			<b>{{#if system.letale.value}}Mode retrait de points{{else}}Mode message{{/if}}</b>
 			<div id="letale-label-container" style="background-color:var(--opacity-color);vertical-align: middle; display: {{#unless system.letale.value}}block{{else}}none{{/unless}}">
-      		 	 <input type="text" id="letale-label" name="system.letale.label" value="{{system.letale.label}}" data-dtype="String"/>
+      		 	 <input type="text" size="50" id="letale-label" ame="system.letale.label" value="{{system.letale.label}}" data-dtype="String"/>
 				   <!-- {{editor enrichedLetaleLabel target="system.letale.label" button=true editable=editable}} -->
 			</div>
 		</td></tr>
@@ -85,7 +85,7 @@
 		</table>
 		{{/if}}
 			<table class="tablemj">
-				<thead style="border-bottom:none;" class="masquer" value="famille">
+				<thead style="border:none;" class="masquer" value="famille">
 				<tr>
 				<th>
 					Equipement / Personnalisation</th>
@@ -100,7 +100,7 @@
 			{{/if}}
 		</table>
 			<table class="tablemj">
-				<thead  style="border-bottom:none;" class="masquer" value="degats">
+				<thead style="border:none;" class="masquer" value="degats">
 				<tr>
 				<th colspan="7">
 					Type de dégâts
@@ -162,14 +162,14 @@
 			</center>
 			{{/if}}
 			<table class="tablemj">
-				<thead style="border-bottom:none;" class="masquer" value="avantage">
+				<thead style="border:none;" class="masquer" value="avantage">
 				<tr>
 				<th colspan="6">Paramétrages Avantages & Effets optionnels</th>
 				</tr>
 				</thead>
 
 			{{#if system.masquer_avantage}}
-				<thead>
+				<thead style="border:none;" >
 				  <tr>
 					<td></td>
 					<td>Av0</td>
@@ -211,7 +211,7 @@
 				  <td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.effet_ac_3_3" value="{{system.effet_ac_3_3}}" /></td>
 				  <td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.effet_ac_4_3" value="{{system.effet_ac_4_3}}" /></td>
 				</tr>
-				<tfoot>
+				<tfoot style="border:none;">
 				  <tr>
 					<td colspan="8">H Handicaper, A Assommer, S Sonner, R Renverser, I Immobiliser, V Vitesse<br>P Positionnement, T Tenir à distance, D Défaut de la cuirasse<span class="info_effets_speciaux" value="">&nbsp<sup><img class="icon_info" src="systems/mega/images/info.svg"></sup></span>
 					</td>
@@ -222,7 +222,7 @@
 			
 			{{#if GM}}
 			<table class="tablemj">
-				<thead  style="border-bottom:none;" class="masquer" value="effets_armes">
+				<thead  style="border:none;" class="masquer" value="effets_armes">
 				<tr >
 				<th colspan="7">Effets Vidéos et Bruitages
 				</th>
