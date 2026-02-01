@@ -98,7 +98,7 @@
   "secondaryTokenAttribute": "power",
   "url": "https://www.youtube.com/@maxtormj5638",
   "manifest": "https://gitlab.com/foundrynet/worldbuilding/raw/master/system.json",
-  "download": "https://gitlab.com/foundrynet/worldbuilding/-/archive/release-036/worldbuilding-release-036.zip",
+  "download": "",
   "license": "LICENSE.txt",
   "readme": "README.md",
   "flags": {}
