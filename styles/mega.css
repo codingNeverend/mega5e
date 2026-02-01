@@ -2764,10 +2764,6 @@ table.pouvoir th {
   box-shadow:
     0 0 0 2px var(--opacity-color),
     -1px 2px 10px 1px rgba(0, 0, 0, 0.7);
-  /* box-shadow: -1px 2px 5px 1px rgba(0, 0, 0, 0.7); */
-  /* box-shadow: 0 0 0 4px var(--table-traits); */
-  /* background: rgb(70, 130, 180, 0.9); Background et transparence du tableau Traits */
-  /* background: rgb(176, 196, 222,0.4); */
   background-color: var(--opacity-clear-color);
   border-radius: var(--corner-radius);
   border-collapse: collapse !important;
@@ -3286,7 +3282,7 @@ table.notes_pnj th {
   font-size: 14px;
   max-height: 25px !important;
   max-width: 50px !important;
-  color: green;
+  /* color: green; */
   text-align: center;
   font-weight: bold;
   text-transform: uppercase;
@@ -3300,7 +3296,7 @@ table.notes_pnj th {
   text-align: center;
   font-weight: bold;
   text-transform: uppercase;
-  color: black;
+  /* color: black; */
   text-shadow: #fc0 1px 0 10px;
   font-size: 14px;
   height: 25px !important;
@@ -3827,11 +3823,8 @@ a.inline-roll {
 }
 
 .dialog button {
-  background: var(--blur-foreground-bright) !important;
   border: none !important;
   border-radius: var(--corner-radius);
-  color: var(--text-color) !important;
-  box-shadow: -1px 1px 2px 1px #ffc56e;
   height: 50px;
   font-family: "Mega", sans-serif;
   text-align: center;
@@ -3848,7 +3841,6 @@ a.inline-roll {
 }
 
 .dialog button:hover {
-  box-shadow: 0 0 1px 2px var(--accent-color) !important;
   background: var(--accent-color) !important;
   cursor: inherit;
 }
@@ -4675,6 +4667,13 @@ input[type="color"][data-edit][data-edit] {
   .mega select {
     color: #000 !important;
   }
+  .dialog button {
+    background: var(--button-light-color) !important;
+    color: #000 !important;
+  }
+  .dialog button:hover {
+    color:var(--button-dark-color) !important;
+  }
   #settings button {
     background: var(--button-light-color) !important;
     color: #000 !important;
@@ -4728,6 +4727,13 @@ input[type="color"][data-edit][data-edit] {
   .mega select {
     color: #000 !important;
   }
+  .dialog button {
+    background: var(--button-dark-color) !important;
+    color: var(--dark-color-text) !important;
+  }
+  .dialog button:hover {
+    color:var(--button-light-color) !important;
+  }
   #settings button {
     background: var(--button-dark-color) !important;
     color: var(--dark-color-text) !important;
@@ -4739,7 +4745,7 @@ input[type="color"][data-edit][data-edit] {
   .title {
     color: var(--dark-color-text);
   }
-  
+
 }
 
 /* ========================================= */

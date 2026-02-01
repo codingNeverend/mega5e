@@ -1383,7 +1383,7 @@ Hooks.on("renderSettingsConfig", (app, html, data) => {
       const $logoHeader = $(`
         <div class="mega-logo-header" style="text-align: center; margin: 20px 0 30px 0; padding: 20px; background: linear-gradient(135deg, rgba(255,215,0,0.1) 0%, rgba(218,165,32,0.05) 100%); border: 2px solid rgba(218,165,32,0.3); border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
           <img src="systems/mega/images/logo.png" alt="MEGA Logo" style="max-height: 80px; max-width: 300px; margin-bottom: 10px;">
-          <h2 style="margin: 10px 0 0 0; color: #2c3e50; font-size: 24px; font-weight: bold; text-shadow: 1px 1px 2px rgba(255,255,255,0.8);">Configuration du Système MEGA</h2>
+          <h2 style="margin: 10px 0 0 0; color: #2c3e50; font-size: 24px; font-weight: bold; text-shadow: 1px 1px 2px rgba(255,255,255,0.8);font-family: 'Mega', sans-serif;">Configuration du Système MEGA</h2>
         </div>
       `);
 
