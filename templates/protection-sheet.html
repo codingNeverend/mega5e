@@ -1,110 +1,299 @@
 <form class="{{cssClass}}" autocomplete="off">
-    <header class="sheet-header-item">
-        <span class="item-view" value="{{item.img}}"><img class="profile-img" src="{{item.img}}" data-edit="img" title="{{item.name}}"/></span>
-        <div class="header-fields-item">
-            <h2 class="charname"><input name="name" type="text" value="{{item.name}}" placeholder="Name"/></h2><br>
-            <table class="tablemj3" style="width:90%">
-				<thead>
-				<tr>
-				<td colspan="3">
-					Caractéristiques principales
-				</tr></thead>
-				<tr>
-					<td><label>Quantité : </label>
-						<input type="text" class="comb" name="system.quantity" value="{{system.quantity}}" data-dtype="Number"/></td>
-					<td><label>NT : </label>
-						<input style="width:40px" type="text" class="comb" name="system.nt" value="{{system.nt}}"/></td>
-						<td><label>Prix : </label>
-							<input style="width:40px" type="text" class="comb" name="system.prize" value="{{system.prize}}"/> Σ</td>
-				</tr>
-				<tr>
-					<td>Poids : <input type="text" style="width:50px" class="comb" name="system.weight" value="{{system.weight}}" data-dtype="Number"/> Kg</td>
-					<td></td>
-					<td></td>
-				</tr>
+  <header class="sheet-header-item">
+    <span class="item-view" value="{{item.img}}"
+      ><img
+        class="profile-img"
+        src="{{item.img}}"
+        data-edit="img"
+        title="{{item.name}}"
+    /></span>
+    <div class="header-fields-item">
+      <h2 class="charname">
+        <input
+          name="name"
+          type="text"
+          value="{{item.name}}"
+          placeholder="Name"
+        />
+      </h2>
+      <br />
+      <table class="tablemj3" style="width: 90%">
+        <thead style="border: none">
+          <tr>
+            <td colspan="3">Caractéristiques principales</td>
+          </tr>
+        </thead>
+        <tr>
+          <td>
+            <label>Quantité : </label>
+            <input
+              type="text"
+              class="comb"
+              name="system.quantity"
+              value="{{system.quantity}}"
+              data-dtype="Number"
+            />
+          </td>
+          <td>
+            <label>NT : </label>
+            <input
+              style="width: 40px"
+              type="text"
+              class="comb"
+              name="system.nt"
+              value="{{system.nt}}"
+            />
+          </td>
+          <td>
+            <label>Prix : </label>
+            <input
+              style="width: 40px"
+              type="text"
+              class="comb"
+              name="system.prize"
+              value="{{system.prize}}"
+            />
+            Σ
+          </td>
+        </tr>
+        <tr>
+          <td>
+            Poids :
+            <input
+              type="text"
+              style="width: 50px"
+              class="comb"
+              name="system.weight"
+              value="{{system.weight}}"
+              data-dtype="Number"
+            />
+            Kg
+          </td>
+          <td></td>
+          <td></td>
+        </tr>
+      </table>
+    </div>
+  </header>
 
-			</table>
+  {{!-- Sheet Tab Navigation --}}
+  <nav class="sheet-tabs tabs" data-group="primary">
+    <a class="item" data-tab="description">DESCRIPTION</a>
+    <a class="item" data-tab="localisation">ZONES PROTEGEES</a>
+  </nav>
+  {{!-- Sheet Body --}}
+  <section class="itemsheet-body">
+    {{!-- Description Tab --}}
+    <div class="tab" data-group="primary" data-tab="description">
+      {{editor enrichedBiography target="system.description" button=true
+      editable=editable}}
+    </div>
+
+    {{!-- Localisation Tab --}}
+    <div class="tab attributes" data-group="primary" data-tab="localisation">
+      <table class="tablemj">
+        <thead>
+          <tr>
+            <td class="masquer" value="bonusdef" colspan="7">Bonus DÉF</td>
+          </tr>
+        </thead>
+      </table>
+      {{#if system.masquer_bonusdef}}
+      <table class="tablemj">
+        <tr>
+          <td>
+            Choc<input
+              class="comb"
+              type="text"
+              name="system.caracs.def_choc"
+              value="{{system.caracs.def_choc}}"
+              data-dtype="Number"
+            />
+          </td>
+          <td>
+            Lame<input
+              class="comb"
+              type="text"
+              name="system.caracs.def_lame"
+              value="{{system.caracs.def_lame}}"
+              data-dtype="Number"
+            />
+          </td>
+          <td>
+            Balle<input
+              class="comb"
+              type="text"
+              name="system.caracs.def_balle"
+              value="{{system.caracs.def_balle}}"
+              data-dtype="Number"
+            />
+          </td>
+          <td>
+            Feu<input
+              class="comb"
+              type="text"
+              name="system.caracs.def_feu"
+              value="{{system.caracs.def_feu}}"
+              data-dtype="Number"
+            />
+          </td>
+          <td>
+            Froid<input
+              class="comb"
+              type="text"
+              name="system.caracs.def_froid"
+              value="{{system.caracs.def_froid}}"
+              data-dtype="Number"
+            />
+          </td>
+          <td>
+            Acide<input
+              class="comb"
+              type="text"
+              name="system.caracs.def_acide"
+              value="{{system.caracs.def_acide}}"
+              data-dtype="Number"
+            />
+          </td>
+          <td>
+            Rayon<input
+              class="comb"
+              type="text"
+              name="system.caracs.def_rayon"
+              value="{{system.caracs.def_rayon}}"
+              data-dtype="Number"
+            />
+          </td>
+        </tr>
+      </table>
+      {{/if}}
+
+      <div class="silouhette_body_container">
+        <!-- <div class="silouhette_body_div head"> -->
+        <!-- <input  {{#ifequal system.caracs.def_tete 1}}class="silouhette_equip"{{else}}class="silouhette_unequip"{{/ifequal}}" type="text" name="system.caracs.def_tete" value="{{system.caracs.def_tete}}"/> -->
+        <div
+          class="silouhette_body_div tete pastille {{#ifequal system.caracs.def_tete 1}}green{{else}}red{{/ifequal}}"
+          value="tete"
+        >
+          <input
+            type="hidden"
+            name="system.caracs.def_tete"
+            value="{{system.caracs.def_tete}}"
+            id="def_tete_input"
+          />
         </div>
-    </header>
-
-	{{!-- Sheet Tab Navigation --}}
-	<nav class="sheet-tabs tabs" data-group="primary">
-	   <a class="item" data-tab="description">DESCRIPTION</a>
-	   <a class="item" data-tab="localisation">ZONES PROTEGEES</a>
-    </nav>
-    {{!-- Sheet Body --}}
-    <section class="itemsheet-body">
-
-	{{!-- Description Tab --}}
-	<div class="tab" data-group="primary" data-tab="description">
-		{{editor enrichedBiography target="system.description" button=true editable=editable}}
-	</div>
-
-
-	{{!-- Localisation Tab --}}
-	 <div class="tab attributes" data-group="primary" data-tab="localisation">
-		<table class="tablemj">
-		<thead>
-		<tr>
-		<td class="masquer" value="bonusdef" colspan="7">Bonus DÉF
-		</td>
-		</tr>
-		</thead>
-		</table>
-		{{#if system.masquer_bonusdef}}
-		<table class="tablemj">
-		<tr>
-			<td>Choc<input class="comb" type="text" name="system.caracs.def_choc" value="{{system.caracs.def_choc}}" data-dtype="Number"/></td>
-			<td>Lame<input class="comb" type="text" name="system.caracs.def_lame" value="{{system.caracs.def_lame}}" data-dtype="Number"/></td>
-			<td>Balle<input class="comb" type="text" name="system.caracs.def_balle" value="{{system.caracs.def_balle}}" data-dtype="Number"/></td>
-			<td>Feu<input class="comb" type="text" name="system.caracs.def_feu" value="{{system.caracs.def_feu}}" data-dtype="Number"/></td>
-			<td>Froid<input class="comb" type="text" name="system.caracs.def_froid" value="{{system.caracs.def_froid}}" data-dtype="Number"/></td>
-			<td>Acide<input class="comb" type="text" name="system.caracs.def_acide" value="{{system.caracs.def_acide}}" data-dtype="Number"/></td>
-			<td>Rayon<input class="comb" type="text" name="system.caracs.def_rayon" value="{{system.caracs.def_rayon}}" data-dtype="Number"/></td>
-		</tr>
-		</table>
-		{{/if}}
-
-		<div class='silouhette_body_container'>
-			<!-- <div class="silouhette_body_div head"> -->
-				<!-- <input  {{#ifequal system.caracs.def_tete 1}}class="silouhette_equip"{{else}}class="silouhette_unequip"{{/ifequal}}" type="text" name="system.caracs.def_tete" value="{{system.caracs.def_tete}}"/> -->
-				<div class="silouhette_body_div tete pastille {{#ifequal system.caracs.def_tete 1}}green{{else}}red{{/ifequal}}" value="tete">
-					<input type="hidden" name="system.caracs.def_tete" value="{{system.caracs.def_tete}}" id="def_tete_input"/>
-			   	</div>
-			  <div class="silouhette_body_div poitrine pastille {{#ifequal system.caracs.def_poitrine 1}}green{{else}}red{{/ifequal}}" value="poitrine">
-				<input type="hidden" name="system.caracs.def_poitrine" value="{{system.caracs.def_poitrine}}" id="def_poitrine_input"/>
-			  </div>
-			  <div class="silouhette_body_div ventre pastille {{#ifequal system.caracs.def_ventre 1}}green{{else}}red{{/ifequal}}" value="ventre">
-				<input type="hidden" name="system.caracs.def_ventre" value="{{system.caracs.def_ventre}}" id="def_ventre_input"/>
-			  </div>
-			  <div class="silouhette_body_div bras_g pastille {{#ifequal system.caracs.def_bras_g 1}}green{{else}}red{{/ifequal}}" value="bras_g">
-				<input type="hidden" name="system.caracs.def_bras_g" value="{{system.caracs.def_bras_g}}" id="def_bras_g_input"/>
-			  </div>
-			  <div class="silouhette_body_div bras_d pastille {{#ifequal system.caracs.def_bras_d 1}}green{{else}}red{{/ifequal}}" value="bras_d">
-				<input type="hidden" name="system.caracs.def_bras_d" value="{{system.caracs.def_bras_d}}" id="def_bras_d_input"/>
-			  </div>
-			  <div class="silouhette_body_div main_g pastille {{#ifequal system.caracs.def_main_g 1}}green{{else}}red{{/ifequal}}" value="main_g">
-				<input type="hidden" name="system.caracs.def_main_g" value="{{system.caracs.def_main_g}}" id="def_main_g_input"/>
-			  </div>
-			  <div class="silouhette_body_div main_d pastille {{#ifequal system.caracs.def_main_d 1}}green{{else}}red{{/ifequal}}" value="main_d">
-				<input type="hidden" name="system.caracs.def_main_d" value="{{system.caracs.def_main_d}}" id="def_main_d_input"/>
-			  </div>
-			  <div class="silouhette_body_div jambe_g pastille {{#ifequal system.caracs.def_jambe_g 1}}green{{else}}red{{/ifequal}}" value="jambe_g">
-				<input type="hidden" name="system.caracs.def_jambe_g" value="{{system.caracs.def_jambe_g}}" id="def_jambe_g_input"/>
-			  </div>
-			  <div class="silouhette_body_div jambe_d pastille {{#ifequal system.caracs.def_jambe_d 1}}green{{else}}red{{/ifequal}}" value="jambe_d">
-				<input type="hidden" name="system.caracs.def_jambe_d" value="{{system.caracs.def_jambe_d}}" id="def_jambe_d_input"/>
-			  </div>
-			  <div class="silouhette_body_div pied_g pastille {{#ifequal system.caracs.def_pied_g 1}}green{{else}}red{{/ifequal}}" value="pied_g">
-				<input type="hidden" name="system.caracs.def_pied_g" value="{{system.caracs.def_pied_g}}" id="def_pied_g_input"/>
-			  </div>
-			  <div class="silouhette_body_div pied_d pastille {{#ifequal system.caracs.def_pied_d 1}}green{{else}}red{{/ifequal}}" value="pied_d">
-				<input type="hidden" name="system.caracs.def_pied_d" value="{{system.caracs.def_pied_d}}" id="def_pied_d_input"/>
-			  </div>
-			<!-- </div> -->
-		</div>
-		
-
-	 </div>
-    </section>
+        <div
+          class="silouhette_body_div poitrine pastille {{#ifequal system.caracs.def_poitrine 1}}green{{else}}red{{/ifequal}}"
+          value="poitrine"
+        >
+          <input
+            type="hidden"
+            name="system.caracs.def_poitrine"
+            value="{{system.caracs.def_poitrine}}"
+            id="def_poitrine_input"
+          />
+        </div>
+        <div
+          class="silouhette_body_div ventre pastille {{#ifequal system.caracs.def_ventre 1}}green{{else}}red{{/ifequal}}"
+          value="ventre"
+        >
+          <input
+            type="hidden"
+            name="system.caracs.def_ventre"
+            value="{{system.caracs.def_ventre}}"
+            id="def_ventre_input"
+          />
+        </div>
+        <div
+          class="silouhette_body_div bras_g pastille {{#ifequal system.caracs.def_bras_g 1}}green{{else}}red{{/ifequal}}"
+          value="bras_g"
+        >
+          <input
+            type="hidden"
+            name="system.caracs.def_bras_g"
+            value="{{system.caracs.def_bras_g}}"
+            id="def_bras_g_input"
+          />
+        </div>
+        <div
+          class="silouhette_body_div bras_d pastille {{#ifequal system.caracs.def_bras_d 1}}green{{else}}red{{/ifequal}}"
+          value="bras_d"
+        >
+          <input
+            type="hidden"
+            name="system.caracs.def_bras_d"
+            value="{{system.caracs.def_bras_d}}"
+            id="def_bras_d_input"
+          />
+        </div>
+        <div
+          class="silouhette_body_div main_g pastille {{#ifequal system.caracs.def_main_g 1}}green{{else}}red{{/ifequal}}"
+          value="main_g"
+        >
+          <input
+            type="hidden"
+            name="system.caracs.def_main_g"
+            value="{{system.caracs.def_main_g}}"
+            id="def_main_g_input"
+          />
+        </div>
+        <div
+          class="silouhette_body_div main_d pastille {{#ifequal system.caracs.def_main_d 1}}green{{else}}red{{/ifequal}}"
+          value="main_d"
+        >
+          <input
+            type="hidden"
+            name="system.caracs.def_main_d"
+            value="{{system.caracs.def_main_d}}"
+            id="def_main_d_input"
+          />
+        </div>
+        <div
+          class="silouhette_body_div jambe_g pastille {{#ifequal system.caracs.def_jambe_g 1}}green{{else}}red{{/ifequal}}"
+          value="jambe_g"
+        >
+          <input
+            type="hidden"
+            name="system.caracs.def_jambe_g"
+            value="{{system.caracs.def_jambe_g}}"
+            id="def_jambe_g_input"
+          />
+        </div>
+        <div
+          class="silouhette_body_div jambe_d pastille {{#ifequal system.caracs.def_jambe_d 1}}green{{else}}red{{/ifequal}}"
+          value="jambe_d"
+        >
+          <input
+            type="hidden"
+            name="system.caracs.def_jambe_d"
+            value="{{system.caracs.def_jambe_d}}"
+            id="def_jambe_d_input"
+          />
+        </div>
+        <div
+          class="silouhette_body_div pied_g pastille {{#ifequal system.caracs.def_pied_g 1}}green{{else}}red{{/ifequal}}"
+          value="pied_g"
+        >
+          <input
+            type="hidden"
+            name="system.caracs.def_pied_g"
+            value="{{system.caracs.def_pied_g}}"
+            id="def_pied_g_input"
+          />
+        </div>
+        <div
+          class="silouhette_body_div pied_d pastille {{#ifequal system.caracs.def_pied_d 1}}green{{else}}red{{/ifequal}}"
+          value="pied_d"
+        >
+          <input
+            type="hidden"
+            name="system.caracs.def_pied_d"
+            value="{{system.caracs.def_pied_d}}"
+            id="def_pied_d_input"
+          />
+        </div>
+        <!-- </div> -->
+      </div>
+    </div>
+  </section>
 </form>

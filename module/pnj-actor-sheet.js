@@ -2344,7 +2344,7 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
 
     html.find(".competences_rollable").click((ev) => {
       let dataType = ev.currentTarget.getAttribute("data-type");
-      let comp = ev.currentTarget.getAttribute("value");
+      // let comp = ev.currentTarget.getAttribute("value");
       let Spe = "";
       let Rang = 0;
       let diff = "";
@@ -2608,9 +2608,18 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
         myDialogOptions_spes,
       );
 
-      console.log("Rang : " + Rang);
+      // console.log("Rang : " + Rang);
       if (Rang !== 0) {
-        d2.render(true);
+        if (
+          this.actor.system.spe1.value !== "" ||
+          this.actor.system.spe2.value !== "" ||
+          this.actor.system.spe3.value !== "" ||
+          this.actor.system.spe4.value !== ""
+        ) {
+          d2.render(true);
+        } else {
+          d_diff.render(true);
+        }
       } else {
         ui.notifications.error("Il n'y a pas de Rang associé à ce talent !");
       }

@@ -528,6 +528,20 @@ body {
   color: var(--accent-color);
 }
 
+/* Correction spécifique pour l'icône de fermeture qui ne s'affiche pas */
+.window-header .fa-xmark,
+.window-header i.fa-xmark {
+  font-family: inherit;
+  font-weight: inherit;
+}
+
+.window-header .fa-xmark::before,
+.window-header i.fa-xmark::before {
+  content: "x"; /* Caractère × (multiplication) comme fallback */
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
 /* .window-header {
   border-bottom: 1px dashed grey;
   background-image: url("../images/parchment.png");
@@ -1253,6 +1267,33 @@ table.spes th {
   border-radius: 20px;
   font-weight: bold;
   color: white;
+}
+
+/* Encadré vert pour les lignes de protection actives */
+.mega .active_protection_p1[data-type="text"][value="p1"]:has(b) tr,
+.mega .active_protection_p2[data-type="text"][value="p2"]:has(b) tr,
+.mega .active_protection_p3[data-type="text"][value="p3"]:has(b) tr {
+  border: 2px solid #00ff00;
+  border-radius: 5px;
+  background-color: rgba(0, 255, 0, 0.1);
+}
+
+/* Alternative si :has n'est pas supporté - cibler directement le parent tr */
+.mega table.protections tr:has(.active_protection_p1 b),
+.mega table.protections tr:has(.active_protection_p2 b),
+.mega table.protections tr:has(.active_protection_p3 b) {
+  border: 2px solid #00ff00;
+  border-radius: 5px;
+  background-color: rgba(0, 255, 0, 0.1);
+}
+
+/* Encadré vert pour les lignes de protection actives dans la fiche PNJ */
+.mega table.equipement tr:has(.active_protection_p1 b),
+.mega table.equipement tr:has(.active_protection_p2 b),
+.mega table.equipement tr:has(.active_protection_p3 b) {
+  border: 2px solid #00ff00;
+  border-radius: 5px;
+  background-color: rgba(0, 255, 0, 0.1);
 }
 
 .mega .clic_technique_combat {
@@ -2672,7 +2713,7 @@ table.pouvoirs_items th {
   /* box-shadow: 0 0 0 4px var(--table-traits); */
   /* background: rgb(70, 130, 180, 0.9); Background et transparence du tableau Traits */
   /* background: rgb(176, 196, 222,0.4); */
-  /* background-color: var(--table-traits); */
+  background-color: var(--table-traits);
   border-radius: var(--corner-radius);
   border-collapse: collapse !important;
   border-width: 0;

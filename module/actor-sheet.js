@@ -3,7 +3,7 @@
  * @extends {foundry.appv1.sheets.ActorSheet}
  */
 
-import { safeDocumentUpdate } from "./mega-utils.js";
+import { safeDocumentUpdate, getMegaAPI } from "./mega-utils.js";
 
 class TabbedDialog extends Dialog {
   constructor(data, options = {}) {
@@ -1805,21 +1805,22 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
                           vie_perdue +
                           " points de vie</p>";
                         if (retraitAuto) {
-                          game.modules
-                            .get("megasocket")
-                            .api.documentUpdate(currentTarget, {
+                          const updatePromise = safeDocumentUpdate(
+                            currentTarget,
+                            {
                               "system.health.value":
                                 currentTarget.system.health.value - vie_perdue,
-                            })
-                            .then(() => {
-                              game.modules
-                                .get("megasocket")
-                                .api.documentUpdate(currentTarget, {
-                                  "system.power.value":
-                                    currentTarget.system.power.value -
-                                    melee_perdue,
-                                });
+                            },
+                          );
+                          if (updatePromise) {
+                            updatePromise.then(() => {
+                              safeDocumentUpdate(currentTarget, {
+                                "system.power.value":
+                                  currentTarget.system.power.value -
+                                  melee_perdue,
+                              });
                             });
+                          }
                         }
                       }
 
@@ -6217,20 +6218,18 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
             " points de vie</p>";
           // TODO : enelever l'automatisme pour charge + bagarre
           if (retraitAuto) {
-            game.modules
-              .get("megasocket")
-              .api.documentUpdate(currentTarget, {
-                "system.health.value":
-                  currentTarget.system.health.value - vie_perdue,
-              })
-              .then(() => {
-                game.modules
-                  .get("megasocket")
-                  .api.documentUpdate(currentTarget, {
-                    "system.power.value":
-                      currentTarget.system.power.value - melee_perdue,
-                  });
+            const updatePromise = safeDocumentUpdate(currentTarget, {
+              "system.health.value":
+                currentTarget.system.health.value - vie_perdue,
+            });
+            if (updatePromise) {
+              updatePromise.then(() => {
+                safeDocumentUpdate(currentTarget, {
+                  "system.power.value":
+                    currentTarget.system.power.value - melee_perdue,
+                });
               });
+            }
           }
         }
 
@@ -6788,20 +6787,18 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
                 vie_perdue +
                 " points de vie</p>";
               if (retraitAuto) {
-                game.modules
-                  .get("megasocket")
-                  .api.documentUpdate(currentTarget, {
-                    "system.health.value":
-                      currentTarget.system.health.value - vie_perdue,
-                  })
-                  .then(() => {
-                    game.modules
-                      .get("megasocket")
-                      .api.documentUpdate(currentTarget, {
-                        "system.power.value":
-                          currentTarget.system.power.value - melee_perdue,
-                      });
+                const updatePromise = safeDocumentUpdate(currentTarget, {
+                  "system.health.value":
+                    currentTarget.system.health.value - vie_perdue,
+                });
+                if (updatePromise) {
+                  updatePromise.then(() => {
+                    safeDocumentUpdate(currentTarget, {
+                      "system.power.value":
+                        currentTarget.system.power.value - melee_perdue,
+                    });
                   });
+                }
               }
             }
 
