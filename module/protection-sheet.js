@@ -8,12 +8,12 @@ export class Protection_Sheet extends foundry.appv1.sheets.ItemSheet {
     return foundry.utils.mergeObject(super.defaultOptions, {
       classes: ["mega", "sheet", "item"],
       template: "systems/mega/templates/protection-sheet.html",
-      width: 526,
+      width: 530,
       height: 674,
       tabs: [
         {
-          navSelector: ".sheet-tabs",
-          contentSelector: ".itemsheet-body",
+          navSelector: ".side-tabs",
+          contentSelector: ".sheet-body",
           initial: "description",
         },
       ],

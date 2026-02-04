@@ -13,37 +13,43 @@
             padding: 10px;
 
         }
-
     </style>
+	
     {{!-- Sheet Header --}}
     <header class="sheet-header">
         <div class="header-fields">
 		<table class="entete" style="height:1%">
 		<tr style="height:100%">
-			<!-- <td rowspan="2" width="12%" style="vertical-align: bottom; text-align:center;" ><span class="actor-view" value="{{actor.img}}"><img src="{{actor.img}}" data-edit="img" title="{{actor.name}}" class="img" style="{{#if system.combat_modif.value}}border: 1px solid #FF0000; box-shadow: 0px 0px 8px 3px #FF0000; {{else}}border: 0px solid #555;  box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;{{/if}} width:90px; height:90px;"/></span></td> -->
 			<td rowspan="2" width="12%" style="vertical-align: bottom; text-align:center;" ><span class="actor-view" value="{{actor.img}}"><img src="{{actor.img}}" data-edit="img" title="{{actor.name}}" class="img" {{#if system.combat_modif.value}}style="border: 1px solid #FF0000; box-shadow: 0px 0px 8px 3px #FF0000; width:90px; height:90px;" {{else}} style="border: 0px solid #555;  box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px; width:90px; height:90px;"{{/if}}/></span></td>
 			<td width="48%">
-				<!-- <span class="charname"><input {{#if system.verouille}}disabled="disabled"{{/if}} name="name" type="text" value="{{actor.name}}" placeholder="Nom"/><span> -->
 				<span class="charname"><input {{#if system.verouille}}disabled="disabled"{{/if}} name="name" type="text" value="{{actor.name}}" placeholder="Nom"/><span></span>
 				
 			</td>
 			<td style="text-align:center;" width="20%" height="100%" rowspan="2">
-				<span class="resource">	
-					<div title="Points de Vie" style="height:100%; background-image: url('systems/mega/images/triangle_petit.png'); background-repeat: no-repeat; background-position:center;">
-						<img {{#ifinferior system.health.value 5}}src="systems/mega/images/health-red2.png"{{else}}src="systems/mega/images/health-normal2.png" {{/ifinferior}} alt="Points de Vie" style="border:none;width:32px;height:32px;"><br>
-						<!-- <meter value="{{system.health.value}}" low="6"  min="{{system.health.min}}" max="{{system.health.max}}"></meter><br> -->
-						<input type="text" class="comb" name="system.health.value" value="{{system.health.value}}" data-dtype="Number"/>/<input class="comb" {{#if system.verouille}}disabled="disabled"{{/if}} type="text" name="system.health.max" value="{{system.health.max}}" data-dtype="Number"/>
+				<div class="modern-health-triangle" title="Points de Vie">
+					<div class="triangle-icon health-icon">
+						<i class="fas fa-plus-circle" style="color: {{#ifinferior system.health.value 5}}#e74c3c{{else}}#27ae60{{/ifinferior}};"></i>
 					</div>
-				</span>
+					<div class="resource-values">
+						<input type="text" class="modern-resource-input health-current" name="system.health.value" value="{{system.health.value}}" data-dtype="Number" {{#ifinferior system.health.value 5}}style="color: #e74c3c; font-weight: bold;"{{/ifinferior}}/>
+						<span class="resource-separator">/</span>
+						<input class="modern-resource-input health-max" {{#if system.verouille}}disabled="disabled"{{/if}} type="text" name="system.health.max" value="{{system.health.max}}" data-dtype="Number"/>
+					</div>
+					<div class="resource-label">VIE</div>
+				</div>
 			</td>
 			<td style="text-align:center"  width="20%" rowspan="2">
-				<span class="resource">
-					<div title="Points de Mêlée" style="height:100%; background-image: url('systems/mega/images/triangle_petit.png'); background-repeat: no-repeat; background-position:center;">
-						<img {{#ifinferior system.power.value 5}}src="systems/mega/images/melee-red2.png"{{else}}src="systems/mega/images/melee2.png" {{/ifinferior}} alt="Points de Mêlée" style="border:none;width:32px;height:32px;"><br>
-						<!-- <meter value="{{system.power.value}}" low="6" min="{{system.power.min}}" max="{{system.power.max}}"></meter><br> -->
-						<input class="comb" type="text" name="system.power.value" value="{{system.power.value}}" data-dtype="Number"/>/<input type="text" name="system.power.max" {{#if system.verouille}}disabled="disabled"{{/if}}  class="comb" value="{{system.power.max}}" data-dtype="Number"/>
+				<div class="modern-melee-triangle" title="Points de Mêlée">
+					<div class="triangle-icon melee-icon">
+						<i class="fas fa-sword" style="color: {{#ifinferior system.power.value 5}}#e74c3c{{else}}#3498db{{/ifinferior}};"></i>
 					</div>
-				</span>
+					<div class="resource-values">
+						<input class="modern-resource-input melee-current" type="text" name="system.power.value" value="{{system.power.value}}" data-dtype="Number" {{#ifinferior system.power.value 5}}style="color: #e74c3c; font-weight: bold;"{{/ifinferior}}/>
+						<span class="resource-separator">/</span>
+						<input type="text" name="system.power.max" {{#if system.verouille}}disabled="disabled"{{/if}} class="modern-resource-input melee-max" value="{{system.power.max}}" data-dtype="Number"/>
+					</div>
+					<div class="resource-label">MÊLÉE</div>
+				</div>
 			</td>
 		</tr>
 
@@ -162,17 +168,10 @@
         </div>
     </header>
 
-    {{!-- Sheet Tab Navigation --}}
-    <nav class="sheet-tabs tabs" style="border-top: none; border-bottom: none;margin:0;padding:0;" data-group="primary">
-		<a class="item" data-tab="description">DESCRIPTION</a>
-		<a class="item" data-tab="attributes">ATTRIBUTS</a>
-		<a class="item" data-tab="combat">COMBAT</a>
-		<a class="item" data-tab="items">INVENTAIRE</a>
-		{{#if GM}}<a class="item" data-tab="MJ">MJ</a>{{/if}}
-    </nav>
-
-    {{!-- Sheet Body --}}
-    <section class="sheet-body">
+    {{!-- Main Content Area with Side Navigation --}}
+    <div class="main-content">
+        {{!-- Sheet Body --}}
+        <section class="sheet-body">
 
         {{!-- Biography Tab --}}
         <div class="tab biography" data-group="primary" data-tab="description">
@@ -1064,6 +1063,32 @@
 			</div>	
 		</div>
       
-    </section>
+        </section>
+        
+
+    </div>
+    
+    {{!-- Invisible trigger zone for side tabs --}}
+    <div class="side-trigger-zone"></div>
+    
+    {{!-- Side Tab Navigation - outside the main content --}}
+    <nav class="side-tabs" data-group="primary">
+        <a class="side-tab-item" data-tab="description" title="DESCRIPTION">
+            <i class="fas fa-user"></i>
+        </a>
+        <a class="side-tab-item" data-tab="attributes" title="ATTRIBUTS">
+            <i class="fas fa-chart-bar"></i>
+        </a>
+        <a class="side-tab-item" data-tab="combat" title="COMBAT">
+            <i class="fas fa-sword"></i>
+        </a>
+        <a class="side-tab-item" data-tab="items" title="INVENTAIRE">
+            <i class="fas fa-backpack"></i>
+        </a>
+        {{#if GM}}<a class="side-tab-item" data-tab="MJ" title="MJ">
+            <i class="fas fa-eye"></i>
+        </a>{{/if}}
+    </nav>
+
 </form>
 

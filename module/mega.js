@@ -1845,7 +1845,7 @@ Hooks.on("getActorSheetHeaderButtons", (app, buttons) => {
         // Changer la taille de la fiche
         app.setPosition({
           width: newValue === 1 ? 860 : 898,
-          height: newValue === 1 ? 568 : 745,
+          height: newValue === 1 ? 568 : 715,
         });
       },
     });

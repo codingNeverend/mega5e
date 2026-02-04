@@ -51,7 +51,7 @@ export class Arme_lancer_Sheet extends foundry.appv1.sheets.ItemSheet {
       height: 709,
       tabs: [
         {
-          navSelector: ".sheet-tabs",
+          navSelector: ".side-tabs",
           contentSelector: ".sheet-body",
           initial: "description",
         },

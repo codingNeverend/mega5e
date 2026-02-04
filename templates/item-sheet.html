@@ -1,81 +1,53 @@
 <form class="{{cssClass}}" autocomplete="off">
-  {{!-- Sheet Tab Navigation --}}
-  <header class="sheet-header-item">
-    <span class="item-view" value="{{item.img}}"
-      ><img
-        class="profile-img"
-        src="{{item.img}}"
-        data-edit="img"
-        title="{{item.name}}"
-    /></span>
-    <div class="header-fields-item">
-      <h2 class="charname">
-        <input
-          name="name"
-          type="text"
-          value="{{item.name}}"
-          placeholder="Name"
-        />
-      </h2>
-      <br />
-      <table class="cartouche_item" style="width: 90%">
-        <thead style="border: none">
-          <tr>
-            <th colspan="3">Caractéristiques principales</th>
-          </tr>
-        </thead>
-        <tr>
-          <td>
-            <label>Quantité : </label>
-            <input
-              type="text"
-              class="comb"
-              name="system.quantity"
-              value="{{system.quantity}}"
-              data-dtype="Number"
-            />
-          </td>
-          <td>
-            <label>NT : </label>
-            <input
-              style="width: 40px"
-              type="text"
-              class="comb"
-              name="system.nt"
-              value="{{system.nt}}"
-            />
-          </td>
-          <td>
-            <label>Prix : </label>
-            <input
-              style="width: 60px"
-              type="text"
-              class="comb"
-              name="system.prize"
-              value="{{system.prize}}"
-            />
-            Σ
-          </td>
-        </tr>
-        <tr>
-          <td>
-            Poids :
-            <input
-              type="text"
-              style="width: 50px"
-              class="comb"
-              name="system.weight"
-              value="{{system.weight}}"
-              data-dtype="Number"
-            />
-            Kg
-          </td>
-          <td></td>
-          <td></td>
-        </tr>
-      </table>
-    </div>
-  </header>
+	<header class="sheet-header-item">
+		<span class="item-view" value="{{item.img}}"><img class="profile-img" src="{{item.img}}" data-edit="img" title="{{item.name}}"/></span>
+        <div class="header-fields-item">
+            <div class="weapon-header-modern">
+                <div class="weapon-name-container">
+                    <h1 class="weapon-name"><input name="name" type="text" value="{{item.name}}" placeholder="Nom de l'arme"/></h1>
+                    <div class="weapon-type">Objet</div>
+                </div>
+                
+                <div class="weapon-stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-label">Qté</div>
+                        <div class="stat-value">
+                            <input type="text" class="stat-input" name="system.quantity" value="{{system.quantity}}" data-dtype="Number"/>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-item">
+                        <div class="stat-label">Poids</div>
+                        <div class="stat-value">
+                            <input type="text" class="stat-input" name="system.weight" value="{{system.weight}}" data-dtype="Number"/>
+                            <select class="stat-unit-select" name="system.weightUnit">
+                                <option value="kg" {{#if (eq system.weightUnit "kg")}}selected{{/if}}>kg</option>
+                                <option value="g" {{#if (eq system.weightUnit "g")}}selected{{/if}}>g</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-item">
+                        <div class="stat-label">Prix</div>
+                        <div class="stat-value">
+                            <input type="text" class="stat-input" name="system.prize" value="{{system.prize}}"/>
+                            <select class="stat-unit-select" name="system.prizeUnit">
+                                <option value="Σ" {{#if (eq system.prizeUnit "Σ")}}selected{{/if}}>Σ</option>
+                                <option value="Ω" {{#if (eq system.prizeUnit "Ω")}}selected{{/if}}>Ω</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="stat-item">
+                        <div class="stat-label">NT</div>
+                        <div class="stat-value">
+                            <input type="text" class="stat-input" name="system.nt" value="{{system.nt}}"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
 
   {{#if GM}}
   <nav class="sheet-tabs tabs" data-group="primary">

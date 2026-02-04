@@ -48,10 +48,10 @@ export class Pouvoir_Sheet extends foundry.appv1.sheets.ItemSheet {
       classes: ["mega", "sheet", "item"],
       template: "systems/mega/templates/pouvoir-sheet.html",
       width: 700,
-      height: 860,
+      height: 893,
       tabs: [
         {
-          navSelector: ".sheet-tabs",
+          navSelector: ".side-tabs",
           contentSelector: ".sheet-body",
           initial: "description",
         },

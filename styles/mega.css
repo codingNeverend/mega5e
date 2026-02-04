@@ -522,6 +522,7 @@ body {
   box-shadow: 0 0 10px var(--color-shadow-dark);
   border: none;
   color: var(--accent-color);
+  overflow: visible; /* Permet le débordement pour les éléments positionnés absolument */
 }
 
 .window-app .window-header a:hover {
@@ -557,6 +558,7 @@ body {
 
 .mega .window-content {
   overflow-y: hidden;
+  overflow-x: visible; /* Permet le débordement horizontal pour la sidebar */
   /* background-image: url("../images/parchment.png"); */
   font-family: "Mega", sans-serif;
   margin: 0px 0px 20px 0px;
@@ -710,7 +712,9 @@ html body.game.system-mega #ui .window-app.mega select {
 
 .mega .sheet-header-item .header-fields-item {
   flex: 1;
-  height: 100px;
+  height: 150px;
+  display: flex;
+  flex-direction: column;
 }
 
 .mega .sheet-header charname {
@@ -942,6 +946,13 @@ html body.game.system-mega #ui .window-app.mega select {
     rgba(255, 246, 143, 0.1) 100%
   );
 }
+
+.mega table.spes2:hover{
+box-shadow:
+    0 0 0 2px rgba(201, 164, 83, 0.4),
+    -1px 2px 10px 1px rgba(0, 0, 0, 0.7);
+}
+
 .mega table.spes td,
 table.spes th {
   padding: 2px 2px;
@@ -988,7 +999,7 @@ table.spes th {
   border: 1px solid var(--color-border-highlight);
 }
 
-.mega .tabs .item {
+/* .mega .tabs .item {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -996,26 +1007,138 @@ table.spes th {
   flex-grow: 1;
   border: var(--opacity-color) 1px solid;
   border-bottom: none;
-  /* background-color : rgba(255, 255, 255, 0); */
-  /* background: url(systems/mega/images/fond-fiche.webp) center no-repeat;background-size: cover; */
   background: var(--opacity-clear-color);
   font-size: 13px;
   margin-top: 0px;
   font-weight: bold;
-  /* background: rgba(220,170,0,0.18); */
   justify-content: center;
   align-items: center;
   border-radius: 4px 4px 0px 0px;
-  /* box-shadow: 3px -1px 6px rgba(0, 0, 0, 0.71); */
+} */
+
+/* .mega .tabs .item.active {
+  background-color: var(--accent-color);
+  text-shadow: none;
+} */
+
+/* .mega .tabs .item:hover {
+  background-color: var(--accent-color);
+  text-shadow: none;
+} */
+
+/* Main content layout with side navigation */
+.mega .main-content {
+  display: flex;
+  height: calc(100% - 180px);
+  /* height:100%; */
+  position: relative;
 }
 
-.mega .tabs .item.active {
-  background-color: var(--accent-color);
-  text-shadow: none;
+.mega .sheet-body {
+  flex: 1;
+  /* overflow-y: auto; */
+  margin-right: 0;
 }
-.mega .tabs .item:hover {
+
+/* Invisible trigger zone on the right side of the sheet */
+.mega .side-trigger-zone {
+  position: absolute;
+  right: 0;
+  top: 100px;
+  width: 20px;
+  height: calc(100% - 200px);
+  z-index: 1001;
+  background: transparent;
+}
+
+/* Side navigation styles - positioned outside the entire fiche */
+.mega .side-tabs {
+  position: fixed;
+  right: -65px; /* Hidden outside the fiche window */
+  top: 50%;
+  transform: translateY(-50%);
+  width: 50px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 1002;
+  transition: all 0.3s ease;
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: all;
+}
+
+/* Show buttons when hovering the trigger zone or the buttons themselves */
+.mega .side-trigger-zone:hover ~ .side-tabs,
+.mega .side-tabs:hover {
+  
+  visibility: visible;
+  opacity: 1;
+}
+
+.mega .side-tab-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  background: var(--opacity-clear-color);
+  border: var(--opacity-color) 2px solid;
+  border-radius: 12px;
+  color: var(--text-color);
+  text-decoration: none;
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  backdrop-filter: blur(10px);
+}
+
+.mega .side-tab-item:hover {
   background-color: var(--accent-color);
-  text-shadow: none;
+  transform: scale(1.1);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+}
+
+.mega .side-tab-item.active {
+  background-color: var(--accent-color);
+  transform: scale(1.1);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+  border-color: var(--accent-color);
+}
+
+
+
+
+/* Responsive adjustments for smaller windows */
+@media (max-width: 1000px) {
+  .mega .side-tabs {
+    right: -65px;
+    visibility: hidden;
+    opacity: 0;
+  }
+  
+  .mega .side-trigger-zone:hover ~ .side-tabs,
+  .mega .side-tabs:hover {
+    right: -25px;
+    visibility: visible;
+    opacity: 1;
+  }
+  
+  .mega .side-tab-item {
+    width: 45px;
+    height: 45px;
+    font-size: 16px;
+  }
+}
+
+/* Ensure tab content is visible */
+.mega .tab {
+  display: none;
+}
+
+.mega .tab.active {
+  display: block;
 }
 
 .mega .sheet-body {
@@ -1035,10 +1158,25 @@ table.spes th {
   padding: 0 5px;
 }
 
+/* Permettre le débordement pour la sidebar des PNJ */
+.window-app.mega.pnj,
+.window-app.mega.pnj .window-content,
+.window-app.mega.pnj form {
+  overflow: visible !important;
+}
+
+/* Forcer le débordement pour toutes les feuilles d'acteur PNJ */
+.actor.sheet.pnj,
+.actor.sheet.pnj .window-content,
+.actor.sheet.pnj form {
+  overflow: visible !important;
+}
+
 .mega .pnj-sheet-body {
   overflow: auto;
   margin: 0 0 0 0;
   padding: 0 0 0 0;
+  position: relative; /* Important pour le positionnement absolu des enfants */
   /* background-image: url('../images/fond_fiche_pnj.webp'); */
 }
 
@@ -1977,13 +2115,10 @@ input[type="radio"]:focus {
 .mega table.protections {
   text-align: center;
   border-collapse: collapse;
-  box-shadow:
+  /* box-shadow:
     0 0 0 2px var(--table-protections),
-    -1px 2px 10px 1px rgba(0, 0, 0, 0.7);
-  /* box-shadow: -1px 2px 5px 1px rgba(0, 0, 0, 0.7); */
-  /* box-shadow: 0 0 0 4px var(--table-traits); */
-  /* background: rgb(70, 130, 180, 0.9); Background et transparence du tableau Traits */
-  /* background: rgb(176, 196, 222,0.4); */
+    -1px 2px 10px 1px rgba(0, 0, 0, 0.7); */
+  box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
   background: var(--table-protections);
   border-radius: var(--corner-radius);
   border-collapse: collapse !important;
@@ -1991,6 +2126,12 @@ input[type="radio"]:focus {
   margin-left: 4px;
   margin-top: 7x;
   margin-bottom: 10px;
+}
+
+.mega table.protections:hover{
+  box-shadow:
+    0 0 0 2px var(--table-protections),
+    -1px 2px 10px 1px rgba(0, 0, 0, 0.7);
 }
 
 .mega table.protections th:nth-child(1) {
@@ -2048,9 +2189,10 @@ input[type="radio"]:focus {
   width: 500px;
   /* height: 500px; */
   text-align: left;
-  box-shadow:
+  /* box-shadow:
     0 0 0 2px var(--table-combat),
-    -1px 2px 10px 1px rgba(0, 0, 0, 0.7);
+    -1px 2px 10px 1px rgba(0, 0, 0, 0.7); */
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
   background-color: var(--table-combat);
   border-radius: var(--corner-radius);
   border-collapse: collapse !important;
@@ -2059,6 +2201,12 @@ input[type="radio"]:focus {
   margin-top: 7x;
   margin-bottom: 10px;
 }
+.mega table.equipement:hover {
+  box-shadow:
+    0 0 0 2px var(--table-combat),
+    -1px 2px 10px 1px rgba(0, 0, 0, 0.7);
+}
+
 
 .mega table.equipement th:nth-child(1) {
   border-radius: var(--corner-radius) var(--corner-radius) 0px 0px;
@@ -2148,13 +2296,10 @@ input[type="radio"]:focus {
   border: none;
   width: 99%;
   text-align: left;
-  box-shadow:
+  /* box-shadow:
     0 0 0 2px var(--opacity-color),
-    -1px 2px 10px 1px rgba(0, 0, 0, 0.7);
-  /* box-shadow: -1px 2px 5px 1px rgba(0, 0, 0, 0.7); */
-  /* box-shadow: 0 0 0 4px var(--table-traits); */
-  /* background: rgb(70, 130, 180, 0.9); Background et transparence du tableau Traits */
-  /* background: rgb(176, 196, 222,0.4); */
+    -1px 2px 10px 1px rgba(0, 0, 0, 0.7); */
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
   background-color: var(--opacity-clear-color);
   border-radius: var(--corner-radius);
   border-collapse: collapse !important;
@@ -2163,6 +2308,12 @@ input[type="radio"]:focus {
   margin-top: 7x;
   margin-bottom: 10px;
   /* background: linear-gradient(90deg, rgba(83,83,201,1) 0%, rgba(222,215,59,0.14609593837535018) 0%, rgba(255,255,215,0.10127801120448177) 100%); */
+}
+
+.mega table.tablemj:hover{
+  box-shadow:
+    0 0 0 2px var(--opacity-color),
+    -1px 2px 10px 1px rgba(0, 0, 0, 0.7);
 }
 
 .mega table.tablemj th:nth-child(1) {
@@ -2193,13 +2344,10 @@ input[type="radio"]:focus {
   border: none;
   width: 400px;
   text-align: left;
-  box-shadow:
+  /* box-shadow:
     0 0 0 2px var(--opacity-color),
-    -1px 2px 10px 1px rgba(0, 0, 0, 0.7);
-  /* box-shadow: -1px 2px 5px 1px rgba(0, 0, 0, 0.7); */
-  /* box-shadow: 0 0 0 4px var(--table-traits); */
-  /* background: rgb(70, 130, 180, 0.9); Background et transparence du tableau Traits */
-  /* background: rgb(176, 196, 222,0.4); */
+    -1px 2px 10px 1px rgba(0, 0, 0, 0.7); */
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
   background-color: var(--opacity-clear-color);
   border-radius: var(--corner-radius);
   border-collapse: collapse !important;
@@ -2208,6 +2356,13 @@ input[type="radio"]:focus {
   margin-top: 7x;
   margin-bottom: 10px;
 }
+
+.mega table.tablemj2:hover{
+  box-shadow:
+    0 0 0 2px var(--opacity-color),
+    -1px 2px 10px 1px rgba(0, 0, 0, 0.7);
+}
+
 
 .mega table.tablemj2 th:nth-child(1) {
   border-radius: var(--corner-radius) var(--corner-radius) 0px 0px;
@@ -2243,13 +2398,10 @@ input[type="radio"]:focus {
   border: none;
   width: 400px;
   text-align: left;
-  box-shadow:
+  /* box-shadow:
     0 0 0 2px var(--opacity-color),
-    -1px 2px 10px 1px rgba(0, 0, 0, 0.7);
-  /* box-shadow: -1px 2px 5px 1px rgba(0, 0, 0, 0.7); */
-  /* box-shadow: 0 0 0 4px var(--table-traits); */
-  /* background: rgb(70, 130, 180, 0.9); Background et transparence du tableau Traits */
-  /* background: rgb(176, 196, 222,0.4); */
+    -1px 2px 10px 1px rgba(0, 0, 0, 0.7); */
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
   background-color: var(--opacity-clear-color);
   border-radius: var(--corner-radius);
   border-collapse: collapse !important;
@@ -2257,6 +2409,207 @@ input[type="radio"]:focus {
   margin-left: 4px;
   margin-top: 7x;
   margin-bottom: 10px;
+}
+
+/* Nouvelle entête moderne pour les armes courtes */
+.mega .weapon-header-modern {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 8px 12px;
+  /* background: linear-gradient(135deg, rgba(0,0,0,0.05), rgba(255,255,255,0.1)); */
+  border-radius: var(--corner-radius);
+  /* box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px; */
+  border: 1px solid rgba(255,255,255,0.2);
+}
+
+.mega .weapon-name-container {
+  text-align: center;
+  margin-bottom: 12px;
+  flex-shrink: 0;
+}
+
+.mega .weapon-name {
+  margin: 0;
+  padding: 0;
+  line-height: 1;
+}
+
+.mega .weapon-name input {
+  width: 100%;
+  font-size: 22px;
+  font-weight: bold;
+  font-family: "Mega", serif;
+  text-align: center;
+  border: none;
+  background: transparent;
+  color: var(--accent-color, #2c5aa0);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  margin: 0;
+  padding: 4px 0;
+  border-bottom: 2px solid var(--accent-color, #2c5aa0);
+  min-height: 30px;
+}
+
+.mega .weapon-name input:focus {
+  outline: none;
+  border-bottom-color: var(--opacity-color, #4a90e2);
+  background: rgba(255,255,255,0.1);
+}
+
+.mega .weapon-type {
+  font-size: 11px;
+  color: var(--text-light, #666);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 3px;
+  font-weight: 600;
+}
+
+.mega .weapon-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  align-items: end;
+  flex: 1;
+}
+
+.mega .stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  min-height: 50px;
+  justify-content: space-between;
+}
+
+.mega .stat-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-dark, #333);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+  text-shadow: 0 1px 1px rgba(255,255,255,0.5);
+  height: 12px;
+  display: flex;
+  align-items: center;
+}
+
+.mega .stat-value {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  width: 100%;
+  height: 28px;
+  align-items: flex-end;
+}
+
+.mega .stat-input {
+  width: 45px;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+  border: 1px solid rgba(0,0,0,0.3);
+  border-radius: 3px;
+  padding: 3px 2px;
+  background: rgba(255,255,255,0.9);
+  color: #333;
+  min-height: 20px;
+}
+
+.mega .stat-input-sphere {
+  width: 260  px;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+  border: 1px solid rgba(0,0,0,0.3);
+  border-radius: 3px;
+  padding: 3px 2px;
+  background: rgba(255,255,255,0.9);
+  color: #333;
+  min-height: 20px;
+}
+
+.mega .stat-input:focus {
+  outline: none;
+  border-color: var(--accent-color, #2c5aa0);
+  box-shadow: 0 0 4px rgba(44, 90, 160, 0.4);
+  background: white;
+}
+
+.mega .stat-input:disabled {
+  background: rgba(200,200,200,0.6);
+  color: #999;
+  cursor: not-allowed;
+}
+
+.mega .stat-unit {
+  font-size: 11px;
+  color: var(--text-dark, #333);
+  font-weight: 600;
+  text-shadow: 0 1px 1px rgba(255,255,255,0.5);
+}
+
+.mega .stat-unit-select {
+  font-size: 10px;
+  color: var(--text-dark, #333);
+  font-weight: 600;
+  text-shadow: 0 1px 1px rgba(255,255,255,0.5);
+  border: 1px solid rgba(0,0,0,0.2);
+  border-radius: 2px;
+  background: rgba(255,255,255,0.9);
+  padding: 1px 2px;
+  margin-left: 2px;
+  cursor: pointer;
+  min-width: 30px;
+}
+
+.mega .stat-unit-select:focus {
+  outline: none;
+  border-color: var(--accent-color, #2c5aa0);
+  box-shadow: 0 0 2px rgba(44, 90, 160, 0.3);
+}
+
+.mega .stat-unit-select:hover {
+  background: white;
+  border-color: var(--accent-color, #2c5aa0);
+}
+
+/* Grille spécifique pour les pouvoirs (3 colonnes centrées) */
+.mega .weapon-stats-grid-pouvoir {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  align-items: end;
+  flex: 1;
+  justify-content: center;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Réduction de la hauteur des éditeurs de description des pouvoirs */
+.mega .editor-pouv-compact .editor {
+  height: 140px !important;
+  min-height: 140px !important;
+}
+
+.mega .editor-pouv-long .editor {
+  height: 500px !important;
+  min-height: 500px !important;
+}
+
+.mega .editor-pouv-compact .editor .editor-content {
+  height: 160px !important;
+  max-height: 160px !important;
+  overflow-y: auto;
+}
+
+.mega table.cartouche_item:hover{
+  box-shadow:
+    0 0 0 2px var(--opacity-color),
+    -1px 2px 10px 1px rgba(0, 0, 0, 0.7);
 }
 
 .mega table.cartouche_item th:nth-child(1) {
@@ -2580,14 +2933,11 @@ table.caracs th {
   /* width: 200px;*/
   width: 100%;
   text-align: center;
-  box-shadow:
+  /* box-shadow:
     0 0 0 2px var(--table-talents),
-    -1px 2px 10px 1px rgba(0, 0, 0, 0.7);
-  /* box-shadow: -1px 2px 5px 1px rgba(0, 0, 0, 0.7); */
-  /* box-shadow: 0 0 0 4px var(--table-objets_items); */
-  /* background: rgb(70, 130, 180, 0.9); Background et transparence du tableau objets_items */
-  /* background: rgb(176, 196, 222,0.4); */
-  background-color: var(--table-talents);
+    -1px 2px 10px 1px rgba(0, 0, 0, 0.7); */
+  box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+    background-color: var(--table-talents);
   border-radius: var(--corner-radius);
   border-collapse: collapse !important;
   border-width: 0;
@@ -2595,6 +2945,14 @@ table.caracs th {
   margin-top: 7x;*/
   margin-bottom: 10px;
 }
+
+.mega table.objets_items:hover {
+  box-shadow:
+    0 0 0 2px var(--table-talents),
+    -1px 2px 10px 1px rgba(0, 0, 0, 0.7);
+}
+
+
 .mega table.objets_items th:nth-child(1) {
   border-radius: var(--corner-radius) var(--corner-radius) 0px 0px;
 }
@@ -2613,13 +2971,10 @@ table.objets_items th {
   /* width: 200px;*/
   width: 100%;
   text-align: center;
-  box-shadow:
+  /* box-shadow:
     0 0 0 2px var(--table-combat),
-    -1px 2px 10px 1px rgba(0, 0, 0, 0.7);
-  /* box-shadow: -1px 2px 5px 1px rgba(0, 0, 0, 0.7); */
-  /* box-shadow: 0 0 0 4px var(--table-armes_items); */
-  /* background: rgb(70, 130, 180, 0.9); Background et transparence du tableau armes_items */
-  /* background: rgb(176, 196, 222,0.4); */
+    -1px 2px 10px 1px rgba(0, 0, 0, 0.7); */
+  box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
   background-color: var(--table-combat);
   border-radius: var(--corner-radius);
   border-collapse: collapse !important;
@@ -2628,6 +2983,13 @@ table.objets_items th {
   margin-top: 7x;*/
   margin-bottom: 10px;
 }
+
+.mega table.armes_items:hover {
+  box-shadow:
+    0 0 0 2px var(--table-combat),
+    -1px 2px 10px 1px rgba(0, 0, 0, 0.7);
+}
+
 .mega table.armes_items th:nth-child(1) {
   border-radius: var(--corner-radius) var(--corner-radius) 0px 0px;
 }
@@ -2640,13 +3002,10 @@ table.objets_items th {
   /* width: 200px;*/
   width: 100%;
   text-align: center;
-  box-shadow:
+  /* box-shadow:
     0 0 0 2px var(--table-protections),
-    -1px 2px 10px 1px rgba(0, 0, 0, 0.7);
-  /* box-shadow: -1px 2px 5px 1px rgba(0, 0, 0, 0.7); */
-  /* box-shadow: 0 0 0 4px var(--table-protections_items); */
-  /* background: rgb(70, 130, 180, 0.9); Background et transparence du tableau protections_items */
-  /* background: rgb(176, 196, 222,0.4); */
+    -1px 2px 10px 1px rgba(0, 0, 0, 0.7); */
+  box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
   background-color: var(--table-protections);
   border-radius: var(--corner-radius);
   border-collapse: collapse !important;
@@ -2655,6 +3014,13 @@ table.objets_items th {
   margin-top: 7x;*/
   margin-bottom: 10px;
 }
+
+.mega table.protections_items:hover {
+  box-shadow:
+    0 0 0 2px var(--table-protections),
+    -1px 2px 10px 1px rgba(0, 0, 0, 0.7);
+}
+
 .mega table.protections_items th:nth-child(1) {
   border-radius: var(--corner-radius) var(--corner-radius) 0px 0px;
 }
@@ -2673,13 +3039,10 @@ table.armes_items th {
   /* width: 200px;*/
   width: 100%;
   text-align: left;
-  box-shadow:
+  /* box-shadow:
     0 0 0 2px var(--table-pouvoirs),
-    -1px 2px 10px 1px rgba(0, 0, 0, 0.7);
-  /* box-shadow: -1px 2px 5px 1px rgba(0, 0, 0, 0.7); */
-  /* box-shadow: 0 0 0 4px var(--table-pouvoirs_items); */
-  /* background: rgb(70, 130, 180, 0.9); Background et transparence du tableau pouvoirs_items */
-  /* background: rgb(176, 196, 222,0.4); */
+    -1px 2px 10px 1px rgba(0, 0, 0, 0.7); */
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
   background-color: var(--table-pouvoirs);
   border-radius: var(--corner-radius);
   border-collapse: collapse !important;
@@ -2688,6 +3051,14 @@ table.armes_items th {
   margin-top: 7x;*/
   margin-bottom: 10px;
 }
+
+
+.mega table.pouvoirs_items:hover {
+  box-shadow:
+    0 0 0 2px var(--table-pouvoirs),
+    -1px 2px 10px 1px rgba(0, 0, 0, 0.7);
+}
+
 .mega table.pouvoirs_items th:nth-child(1) {
   border-radius: var(--corner-radius) var(--corner-radius) 0px 0px;
 }
@@ -2706,13 +3077,10 @@ table.pouvoirs_items th {
   /* width: 200px;*/
   width: 100%;
   text-align: left;
-  box-shadow:
+  /* box-shadow:
     0 0 0 2px var(--table-traits),
-    -1px 2px 10px 1px rgba(0, 0, 0, 0.7);
-  /* box-shadow: -1px 2px 5px 1px rgba(0, 0, 0, 0.7); */
-  /* box-shadow: 0 0 0 4px var(--table-traits); */
-  /* background: rgb(70, 130, 180, 0.9); Background et transparence du tableau Traits */
-  /* background: rgb(176, 196, 222,0.4); */
+    -1px 2px 10px 1px rgba(0, 0, 0, 0.7); */
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
   background-color: var(--table-traits);
   border-radius: var(--corner-radius);
   border-collapse: collapse !important;
@@ -2722,6 +3090,13 @@ table.pouvoirs_items th {
   margin-bottom: 10px;
   overflow: visible;
 }
+
+.mega table.traits:hover {
+  box-shadow:
+    0 0 0 2px var(--table-traits),
+    -1px 2px 10px 1px rgba(0, 0, 0, 0.7);
+}
+
 .mega table.traits th:nth-child(1) {
   border-radius: var(--corner-radius) var(--corner-radius) 0px 0px;
 }
@@ -2764,12 +3139,10 @@ table.traits th {
   width: 100%;
   text-align: right;
   border-collapse: collapse;
-  /* box-shadow: -1px 2px 5px 1px rgba(0, 0, 0, 0.7); */
-  /* box-shadow: 0 0 0 1px var(--table-pouvoirs); */
-  box-shadow:
+  /* box-shadow:
     0 0 0 2px var(--table-pouvoirs),
-    -1px 2px 10px 1px rgba(0, 0, 0, 0.7);
-  /* background: rgba(176, 222, 202,0.4); */
+    -1px 2px 10px 1px rgba(0, 0, 0, 0.7); */
+  box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
   font-weight: bold;
   background: var(--table-pouvoirs);
   border-radius: var(--corner-radius);
@@ -2778,6 +3151,13 @@ table.traits th {
   margin: 4px;
   margin-bottom: 10px;
 }
+
+.mega table.pouvoir:hover{
+  box-shadow:
+    0 0 0 2px var(--table-pouvoirs),
+    -1px 2px 10px 1px rgba(0, 0, 0, 0.7);
+}
+
 .mega table.pouvoir th:nth-child(1) {
   border-radius: var(--corner-radius) var(--corner-radius) 0px 0px;
 }
@@ -2802,9 +3182,10 @@ table.pouvoir th {
   border: none;
   /* width: 400px; */
   text-align: left;
-  box-shadow:
+  /* box-shadow:
     0 0 0 2px var(--opacity-color),
-    -1px 2px 10px 1px rgba(0, 0, 0, 0.7);
+    -1px 2px 10px 1px rgba(0, 0, 0, 0.7); */
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
   background-color: var(--opacity-clear-color);
   border-radius: var(--corner-radius);
   border-collapse: collapse !important;
@@ -2812,6 +3193,12 @@ table.pouvoir th {
   margin-left: 4px;
   margin-top: 7x;
   margin-bottom: 10px;
+}
+
+.mega table.item_pouvoir:hover{
+  box-shadow:
+    0 0 0 2px var(--opacity-color),
+    -1px 2px 10px 1px rgba(0, 0, 0, 0.7);
 }
 
 .mega table.item_pouvoir th:nth-child(1) {
@@ -2844,6 +3231,7 @@ table.pouvoir th {
   border: none;
   background-color: rgba(0, 0, 0, 0);
   font-weight: bold;
+  font-size: 12px;
 }
 
 .mega table.cartouche_item thead td {
@@ -2895,11 +3283,10 @@ table.pouvoir th {
 
 .mega table.spes2 {
   text-align: left;
-  /* box-shadow: -1px 2px 5px 1px rgba(0, 0, 0, 0.7); */
-  box-shadow:
+  /* box-shadow:
     0 0 0 2px var(--table-spes),
-    -1px 2px 10px 1px rgba(0, 0, 0, 0.7);
-  /* background: rgba(219, 222, 176,0.4); */
+    -1px 2px 10px 1px rgba(0, 0, 0, 0.7); */
+  box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
   background: var(--table-spes);
   border-radius: var(--corner-radius);
   border-collapse: collapse;
@@ -2946,14 +3333,10 @@ table.spes2 th {
 .mega table.cumul {
   width: 100%;
   text-align: left;
-  box-shadow:
+  /* box-shadow:
     0 0 0 2px rgba(201, 164, 83, 0.4),
-    -1px 2px 10px 1px rgba(0, 0, 0, 0.7);
-
-  /* box-shadow: -1px 2px 5px 1px rgba(0, 0, 0, 0.7); */
-  /* box-shadow: 0 0 0 4px var(--table-traits); */
-  /* background: rgb(70, 130, 180, 0.9); Background et transparence du tableau Traits */
-  /* background: rgb(176, 196, 222,0.4); */
+    -1px 2px 10px 1px rgba(0, 0, 0, 0.7); */
+  box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
   background-color: rgba(201, 164, 83, 0.4);
   border-radius: var(--corner-radius);
   border-collapse: collapse !important;
@@ -2964,6 +3347,12 @@ table.spes2 th {
 
   /* background: linear-gradient(90deg, rgba(83,83,201,1) 0%, rgba(250,172,14,0.14609593837535018) 0%, rgba(255,224,131,0.10127801120448177) 100%); */
 }
+.mega table.cumul:hover {
+box-shadow:
+    0 0 0 2px rgba(201, 164, 83, 0.4),
+    -1px 2px 10px 1px rgba(0, 0, 0, 0.7);
+}
+
 
 .mega table.cumul th:nth-child(1) {
   border-radius: var(--corner-radius) var(--corner-radius) 0px 0px;
@@ -3116,10 +3505,10 @@ table.entete th {
 
 .mega table.talents {
   text-align: left;
-  box-shadow:
+  /* box-shadow:
     0 0 0 2px var(--table-talents),
-    -1px 2px 10px 1px rgba(0, 0, 0, 0.7);
-  /* background: var(--opacity-clear-color); */
+    -1px 2px 10px 1px rgba(0, 0, 0, 0.7); */
+  box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
   background-color: var(--table-talents);
   border-radius: var(--corner-radius);
   border-collapse: collapse !important;
@@ -3129,6 +3518,13 @@ table.entete th {
   margin-bottom: 10px;
   width: 500px;
 }
+
+.mega table.talents:hover {
+  box-shadow:
+    0 0 0 2px var(--table-talents),
+    -1px 2px 10px 1px rgba(0, 0, 0, 0.7);
+}
+
 .mega table.talents th:nth-child(1) {
   border-radius: var(--corner-radius) var(--corner-radius) 0px 0px;
 }
@@ -3162,9 +3558,10 @@ table.talents th {
   /* width: 335px; */
   width: 100%;
   text-align: left;
-  box-shadow:
+  /* box-shadow:
     0 0 0 2px var(--table-traits),
-    -1px 2px 10px 1px rgba(0, 0, 0, 0.7);
+    -1px 2px 10px 1px rgba(0, 0, 0, 0.7); */
+  box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
   /* box-shadow: -1px 2px 5px 1px rgba(0, 0, 0, 0.7); */
   /* box-shadow: 0 0 0 4px var(--table-traits); */
   /* background: rgb(70, 130, 180, 0.9); Background et transparence du tableau Traits */
@@ -3176,6 +3573,12 @@ table.talents th {
   margin-left: 4px;
   margin-top: 7x;
   margin-bottom: 10px;
+}
+
+.mega table.talents_annexes:hover {
+  box-shadow:
+    0 0 0 2px var(--table-traits),
+    -1px 2px 10px 1px rgba(0, 0, 0, 0.7);
 }
 
 .mega table.talents_annexes th:nth-child(1) {
@@ -5080,3 +5483,294 @@ form[data-setting-type="mega"] .form-group:nth-child(6) { animation-delay: 0.6s;
   }
 }
 
+/* =================== TRIANGLES MODERNES POUR VIE ET MÊLÉE =================== */
+
+/* Container principal pour les triangles */
+.modern-health-triangle,
+.modern-melee-triangle {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100px;
+  height: 90px;
+  margin: 0 auto;
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.9) 0%, 
+    rgba(240, 240, 240, 0.8) 50%, 
+    rgba(220, 220, 220, 0.7) 100%);
+  border-radius: 15px 15px 80% 80%;
+  border: 2px solid #ddd;
+  box-shadow: 
+    0 4px 15px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+/* Effet au survol */
+.modern-health-triangle:hover,
+.modern-melee-triangle:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 8px 25px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+}
+
+/* Styles spécifiques pour la vie */
+.modern-health-triangle {
+  border-color: #27ae60;
+  background: linear-gradient(135deg, 
+    rgba(46, 204, 113, 0.1) 0%, 
+    rgba(39, 174, 96, 0.1) 50%, 
+    rgba(22, 160, 133, 0.1) 100%);
+}
+
+/* Styles spécifiques pour la mêlée */
+.modern-melee-triangle {
+  border-color: #3498db;
+  background: linear-gradient(135deg, 
+    rgba(52, 152, 219, 0.1) 0%, 
+    rgba(41, 128, 185, 0.1) 50%, 
+    rgba(44, 62, 80, 0.1) 100%);
+}
+
+/* Icône dans le triangle */
+.triangle-icon {
+  margin-bottom: 8px;
+  font-size: 18px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Container pour les valeurs */
+.resource-values {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4px;
+  font-weight: bold;
+}
+
+/* Inputs modernes */
+.modern-resource-input {
+  width: 32px !important;
+  height: 24px !important;
+  border: none !important;
+  background: rgba(255, 255, 255, 0.8) !important;
+  border-radius: 8px !important;
+  text-align: center !important;
+  font-size: 14px !important;
+  font-weight: bold !important;
+  font-family: "Mega", sans-serif !important;
+  color: #2c3e50 !important;
+  box-shadow: 
+    inset 0 2px 4px rgba(0, 0, 0, 0.1),
+    0 1px 2px rgba(255, 255, 255, 0.8) !important;
+  transition: all 0.2s ease !important;
+  padding: 2px 4px !important;
+}
+
+.modern-resource-input:hover {
+  background: rgba(255, 255, 255, 0.95) !important;
+  box-shadow: 
+    inset 0 2px 4px rgba(0, 0, 0, 0.15),
+    0 0 8px rgba(52, 152, 219, 0.3) !important;
+}
+
+.modern-resource-input:focus {
+  outline: none !important;
+  background: rgba(255, 255, 255, 1) !important;
+  box-shadow: 
+    inset 0 2px 4px rgba(0, 0, 0, 0.15),
+    0 0 12px rgba(52, 152, 219, 0.5) !important;
+}
+
+/* Séparateur entre les valeurs */
+.resource-separator {
+  margin: 0 4px;
+  font-size: 14px;
+  font-weight: bold;
+  color: #7f8c8d;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Label sous les valeurs */
+.resource-label {
+  font-size: 10px;
+  font-weight: bold;
+  color: #7f8c8d;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  font-family: "Mega", sans-serif;
+}
+
+/* Animation quand la valeur est critique */
+.health-current[style*="color: #e74c3c"],
+.melee-current[style*="color: #e74c3c"] {
+  animation: criticalPulse 2s infinite !important;
+}
+
+@keyframes criticalPulse {
+  0%, 100% {
+    background: rgba(255, 255, 255, 0.8) !important;
+    box-shadow: 
+      inset 0 2px 4px rgba(0, 0, 0, 0.1),
+      0 1px 2px rgba(255, 255, 255, 0.8) !important;
+  }
+  50% {
+    background: rgba(231, 76, 60, 0.1) !important;
+    box-shadow: 
+      inset 0 2px 4px rgba(231, 76, 60, 0.2),
+      0 0 8px rgba(231, 76, 60, 0.4) !important;
+  }
+}
+
+/* Responsivité pour les petites tailles */
+@media (max-width: 800px) {
+  .modern-health-triangle,
+  .modern-melee-triangle {
+    width: 80px;
+    height: 75px;
+  }
+  
+  .triangle-icon {
+    font-size: 16px;
+  }
+  
+  .modern-resource-input {
+    width: 28px !important;
+    height: 22px !important;
+    font-size: 12px !important;
+  }
+}
+
+/* États désactivés */
+.modern-resource-input:disabled {
+  background: rgba(200, 200, 200, 0.5) !important;
+  color: #95a5a6 !important;
+  cursor: not-allowed !important;
+}
+
+/* Side navigation pour armes courtes - comme fiches PJ/PNJ */
+.arme-courte-sheet .side-trigger-zone {
+  position: fixed;
+  right: 0;
+  top: 0;
+  width: 20px;
+  height: 100vh;
+  z-index: 1001;
+  pointer-events: all;
+}
+
+.arme-courte-sheet .side-tabs {
+  position: fixed;
+  right: -65px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 50px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 1002;
+  transition: all 0.3s ease;
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: all;
+}
+
+.arme-courte-sheet .side-trigger-zone:hover ~ .side-tabs,
+.arme-courte-sheet .side-tabs:hover {
+  /* right: 10px; */
+  visibility: visible;
+  opacity: 1;
+}
+
+.arme-courte-sheet .side-tab-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  background: var(--opacity-clear-color);
+  border: var(--opacity-color) 2px solid;
+  border-radius: 12px;
+  color: var(--text-color);
+  text-decoration: none;
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  backdrop-filter: blur(10px);
+}
+
+.arme-courte-sheet .side-tab-item:hover {
+  background-color: var(--accent-color);
+  transform: scale(1.1);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+}
+
+.arme-courte-sheet .side-tab-item.active {
+  background-color: var(--accent-color);
+  transform: scale(1.1);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+  border-color: var(--accent-color);
+}
+
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+/* Responsive design for sidebar */
+@media (max-width: 768px) {
+    .arme-courte-content {
+        padding-right: 20px;
+    }
+    
+    .side-tabs {
+        position: fixed;
+        bottom: 10px;
+        right: 10px;
+        top: auto;
+        transform: none;
+        flex-direction: row;
+        padding: 5px 10px;
+    }
+    
+    .side-tab-item {
+        width: 40px;
+        height: 40px;
+        font-size: 14px;
+    }
+    
+    .side-tab-item.active::after {
+        top: -8px;
+        left: 50%;
+        transform: translateX(-50%);
+        border-left: 8px solid transparent;
+        border-right: 8px solid transparent;
+        border-bottom: 8px solid #e74c3c;
+        border-top: none;
+    }
+}
+
+/* Amélioration des styles existants pour la compatibilité */
+.arme-courte-sheet .window-content {
+    padding: 0;
+}
+
+.arme-courte-sheet .sheet-header {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    padding: 15px;
+    border-bottom: 2px solid #e74c3c;
+}
+
+.arme-courte-sheet .sheet-body {
+    position: relative;
+    height: 100%;
+}

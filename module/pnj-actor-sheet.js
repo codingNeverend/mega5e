@@ -54,7 +54,7 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
       height: 568,
       tabs: [
         {
-          navSelector: ".sheet-tabs",
+          navSelector: ".side-tabs",
           contentSelector: ".sheet-body",
           initial: "attributes",
         },
@@ -95,7 +95,7 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
       this.position.height = 568;
     } else {
       this.position.width = 898; // Nouvelle largeur
-      this.position.height = 745;
+      this.position.height = 715;
     }
     return context;
   }
@@ -105,6 +105,12 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
   /** @override */
   activateListeners(html) {
     super.activateListeners(html);
+
+    // Gestionnaire pour les boutons latéraux
+    html.find(".side-tab-item").click(this._onSideTabClick.bind(this));
+
+    // Initialiser l'onglet actif au chargement
+    this._initializeActiveSideTab(html);
 
     //active ou désactive les effets spéciaux
     const effets_speciaux = game.settings.get("mega", "effets_speciaux");
@@ -1921,7 +1927,7 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
         this.actor.update({ "system.reduit": 0 });
         ui.notifications.info("Le PNJ devient acteur !");
         this.position.width = 898; // Nouvelle largeur
-        this.position.height = 745;
+        this.position.height = 715;
       } else {
         this.actor.update({ "system.reduit": 1 });
         this.position.width = 851; // Nouvelle largeur
@@ -3051,6 +3057,7 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
     sheetBody.css("height", bodyHeight);
     return position;
   }
+
   //Inventaire par type
 
   _prepareItems(context) {
@@ -6025,6 +6032,38 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
         content: content,
       });
     });
+  }
+
+  /**
+   * Handle clicking on side tab buttons
+   * @param {Event} event
+   * @private
+   */
+  _onSideTabClick(event) {
+    event.preventDefault();
+    const tab = event.currentTarget.dataset.tab;
+
+    // Remove active class from all side tabs
+    this.element.find(".side-tab-item").removeClass("active");
+
+    // Add active class to clicked tab
+    event.currentTarget.classList.add("active");
+
+    // Use the parent class tab switching functionality
+    this._tabs[0].activate(tab);
+  }
+
+  /**
+   * Initialize the active side tab on sheet load
+   * @param {jQuery} html
+   * @private
+   */
+  _initializeActiveSideTab(html) {
+    const activeTab = this._tabs[0].active;
+    const activeButton = html.find(`[data-tab="${activeTab}"]`);
+    if (activeButton.length) {
+      activeButton.addClass("active");
+    }
   }
 }
 

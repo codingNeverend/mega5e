@@ -45,13 +45,13 @@ export class Arme_longue_Sheet extends foundry.appv1.sheets.ItemSheet {
   /** @override */
   static get defaultOptions() {
     return foundry.utils.mergeObject(super.defaultOptions, {
-      classes: ["mega", "sheet", "item"],
+      classes: ["mega", "sheet", "item", "arme-longue-sheet"],
       template: "systems/mega/templates/arme-longue-sheet.html",
       width: 549,
       height: 709,
       tabs: [
         {
-          navSelector: ".sheet-tabs",
+          navSelector: ".side-tabs",
           contentSelector: ".sheet-body",
           initial: "description",
         },
