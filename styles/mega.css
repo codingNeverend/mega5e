@@ -1054,10 +1054,10 @@ table.spes th {
 /* Side navigation styles - positioned outside the entire fiche */
 .mega .side-tabs {
   position: fixed;
-  right: -65px; /* Hidden outside the fiche window */
+  right: -65px;
   top: 50%;
   transform: translateY(-50%);
-  width: 50px;
+  width: 80px;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -1727,6 +1727,14 @@ table.spes th {
   box-shadow: 0 0 5px black;
 }
 
+/* Style pour le conteneur damage-type-item quand il est actif */
+.mega .damage-type-item.active {
+  background: var(--accent-color);
+  border-radius: 8px;
+  border-color: var(--accent-color);
+  transition: background-color 0.2s ease;
+}
+
 /* Styles pour centrer les icônes de type de dégâts */
 .mega table.tablemj td {
   overflow: visible;
@@ -1822,6 +1830,15 @@ table.spes th {
 /* S'assurer que tous les conteneurs de tabs permettent le débordement des tooltips */
 .mega .tab {
   overflow: visible;
+}
+
+/* Ensure tab visibility rules are maintained */
+.mega .tab:not(.active) {
+  display: none;
+}
+
+.mega .tab.active {
+  display: block;
 }
 
 /* Assurer que les tooltips des SPÉ peuvent déborder correctement */
@@ -5773,4 +5790,884 @@ form[data-setting-type="mega"] .form-group:nth-child(6) { animation-delay: 0.6s;
 .arme-courte-sheet .sheet-body {
     position: relative;
     height: 100%;
+}
+
+/* Styles pour le conteneur d'image et le cercle de charge */
+.mega .sheet-header-item .image-container {
+    position: relative;
+    flex: 0 0 150px;
+    height: 150px;
+    margin-right: 10px;
+}
+
+.mega .sheet-header-item .charge-circle {
+    position: absolute;
+    top: 10px;
+    right: -5px;
+    width: 40px;
+    height: 40px;
+    background-color: var(--accent-color);
+    border: 3px solid #ecf0f1;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    z-index: 10;
+}
+
+.mega .sheet-header-item .charge-circle input {
+    background: transparent;
+    border: none;
+    color: #ecf0f1;
+    font-weight: bold;
+    font-size: 12px;
+    text-align: center;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    margin: 0;
+}
+
+.mega .sheet-header-item .charge-circle input:focus {
+    outline: none;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+}
+
+/* Modern weapon feature cards */
+.mega .weapon-feature-card {
+    /* background: var(--opacity3-clear-color); */
+    background :rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(var(--accent-color), 0.8);
+    border-radius: 6px;
+    padding: 10px;
+    margin: 15px 0;
+    /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); */
+    transition: all 0.3s ease;
+    backdrop-filter: blur(2px);
+    overflow: hidden;
+    position: relative;
+}
+
+
+.mega .weapon-feature-card:hover {
+    transform: translateY(-2px);
+    /* box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4); */
+    border-color: var(--accent-color);
+    /* background: rgba(255, 255, 255, 0.18); */
+}
+
+
+/* Simple collapsible system */
+.mega .collapsible-header {
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s ease;
+    margin: 0;
+    padding: 0;
+}
+
+.mega .collapsible-header:hover {
+    color: var(--accent-color);
+    transform: translateX(2px);
+}
+
+.mega .collapse-icon {
+    transition: transform 0.3s ease;
+    font-size: 12px !important;
+    margin-left: auto;
+}
+
+.mega .card-content {
+    max-height: 1000px;
+    opacity: 1;
+    margin-top: 15px;
+    overflow: visible;
+    transition: all 0.4s ease;
+}
+
+.mega .weapon-feature-card.collapsed .card-content {
+    max-height: 0;
+    opacity: 0;
+    margin-top: 0;
+    overflow: hidden;
+}
+
+.mega .weapon-feature-card.collapsed .collapse-icon {
+    transform: rotate(-90deg);
+}
+
+.mega .weapon-feature-card:not(.collapsed) .collapse-icon {
+    transform: rotate(0deg);
+}
+
+.mega .weapon-feature-card .feature-title {
+    font-size: 16px;
+    font-weight: bold;
+    color: #2c394b;
+    margin: 0 0 15px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    padding-bottom: 8px;
+    /* text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5); */
+}
+
+.mega .weapon-feature-card .feature-title i {
+    font-size: 14px;
+}
+
+/* Specific style for advantages card to prevent overflow */
+.mega .advantages-card .card-content {
+    overflow-x: auto;
+    overflow-y: visible;
+    padding-right: 5px;
+    padding-left: 5px;
+}
+
+.mega .advantages-card {
+    min-width: 500px; /* Assure une largeur minimale pour les 5 colonnes */
+}
+
+/* Damage types grid */
+.mega .damage-types-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.mega .damage-type-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.mega .damage-type-item:hover {
+    background: var(--accent-color);
+    border-color: var(--accent-color);
+    transform: scale(1.05);
+}
+
+.mega .damage-type-label {
+    font-size: 14px;
+    color: #2c394b;
+    text-align: center;
+    font-weight: 500;
+    /* text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5); */
+}
+
+/* Equipment field */
+.mega .equipment-field {
+    margin-top: 10px;
+}
+
+.mega .modern-textarea {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    padding: 12px;
+    color: #ffffff;
+    font-family: inherit;
+    font-size: 14px;
+    resize: vertical;
+    min-height: 120px;
+    transition: all 0.2s ease;
+}
+
+.mega .modern-textarea:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 2px rgba(var(--accent-color), 0.2);
+}
+
+.mega .modern-textarea::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* Defense bonus grid for protection items */
+.mega .defense-bonus-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.mega .defense-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.mega .defense-stat:hover {
+    background: rgba(0, 0, 0, 0.3);
+    border-color: rgba(var(--accent-color), 0.6);
+    transform: translateY(-2px);
+}
+
+.mega .defense-stat label {
+    font-size: 12px;
+    font-weight: bold;
+    color: rgba(255, 255, 255, 0.9);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0;
+    text-align: center;
+}
+
+.mega .defense-stat .stat-input {
+    width: 60px;
+    text-align: center;
+    padding: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.3);
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: bold;
+    transition: all 0.2s ease;
+}
+
+.mega .defense-stat .stat-input:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    background: rgba(0, 0, 0, 0.4);
+    box-shadow: 0 0 0 2px rgba(var(--accent-color), 0.2);
+}
+
+/* Power sheets grid layouts */
+.mega .power-header-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.mega .power-field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.mega .power-field label {
+    font-size: 12px;
+    font-weight: bold;
+    color: rgba(255, 255, 255, 0.9);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.mega .power-field .stat-input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.3);
+    color: #ffffff;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.mega .power-field .stat-input:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    background: rgba(0, 0, 0, 0.4);
+    box-shadow: 0 0 0 2px rgba(var(--accent-color), 0.2);
+}
+
+.mega .power-description {
+    margin-top: 10px;
+}
+
+.mega .power-grades-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.mega .grade-field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.mega .grade-field:hover {
+    background: rgba(0, 0, 0, 0.3);
+    border-color: rgba(var(--accent-color), 0.6);
+    transform: translateY(-1px);
+}
+
+.mega .grade-field label {
+    font-size: 11px;
+    font-weight: bold;
+    color: rgba(255, 255, 255, 0.9);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-align: center;
+}
+
+.mega .grade-field .stat-input {
+    width: 100%;
+    text-align: center;
+    padding: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.3);
+    color: #ffffff;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.mega .grade-field .stat-input:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    background: rgba(0, 0, 0, 0.4);
+    box-shadow: 0 0 0 2px rgba(var(--accent-color), 0.2);
+}
+
+/* Wide fields for power sheets */
+.mega .stat-item-wide {
+    grid-column: span 2;
+    min-width: 220px;
+}
+
+.mega .stat-input-wide {
+    min-width: 160px;
+    width: 100%;
+}
+
+/* Combat mode section */
+.mega .combat-mode-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.mega .combat-mode-toggle {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.mega .combat-mode-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(var(--accent-color), 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.mega .combat-mode-text {
+    font-size: 15px;
+    color: #2c3e50;
+    /* text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5); */
+}
+
+.mega .combat-mode-input {
+    padding-left: 52px;
+}
+
+.mega .combat-mode-input.hidden {
+    display: none;
+}
+
+.mega .combat-mode-input label {
+    display: block;
+    margin-bottom: 5px;
+    /* color: rgba(255, 255, 255, 0.9); */
+    font-size: 13px;
+}
+
+/* Advantages grid */
+.mega .advantages-card {
+    margin-top: 20px;
+    /* background: var(--opacity-clear-color); */
+    /* background: rgba(0,100,200,0.2); */
+}
+
+.mega .advantages-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 3px;
+    margin-top: 15px;
+    max-width: 100%;
+    overflow-x: auto;
+    width: 100%;
+}
+
+.mega .advantage-column {
+    background: var(--opacity-color);
+    border-radius: 6px;
+    padding: 6px;
+    border: 1px solid VAR(--accent-color);
+    min-width: 0;
+    font-size: 10px;
+    width: 100%;
+    max-width: 100%;
+    flex: 1;
+    box-sizing: border-box;
+}
+
+.mega .advantage-header {
+    text-align: center;
+    font-weight: bold;
+    /* color: #ffffff; */
+    color:#2c394b;
+    margin-bottom: 6px;
+    padding: 4px;
+    background: rgba(var(--accent-color), 0.3);
+    border-radius: 4px;
+    font-size: 12px;
+    /* text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5); */
+    word-break: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+}
+
+.mega .advantage-field {
+    margin-bottom: 6px;
+}
+
+.mega .advantage-field label {
+    display: block;
+    font-size: 11px;
+    /* color:#fff; */
+    margin-bottom: 2px;
+    font-weight: 500;
+    line-height: 1.2;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    text-align: center;
+}
+
+.mega .modern-input {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    padding: 4px 6px;
+    color: #ffffff;
+    font-size: 11px;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+
+.mega .modern-input:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 2px rgba(var(--accent-color), 0.4);
+    /* background: rgba(0, 0, 0, 0.6); */
+}
+
+.mega .advantage-input {
+    text-align: center;
+    font-weight: bold;
+}
+
+.mega .effect-input {
+    font-size: 11px;
+    text-align: center;
+}
+
+.mega .effect-input input {
+    font-size: 11px;
+    color:#FFF;
+    background: #fff;
+}
+
+/* Effects help */
+.mega .effects-help {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.mega .effects-legend {
+    background: rgba(var(--accent-color), 0.15);
+    border-left: 3px solid var(--accent-color);
+    padding: 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    line-height: 1.4;
+    color: #ffffff;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.mega .effects-legend i {
+    color: var(--accent-color);
+    margin-top: 2px;
+}
+
+/* Media fields */
+.mega .media-fields-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.mega .media-fields-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    color:#000;
+}
+
+.mega .media-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.mega .media-field.half-width {
+    flex: 1;
+}
+
+.mega .media-field label {
+    font-size: 13px;
+    color:#2c394b;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    /* text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5); */
+}
+
+.mega .media-field label i {
+    font-size: 12px;
+    /* color: var(--accent-color); */
+}
+
+.mega .numeric-input {
+    text-align: center;
+}
+
+/* Sound field */
+.mega .sound-field-container {
+    margin-top: 10px;
+}
+
+.mega .sound-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.mega .sound-input-group > div:last-child {
+    display: flex;
+    align-items: stretch;
+    gap: 8px;
+}
+
+.mega .sound-input {
+    flex: 1;
+}
+
+.mega .play-sound-btn {
+    background: var(--accent-color);
+    border: none;
+    border-radius: 6px;
+    padding: 8px 12px;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+}
+
+.mega .play-sound-btn:hover {
+    background: rgba(var(--accent-color), 0.8);
+    transform: scale(1.05);
+}
+
+.mega .play-sound-btn i {
+    font-size: 12px;
+}
+
+/* Media fields styling */
+.mega .media-fields-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.mega .media-fields-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.mega .media-field {
+    margin-bottom: 15px;
+}
+
+.mega .media-field.half-width {
+    margin-bottom: 0;
+}
+
+.mega .media-field label {
+    display: block;
+    font-size: 14px;
+    /* color: rgba(255, 255, 255, 0.9); */
+    margin-bottom: 6px;
+    font-weight: 500;
+    color:#000;
+}
+
+.mega .sound-field-container {
+    margin-top: 10px;
+}
+
+.mega .sound-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.mega .sound-input-group label {
+    font-size: 14px;
+    /* color: rgba(255, 255, 255, 0.9); */
+    margin-bottom: 4px;
+    font-weight: 500;
+}
+
+.mega .play-sound-btn {
+    background: rgba(var(--accent-color), 0.6);
+    border: none;
+    border-radius: 4px;
+    padding: 8px 12px;
+    margin-top: 8px;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    align-self: flex-start;
+}
+
+.mega .play-sound-btn:hover {
+    background: rgba(var(--accent-color), 0.8);
+    transform: scale(1.05);
+}
+
+/* Responsive adjustments */
+@media (max-width: 800px) {
+    .mega .advantages-grid {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 6px;
+    }
+    
+    .mega .advantage-column {
+        padding: 6px;
+        font-size: 10px;
+    }
+    
+    .mega .advantage-header {
+        font-size: 11px;
+        padding: 4px;
+    }
+    
+    .mega .advantage-field label {
+        font-size: 9px;
+    }
+    
+    .mega .modern-input {
+        font-size: 10px;
+        padding: 3px 4px;
+    }
+    
+    .mega .damage-types-grid {
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        gap: 10px;
+    }
+    
+    .mega .media-fields-row {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+}
+
+@media (max-width: 600px) {
+    .mega .advantages-grid {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 4px;
+    }
+    
+    .mega .advantage-column {
+        padding: 4px;
+    }
+    
+    .mega .advantage-header {
+        font-size: 10px;
+        padding: 3px;
+    }
+    
+    .mega .advantage-field label {
+        font-size: 8px;
+    }
+    
+    
+    .mega .modern-input {
+        font-size: 9px;
+        padding: 2px 3px;
+    }
+}
+
+/* Styles pour l'inventaire moderne */
+.mega .inventory-sections {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-top: 15px;
+}
+
+.mega .inventory-section-weapons,
+.mega .inventory-section-equipment {
+  background: rgba(0, 0, 0, 0.05);
+  padding: 15px;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--color-border-light-2);
+}
+
+.mega .section-title {
+  color: var(--color-text-heading);
+  margin: 0 0 15px 0;
+  font-size: 1.1em;
+  font-weight: bold;
+  text-align: center;
+  padding: 8px;
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
+  border-radius: var(--border-radius);
+  border: 1px solid var(--color-border-light-1);
+}
+
+.mega .inventory-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 10px;
+  padding: 10px 0;
+}
+
+.mega .inventory-item-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 5px;
+  border-radius: var(--border-radius);
+  transition: all 0.2s ease;
+}
+
+.mega .inventory-item-card:hover {
+  background: rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.mega .inventory-item-image {
+  position: relative;
+  margin-bottom: 5px;
+}
+
+.mega .inventory-item-image img {
+  width: 60px;
+  height: 60px;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--color-border-light-2);
+  box-shadow: inset 0px 2px 10px 29px var(--opacity-clear-color);
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.mega .inventory-item-image img:hover {
+  box-shadow: 0 0 10px rgba(0, 150, 255, 0.5);
+  border-color: rgba(0, 150, 255, 0.7);
+}
+
+.mega .inventory-item-name {
+  font-size: 0.8em;
+  color: var(--color-text-dark-primary);
+  line-height: 1.2;
+  max-width: 70px;
+  word-wrap: break-word;
+  hyphens: auto;
+}
+
+.mega .item-quantity-badge {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  background: linear-gradient(135deg, #4CAF50, #45a049);
+  color: white;
+  font-size: 10px;
+  font-weight: bold;
+  padding: 2px 4px;
+  border-radius: 8px;
+  border: 1px solid white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  min-width: 16px;
+  text-align: center;
+}
+
+.mega .item-charge-badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  background: linear-gradient(135deg, #FF9800, #F57C00);
+  color: white;
+  font-size: 10px;
+  font-weight: bold;
+  padding: 2px 4px;
+  border-radius: 8px;
+  border: 1px solid white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  min-width: 16px;
+  text-align: center;
+}
+
+.mega .item-charge-badge i {
+  margin-right: 2px;
+  font-size: 8px;
+}
+
+/* Responsive pour petits écrans */
+@media (max-width: 768px) {
+  .mega .inventory-sections {
+    grid-template-columns: 1fr;
+  }
+  
+  .mega .inventory-grid {
+    grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+  }
 }

@@ -80,222 +80,593 @@
 		{{!-- Owned Items Tab --}}
 		<div class="tab items" data-group="primary" data-tab="items" style="margin:10px; padding: 0 5px;">
 
-			<center>
-				<div class="container">
-					<div class="column1">
-						{{#if actor.objet}}
-						<table class="objets_items">
-							<thead style="text-align:center;border:none;width:98%;"><tr><th>OBJETS</th></tr></thead>
-							<tr><td>
-								{{#each actor.objet as |item id|}}
-
-								<div class="item-container" style="position: relative; display: inline-block;padding-left: 18px;">
-									<img style="box-shadow: inset 0px 2px 10px 29px var(--opacity-clear-color);border-radius:var(--corner-radius);border-color:#555;width:60px;height:60px;" id="{{item._id}}" class="item-name item-edit items_rollable" src="{{item.img}}" title="{{item.name}}">
-									{{#ifsuperior item.system.quantity 1}}<span class="item-quantity" style="position: absolute; bottom: 0; right: 0; background: rgba(0, 0, 0, 0.5); color: white; padding: 2px;">{{item.system.quantity}}</span>{{/ifsuperior}}
-								</div>
-								{{/each}}
-						{{/if}}
-							</td></tr>
-						</table>
-						{{#if actor.tirs}}
-						<table class="armes_items" style="width:65%">
-							<thead style="text-align:center;border:none;width:98%;"><tr><th>ARMES DE TIR</th></tr></thead>
-							<tr><td>{{#each actor.tirs as |item id|}}
-								<div class="item-container" style="position: relative; display: inline-block;padding-left: 18px;">
-									<img style="box-shadow: inset 0px 2px 10px 29px var(--opacity-clear-color);border-radius:var(--corner-radius);border-color:#555; width:60px;height:60px;" id="{{item._id}}" class="item-name item-edit items_rollable" src="{{item.img}}" title="{{item.name}}">
-									{{#ifsuperior item.system.quantity 1}}<span class="item-quantity" style="position: absolute; bottom: 0; right: 0; font-size:12px;background: rgba(0, 0, 0, 0.5); color: white; padding: 2px;">{{item.system.quantity}}</span>{{/ifsuperior}}
-									<span class="item-charge" style="position: absolute; font-size:12px;top: 0; right: 0; background: rgba(0, 0, 0, 0.5); color: white; padding: 2px;"><i class="fas fa-bolt"></i>{{item.system.charge}}</span>
-								  </div>
-								{{/each}}
-							</td></tr>
-						</table>
-						{{/if}}
-						{{#if actor.courtes}}
-						<table class="armes_items" style="width:65%">
-							<thead style="text-align:center;border:none;width:98%;"><tr><th>ARMES COURTES</th></tr></thead>
-							<tr><td>{{#each actor.courtes as |item id|}}
-								<div class="item-container" style="position: relative; display: inline-block;padding-left: 18px;">
-									<img style="box-shadow: inset 0px 2px 10px 29px var(--opacity-clear-color);border-color:#555;border-radius:var(--corner-radius);width:60px;height:60px;" id="{{item._id}}" class="item-name item-edit items_rollable" src="{{item.img}}" title="{{item.name}}">
-									{{#ifsuperior item.system.quantity 1}}<span class="item-quantity" style="position: absolute; bottom: 0; right: 0; font-size:12px;background: rgba(0, 0, 0, 0.5); color: white; padding: 2px;">{{item.system.quantity}}</span>{{/ifsuperior}}
-								  </div>
-								{{/each}}
-							</td></tr>
-						</table>
-						{{/if}}
-						{{#if actor.longues}}
-						<table class="armes_items" style="width:65%">
-							<thead style="text-align:center;border:none;width:98%;"><tr><th>ARMES LONGUES</th></tr></thead>
-							<tr><td>{{#each actor.longues as |item id|}}
-								<div class="item-container" style="position: relative; display: inline-block;padding-left: 18px;">
-									<img style="box-shadow: inset 0px 2px 10px 29px var(--opacity-clear-color);border-color:#555;border-radius:var(--corner-radius);width:60px;height:60px;" id="{{item._id}}" class="item-name item-edit items_rollable" src="{{item.img}}" title="{{item.name}}">
-									{{#ifsuperior item.system.quantity 1}}<span class="item-quantity" style="position: absolute; bottom: 0; right: 0; font-size:12px;background: rgba(0, 0, 0, 0.5); color: white; padding: 2px;">{{item.system.quantity}}</span>{{/ifsuperior}}
-								  </div>
-								{{/each}}
-							</td></tr>
-						</table>
-						{{/if}}
-						{{#if actor.lancer}}
-						<table class="armes_items" style="width:65%">
-							<thead style="text-align:center;border:none;width:98%;"><tr><th>ARMES DE LANCER</th></tr></thead>
-							<tr><td>{{#each actor.lancer as |item id|}}
-								<div class="item-container" style="position: relative; display: inline-block;padding-left: 18px;">
-									<img style="box-shadow: inset 0px 2px 10px 29px var(--opacity-clear-color);border-color:#555;border-radius:var(--corner-radius);width:60px;height:60px;" id="{{item._id}}" class="item-name item-edit items_rollable" src="{{item.img}}" title="{{item.name}}">
-									{{#ifsuperior item.system.quantity 1}}<span class="item-quantity" style="position: absolute; bottom: 0; right: 0; font-size:12px;background: rgba(0, 0, 0, 0.5); color: white; padding: 2px;">{{item.system.quantity}}</span>{{/ifsuperior}}
-								  </div>
-								{{/each}}
-							</td></tr>
-						</table>
-						{{/if}}
-						{{#if actor.protections}}
-						<table class="protections_items" style="width:65%">
-							<thead style="text-align:center;border:none;width:98%;"><tr><th>PROTECTIONS</th></tr></thead>
-							<tr><td>{{#each actor.protections as |item id|}}
-								<div class="item-container" style="position: relative; display: inline-block;padding-left: 18px;">
-									<img style="box-shadow: inset 0px 2px 10px 29px var(--opacity-clear-color);border-color:#555;border-radius:var(--corner-radius);width:60px;height:60px;" id="{{item._id}}" class="item-name item-edit items_rollable" src="{{item.img}}" title="{{item.name}}">
-									{{#ifsuperior item.system.quantity 1}}<span class="item-quantity" style="position: absolute; bottom: 0; right: 0; font-size:12px;background: rgba(0, 0, 0, 0.5); color: white; padding: 2px;">{{item.system.quantity}}</span>{{/ifsuperior}}
-								  </div>
-								{{/each}}
-							</td></tr>
-						</table>
-						{{/if}}
-					</div>
-					<div class="column2">
-						{{#if actor.pouvoir}}
-						<table class="pouvoirs_items">
-							<thead style="text-align:center;border:none;width:98%;"><tr><th>POUVOIRS</th></tr></thead>
-							<tr><td>{{#each actor.pouvoir as |item id|}}
-								<div class="item-container" style="position: relative; display: inline-block;padding-left: 18px;">
-									<img style="box-shadow: inset 0px 2px 10px 29px var(--opacity-clear-color);border-color:#555;border-radius:var(--corner-radius);width:60px;height:60px;" id="{{item._id}}" class="item-name item-edit items_rollable" src="{{item.img}}" title="{{item.name}}">
-									{{#ifsuperior item.system.quantity 1}}<span class="item-quantity" style="position: absolute; bottom: 0; right: 0; font-size:12px;background: rgba(0, 0, 0, 0.5); color: white; padding: 2px;">{{item.system.quantity}}</span>{{/ifsuperior}}
-								  </div>
-								{{/each}}
-							</td></tr>
-						</table>
-						{{/if}}
-						{{#if actor.melee}}
-						<table class="pouvoirs_items">
-							<thead  style="text-align:center;border:none;width:98%;"><tr><th>ATTAQUES SPÉCIALES</th></tr></thead>
-							<tr><td>{{#each actor.melee as |item id|}}
-								<div class="item-container" style="position: relative; display: inline-block;padding-left: 18px;">
-									<img style="box-shadow: inset 0px 2px 10px 29px var(--opacity-clear-color);border-color:#555;border-radius:var(--corner-radius);width:60px;height:60px;" id="{{item._id}}" class="item-name item-edit items_rollable" src="{{item.img}}" title="{{item.name}}">
-									{{#ifsuperior item.system.quantity 1}}<span class="item-quantity" style="position: absolute; bottom: 0; right: 0; font-size:12px;background: rgba(0, 0, 0, 0.5); color: white; padding: 2px;">{{item.system.quantity}}</span>{{/ifsuperior}}
-								  </div>
-								{{/each}}</td></tr>
-						</table>
-						{{/if}}
+			<h3>🎒 Inventaire</h3>
+			
+			{{#if actor.objet}}
+			<div class="weapon-feature-card" onclick="this.classList.toggle('collapsed')">
+				<h4 class="feature-title collapsible-header">
+					<i class="fas fa-cube"></i> Objets ({{actor.objet.length}})
+					<i class="fas fa-chevron-down collapse-icon"></i>
+				</h4>
+				<div class="card-content" onclick="event.stopPropagation();">
+					<div class="inventory-grid" onclick="event.stopPropagation();">
+						{{#each actor.objet as |item id|}}
+						<div class="inventory-item-card">
+							<div class="inventory-item-image">
+								<img id="{{item._id}}" class="item-name item-edit items_rollable" src="{{item.img}}" title="{{item.name}}"/>
+								{{#ifsuperior item.system.quantity 1}}<span class="item-quantity-badge">{{item.system.quantity}}</span>{{/ifsuperior}}
+							</div>
+							<div class="inventory-item-name">{{item.name}}</div>
+						</div>
+						{{/each}}
 					</div>
 				</div>
+			</div>
+			{{/if}}
+
+			<div class="inventory-sections">
+				<div class="inventory-section-weapons">
+					<h4 class="section-title"><i class="fas fa-crossed-swords"></i> Armement</h4>
+					
+					{{#if actor.tirs}}
+					<div class="weapon-feature-card collapsed" onclick="this.classList.toggle('collapsed')">
+						<h4 class="feature-title collapsible-header">
+							<i class="fas fa-crosshairs"></i> Armes de Tir ({{actor.tirs.length}})
+							<i class="fas fa-chevron-down collapse-icon"></i>
+						</h4>
+						<div class="card-content" onclick="event.stopPropagation();">
+							<div class="inventory-grid" onclick="event.stopPropagation();">
+								{{#each actor.tirs as |item id|}}
+								<div class="inventory-item-card">
+									<div class="inventory-item-image">
+										<img id="{{item._id}}" class="item-name item-edit items_rollable" src="{{item.img}}" title="{{item.name}}"/>
+										{{#ifsuperior item.system.quantity 1}}<span class="item-quantity-badge">{{item.system.quantity}}</span>{{/ifsuperior}}
+										<span class="item-charge-badge"><i class="fas fa-bolt"></i>{{item.system.charge}}</span>
+									</div>
+									<div class="inventory-item-name">{{item.name}}</div>
+								</div>
+								{{/each}}
+							</div>
+						</div>
+					</div>
+					{{/if}}
+
+					{{#if actor.courtes}}
+					<div class="weapon-feature-card collapsed" onclick="this.classList.toggle('collapsed')">
+						<h4 class="feature-title collapsible-header">
+							<i class="fas fa-cut"></i> Armes Courtes ({{actor.courtes.length}})
+							<i class="fas fa-chevron-down collapse-icon"></i>
+						</h4>
+						<div class="card-content" onclick="event.stopPropagation();">
+							<div class="inventory-grid" onclick="event.stopPropagation();">
+								{{#each actor.courtes as |item id|}}
+								<div class="inventory-item-card">
+									<div class="inventory-item-image">
+										<img id="{{item._id}}" class="item-name item-edit items_rollable" src="{{item.img}}" title="{{item.name}}"/>
+										{{#ifsuperior item.system.quantity 1}}<span class="item-quantity-badge">{{item.system.quantity}}</span>{{/ifsuperior}}
+									</div>
+									<div class="inventory-item-name">{{item.name}}</div>
+								</div>
+								{{/each}}
+							</div>
+						</div>
+					</div>
+					{{/if}}
+
+					{{#if actor.longues}}
+					<div class="weapon-feature-card collapsed" onclick="this.classList.toggle('collapsed')">
+						<h4 class="feature-title collapsible-header">
+							<i class="fas fa-sword"></i> Armes Longues ({{actor.longues.length}})
+							<i class="fas fa-chevron-down collapse-icon"></i>
+						</h4>
+						<div class="card-content" onclick="event.stopPropagation();">
+							<div class="inventory-grid" onclick="event.stopPropagation();">
+								{{#each actor.longues as |item id|}}
+								<div class="inventory-item-card">
+									<div class="inventory-item-image">
+										<img id="{{item._id}}" class="item-name item-edit items_rollable" src="{{item.img}}" title="{{item.name}}"/>
+										{{#ifsuperior item.system.quantity 1}}<span class="item-quantity-badge">{{item.system.quantity}}</span>{{/ifsuperior}}
+									</div>
+									<div class="inventory-item-name">{{item.name}}</div>
+								</div>
+								{{/each}}
+							</div>
+						</div>
+					</div>
+					{{/if}}
+
+					{{#if actor.lancer}}
+					<div class="weapon-feature-card collapsed" onclick="this.classList.toggle('collapsed')">
+						<h4 class="feature-title collapsible-header">
+							<i class="fas fa-bullseye"></i> Armes de Lancer ({{actor.lancer.length}})
+							<i class="fas fa-chevron-down collapse-icon"></i>
+						</h4>
+						<div class="card-content" onclick="event.stopPropagation();">
+							<div class="inventory-grid" onclick="event.stopPropagation();">
+								{{#each actor.lancer as |item id|}}
+								<div class="inventory-item-card">
+									<div class="inventory-item-image">
+										<img id="{{item._id}}" class="item-name item-edit items_rollable" src="{{item.img}}" title="{{item.name}}"/>
+										{{#ifsuperior item.system.quantity 1}}<span class="item-quantity-badge">{{item.system.quantity}}</span>{{/ifsuperior}}
+									</div>
+									<div class="inventory-item-name">{{item.name}}</div>
+								</div>
+								{{/each}}
+							</div>
+						</div>
+					</div>
+					{{/if}}
+
+					{{#if actor.melee}}
+					<div class="weapon-feature-card collapsed" onclick="this.classList.toggle('collapsed')">
+						<h4 class="feature-title collapsible-header">
+							<i class="fas fa-fist-raised"></i> Attaques Spéciales ({{actor.melee.length}})
+							<i class="fas fa-chevron-down collapse-icon"></i>
+						</h4>
+						<div class="card-content" onclick="event.stopPropagation();">
+							<div class="inventory-grid" onclick="event.stopPropagation();">
+								{{#each actor.melee as |item id|}}
+								<div class="inventory-item-card">
+									<div class="inventory-item-image">
+										<img id="{{item._id}}" class="item-name item-edit items_rollable" src="{{item.img}}" title="{{item.name}}"/>
+										{{#ifsuperior item.system.quantity 1}}<span class="item-quantity-badge">{{item.system.quantity}}</span>{{/ifsuperior}}
+									</div>
+									<div class="inventory-item-name">{{item.name}}</div>
+								</div>
+								{{/each}}
+							</div>
+						</div>
+					</div>
+					{{/if}}
+				</div>
+
+				<div class="inventory-section-equipment">
+					<h4 class="section-title"><i class="fas fa-shield-alt"></i> Équipement</h4>
+
+					{{#if actor.protections}}
+					<div class="weapon-feature-card collapsed" onclick="this.classList.toggle('collapsed')">
+						<h4 class="feature-title collapsible-header">
+							<i class="fas fa-vest"></i> Protections ({{actor.protections.length}})
+							<i class="fas fa-chevron-down collapse-icon"></i>
+						</h4>
+						<div class="card-content" onclick="event.stopPropagation();">
+							<div class="inventory-grid" onclick="event.stopPropagation();">
+								{{#each actor.protections as |item id|}}
+								<div class="inventory-item-card">
+									<div class="inventory-item-image">
+										<img id="{{item._id}}" class="item-name item-edit items_rollable" src="{{item.img}}" title="{{item.name}}"/>
+										{{#ifsuperior item.system.quantity 1}}<span class="item-quantity-badge">{{item.system.quantity}}</span>{{/ifsuperior}}
+									</div>
+									<div class="inventory-item-name">{{item.name}}</div>
+								</div>
+								{{/each}}
+							</div>
+						</div>
+					</div>
+					{{/if}}
+
+					{{#if actor.pouvoir}}
+					<div class="weapon-feature-card collapsed" onclick="this.classList.toggle('collapsed')">
+						<h4 class="feature-title collapsible-header">
+							<i class="fas fa-magic"></i> Pouvoirs ({{actor.pouvoir.length}})
+							<i class="fas fa-chevron-down collapse-icon"></i>
+						</h4>
+						<div class="card-content" onclick="event.stopPropagation();">
+							<div class="inventory-grid" onclick="event.stopPropagation();">
+								{{#each actor.pouvoir as |item id|}}
+								<div class="inventory-item-card">
+									<div class="inventory-item-image">
+										<img id="{{item._id}}" class="item-name item-edit items_rollable" src="{{item.img}}" title="{{item.name}}"/>
+										{{#ifsuperior item.system.quantity 1}}<span class="item-quantity-badge">{{item.system.quantity}}</span>{{/ifsuperior}}
+									</div>
+									<div class="inventory-item-name">{{item.name}}</div>
+								</div>
+								{{/each}}
+							</div>
+						</div>
+					</div>
+					{{/if}}
+				</div>
+			</div>
         </div>
 		
 		{{!-- MJ Tab --}}
 
 			<div class="tab" data-group="primary" data-tab="MJ" style="margin:10px; padding: 0 5px;">
 				<div>
-				<br><br>
-				<table class="tablemj">
-					<thead style="border:none;">
-					<th class="masquer" value="charge">Paramétrer la Charge</th>
-					</thead>
-				<tr><td>
-				{{#if system.masquer_avantage_charge}}
-				<center><table style="width:60%" class="equipement">
-					<tr>
-						<thead style="border:none;"><tr>
-							<td></td><td>Av0</td><td>Av1</td><td>Av2</td><td>Av3</td><td>Av4</td>
-						</tr></thead>
-						<td>Points de Mêlée</td>
-						<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.charge.av0" value="{{system.talents_combat.charge.av0}}" data-dtype="Number"/></td>
-						<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.charge.av1" value="{{system.talents_combat.charge.av1}}" data-dtype="Number"/></td>
-						<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.charge.av2" value="{{system.talents_combat.charge.av2}}" data-dtype="Number"/></td>
-						<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.charge.av3" value="{{system.talents_combat.charge.av3}}" data-dtype="Number"/></td>
-						<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.charge.av4" value="{{system.talents_combat.charge.av4}}" data-dtype="Number"/></td>
-					</tr>
-					<tr>
-						<td>1er Effet</td>
-						<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.charge.effet_ac_0_1" value="{{system.talents_combat.charge.effet_ac_0_1}}" /></td>
-						<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.charge.effet_ac_1_1" value="{{system.talents_combat.charge.effet_ac_1_1}}" /></td>
-						<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.charge.effet_ac_2_1" value="{{system.talents_combat.charge.effet_ac_2_1}}" /></td>
-						<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.charge.effet_ac_3_1" value="{{system.talents_combat.charge.effet_ac_3_1}}" /></td>
-						<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.charge.effet_ac_4_1" value="{{system.talents_combat.charge.effet_ac_4_1}}" /></td>
-					</tr>
-					<tr>
-						<td>2ème Effet</td>
-						<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.charge.effet_ac_0_2" value="{{system.talents_combat.charge.effet_ac_0_2}}" /></td>
-						<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.charge.effet_ac_1_2" value="{{system.talents_combat.charge.effet_ac_1_2}}" /></td>
-						<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.charge.effet_ac_2_2" value="{{system.talents_combat.charge.effet_ac_2_2}}" /></td>
-						<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.charge.effet_ac_3_2" value="{{system.talents_combat.charge.effet_ac_3_2}}" /></td>
-						<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.charge.effet_ac_4_2" value="{{system.talents_combat.charge.effet_ac_4_2}}" /></td>
-					</tr>
-					<tr>
-						<td>3ème Effet</td>
-						<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.charge.effet_ac_0_3" value="{{system.talents_combat.charge.effet_ac_0_3}}" /></td>
-						<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.charge.effet_ac_1_3" value="{{system.talents_combat.charge.effet_ac_1_3}}" /></td>
-						<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.charge.effet_ac_2_3" value="{{system.talents_combat.charge.effet_ac_2_3}}" /></td>
-						<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.charge.effet_ac_3_3" value="{{system.talents_combat.charge.effet_ac_3_3}}" /></td>
-						<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.charge.effet_ac_4_3" value="{{system.talents_combat.charge.effet_ac_4_3}}" /></td>
-					</tr>
-					<tfoot>
-						<tr>
-						<td colspan="8">H=HANDICAPER, A=ASSOMMER, S=SONNER, R=RENVERSER, I=IMMOBILISER, P=POSITIONNEMENT, T=TENIR A DISTANCE, D=DÉFAUT DE LA CUIRASSE
-						</td>
-						</tr>
-					</tfoot>
-				</table>
-				{{/if}}
-			</td></tr></table>
-				<table class="tablemj">
-					<thead style="border:none;">
-					<th class="masquer" value="bagarre">Paramétrer la Bagarre</th>
-					</thead>
-				<tr><td>
-				{{#if system.masquer_avantage_bagarre}}
-				<center><table style="width:60%" class="equipement">
-					<tr>
-						<thead style="border:none;"><tr>
-							<td></td><td>Av0</td><td>Av1</td><td>Av2</td><td>Av3</td><td>Av4</td>
-						</tr></thead>
-						<td>Points de Mêlée</td>
-						<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.mainsnues.av0" value="{{system.talents_combat.mainsnues.av0}}" data-dtype="Number"/></td>
-						<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.mainsnues.av1" value="{{system.talents_combat.mainsnues.av1}}" data-dtype="Number"/></td>
-						<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.mainsnues.av2" value="{{system.talents_combat.mainsnues.av2}}" data-dtype="Number"/></td>
-						<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.mainsnues.av3" value="{{system.talents_combat.mainsnues.av3}}" data-dtype="Number"/></td>
-						<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.mainsnues.av4" value="{{system.talents_combat.mainsnues.av4}}" data-dtype="Number"/></td>
-					</tr>
-					<tr>
-						<td>1er Effet</td>
-						<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.mainsnues.effet_ac_0_1" value="{{system.talents_combat.mainsnues.effet_ac_0_1}}" /></td>
-						<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.mainsnues.effet_ac_1_1" value="{{system.talents_combat.mainsnues.effet_ac_1_1}}" /></td>
-						<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.mainsnues.effet_ac_2_1" value="{{system.talents_combat.mainsnues.effet_ac_2_1}}" /></td>
-						<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.mainsnues.effet_ac_3_1" value="{{system.talents_combat.mainsnues.effet_ac_3_1}}" /></td>
-						<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.mainsnues.effet_ac_4_1" value="{{system.talents_combat.mainsnues.effet_ac_4_1}}" /></td>
-					</tr>
-					<tr>
-						<td>2ème Effet</td>
-						<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.mainsnues.effet_ac_0_2" value="{{system.talents_combat.mainsnues.effet_ac_0_2}}" /></td>
-						<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.mainsnues.effet_ac_1_2" value="{{system.talents_combat.mainsnues.effet_ac_1_2}}" /></td>
-						<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.mainsnues.effet_ac_2_2" value="{{system.talents_combat.mainsnues.effet_ac_2_2}}" /></td>
-						<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.mainsnues.effet_ac_3_2" value="{{system.talents_combat.mainsnues.effet_ac_3_2}}" /></td>
-						<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.mainsnues.effet_ac_4_2" value="{{system.talents_combat.mainsnues.effet_ac_4_2}}" /></td>
-					</tr>
-					<tr>
-						<td>3ème Effet</td>
-						<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.mainsnues.effet_ac_0_3" value="{{system.talents_combat.mainsnues.effet_ac_0_3}}" /></td>
-						<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.mainsnues.effet_ac_1_3" value="{{system.talents_combat.mainsnues.effet_ac_1_3}}" /></td>
-						<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.mainsnues.effet_ac_2_3" value="{{system.talents_combat.mainsnues.effet_ac_2_3}}" /></td>
-						<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.mainsnues.effet_ac_3_3" value="{{system.talents_combat.mainsnues.effet_ac_3_3}}" /></td>
-						<td><input {{#unless GM}}readonly="readonly"{{/unless}} class="comb" type="text" name="system.talents_combat.mainsnues.effet_ac_4_3" value="{{system.talents_combat.mainsnues.effet_ac_4_3}}" /></td>
-					</tr>
-					<tfoot>
-						<tr>
-						<td colspan="8">H=HANDICAPER, A=ASSOMMER, S=SONNER, R=RENVERSER, I=IMMOBILISER, P=POSITIONNEMENT, T=TENIR A DISTANCE, D=DÉFAUT DE LA CUIRASSE
-						</td>
-						</tr>
-					</tfoot>
-				</table>
-				{{/if}}	
-			</td></tr></table>	
+
+				<div class="weapon-feature-card advantages-card collapsed" onclick="this.classList.toggle('collapsed')">
+				<h4 class="feature-title collapsible-header">
+					<i class="fas fa-plus-circle"></i> Paramétrer la Charge
+					<i class="fas fa-chevron-down collapse-icon"></i>
+				</h4>
+				<div class="card-content" onclick="event.stopPropagation();">
+					{{#if system.masquer_avantage_charge}}
+					<div class="advantages-grid" onclick="event.stopPropagation();">
+						<div class="advantage-column">
+							<div class="advantage-header">Av0</div>
+							<div class="advantage-field">
+								<label>Points de Mêlée</label>
+								<input {{#unless GM}}readonly="readonly"{{/unless}} 
+									class="modern-input advantage-input" 
+									type="text" 
+									name="system.talents_combat.charge.av0" 
+									value="{{system.talents_combat.charge.av0}}" 
+									data-dtype="Number"/>
+							</div>
+							<div class="advantage-field">
+								<label>1er Effet</label>
+								<input {{#unless GM}}readonly="readonly"{{/unless}} 
+									class="modern-input effect-input" 
+									type="text" 
+									name="system.talents_combat.charge.effet_ac_0_1" 
+									value="{{system.talents_combat.charge.effet_ac_0_1}}"/>
+							</div>
+							<div class="advantage-field">
+								<label>2ème Effet</label>
+								<input {{#unless GM}}readonly="readonly"{{/unless}} 
+									class="modern-input effect-input" 
+									type="text" 
+									name="system.talents_combat.charge.effet_ac_0_2" 
+									value="{{system.talents_combat.charge.effet_ac_0_2}}"/>
+							</div>
+							<div class="advantage-field">
+								<label>3ème Effet</label>
+								<input {{#unless GM}}readonly="readonly"{{/unless}} 
+									class="modern-input effect-input" 
+									type="text" 
+									name="system.talents_combat.charge.effet_ac_0_3" 
+									value="{{system.talents_combat.charge.effet_ac_0_3}}"/>
+							</div>
+						</div>
+						<div class="advantage-column">
+							<div class="advantage-header">Av1</div>
+							<div class="advantage-field">
+								<label>Points de Mêlée</label>
+								<input {{#unless GM}}readonly="readonly"{{/unless}} 
+									class="modern-input advantage-input" 
+									type="text" 
+									name="system.talents_combat.charge.av1" 
+									value="{{system.talents_combat.charge.av1}}" 
+									data-dtype="Number"/>
+							</div>
+							<div class="advantage-field">
+								<label>1er Effet</label>
+								<input {{#unless GM}}readonly="readonly"{{/unless}} 
+									class="modern-input effect-input" 
+									type="text" 
+									name="system.talents_combat.charge.effet_ac_1_1" 
+									value="{{system.talents_combat.charge.effet_ac_1_1}}"/>
+							</div>
+							<div class="advantage-field">
+								<label>2ème Effet</label>
+								<input {{#unless GM}}readonly="readonly"{{/unless}} 
+									class="modern-input effect-input" 
+									type="text" 
+									name="system.talents_combat.charge.effet_ac_1_2" 
+									value="{{system.talents_combat.charge.effet_ac_1_2}}"/>
+							</div>
+							<div class="advantage-field">
+								<label>3ème Effet</label>
+								<input {{#unless GM}}readonly="readonly"{{/unless}} 
+									class="modern-input effect-input" 
+									type="text" 
+									name="system.talents_combat.charge.effet_ac_1_3" 
+									value="{{system.talents_combat.charge.effet_ac_1_3}}"/>
+							</div>
+						</div>
+						<div class="advantage-column">
+							<div class="advantage-header">Av2</div>
+							<div class="advantage-field">
+								<label>Points de Mêlée</label>
+								<input {{#unless GM}}readonly="readonly"{{/unless}} 
+									class="modern-input advantage-input" 
+									type="text" 
+									name="system.talents_combat.charge.av2" 
+									value="{{system.talents_combat.charge.av2}}" 
+									data-dtype="Number"/>
+							</div>
+							<div class="advantage-field">
+								<label>1er Effet</label>
+								<input {{#unless GM}}readonly="readonly"{{/unless}} 
+									class="modern-input effect-input" 
+									type="text" 
+									name="system.talents_combat.charge.effet_ac_2_1" 
+									value="{{system.talents_combat.charge.effet_ac_2_1}}"/>
+							</div>
+							<div class="advantage-field">
+								<label>2ème Effet</label>
+								<input {{#unless GM}}readonly="readonly"{{/unless}} 
+									class="modern-input effect-input" 
+									type="text" 
+									name="system.talents_combat.charge.effet_ac_2_2" 
+									value="{{system.talents_combat.charge.effet_ac_2_2}}"/>
+							</div>
+							<div class="advantage-field">
+								<label>3ème Effet</label>
+								<input {{#unless GM}}readonly="readonly"{{/unless}} 
+									class="modern-input effect-input" 
+									type="text" 
+									name="system.talents_combat.charge.effet_ac_2_3" 
+									value="{{system.talents_combat.charge.effet_ac_2_3}}"/>
+							</div>
+						</div>
+						<div class="advantage-column">
+							<div class="advantage-header">Av3</div>
+							<div class="advantage-field">
+								<label>Points de Mêlée</label>
+								<input {{#unless GM}}readonly="readonly"{{/unless}} 
+									class="modern-input advantage-input" 
+									type="text" 
+									name="system.talents_combat.charge.av3" 
+									value="{{system.talents_combat.charge.av3}}" 
+									data-dtype="Number"/>
+							</div>
+							<div class="advantage-field">
+								<label>1er Effet</label>
+								<input {{#unless GM}}readonly="readonly"{{/unless}} 
+									class="modern-input effect-input" 
+									type="text" 
+									name="system.talents_combat.charge.effet_ac_3_1" 
+									value="{{system.talents_combat.charge.effet_ac_3_1}}"/>
+							</div>
+							<div class="advantage-field">
+								<label>2ème Effet</label>
+								<input {{#unless GM}}readonly="readonly"{{/unless}} 
+									class="modern-input effect-input" 
+									type="text" 
+									name="system.talents_combat.charge.effet_ac_3_2" 
+									value="{{system.talents_combat.charge.effet_ac_3_2}}"/>
+							</div>
+							<div class="advantage-field">
+								<label>3ème Effet</label>
+								<input {{#unless GM}}readonly="readonly"{{/unless}} 
+									class="modern-input effect-input" 
+									type="text" 
+									name="system.talents_combat.charge.effet_ac_3_3" 
+									value="{{system.talents_combat.charge.effet_ac_3_3}}"/>
+							</div>
+						</div>
+						<div class="advantage-column">
+							<div class="advantage-header">Av4</div>
+							<div class="advantage-field">
+								<label>Points de Mêlée</label>
+								<input {{#unless GM}}readonly="readonly"{{/unless}} 
+									class="modern-input advantage-input" 
+									type="text" 
+									name="system.talents_combat.charge.av4" 
+									value="{{system.talents_combat.charge.av4}}" 
+									data-dtype="Number"/>
+							</div>
+							<div class="advantage-field">
+								<label>1er Effet</label>
+								<input {{#unless GM}}readonly="readonly"{{/unless}} 
+									class="modern-input effect-input" 
+									type="text" 
+									name="system.talents_combat.charge.effet_ac_4_1" 
+									value="{{system.talents_combat.charge.effet_ac_4_1}}"/>
+							</div>
+							<div class="advantage-field">
+								<label>2ème Effet</label>
+								<input {{#unless GM}}readonly="readonly"{{/unless}} 
+									class="modern-input effect-input" 
+									type="text" 
+									name="system.talents_combat.charge.effet_ac_4_2" 
+									value="{{system.talents_combat.charge.effet_ac_4_2}}"/>
+							</div>
+							<div class="advantage-field">
+								<label>3ème Effet</label>
+								<input {{#unless GM}}readonly="readonly"{{/unless}} 
+									class="modern-input effect-input" 
+									type="text" 
+									name="system.talents_combat.charge.effet_ac_4_3" 
+									value="{{system.talents_combat.charge.effet_ac_4_3}}"/>
+							</div>
+						</div>
 					</div>
+					<div style="margin-top: 10px; font-size: 10px; color: #666; text-align: center;">
+						H=HANDICAPER, A=ASSOMMER, S=SONNER, R=RENVERSER, I=IMMOBILISER, P=POSITIONNEMENT, T=TENIR A DISTANCE, D=DÉFAUT DE LA CUIRASSE<span class="info_effets_speciaux" value=""><sup><img class="icon_info" src="systems/mega/images/info.svg"></sup></span>
+					</div>
+					{{/if}}
 				</div>
+			</div>
+			<div class="weapon-feature-card advantages-card collapsed" onclick="this.classList.toggle('collapsed')">
+				<h4 class="feature-title collapsible-header">
+					<i class="fas fa-plus-circle"></i> Paramétrer la Bagarre
+					<i class="fas fa-chevron-down collapse-icon"></i>
+				</h4>
+				<div class="card-content" onclick="event.stopPropagation();">
+					{{#if system.masquer_avantage_bagarre}}
+					<div class="advantages-grid" onclick="event.stopPropagation();">
+						<div class="advantage-column">
+							<div class="advantage-header">Av0</div>
+							<div class="advantage-field">
+								<label>Points de Mêlée</label>
+								<input {{#unless GM}}readonly="readonly"{{/unless}} 
+									class="modern-input advantage-input" 
+									type="text" 
+									name="system.talents_combat.mainsnues.av0" 
+									value="{{system.talents_combat.mainsnues.av0}}" 
+									data-dtype="Number"/>
+							</div>
+							<div class="advantage-field">
+								<label>1er Effet</label>
+								<input {{#unless GM}}readonly="readonly"{{/unless}} 
+									class="modern-input effect-input" 
+									type="text" 
+									name="system.talents_combat.mainsnues.effet_ac_0_1" 
+									value="{{system.talents_combat.mainsnues.effet_ac_0_1}}"/>
+							</div>
+							<div class="advantage-field">
+								<label>2ème Effet</label>
+								<input {{#unless GM}}readonly="readonly"{{/unless}} 
+									class="modern-input effect-input" 
+									type="text" 
+									name="system.talents_combat.mainsnues.effet_ac_0_2" 
+									value="{{system.talents_combat.mainsnues.effet_ac_0_2}}"/>
+							</div>
+							<div class="advantage-field">
+								<label>3ème Effet</label>
+								<input {{#unless GM}}readonly="readonly"{{/unless}} 
+									class="modern-input effect-input" 
+									type="text" 
+									name="system.talents_combat.mainsnues.effet_ac_0_3" 
+									value="{{system.talents_combat.mainsnues.effet_ac_0_3}}"/>
+							</div>
+						</div>
+						<div class="advantage-column">
+							<div class="advantage-header">Av1</div>
+							<div class="advantage-field">
+								<label>Points de Mêlée</label>
+								<input {{#unless GM}}readonly="readonly"{{/unless}} 
+									class="modern-input advantage-input" 
+									type="text" 
+									name="system.talents_combat.mainsnues.av1" 
+									value="{{system.talents_combat.mainsnues.av1}}" 
+									data-dtype="Number"/>
+							</div>
+							<div class="advantage-field">
+								<label>1er Effet</label>
+								<input {{#unless GM}}readonly="readonly"{{/unless}} 
+									class="modern-input effect-input" 
+									type="text" 
+									name="system.talents_combat.mainsnues.effet_ac_1_1" 
+									value="{{system.talents_combat.mainsnues.effet_ac_1_1}}"/>
+							</div>
+							<div class="advantage-field">
+								<label>2ème Effet</label>
+								<input {{#unless GM}}readonly="readonly"{{/unless}} 
+									class="modern-input effect-input" 
+									type="text" 
+									name="system.talents_combat.mainsnues.effet_ac_1_2" 
+									value="{{system.talents_combat.mainsnues.effet_ac_1_2}}"/>
+							</div>
+							<div class="advantage-field">
+								<label>3ème Effet</label>
+								<input {{#unless GM}}readonly="readonly"{{/unless}} 
+									class="modern-input effect-input" 
+									type="text" 
+									name="system.talents_combat.mainsnues.effet_ac_1_3" 
+									value="{{system.talents_combat.mainsnues.effet_ac_1_3}}"/>
+							</div>
+						</div>
+						<div class="advantage-column">
+							<div class="advantage-header">Av2</div>
+							<div class="advantage-field">
+								<label>Points de Mêlée</label>
+								<input {{#unless GM}}readonly="readonly"{{/unless}} 
+									class="modern-input advantage-input" 
+									type="text" 
+									name="system.talents_combat.mainsnues.av2" 
+									value="{{system.talents_combat.mainsnues.av2}}" 
+									data-dtype="Number"/>
+							</div>
+							<div class="advantage-field">
+								<label>1er Effet</label>
+								<input {{#unless GM}}readonly="readonly"{{/unless}} 
+									class="modern-input effect-input" 
+									type="text" 
+									name="system.talents_combat.mainsnues.effet_ac_2_1" 
+									value="{{system.talents_combat.mainsnues.effet_ac_2_1}}"/>
+							</div>
+							<div class="advantage-field">
+								<label>2ème Effet</label>
+								<input {{#unless GM}}readonly="readonly"{{/unless}} 
+									class="modern-input effect-input" 
+									type="text" 
+									name="system.talents_combat.mainsnues.effet_ac_2_2" 
+									value="{{system.talents_combat.mainsnues.effet_ac_2_2}}"/>
+							</div>
+							<div class="advantage-field">
+								<label>3ème Effet</label>
+								<input {{#unless GM}}readonly="readonly"{{/unless}} 
+									class="modern-input effect-input" 
+									type="text" 
+									name="system.talents_combat.mainsnues.effet_ac_2_3" 
+									value="{{system.talents_combat.mainsnues.effet_ac_2_3}}"/>
+							</div>
+						</div>
+						<div class="advantage-column">
+							<div class="advantage-header">Av3</div>
+							<div class="advantage-field">
+								<label>Points de Mêlée</label>
+								<input {{#unless GM}}readonly="readonly"{{/unless}} 
+									class="modern-input advantage-input" 
+									type="text" 
+									name="system.talents_combat.mainsnues.av3" 
+									value="{{system.talents_combat.mainsnues.av3}}" 
+									data-dtype="Number"/>
+							</div>
+							<div class="advantage-field">
+								<label>1er Effet</label>
+								<input {{#unless GM}}readonly="readonly"{{/unless}} 
+									class="modern-input effect-input" 
+									type="text" 
+									name="system.talents_combat.mainsnues.effet_ac_3_1" 
+									value="{{system.talents_combat.mainsnues.effet_ac_3_1}}"/>
+							</div>
+							<div class="advantage-field">
+								<label>2ème Effet</label>
+								<input {{#unless GM}}readonly="readonly"{{/unless}} 
+									class="modern-input effect-input" 
+									type="text" 
+									name="system.talents_combat.mainsnues.effet_ac_3_2" 
+									value="{{system.talents_combat.mainsnues.effet_ac_3_2}}"/>
+							</div>
+							<div class="advantage-field">
+								<label>3ème Effet</label>
+								<input {{#unless GM}}readonly="readonly"{{/unless}} 
+									class="modern-input effect-input" 
+									type="text" 
+									name="system.talents_combat.mainsnues.effet_ac_3_3" 
+									value="{{system.talents_combat.mainsnues.effet_ac_3_3}}"/>
+							</div>
+						</div>
+						<div class="advantage-column">
+							<div class="advantage-header">Av4</div>
+							<div class="advantage-field">
+								<label>Points de Mêlée</label>
+								<input {{#unless GM}}readonly="readonly"{{/unless}} 
+									class="modern-input advantage-input" 
+									type="text" 
+									name="system.talents_combat.mainsnues.av4" 
+									value="{{system.talents_combat.mainsnues.av4}}" 
+									data-dtype="Number"/>
+							</div>
+							<div class="advantage-field">
+								<label>1er Effet</label>
+								<input {{#unless GM}}readonly="readonly"{{/unless}} 
+									class="modern-input effect-input" 
+									type="text" 
+									name="system.talents_combat.mainsnues.effet_ac_4_1" 
+									value="{{system.talents_combat.mainsnues.effet_ac_4_1}}"/>
+							</div>
+							<div class="advantage-field">
+								<label>2ème Effet</label>
+								<input {{#unless GM}}readonly="readonly"{{/unless}} 
+									class="modern-input effect-input" 
+									type="text" 
+									name="system.talents_combat.mainsnues.effet_ac_4_2" 
+									value="{{system.talents_combat.mainsnues.effet_ac_4_2}}"/>
+							</div>
+							<div class="advantage-field">
+								<label>3ème Effet</label>
+								<input {{#unless GM}}readonly="readonly"{{/unless}} 
+									class="modern-input effect-input" 
+									type="text" 
+									name="system.talents_combat.mainsnues.effet_ac_4_3" 
+									value="{{system.talents_combat.mainsnues.effet_ac_4_3}}"/>
+							</div>
+						</div>
+					</div>
+					<div style="margin-top: 10px; font-size: 10px; color: #666; text-align: center;">
+						H=HANDICAPER, A=ASSOMMER, S=SONNER, R=RENVERSER, I=IMMOBILISER, P=POSITIONNEMENT, T=TENIR A DISTANCE, D=DÉFAUT DE LA CUIRASSE<span class="info_effets_speciaux" value=""><sup><img class="icon_info" src="systems/mega/images/info.svg"></sup></span>
+					</div>
+					{{/if}}
+				</div>
+			</div>
+				</div>
+			</div>
 		
 		{{!-- Combat Tab --}}
         <div class="tab attributes" data-group="primary" data-tab="combat">

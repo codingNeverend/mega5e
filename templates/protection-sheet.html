@@ -62,83 +62,97 @@
     {{!-- Localisation Tab --}}
     <div class="tab" data-group="primary" data-tab="characteristics">
 			<h3>⚙️ Caractéristiques de la protection</h3>
-      <table class="tablemj">
-        <thead style="border: none">
-          <tr>
-            <td class="masquer" value="bonusdef" colspan="7">Bonus DÉF</td>
-          </tr>
-        </thead>
-      </table>
-      {{#if system.masquer_bonusdef}}
-      <table class="tablemj">
-        <tr>
-          <td>
-            Choc<input
-              class="comb"
-              type="text"
-              name="system.caracs.def_choc"
-              value="{{system.caracs.def_choc}}"
-              data-dtype="Number"
-            />
-          </td>
-          <td>
-            Lame<input
-              class="comb"
-              type="text"
-              name="system.caracs.def_lame"
-              value="{{system.caracs.def_lame}}"
-              data-dtype="Number"
-            />
-          </td>
-          <td>
-            Balle<input
-              class="comb"
-              type="text"
-              name="system.caracs.def_balle"
-              value="{{system.caracs.def_balle}}"
-              data-dtype="Number"
-            />
-          </td>
-          <td>
-            Feu<input
-              class="comb"
-              type="text"
-              name="system.caracs.def_feu"
-              value="{{system.caracs.def_feu}}"
-              data-dtype="Number"
-            />
-          </td>
-          <td>
-            Froid<input
-              class="comb"
-              type="text"
-              name="system.caracs.def_froid"
-              value="{{system.caracs.def_froid}}"
-              data-dtype="Number"
-            />
-          </td>
-          <td>
-            Acide<input
-              class="comb"
-              type="text"
-              name="system.caracs.def_acide"
-              value="{{system.caracs.def_acide}}"
-              data-dtype="Number"
-            />
-          </td>
-          <td>
-            Rayon<input
-              class="comb"
-              type="text"
-              name="system.caracs.def_rayon"
-              value="{{system.caracs.def_rayon}}"
-              data-dtype="Number"
-            />
-          </td>
-        </tr>
-      </table>
-      {{/if}}
-
+			
+			<div class="weapon-feature-card {{#unless system.masquer_bonusdef}}collapsed{{/unless}}" onclick="this.classList.toggle('collapsed')">
+				<h4 class="feature-title collapsible-header">
+					<i class="fas fa-shield-alt"></i> Bonus DÉF
+					<i class="fas fa-chevron-down collapse-icon"></i>
+				</h4>
+				<div class="card-content" onclick="event.stopPropagation();">
+					<div class="defense-bonus-grid" onclick="event.stopPropagation();">
+						<div class="defense-stat">
+							<label for="def_choc">Choc</label>
+							<input
+								id="def_choc"
+								class="stat-input"
+								type="text"
+								name="system.caracs.def_choc"
+								value="{{system.caracs.def_choc}}"
+								data-dtype="Number"
+							/>
+						</div>
+						<div class="defense-stat">
+							<label for="def_lame">Lame</label>
+							<input
+								id="def_lame"
+								class="stat-input"
+								type="text"
+								name="system.caracs.def_lame"
+								value="{{system.caracs.def_lame}}"
+								data-dtype="Number"
+							/>
+						</div>
+						<div class="defense-stat">
+							<label for="def_balle">Balle</label>
+							<input
+								id="def_balle"
+								class="stat-input"
+								type="text"
+								name="system.caracs.def_balle"
+								value="{{system.caracs.def_balle}}"
+								data-dtype="Number"
+							/>
+						</div>
+						<div class="defense-stat">
+							<label for="def_feu">Feu</label>
+							<input
+								id="def_feu"
+								class="stat-input"
+								type="text"
+								name="system.caracs.def_feu"
+								value="{{system.caracs.def_feu}}"
+								data-dtype="Number"
+							/>
+						</div>
+						<div class="defense-stat">
+							<label for="def_froid">Froid</label>
+							<input
+								id="def_froid"
+								class="stat-input"
+								type="text"
+								name="system.caracs.def_froid"
+								value="{{system.caracs.def_froid}}"
+								data-dtype="Number"
+							/>
+						</div>
+						<div class="defense-stat">
+							<label for="def_acide">Acide</label>
+							<input
+								id="def_acide"
+								class="stat-input"
+								type="text"
+								name="system.caracs.def_acide"
+								value="{{system.caracs.def_acide}}"
+								data-dtype="Number"
+							/>
+						</div>
+						<div class="defense-stat">
+							<label for="def_rayon">Rayon</label>
+							<input
+								id="def_rayon"
+								class="stat-input"
+								type="text"
+								name="system.caracs.def_rayon"
+								value="{{system.caracs.def_rayon}}"
+								data-dtype="Number"
+							/>
+						</div>
+					</div>
+				</div>
+			</div>
+    </div>
+    <div class="tab" data-group="primary" data-tab="silouhette">
+      <h3><i class="fas fa-crosshairs"></i> Localisation</h3>
       <div class="silouhette_body_container">
         <!-- <div class="silouhette_body_div head"> -->
         <!-- <input  {{#ifequal system.caracs.def_tete 1}}class="silouhette_equip"{{else}}class="silouhette_unequip"{{/ifequal}}" type="text" name="system.caracs.def_tete" value="{{system.caracs.def_tete}}"/> -->
@@ -278,6 +292,9 @@
         </a>
         <a class="side-tab-item" data-tab="characteristics" title="CARACTÉRISTIQUES">
             <i class="fas fa-cog"></i>
+        </a>
+        <a class="side-tab-item" data-tab="silouhette" title="LOCALISATION">
+            <i class="fas fa-crosshairs"></i>
         </a>
     </nav>
 </form>

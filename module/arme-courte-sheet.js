@@ -45,7 +45,7 @@ export class Arme_courte_Sheet extends foundry.appv1.sheets.ItemSheet {
   /** @override */
   static get defaultOptions() {
     return foundry.utils.mergeObject(super.defaultOptions, {
-      classes: ["mega", "sheet", "item", "arme-courte-sheet"],
+      classes: ["mega", "sheet", "item"],
       template: "systems/mega/templates/arme-courte-sheet.html",
       width: 549,
       height: 709,
@@ -84,8 +84,11 @@ export class Arme_courte_Sheet extends foundry.appv1.sheets.ItemSheet {
   setPosition(options = {}) {
     const position = super.setPosition(options);
     const sheetBody = this.element.find(".sheet-body");
-    const bodyHeight = position.height - 192;
-    sheetBody.css("height", bodyHeight);
+    // Permet le redimensionnement en calculant dynamiquement la hauteur
+    if (position.height && !options.height) {
+      const bodyHeight = position.height - 192;
+      sheetBody.css("height", bodyHeight);
+    }
     return position;
   }
 
@@ -94,6 +97,24 @@ export class Arme_courte_Sheet extends foundry.appv1.sheets.ItemSheet {
   /** @override */
   activateListeners(html) {
     super.activateListeners(html);
+
+    // Force tab activation - Fix for missing tab functionality
+    html.find(".side-tab-item").click((event) => {
+      const tab = event.currentTarget.dataset.tab;
+      const group = event.currentTarget.closest("[data-group]")?.dataset.group;
+
+      if (tab && group) {
+        // Remove active class from all tabs in group
+        html.find(`[data-group="${group}"] .tab`).removeClass("active");
+        html
+          .find(`[data-group="${group}"] .side-tab-item`)
+          .removeClass("active");
+
+        // Add active class to clicked tab and corresponding content
+        html.find(`[data-tab="${tab}"]`).addClass("active");
+        event.currentTarget.classList.add("active");
+      }
+    });
 
     // Everything below here is only needed if the sheet is editable
     if (!this.options.editable) return;
@@ -221,6 +242,7 @@ export class Arme_courte_Sheet extends foundry.appv1.sheets.ItemSheet {
     });
 
     html.find(".type_degat").click((ev) => {
+      ev.stopPropagation(); // Empêche le pliage de la carte
       let type_degat = ev.currentTarget.getAttribute("value");
       if (this.object.system.type_degats.balles.etat) {
         this.object.update({ "system.type_degats.balles.etat": false });

@@ -5,7 +5,7 @@
             <div class="weapon-header-modern">
                 <div class="weapon-name-container">
                     <h1 class="weapon-name"><input name="name" type="text" value="{{item.name}}" placeholder="Nom de l'arme"/></h1>
-                    <div class="weapon-type">Arme Longue</div>
+                    <div class="weapon-type">Arme Courte</div>
                 </div>
                 
                 <div class="weapon-stats-grid">
@@ -56,8 +56,7 @@
         </div>
     </header>
 
-   {{!-- Sheet Body --}}
-   <section class="sheet-body" style="margin:10px; padding: 0 5px;">
+  <section class="sheet-body" style="margin:10px; padding: 0 5px;">
     <!-- ONGLET DESCRIPTION -->
     <div class="tab active" data-group="primary" data-tab="description">
       <h3>📝 Description</h3>
@@ -68,14 +67,14 @@
 		<div class="tab" data-group="primary" data-tab="characteristics">
 			<h3>⭐ Caractéristiques</h3>
 			
-			<div class="weapon-feature-card collapsed" onclick="this.classList.toggle('collapsed')">
-				<h4 class="feature-title collapsible-header">
+			<div class="weapon-feature-card collapsed">
+				<h4 class="feature-title collapsible-header" onclick="this.parentElement.classList.toggle('collapsed')">
 					<i class="fas fa-crosshairs"></i> Type de dégâts
 					<i class="fas fa-chevron-down collapse-icon"></i>
 				</h4>
-				<div class="card-content" onclick="event.stopPropagation();">
-					<div class="damage-types-grid" onclick="event.stopPropagation();">
-					<div class="damage-type-item{{#if system.type_degats.balles.etat}} active{{/if}}" data-type="balles">
+				<div class="card-content">
+					<div class="damage-types-grid">
+					<div class="damage-type-item" data-type="balles">
 						<span class="type_degat" value="balles">
 							<img title="Balles" src="systems/mega/images/silver-bullet.svg" 
 								 {{#if system.type_degats.balles.etat}}class="icon_typedegats_active"{{else}}class="icon_typedegats"{{/if}}
@@ -83,7 +82,7 @@
 						</span>
 						<span class="damage-type-label">Balles</span>
 					</div>
-					<div class="damage-type-item{{#if system.type_degats.choc.etat}} active{{/if}}" data-type="choc">
+					<div class="damage-type-item" data-type="choc">
 						<span class="type_degat" value="choc">
 							<img title="Choc" src="systems/mega/images/flint-spark.svg" 
 								 {{#if system.type_degats.choc.etat}}class="icon_typedegats_active"{{else}}class="icon_typedegats"{{/if}}
@@ -91,7 +90,7 @@
 						</span>
 						<span class="damage-type-label">Choc</span>
 					</div>
-					<div class="damage-type-item{{#if system.type_degats.lame.etat}} active{{/if}}" data-type="lame">
+					<div class="damage-type-item" data-type="lame">
 						<span class="type_degat" value="lame">
 							<img title="Lame" src="systems/mega/images/blade-fall.svg" 
 								 {{#if system.type_degats.lame.etat}}class="icon_typedegats_active"{{else}}class="icon_typedegats"{{/if}}
@@ -99,7 +98,7 @@
 						</span>
 						<span class="damage-type-label">Lame</span>
 					</div>
-					<div class="damage-type-item{{#if system.type_degats.rayon.etat}} active{{/if}}" data-type="rayon">
+					<div class="damage-type-item" data-type="rayon">
 						<span class="type_degat" value="rayon">
 							<img title="Rayon" src="systems/mega/images/ringed-beam.svg" 
 								 {{#if system.type_degats.rayon.etat}}class="icon_typedegats_active"{{else}}class="icon_typedegats"{{/if}}
@@ -107,7 +106,7 @@
 						</span>
 						<span class="damage-type-label">Rayon</span>
 					</div>
-					<div class="damage-type-item{{#if system.type_degats.feu.etat}} active{{/if}}" data-type="feu">
+					<div class="damage-type-item" data-type="feu">
 						<span class="type_degat" value="feu">
 							<img title="Feu" src="systems/mega/images/fire.svg" 
 								 {{#if system.type_degats.feu.etat}}class="icon_typedegats_active"{{else}}class="icon_typedegats"{{/if}}
@@ -115,7 +114,7 @@
 						</span>
 						<span class="damage-type-label">Feu</span>
 					</div>
-					<div class="damage-type-item{{#if system.type_degats.froid.etat}} active{{/if}}" data-type="froid">
+					<div class="damage-type-item" data-type="froid">
 						<span class="type_degat" value="froid">
 							<img title="Froid" src="systems/mega/images/frozen-orb.svg" 
 								 {{#if system.type_degats.froid.etat}}class="icon_typedegats_active"{{else}}class="icon_typedegats"{{/if}}
@@ -123,7 +122,7 @@
 						</span>
 						<span class="damage-type-label">Froid</span>
 					</div>
-					<div class="damage-type-item{{#if system.type_degats.acide.etat}} active{{/if}}" data-type="acide">
+					<div class="damage-type-item" data-type="acide">
 						<span class="type_degat" value="acide">
 							<img title="Acide" src="systems/mega/images/chemical-drop.svg" 
 								 {{#if system.type_degats.acide.etat}}class="icon_typedegats_active"{{else}}class="icon_typedegats"{{/if}}
@@ -135,13 +134,13 @@
 				</div>
 			</div>
 
-			<div class="weapon-feature-card collapsed" onclick="this.classList.toggle('collapsed')">
-				<h4 class="feature-title collapsible-header">
+			<div class="weapon-feature-card collapsed">
+				<h4 class="feature-title collapsible-header" onclick="this.parentElement.classList.toggle('collapsed')">
 					<i class="fas fa-tools"></i> Équipement / Personnalisation
 					<i class="fas fa-chevron-down collapse-icon"></i>
 				</h4>
-				<div class="card-content" onclick="event.stopPropagation();">
-					<div class="equipment-field" onclick="event.stopPropagation();">
+				<div class="card-content">
+					<div class="equipment-field">
 						<textarea {{#unless GM}}disabled{{/unless}} rows="6" class="modern-textarea" name="system.type.value" data-dtype="String" placeholder="Décrivez les équipements et personnalisations de cette arme...">{{system.type.value}}</textarea>
 					</div>
 				</div>
@@ -155,14 +154,14 @@
 				<i class="fas fa-info-circle"></i> <strong>Info :</strong> Cliquez sur les en-têtes des sections pour les déplier/replier
 			</div>
 			
-			<div class="weapon-feature-card collapsed" onclick="this.classList.toggle('collapsed')">
+			<div class="weapon-feature-card collapsed">
 				{{#if GM}}
-				<h4 class="feature-title collapsible-header">
+				<h4 class="feature-title collapsible-header" onclick="this.parentElement.classList.toggle('collapsed')">
 					<i class="fas fa-heart-broken"></i> Mode de combat
 					<i class="fas fa-chevron-down collapse-icon"></i>
 				</h4>
-				<div class="card-content" onclick="event.stopPropagation();">
-					<div class="combat-mode-section" onclick="event.stopPropagation();">
+				<div class="card-content">
+					<div class="combat-mode-section">
 					<div class="combat-mode-toggle">
 						<span class="letale combat-mode-icon">
 							<img src="systems/mega/images/heart-minus.svg" 
@@ -178,36 +177,34 @@
 					</div>
 					<div class="combat-mode-input {{#if system.letale.value}}hidden{{/if}}">
 						<label for="letale-label">Message personnalisé :</label>
-						<textarea 
+						<input type="text" 
 							id="letale-label" 
-							class="modern-textarea" 
+							class="modern-input" 
 							name="system.letale.label" 
+							value="{{system.letale.label}}" 
 							data-dtype="String" 
-							rows="3"
-							placeholder="Message affiché lors des dégâts">{{system.letale.label}}</textarea>
-					</div>	
+							placeholder="Message affiché lors des dégâts"/>
+					</div>
 					</div>
 				</div>
 				{{else}}
-				<h4 class="feature-title collapsible-header">
+				<h4 class="feature-title collapsible-header" onclick="this.parentElement.classList.toggle('collapsed')">
 					<i class="fas fa-eye-slash"></i> Mode de combat (GM uniquement)
 					<i class="fas fa-chevron-down collapse-icon"></i>
 				</h4>
-				<div class="card-content" onclick="event.stopPropagation();">
+				<div class="card-content">
 					<p style="color: rgba(255,255,255,0.6); font-style: italic; text-align: center; padding: 20px;">Cette section n'est accessible qu'aux Game Masters.</p>
 				</div>
 				{{/if}}
 			</div>
 			
-			<div class="weapon-feature-card advantages-card collapsed" onclick="this.classList.toggle('collapsed')">
-				<h4 class="feature-title collapsible-header">
-					<i class="fas fa-plus-circle"></i> Avantages & Effets optionnels <span class="info_effets_speciaux" value="">
-									<sup><img class="icon_info" src="systems/mega/images/info.svg"></sup>
-								</span>
+			<div class="weapon-feature-card advantages-card collapsed">
+				<h4 class="feature-title collapsible-header" onclick="this.parentElement.classList.toggle('collapsed')">
+					<i class="fas fa-plus-circle"></i> Avantages & Effets optionnels
 					<i class="fas fa-chevron-down collapse-icon"></i>
 				</h4>
-				<div class="card-content" onclick="event.stopPropagation();">
-					<div class="advantages-grid" onclick="event.stopPropagation();">
+				<div class="card-content">
+					<div class="advantages-grid">
 					<div class="advantage-column">
 						<div class="advantage-header">Av0</div>
 						<div class="advantage-field">
@@ -389,7 +386,7 @@
 						</div>
 					</div>
 					
-						<!-- <div class="effects-help">
+						<div class="effects-help">
 							<div class="effects-legend">
 								<i class="fas fa-info-circle"></i>
 								<strong>Codes d'effets spéciaux :</strong> 
@@ -399,7 +396,7 @@
 									<sup><img class="icon_info" src="systems/mega/images/info.svg"></sup>
 								</span>
 							</div>
-						</div> -->
+						</div>
 					</div>
 				</div>
 			</div>
@@ -412,12 +409,12 @@
 				<i class="fas fa-info-circle"></i> <strong>Info :</strong> Cliquez sur les en-têtes des sections pour les déplier/replier
 			</div>
 			
-			<div class="weapon-feature-card collapsed" onclick="this.classList.toggle('collapsed')">
-				<h4 class="feature-title collapsible-header">
+			<div class="weapon-feature-card collapsed">
+				<h4 class="feature-title collapsible-header" onclick="this.parentElement.classList.toggle('collapsed')">
 					<i class="fas fa-video"></i> Effets visuels
 					<i class="fas fa-chevron-down collapse-icon"></i>
 				</h4>
-				<div class="card-content" onclick="event.stopPropagation();">
+				<div class="card-content">
 					{{#if GM}}
 					<div class="media-fields-grid">
 						<div class="media-field">
@@ -464,12 +461,12 @@
 				</div>
 			</div>
 			
-			<div class="weapon-feature-card collapsed" onclick="this.classList.toggle('collapsed')">
-				<h4 class="feature-title collapsible-header">
+			<div class="weapon-feature-card collapsed">
+				<h4 class="feature-title collapsible-header" onclick="this.parentElement.classList.toggle('collapsed')">
 					<i class="fas fa-volume-up"></i> Effets sonores
 					<i class="fas fa-chevron-down collapse-icon"></i>
 				</h4>
-				<div class="card-content" onclick="event.stopPropagation();">
+				<div class="card-content">
 					{{#if GM}}
 					<div class="sound-field-container">
 						<div class="sound-input-group">
@@ -516,4 +513,3 @@
         </a>{{/if}}
   </nav>
 </form>
-
