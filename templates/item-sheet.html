@@ -1,53 +1,57 @@
 <form class="{{cssClass}}" autocomplete="off">
-	<header class="sheet-header-item">
-		<span class="item-view" value="{{item.img}}"><img class="profile-img" src="{{item.img}}" data-edit="img" title="{{item.name}}"/></span>
-        <div class="header-fields-item">
-            <div class="weapon-header-modern">
-                <div class="weapon-name-container">
-                    <h1 class="weapon-name"><input name="name" type="text" value="{{item.name}}" placeholder="Nom de l'arme"/></h1>
-                    <div class="weapon-type">Objet</div>
-                </div>
-                
-                <div class="weapon-stats-grid">
-                    <div class="stat-item">
-                        <div class="stat-label">Qté</div>
-                        <div class="stat-value">
-                            <input type="text" class="stat-input" name="system.quantity" value="{{system.quantity}}" data-dtype="Number"/>
-                        </div>
-                    </div>
-                    
-                    <div class="stat-item">
-                        <div class="stat-label">Poids</div>
-                        <div class="stat-value">
-                            <input type="text" class="stat-input" name="system.weight" value="{{system.weight}}" data-dtype="Number"/>
-                            <select class="stat-unit-select" name="system.weightUnit">
-                                <option value="kg" {{#if (eq system.weightUnit "kg")}}selected{{/if}}>kg</option>
-                                <option value="g" {{#if (eq system.weightUnit "g")}}selected{{/if}}>g</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <div class="stat-item">
-                        <div class="stat-label">Prix</div>
-                        <div class="stat-value">
-                            <input type="text" class="stat-input" name="system.prize" value="{{system.prize}}"/>
-                            <select class="stat-unit-select" name="system.prizeUnit">
-                                <option value="Σ" {{#if (eq system.prizeUnit "Σ")}}selected{{/if}}>Σ</option>
-                                <option value="Ω" {{#if (eq system.prizeUnit "Ω")}}selected{{/if}}>Ω</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="stat-item">
-                        <div class="stat-label">NT</div>
-                        <div class="stat-value">
-                            <input type="text" class="stat-input" name="system.nt" value="{{system.nt}}"/>
-                        </div>
-                    </div>
-                </div>
-            </div>
+  <header class="sheet-header-item">
+    <span class="item-view" value="{{item.img}}"><img class="profile-img" src="{{item.img}}" data-edit="img"
+        title="{{item.name}}" /></span>
+    <div class="header-fields-item">
+      <div class="weapon-header-modern">
+        <div class="weapon-name-container">
+          <h1 class="weapon-name"><input name="name" type="text" value="{{item.name}}" placeholder="Nom de l'arme" />
+          </h1>
+          <div class="weapon-type">Objet</div>
         </div>
-    </header>
+
+        <div class="weapon-stats-grid">
+          <div class="stat-item">
+            <div class="stat-label">Qté</div>
+            <div class="stat-value">
+              <input type="text" class="stat-input" name="system.quantity" value="{{system.quantity}}"
+                data-dtype="Number" />
+            </div>
+          </div>
+
+          <div class="stat-item">
+            <div class="stat-label">Poids</div>
+            <div class="stat-value">
+              <input type="text" class="stat-input" name="system.weight" value="{{system.weight}}"
+                data-dtype="Number" />
+              <select class="stat-unit-select" name="system.weightUnit">
+                <option value="kg" {{#if (eq system.weightUnit "kg" )}}selected{{/if}}>kg</option>
+                <option value="g" {{#if (eq system.weightUnit "g" )}}selected{{/if}}>g</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="stat-item">
+            <div class="stat-label">Prix</div>
+            <div class="stat-value">
+              <input type="text" class="stat-input" name="system.prize" value="{{system.prize}}" />
+              <select class="stat-unit-select" name="system.prizeUnit">
+                <option value="Σ" {{#if (eq system.prizeUnit "Σ" )}}selected{{/if}}>Σ</option>
+                <option value="Ω" {{#if (eq system.prizeUnit "Ω" )}}selected{{/if}}>Ω</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="stat-item">
+            <div class="stat-label">NT</div>
+            <div class="stat-value">
+              <input type="text" class="stat-input" name="system.nt" value="{{system.nt}}" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
 
   {{#if GM}}
   <nav class="sheet-tabs tabs" data-group="primary">
@@ -74,43 +78,21 @@
       <ol class="attributes-list">
         {{#each system.attributes as |attr key|}}
         <li class="attribute flexrow" data-attribute="{{key}}">
-          <input
-            class="attribute-key"
-            type="text"
-            name="data.attributes.{{key}}.key"
-            value="{{key}}"
-          />
+          <input class="attribute-key" type="text" name="data.attributes.{{key}}.key" value="{{key}}" />
           {{#if attr.isCheckbox}}
-          <label class="attribute-value checkbox"
-            ><input
-              type="checkbox"
-              name="data.attributes.{{key}}.value"
-              {{checked
-              attr.value}}
-          /></label>
+          <label class="attribute-value checkbox"><input type="checkbox" name="data.attributes.{{key}}.value" {{checked
+              attr.value}} /></label>
           {{else}}
-          <input
-            class="attribute-value"
-            type="text"
-            name="data.attributes.{{key}}.value"
-            value="{{attr.value}}"
-            data-dtype="{{attr.dtype}}"
-          />
+          <input class="attribute-value" type="text" name="data.attributes.{{key}}.value" value="{{attr.value}}"
+            data-dtype="{{attr.dtype}}" />
           {{/if}}
-          <input
-            class="attribute-label"
-            type="text"
-            name="data.attributes.{{key}}.label"
-            value="{{attr.label}}"
-          />
+          <input class="attribute-label" type="text" name="data.attributes.{{key}}.label" value="{{attr.label}}" />
           <select class="attribute-dtype" name="data.attributes.{{key}}.dtype">
             {{#select attr.dtype}} {{#each ../dtypes as |t|}}
             <option value="{{t}}">{{t}}</option>
             {{/each}} {{/select}}
           </select>
-          <a class="attribute-control" data-action="delete"
-            ><i class="fas fa-trash"></i
-          ></a>
+          <a class="attribute-control" data-action="delete"><i class="fas fa-trash"></i></a>
         </li>
         {{/each}}
       </ol>

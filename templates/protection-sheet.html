@@ -1,300 +1,206 @@
 <form class="{{cssClass}}" autocomplete="off">
-	<header class="sheet-header-item">
-		<span class="item-view" value="{{item.img}}"><img class="profile-img" src="{{item.img}}" data-edit="img" title="{{item.name}}"/></span>
-        <div class="header-fields-item">
-            <div class="weapon-header-modern">
-                <div class="weapon-name-container">
-                    <h1 class="weapon-name"><input name="name" type="text" value="{{item.name}}" placeholder="Nom de l'arme"/></h1>
-                    <div class="weapon-type">Objet</div>
-                </div>
-                
-                <div class="weapon-stats-grid">
-                    <div class="stat-item">
-                        <div class="stat-label">Qté</div>
-                        <div class="stat-value">
-                            <input type="text" class="stat-input" name="system.quantity" value="{{system.quantity}}" data-dtype="Number"/>
-                        </div>
-                    </div>
-                    
-                    <div class="stat-item">
-                        <div class="stat-label">Poids</div>
-                        <div class="stat-value">
-                            <input type="text" class="stat-input" name="system.weight" value="{{system.weight}}" data-dtype="Number"/>
-                            <select class="stat-unit-select" name="system.weightUnit">
-                                <option value="kg" {{#if (eq system.weightUnit "kg")}}selected{{/if}}>kg</option>
-                                <option value="g" {{#if (eq system.weightUnit "g")}}selected{{/if}}>g</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <div class="stat-item">
-                        <div class="stat-label">Prix</div>
-                        <div class="stat-value">
-                            <input type="text" class="stat-input" name="system.prize" value="{{system.prize}}"/>
-                            <select class="stat-unit-select" name="system.prizeUnit">
-                                <option value="Σ" {{#if (eq system.prizeUnit "Σ")}}selected{{/if}}>Σ</option>
-                                <option value="Ω" {{#if (eq system.prizeUnit "Ω")}}selected{{/if}}>Ω</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="stat-item">
-                        <div class="stat-label">NT</div>
-                        <div class="stat-value">
-                            <input type="text" class="stat-input" name="system.nt" value="{{system.nt}}"/>
-                        </div>
-                    </div>
-                </div>
-            </div>
+  <header class="sheet-header-item">
+    <span class="item-view" value="{{item.img}}"><img class="profile-img" src="{{item.img}}" data-edit="img"
+        title="{{item.name}}" /></span>
+    <div class="header-fields-item">
+      <div class="weapon-header-modern">
+        <div class="weapon-name-container">
+          <h1 class="weapon-name"><input name="name" type="text" value="{{item.name}}" placeholder="Nom de l'arme" />
+          </h1>
+          <div class="weapon-type">Objet</div>
         </div>
-    </header>
+
+        <div class="weapon-stats-grid">
+          <div class="stat-item">
+            <div class="stat-label">Qté</div>
+            <div class="stat-value">
+              <input type="text" class="stat-input" name="system.quantity" value="{{system.quantity}}"
+                data-dtype="Number" />
+            </div>
+          </div>
+
+          <div class="stat-item">
+            <div class="stat-label">Poids</div>
+            <div class="stat-value">
+              <input type="text" class="stat-input" name="system.weight" value="{{system.weight}}"
+                data-dtype="Number" />
+              <select class="stat-unit-select" name="system.weightUnit">
+                <option value="kg" {{#if (eq system.weightUnit "kg" )}}selected{{/if}}>kg</option>
+                <option value="g" {{#if (eq system.weightUnit "g" )}}selected{{/if}}>g</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="stat-item">
+            <div class="stat-label">Prix</div>
+            <div class="stat-value">
+              <input type="text" class="stat-input" name="system.prize" value="{{system.prize}}" />
+              <select class="stat-unit-select" name="system.prizeUnit">
+                <option value="Σ" {{#if (eq system.prizeUnit "Σ" )}}selected{{/if}}>Σ</option>
+                <option value="Ω" {{#if (eq system.prizeUnit "Ω" )}}selected{{/if}}>Ω</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="stat-item">
+            <div class="stat-label">NT</div>
+            <div class="stat-value">
+              <input type="text" class="stat-input" name="system.nt" value="{{system.nt}}" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
 
 
   {{!-- Sheet Body --}}
   <section class="sheet-body" style="margin:10px; padding: 0 5px;">
 
-   		{{!-- Description Tab --}}
-		<div class="tab active" data-group="primary" data-tab="description">
-			<h3>📝 Description de la protection</h3>
-			{{editor enrichedBiography target="system.description" button=true editable=editable}}
-		</div>
+    {{!-- Description Tab --}}
+    <div class="tab active" data-group="primary" data-tab="description">
+      <h3>📝 Description de la protection</h3>
+      {{editor enrichedBiography target="system.description" button=true editable=editable}}
+    </div>
 
     {{!-- Localisation Tab --}}
     <div class="tab" data-group="primary" data-tab="characteristics">
-			<h3>⚙️ Caractéristiques de la protection</h3>
-			
-			<div class="weapon-feature-card {{#unless system.masquer_bonusdef}}collapsed{{/unless}}" onclick="this.classList.toggle('collapsed')">
-				<h4 class="feature-title collapsible-header">
-					<i class="fas fa-shield-alt"></i> Bonus DÉF
-					<i class="fas fa-chevron-down collapse-icon"></i>
-				</h4>
-				<div class="card-content" onclick="event.stopPropagation();">
-					<div class="defense-bonus-grid" onclick="event.stopPropagation();">
-						<div class="defense-stat">
-							<label for="def_choc">Choc</label>
-							<input
-								id="def_choc"
-								class="stat-input"
-								type="text"
-								name="system.caracs.def_choc"
-								value="{{system.caracs.def_choc}}"
-								data-dtype="Number"
-							/>
-						</div>
-						<div class="defense-stat">
-							<label for="def_lame">Lame</label>
-							<input
-								id="def_lame"
-								class="stat-input"
-								type="text"
-								name="system.caracs.def_lame"
-								value="{{system.caracs.def_lame}}"
-								data-dtype="Number"
-							/>
-						</div>
-						<div class="defense-stat">
-							<label for="def_balle">Balle</label>
-							<input
-								id="def_balle"
-								class="stat-input"
-								type="text"
-								name="system.caracs.def_balle"
-								value="{{system.caracs.def_balle}}"
-								data-dtype="Number"
-							/>
-						</div>
-						<div class="defense-stat">
-							<label for="def_feu">Feu</label>
-							<input
-								id="def_feu"
-								class="stat-input"
-								type="text"
-								name="system.caracs.def_feu"
-								value="{{system.caracs.def_feu}}"
-								data-dtype="Number"
-							/>
-						</div>
-						<div class="defense-stat">
-							<label for="def_froid">Froid</label>
-							<input
-								id="def_froid"
-								class="stat-input"
-								type="text"
-								name="system.caracs.def_froid"
-								value="{{system.caracs.def_froid}}"
-								data-dtype="Number"
-							/>
-						</div>
-						<div class="defense-stat">
-							<label for="def_acide">Acide</label>
-							<input
-								id="def_acide"
-								class="stat-input"
-								type="text"
-								name="system.caracs.def_acide"
-								value="{{system.caracs.def_acide}}"
-								data-dtype="Number"
-							/>
-						</div>
-						<div class="defense-stat">
-							<label for="def_rayon">Rayon</label>
-							<input
-								id="def_rayon"
-								class="stat-input"
-								type="text"
-								name="system.caracs.def_rayon"
-								value="{{system.caracs.def_rayon}}"
-								data-dtype="Number"
-							/>
-						</div>
-					</div>
-				</div>
-			</div>
+      <h3>⚙️ Caractéristiques de la protection</h3>
+
+      <div class="weapon-feature-card {{#unless system.masquer_bonusdef}}collapsed{{/unless}}"
+        onclick="this.classList.toggle('collapsed')">
+        <h4 class="feature-title collapsible-header">
+          <i class="fas fa-shield-alt"></i> Bonus DÉF
+          <i class="fas fa-chevron-down collapse-icon"></i>
+        </h4>
+        <div class="card-content" onclick="event.stopPropagation();">
+          <div class="defense-bonus-grid" onclick="event.stopPropagation();">
+            <div class="defense-stat">
+              <label for="def_choc">Choc</label>
+              <input id="def_choc" class="stat-input" type="text" name="system.caracs.def_choc"
+                value="{{system.caracs.def_choc}}" data-dtype="Number" />
+            </div>
+            <div class="defense-stat">
+              <label for="def_lame">Lame</label>
+              <input id="def_lame" class="stat-input" type="text" name="system.caracs.def_lame"
+                value="{{system.caracs.def_lame}}" data-dtype="Number" />
+            </div>
+            <div class="defense-stat">
+              <label for="def_balle">Balle</label>
+              <input id="def_balle" class="stat-input" type="text" name="system.caracs.def_balle"
+                value="{{system.caracs.def_balle}}" data-dtype="Number" />
+            </div>
+            <div class="defense-stat">
+              <label for="def_feu">Feu</label>
+              <input id="def_feu" class="stat-input" type="text" name="system.caracs.def_feu"
+                value="{{system.caracs.def_feu}}" data-dtype="Number" />
+            </div>
+            <div class="defense-stat">
+              <label for="def_froid">Froid</label>
+              <input id="def_froid" class="stat-input" type="text" name="system.caracs.def_froid"
+                value="{{system.caracs.def_froid}}" data-dtype="Number" />
+            </div>
+            <div class="defense-stat">
+              <label for="def_acide">Acide</label>
+              <input id="def_acide" class="stat-input" type="text" name="system.caracs.def_acide"
+                value="{{system.caracs.def_acide}}" data-dtype="Number" />
+            </div>
+            <div class="defense-stat">
+              <label for="def_rayon">Rayon</label>
+              <input id="def_rayon" class="stat-input" type="text" name="system.caracs.def_rayon"
+                value="{{system.caracs.def_rayon}}" data-dtype="Number" />
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="tab" data-group="primary" data-tab="silouhette">
       <h3><i class="fas fa-crosshairs"></i> Localisation</h3>
       <div class="silouhette_body_container">
         <!-- <div class="silouhette_body_div head"> -->
         <!-- <input  {{#ifequal system.caracs.def_tete 1}}class="silouhette_equip"{{else}}class="silouhette_unequip"{{/ifequal}}" type="text" name="system.caracs.def_tete" value="{{system.caracs.def_tete}}"/> -->
-        <div
-          class="silouhette_body_div tete pastille {{#ifequal system.caracs.def_tete 1}}green{{else}}red{{/ifequal}}"
-          value="tete"
-        >
-          <input
-            type="hidden"
-            name="system.caracs.def_tete"
-            value="{{system.caracs.def_tete}}"
-            id="def_tete_input"
-          />
+        <div class="silouhette_body_div tete pastille {{#ifequal system.caracs.def_tete 1}}green{{else}}red{{/ifequal}}"
+          value="tete">
+          <input type="hidden" name="system.caracs.def_tete" value="{{system.caracs.def_tete}}" id="def_tete_input" />
         </div>
         <div
           class="silouhette_body_div poitrine pastille {{#ifequal system.caracs.def_poitrine 1}}green{{else}}red{{/ifequal}}"
-          value="poitrine"
-        >
-          <input
-            type="hidden"
-            name="system.caracs.def_poitrine"
-            value="{{system.caracs.def_poitrine}}"
-            id="def_poitrine_input"
-          />
+          value="poitrine">
+          <input type="hidden" name="system.caracs.def_poitrine" value="{{system.caracs.def_poitrine}}"
+            id="def_poitrine_input" />
         </div>
         <div
           class="silouhette_body_div ventre pastille {{#ifequal system.caracs.def_ventre 1}}green{{else}}red{{/ifequal}}"
-          value="ventre"
-        >
-          <input
-            type="hidden"
-            name="system.caracs.def_ventre"
-            value="{{system.caracs.def_ventre}}"
-            id="def_ventre_input"
-          />
+          value="ventre">
+          <input type="hidden" name="system.caracs.def_ventre" value="{{system.caracs.def_ventre}}"
+            id="def_ventre_input" />
         </div>
         <div
           class="silouhette_body_div bras_g pastille {{#ifequal system.caracs.def_bras_g 1}}green{{else}}red{{/ifequal}}"
-          value="bras_g"
-        >
-          <input
-            type="hidden"
-            name="system.caracs.def_bras_g"
-            value="{{system.caracs.def_bras_g}}"
-            id="def_bras_g_input"
-          />
+          value="bras_g">
+          <input type="hidden" name="system.caracs.def_bras_g" value="{{system.caracs.def_bras_g}}"
+            id="def_bras_g_input" />
         </div>
         <div
           class="silouhette_body_div bras_d pastille {{#ifequal system.caracs.def_bras_d 1}}green{{else}}red{{/ifequal}}"
-          value="bras_d"
-        >
-          <input
-            type="hidden"
-            name="system.caracs.def_bras_d"
-            value="{{system.caracs.def_bras_d}}"
-            id="def_bras_d_input"
-          />
+          value="bras_d">
+          <input type="hidden" name="system.caracs.def_bras_d" value="{{system.caracs.def_bras_d}}"
+            id="def_bras_d_input" />
         </div>
         <div
           class="silouhette_body_div main_g pastille {{#ifequal system.caracs.def_main_g 1}}green{{else}}red{{/ifequal}}"
-          value="main_g"
-        >
-          <input
-            type="hidden"
-            name="system.caracs.def_main_g"
-            value="{{system.caracs.def_main_g}}"
-            id="def_main_g_input"
-          />
+          value="main_g">
+          <input type="hidden" name="system.caracs.def_main_g" value="{{system.caracs.def_main_g}}"
+            id="def_main_g_input" />
         </div>
         <div
           class="silouhette_body_div main_d pastille {{#ifequal system.caracs.def_main_d 1}}green{{else}}red{{/ifequal}}"
-          value="main_d"
-        >
-          <input
-            type="hidden"
-            name="system.caracs.def_main_d"
-            value="{{system.caracs.def_main_d}}"
-            id="def_main_d_input"
-          />
+          value="main_d">
+          <input type="hidden" name="system.caracs.def_main_d" value="{{system.caracs.def_main_d}}"
+            id="def_main_d_input" />
         </div>
         <div
           class="silouhette_body_div jambe_g pastille {{#ifequal system.caracs.def_jambe_g 1}}green{{else}}red{{/ifequal}}"
-          value="jambe_g"
-        >
-          <input
-            type="hidden"
-            name="system.caracs.def_jambe_g"
-            value="{{system.caracs.def_jambe_g}}"
-            id="def_jambe_g_input"
-          />
+          value="jambe_g">
+          <input type="hidden" name="system.caracs.def_jambe_g" value="{{system.caracs.def_jambe_g}}"
+            id="def_jambe_g_input" />
         </div>
         <div
           class="silouhette_body_div jambe_d pastille {{#ifequal system.caracs.def_jambe_d 1}}green{{else}}red{{/ifequal}}"
-          value="jambe_d"
-        >
-          <input
-            type="hidden"
-            name="system.caracs.def_jambe_d"
-            value="{{system.caracs.def_jambe_d}}"
-            id="def_jambe_d_input"
-          />
+          value="jambe_d">
+          <input type="hidden" name="system.caracs.def_jambe_d" value="{{system.caracs.def_jambe_d}}"
+            id="def_jambe_d_input" />
         </div>
         <div
           class="silouhette_body_div pied_g pastille {{#ifequal system.caracs.def_pied_g 1}}green{{else}}red{{/ifequal}}"
-          value="pied_g"
-        >
-          <input
-            type="hidden"
-            name="system.caracs.def_pied_g"
-            value="{{system.caracs.def_pied_g}}"
-            id="def_pied_g_input"
-          />
+          value="pied_g">
+          <input type="hidden" name="system.caracs.def_pied_g" value="{{system.caracs.def_pied_g}}"
+            id="def_pied_g_input" />
         </div>
         <div
           class="silouhette_body_div pied_d pastille {{#ifequal system.caracs.def_pied_d 1}}green{{else}}red{{/ifequal}}"
-          value="pied_d"
-        >
-          <input
-            type="hidden"
-            name="system.caracs.def_pied_d"
-            value="{{system.caracs.def_pied_d}}"
-            id="def_pied_d_input"
-          />
+          value="pied_d">
+          <input type="hidden" name="system.caracs.def_pied_d" value="{{system.caracs.def_pied_d}}"
+            id="def_pied_d_input" />
         </div>
         <!-- </div> -->
       </div>
     </div>
   </section>
 
-   {{!-- Invisible trigger zone for side tabs --}}
-    <div class="side-trigger-zone"></div>
-    
-    {{!-- Side Tab Navigation - outside the main content --}}
-    <nav class="side-tabs" data-group="primary">
-        <a class="side-tab-item" data-tab="description" title="DESCRIPTION">
-            <i class="fas fa-file-text"></i>
-        </a>
-        <a class="side-tab-item" data-tab="characteristics" title="CARACTÉRISTIQUES">
-            <i class="fas fa-cog"></i>
-        </a>
-        <a class="side-tab-item" data-tab="silouhette" title="LOCALISATION">
-            <i class="fas fa-crosshairs"></i>
-        </a>
-    </nav>
+  {{!-- Invisible trigger zone for side tabs --}}
+  <div class="side-trigger-zone"></div>
+
+  {{!-- Side Tab Navigation - outside the main content --}}
+  <nav class="side-tabs" data-group="primary">
+    <a class="side-tab-item" data-tab="description" title="DESCRIPTION">
+      <i class="fas fa-file-text"></i>
+    </a>
+    <a class="side-tab-item" data-tab="characteristics" title="CARACTÉRISTIQUES">
+      <i class="fas fa-cog"></i>
+    </a>
+    <a class="side-tab-item" data-tab="silouhette" title="LOCALISATION">
+      <i class="fas fa-crosshairs"></i>
+    </a>
+  </nav>
 </form>

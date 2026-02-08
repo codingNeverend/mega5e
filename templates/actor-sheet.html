@@ -433,35 +433,46 @@
 
 						<div class="modern-section">
 							<div class="section-header">
-								<h3 class="masquer" style="text-align:center; color: var(--text-dark, #333); font-size: 16px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px;" value="vie">Récupération des points de Vie</h3>
+								<h3 class="masquer"
+									style="text-align:center; color: var(--text-dark, #333); font-size: 16px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px;"
+									value="vie">Récupération des points de Vie</h3>
 							</div>
 							{{#if system.masquer_pv}}
-							<div class="weapon-stats-grid" style="grid-template-columns: repeat(4, 1fr); margin: 0 auto; max-width: 600px;">
+							<div class="weapon-stats-grid"
+								style="grid-template-columns: repeat(4, 1fr); margin: 0 auto; max-width: 600px;">
 								<div class="stat-item">
 									<div class="stat-label">PV Total</div>
 									<div class="stat-value">
-										<span class="stat-display" style="font-size: 16px; font-weight: 700; color: #2c3e50; padding: 8px 12px; background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.2); border-radius: 3px; min-width: 50px; display: inline-block; text-align: center;">{{system.health.max}}</span>
+										<span class="stat-display"
+											style="font-size: 16px; font-weight: 700; color: #2c3e50; padding: 8px 12px; background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.2); border-radius: 3px; min-width: 50px; display: inline-block; text-align: center;">{{system.health.max}}</span>
 									</div>
 								</div>
-								
+
 								<div class="stat-item">
 									<div class="stat-label">PV Actuels</div>
 									<div class="stat-value">
-										<span class="stat-display" style="font-size: 16px; font-weight: 700; color: #e74c3c; padding: 8px 12px; background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.2); border-radius: 3px; min-width: 50px; display: inline-block; text-align: center;">{{system.health.value}}</span>
+										<span class="stat-display"
+											style="font-size: 16px; font-weight: 700; color: #e74c3c; padding: 8px 12px; background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.2); border-radius: 3px; min-width: 50px; display: inline-block; text-align: center;">{{system.health.value}}</span>
 									</div>
 								</div>
-								
+
 								<div class="stat-item" style="min-height: auto; justify-content: flex-start;">
 									<div class="stat-label">Sans activité intense</div>
-									<div class="stat-value" style="height: auto; flex-direction: column; gap: 6px; padding-top: 4px;">
-										<span class="stat-display" style="font-size: 14px; font-weight: 600; color: #27ae60; padding: 4px 8px; background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.2); border-radius: 3px; min-width: 40px; display: inline-block; text-align: center;">{{system.vie_hrecup_sans_activite.value}} h soit {{system.vie_jrecup_sans_activite.value}} j</span>
+									<div class="stat-value"
+										style="height: auto; flex-direction: column; gap: 6px; padding-top: 4px;">
+										<span class="stat-display"
+											style="font-size: 14px; font-weight: 600; color: #27ae60; padding: 4px 8px; background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.2); border-radius: 3px; min-width: 40px; display: inline-block; text-align: center;">{{system.vie_hrecup_sans_activite.value}}
+											h soit {{system.vie_jrecup_sans_activite.value}} j</span>
 									</div>
 								</div>
-								
+
 								<div class="stat-item" style="min-height: auto; justify-content: flex-start;">
 									<div class="stat-label">Repos total</div>
-									<div class="stat-value" style="height: auto; flex-direction: column; gap: 6px; padding-top: 4px;">
-										<span class="stat-display" style="font-size: 14px; font-weight: 600; color: #3498db; padding: 4px 8px; background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.2); border-radius: 3px; min-width: 40px; display: inline-block; text-align: center;">{{system.vie_hrecup_repos_total.value}} h soit {{system.vie_jrecup_repos_total.value}} j</span>
+									<div class="stat-value"
+										style="height: auto; flex-direction: column; gap: 6px; padding-top: 4px;">
+										<span class="stat-display"
+											style="font-size: 14px; font-weight: 600; color: #3498db; padding: 4px 8px; background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.2); border-radius: 3px; min-width: 40px; display: inline-block; text-align: center;">{{system.vie_hrecup_repos_total.value}}
+											h soit {{system.vie_jrecup_repos_total.value}} j</span>
 									</div>
 								</div>
 							</div>
@@ -470,96 +481,168 @@
 						<br>
 						<div class="modern-section">
 							<div class="section-header">
-								<h3 class="masquer" style="text-align:center; color: var(--text-dark, #333); font-size: 16px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px;" value="ardence">Récupération des points d'Ardence</h3>
+								<h3 class="masquer"
+									style="text-align:center; color: var(--text-dark, #333); font-size: 16px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px;"
+									value="ardence">Récupération des points d'Ardence</h3>
 							</div>
 							{{#if system.masquer_ardence}}
-							<div style="display: flex; justify-content: center; align-items: flex-start; gap: 12px; margin: 0 auto; width: 100%; flex-wrap: wrap;">
+							<div
+								style="display: flex; justify-content: center; align-items: flex-start; gap: 12px; margin: 0 auto; width: 100%; flex-wrap: wrap;">
 								{{#if system.recup_ardence_1.value}}<div class="stat-item" style="min-height: auto;">
 									<div class="stat-label">1er</div>
-									<div class="stat-value" style="height: auto; flex-direction: column; gap: 4px; padding-top: 4px;">
-										<span class="stat-display" style="font-size: 12px; font-weight: 600; color: #e67e22; padding: 3px 6px; background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.2); border-radius: 3px; min-width: 35px; display: inline-block; text-align: center;">{{system.recup_ardence_1.value}} mn</span>
-										<input class="stat-input" style="width: 40px; font-size: 11px; padding: 2px 4px;" type="text" name="system.recup_ardence_1.value_j" value="{{system.recup_ardence_1.value_j}}" placeholder="h" />
+									<div class="stat-value"
+										style="height: auto; flex-direction: column; gap: 4px; padding-top: 4px;">
+										<span class="stat-display"
+											style="font-size: 12px; font-weight: 600; color: #e67e22; padding: 3px 6px; background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.2); border-radius: 3px; min-width: 35px; display: inline-block; text-align: center;">{{system.recup_ardence_1.value}}
+											mn</span>
+										<input class="stat-input"
+											style="width: 40px; font-size: 11px; padding: 2px 4px;" type="text"
+											name="system.recup_ardence_1.value_j"
+											value="{{system.recup_ardence_1.value_j}}" placeholder="h" />
 									</div>
 								</div>{{/if}}
-								{{#if system.recup_ardence_2.value}}{{#if system.recup_ardence_1.value}}<div style="display: flex; align-items: center; padding-top: 20px;">
+								{{#if system.recup_ardence_2.value}}{{#if system.recup_ardence_1.value}}<div
+									style="display: flex; align-items: center; padding-top: 20px;">
 									<i class="fas fa-arrow-right" style="color: #e67e22; font-size: 16px;"></i>
 								</div>{{/if}}<div class="stat-item" style="min-height: auto;">
 									<div class="stat-label">2ème</div>
-									<div class="stat-value" style="height: auto; flex-direction: column; gap: 4px; padding-top: 4px;">
-										<span class="stat-display" style="font-size: 12px; font-weight: 600; color: #e67e22; padding: 3px 6px; background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.2); border-radius: 3px; min-width: 35px; display: inline-block; text-align: center;">{{system.recup_ardence_2.value}} mn</span>
-										<input class="stat-input" style="width: 40px; font-size: 11px; padding: 2px 4px;" type="text" name="system.recup_ardence_2.value_j" value="{{system.recup_ardence_2.value_j}}" placeholder="h" />
+									<div class="stat-value"
+										style="height: auto; flex-direction: column; gap: 4px; padding-top: 4px;">
+										<span class="stat-display"
+											style="font-size: 12px; font-weight: 600; color: #e67e22; padding: 3px 6px; background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.2); border-radius: 3px; min-width: 35px; display: inline-block; text-align: center;">{{system.recup_ardence_2.value}}
+											mn</span>
+										<input class="stat-input"
+											style="width: 40px; font-size: 11px; padding: 2px 4px;" type="text"
+											name="system.recup_ardence_2.value_j"
+											value="{{system.recup_ardence_2.value_j}}" placeholder="h" />
 									</div>
 								</div>{{/if}}
-								{{#if system.recup_ardence_3.value}}{{#if system.recup_ardence_2.value}}<div style="display: flex; align-items: center; padding-top: 20px;">
+								{{#if system.recup_ardence_3.value}}{{#if system.recup_ardence_2.value}}<div
+									style="display: flex; align-items: center; padding-top: 20px;">
 									<i class="fas fa-arrow-right" style="color: #e67e22; font-size: 16px;"></i>
 								</div>{{/if}}<div class="stat-item" style="min-height: auto;">
 									<div class="stat-label">3ème</div>
-									<div class="stat-value" style="height: auto; flex-direction: column; gap: 4px; padding-top: 4px;">
-										<span class="stat-display" style="font-size: 12px; font-weight: 600; color: #e67e22; padding: 3px 6px; background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.2); border-radius: 3px; min-width: 35px; display: inline-block; text-align: center;">{{system.recup_ardence_3.value}} mn</span>
-										<input class="stat-input" style="width: 40px; font-size: 11px; padding: 2px 4px;" type="text" name="system.recup_ardence_3.value_j" value="{{system.recup_ardence_3.value_j}}" placeholder="h" />
+									<div class="stat-value"
+										style="height: auto; flex-direction: column; gap: 4px; padding-top: 4px;">
+										<span class="stat-display"
+											style="font-size: 12px; font-weight: 600; color: #e67e22; padding: 3px 6px; background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.2); border-radius: 3px; min-width: 35px; display: inline-block; text-align: center;">{{system.recup_ardence_3.value}}
+											mn</span>
+										<input class="stat-input"
+											style="width: 40px; font-size: 11px; padding: 2px 4px;" type="text"
+											name="system.recup_ardence_3.value_j"
+											value="{{system.recup_ardence_3.value_j}}" placeholder="h" />
 									</div>
 								</div>{{/if}}
-								{{#if system.recup_ardence_4.value}}{{#if system.recup_ardence_3.value}}<div style="display: flex; align-items: center; padding-top: 20px;">
+								{{#if system.recup_ardence_4.value}}{{#if system.recup_ardence_3.value}}<div
+									style="display: flex; align-items: center; padding-top: 20px;">
 									<i class="fas fa-arrow-right" style="color: #e67e22; font-size: 16px;"></i>
 								</div>{{/if}}<div class="stat-item" style="min-height: auto;">
 									<div class="stat-label">4ème</div>
-									<div class="stat-value" style="height: auto; flex-direction: column; gap: 4px; padding-top: 4px;">
-										<span class="stat-display" style="font-size: 12px; font-weight: 600; color: #e67e22; padding: 3px 6px; background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.2); border-radius: 3px; min-width: 35px; display: inline-block; text-align: center;">{{system.recup_ardence_4.value}} mn</span>
-										<input class="stat-input" style="width: 40px; font-size: 11px; padding: 2px 4px;" type="text" name="system.recup_ardence_4.value_j" value="{{system.recup_ardence_4.value_j}}" placeholder="h" />
+									<div class="stat-value"
+										style="height: auto; flex-direction: column; gap: 4px; padding-top: 4px;">
+										<span class="stat-display"
+											style="font-size: 12px; font-weight: 600; color: #e67e22; padding: 3px 6px; background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.2); border-radius: 3px; min-width: 35px; display: inline-block; text-align: center;">{{system.recup_ardence_4.value}}
+											mn</span>
+										<input class="stat-input"
+											style="width: 40px; font-size: 11px; padding: 2px 4px;" type="text"
+											name="system.recup_ardence_4.value_j"
+											value="{{system.recup_ardence_4.value_j}}" placeholder="h" />
 									</div>
 								</div>{{/if}}
-								{{#if system.recup_ardence_5.value}}{{#if system.recup_ardence_4.value}}<div style="display: flex; align-items: center; padding-top: 20px;">
+								{{#if system.recup_ardence_5.value}}{{#if system.recup_ardence_4.value}}<div
+									style="display: flex; align-items: center; padding-top: 20px;">
 									<i class="fas fa-arrow-right" style="color: #e67e22; font-size: 16px;"></i>
 								</div>{{/if}}<div class="stat-item" style="min-height: auto;">
 									<div class="stat-label">5ème</div>
-									<div class="stat-value" style="height: auto; flex-direction: column; gap: 4px; padding-top: 4px;">
-										<span class="stat-display" style="font-size: 12px; font-weight: 600; color: #e67e22; padding: 3px 6px; background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.2); border-radius: 3px; min-width: 35px; display: inline-block; text-align: center;">{{system.recup_ardence_5.value}} mn</span>
-										<input class="stat-input" style="width: 40px; font-size: 11px; padding: 2px 4px;" type="text" name="system.recup_ardence_5.value_j" value="{{system.recup_ardence_5.value_j}}" placeholder="h" />
+									<div class="stat-value"
+										style="height: auto; flex-direction: column; gap: 4px; padding-top: 4px;">
+										<span class="stat-display"
+											style="font-size: 12px; font-weight: 600; color: #e67e22; padding: 3px 6px; background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.2); border-radius: 3px; min-width: 35px; display: inline-block; text-align: center;">{{system.recup_ardence_5.value}}
+											mn</span>
+										<input class="stat-input"
+											style="width: 40px; font-size: 11px; padding: 2px 4px;" type="text"
+											name="system.recup_ardence_5.value_j"
+											value="{{system.recup_ardence_5.value_j}}" placeholder="h" />
 									</div>
 								</div>{{/if}}
-								{{#if system.recup_ardence_6.value}}{{#if system.recup_ardence_5.value}}<div style="display: flex; align-items: center; padding-top: 20px;">
+								{{#if system.recup_ardence_6.value}}{{#if system.recup_ardence_5.value}}<div
+									style="display: flex; align-items: center; padding-top: 20px;">
 									<i class="fas fa-arrow-right" style="color: #e67e22; font-size: 16px;"></i>
 								</div>{{/if}}<div class="stat-item" style="min-height: auto;">
 									<div class="stat-label">6ème</div>
-									<div class="stat-value" style="height: auto; flex-direction: column; gap: 4px; padding-top: 4px;">
-										<span class="stat-display" style="font-size: 12px; font-weight: 600; color: #e67e22; padding: 3px 6px; background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.2); border-radius: 3px; min-width: 35px; display: inline-block; text-align: center;">{{system.recup_ardence_6.value}} mn</span>
-										<input class="stat-input" style="width: 40px; font-size: 11px; padding: 2px 4px;" type="text" name="system.recup_ardence_6.value_j" value="{{system.recup_ardence_6.value_j}}" placeholder="h" />
+									<div class="stat-value"
+										style="height: auto; flex-direction: column; gap: 4px; padding-top: 4px;">
+										<span class="stat-display"
+											style="font-size: 12px; font-weight: 600; color: #e67e22; padding: 3px 6px; background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.2); border-radius: 3px; min-width: 35px; display: inline-block; text-align: center;">{{system.recup_ardence_6.value}}
+											mn</span>
+										<input class="stat-input"
+											style="width: 40px; font-size: 11px; padding: 2px 4px;" type="text"
+											name="system.recup_ardence_6.value_j"
+											value="{{system.recup_ardence_6.value_j}}" placeholder="h" />
 									</div>
 								</div>{{/if}}
-								{{#if system.recup_ardence_7.value}}{{#if system.recup_ardence_6.value}}<div style="display: flex; align-items: center; padding-top: 20px;">
+								{{#if system.recup_ardence_7.value}}{{#if system.recup_ardence_6.value}}<div
+									style="display: flex; align-items: center; padding-top: 20px;">
 									<i class="fas fa-arrow-right" style="color: #e67e22; font-size: 16px;"></i>
 								</div>{{/if}}<div class="stat-item" style="min-height: auto;">
 									<div class="stat-label">7ème</div>
-									<div class="stat-value" style="height: auto; flex-direction: column; gap: 4px; padding-top: 4px;">
-										<span class="stat-display" style="font-size: 12px; font-weight: 600; color: #e67e22; padding: 3px 6px; background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.2); border-radius: 3px; min-width: 35px; display: inline-block; text-align: center;">{{system.recup_ardence_7.value}} mn</span>
-										<input class="stat-input" style="width: 40px; font-size: 11px; padding: 2px 4px;" type="text" name="system.recup_ardence_7.value_j" value="{{system.recup_ardence_7.value_j}}" placeholder="h" />
+									<div class="stat-value"
+										style="height: auto; flex-direction: column; gap: 4px; padding-top: 4px;">
+										<span class="stat-display"
+											style="font-size: 12px; font-weight: 600; color: #e67e22; padding: 3px 6px; background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.2); border-radius: 3px; min-width: 35px; display: inline-block; text-align: center;">{{system.recup_ardence_7.value}}
+											mn</span>
+										<input class="stat-input"
+											style="width: 40px; font-size: 11px; padding: 2px 4px;" type="text"
+											name="system.recup_ardence_7.value_j"
+											value="{{system.recup_ardence_7.value_j}}" placeholder="h" />
 									</div>
 								</div>{{/if}}
-								{{#if system.recup_ardence_8.value}}{{#if system.recup_ardence_7.value}}<div style="display: flex; align-items: center; padding-top: 20px;">
+								{{#if system.recup_ardence_8.value}}{{#if system.recup_ardence_7.value}}<div
+									style="display: flex; align-items: center; padding-top: 20px;">
 									<i class="fas fa-arrow-right" style="color: #e67e22; font-size: 16px;"></i>
 								</div>{{/if}}<div class="stat-item" style="min-height: auto;">
 									<div class="stat-label">8ème</div>
-									<div class="stat-value" style="height: auto; flex-direction: column; gap: 4px; padding-top: 4px;">
-										<span class="stat-display" style="font-size: 12px; font-weight: 600; color: #e67e22; padding: 3px 6px; background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.2); border-radius: 3px; min-width: 35px; display: inline-block; text-align: center;">{{system.recup_ardence_8.value}} mn</span>
-										<input class="stat-input" style="width: 40px; font-size: 11px; padding: 2px 4px;" type="text" name="system.recup_ardence_8.value_j" value="{{system.recup_ardence_8.value_j}}" placeholder="h" />
+									<div class="stat-value"
+										style="height: auto; flex-direction: column; gap: 4px; padding-top: 4px;">
+										<span class="stat-display"
+											style="font-size: 12px; font-weight: 600; color: #e67e22; padding: 3px 6px; background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.2); border-radius: 3px; min-width: 35px; display: inline-block; text-align: center;">{{system.recup_ardence_8.value}}
+											mn</span>
+										<input class="stat-input"
+											style="width: 40px; font-size: 11px; padding: 2px 4px;" type="text"
+											name="system.recup_ardence_8.value_j"
+											value="{{system.recup_ardence_8.value_j}}" placeholder="h" />
 									</div>
 								</div>{{/if}}
-								{{#if system.recup_ardence_9.value}}{{#if system.recup_ardence_8.value}}<div style="display: flex; align-items: center; padding-top: 20px;">
+								{{#if system.recup_ardence_9.value}}{{#if system.recup_ardence_8.value}}<div
+									style="display: flex; align-items: center; padding-top: 20px;">
 									<i class="fas fa-arrow-right" style="color: #e67e22; font-size: 16px;"></i>
 								</div>{{/if}}<div class="stat-item" style="min-height: auto;">
 									<div class="stat-label">9ème</div>
-									<div class="stat-value" style="height: auto; flex-direction: column; gap: 4px; padding-top: 4px;">
-										<span class="stat-display" style="font-size: 12px; font-weight: 600; color: #e67e22; padding: 3px 6px; background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.2); border-radius: 3px; min-width: 35px; display: inline-block; text-align: center;">{{system.recup_ardence_9.value}} mn</span>
-										<input class="stat-input" style="width: 40px; font-size: 11px; padding: 2px 4px;" type="text" name="system.recup_ardence_9.value_j" value="{{system.recup_ardence_9.value_j}}" placeholder="h" />
+									<div class="stat-value"
+										style="height: auto; flex-direction: column; gap: 4px; padding-top: 4px;">
+										<span class="stat-display"
+											style="font-size: 12px; font-weight: 600; color: #e67e22; padding: 3px 6px; background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.2); border-radius: 3px; min-width: 35px; display: inline-block; text-align: center;">{{system.recup_ardence_9.value}}
+											mn</span>
+										<input class="stat-input"
+											style="width: 40px; font-size: 11px; padding: 2px 4px;" type="text"
+											name="system.recup_ardence_9.value_j"
+											value="{{system.recup_ardence_9.value_j}}" placeholder="h" />
 									</div>
 								</div>{{/if}}
-								{{#if system.recup_ardence_10.value}}{{#if system.recup_ardence_9.value}}<div style="display: flex; align-items: center; padding-top: 20px;">
+								{{#if system.recup_ardence_10.value}}{{#if system.recup_ardence_9.value}}<div
+									style="display: flex; align-items: center; padding-top: 20px;">
 									<i class="fas fa-arrow-right" style="color: #e67e22; font-size: 16px;"></i>
 								</div>{{/if}}<div class="stat-item" style="min-height: auto;">
 									<div class="stat-label">10ème</div>
-									<div class="stat-value" style="height: auto; flex-direction: column; gap: 4px; padding-top: 4px;">
-										<span class="stat-display" style="font-size: 12px; font-weight: 600; color: #e67e22; padding: 3px 6px; background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.2); border-radius: 3px; min-width: 35px; display: inline-block; text-align: center;">{{system.recup_ardence_10.value}} mn</span>
-										<input class="stat-input" style="width: 40px; font-size: 11px; padding: 2px 4px;" type="text" name="system.recup_ardence_10.value_j" value="{{system.recup_ardence_10.value_j}}" placeholder="h" />
+									<div class="stat-value"
+										style="height: auto; flex-direction: column; gap: 4px; padding-top: 4px;">
+										<span class="stat-display"
+											style="font-size: 12px; font-weight: 600; color: #e67e22; padding: 3px 6px; background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.2); border-radius: 3px; min-width: 35px; display: inline-block; text-align: center;">{{system.recup_ardence_10.value}}
+											mn</span>
+										<input class="stat-input"
+											style="width: 40px; font-size: 11px; padding: 2px 4px;" type="text"
+											name="system.recup_ardence_10.value_j"
+											value="{{system.recup_ardence_10.value_j}}" placeholder="h" />
 									</div>
 								</div>{{/if}}
 							</div>
@@ -568,99 +651,176 @@
 						<br>
 						<div class="modern-section">
 							<div class="section-header">
-								<h3 class="masquer" style="text-align:center; color: var(--text-dark, #333); font-size: 16px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px;" value="resonnance">Récupération des points de Résonnance</h3>
+								<h3 class="masquer"
+									style="text-align:center; color: var(--text-dark, #333); font-size: 16px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px;"
+									value="resonnance">Récupération des points de Résonnance</h3>
 							</div>
 							{{#if system.masquer_resonnance}}
-							<div style="display: flex; justify-content: center; align-items: flex-start; gap: 12px; margin: 0 auto; width: 100%; flex-wrap: wrap; min-height: 60px;">
+							<div
+								style="display: flex; justify-content: center; align-items: flex-start; gap: 12px; margin: 0 auto; width: 100%; flex-wrap: wrap; min-height: 60px;">
 								{{#if system.recup_resonnance_1.value}}<div class="stat-item" style="min-height: auto;">
 									<div class="stat-label">1er</div>
-									<div class="stat-value" style="height: auto; flex-direction: column; gap: 4px; padding-top: 4px;">
-										<span class="stat-display" style="font-size: 12px; font-weight: 600; color: #9b59b6; padding: 3px 6px; background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.2); border-radius: 3px; min-width: 35px; display: inline-block; text-align: center;">{{system.recup_resonnance_1.value}} h</span>
-										<input class="stat-input" style="width: 40px; font-size: 11px; padding: 2px 4px;" type="text" name="system.recup_resonnance_1.value_j" value="{{system.recup_resonnance_1.value_j}}" placeholder="h" />
+									<div class="stat-value"
+										style="height: auto; flex-direction: column; gap: 4px; padding-top: 4px;">
+										<span class="stat-display"
+											style="font-size: 12px; font-weight: 600; color: #9b59b6; padding: 3px 6px; background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.2); border-radius: 3px; min-width: 35px; display: inline-block; text-align: center;">{{system.recup_resonnance_1.value}}
+											h</span>
+										<input class="stat-input"
+											style="width: 40px; font-size: 11px; padding: 2px 4px;" type="text"
+											name="system.recup_resonnance_1.value_j"
+											value="{{system.recup_resonnance_1.value_j}}" placeholder="h" />
 									</div>
 								</div>{{/if}}
-								{{#if system.recup_resonnance_2.value}}{{#if system.recup_resonnance_1.value}}<div style="display: flex; align-items: center; padding-top: 20px;">
+								{{#if system.recup_resonnance_2.value}}{{#if system.recup_resonnance_1.value}}<div
+									style="display: flex; align-items: center; padding-top: 20px;">
 									<i class="fas fa-arrow-right" style="color: #9b59b6; font-size: 16px;"></i>
 								</div>{{/if}}<div class="stat-item" style="min-height: auto;">
 									<div class="stat-label">2ème</div>
-									<div class="stat-value" style="height: auto; flex-direction: column; gap: 4px; padding-top: 4px;">
-										<span class="stat-display" style="font-size: 12px; font-weight: 600; color: #9b59b6; padding: 3px 6px; background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.2); border-radius: 3px; min-width: 35px; display: inline-block; text-align: center;">{{system.recup_resonnance_2.value}} h</span>
-										<input class="stat-input" style="width: 40px; font-size: 11px; padding: 2px 4px;" type="text" name="system.recup_resonnance_2.value_j" value="{{system.recup_resonnance_2.value_j}}" placeholder="h" />
+									<div class="stat-value"
+										style="height: auto; flex-direction: column; gap: 4px; padding-top: 4px;">
+										<span class="stat-display"
+											style="font-size: 12px; font-weight: 600; color: #9b59b6; padding: 3px 6px; background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.2); border-radius: 3px; min-width: 35px; display: inline-block; text-align: center;">{{system.recup_resonnance_2.value}}
+											h</span>
+										<input class="stat-input"
+											style="width: 40px; font-size: 11px; padding: 2px 4px;" type="text"
+											name="system.recup_resonnance_2.value_j"
+											value="{{system.recup_resonnance_2.value_j}}" placeholder="h" />
 									</div>
 								</div>{{/if}}
-								{{#if system.recup_resonnance_3.value}}{{#if system.recup_resonnance_2.value}}<div style="display: flex; align-items: center; padding-top: 20px;">
+								{{#if system.recup_resonnance_3.value}}{{#if system.recup_resonnance_2.value}}<div
+									style="display: flex; align-items: center; padding-top: 20px;">
 									<i class="fas fa-arrow-right" style="color: #9b59b6; font-size: 16px;"></i>
 								</div>{{/if}}<div class="stat-item" style="min-height: auto;">
 									<div class="stat-label">3ème</div>
-									<div class="stat-value" style="height: auto; flex-direction: column; gap: 4px; padding-top: 4px;">
-										<span class="stat-display" style="font-size: 12px; font-weight: 600; color: #9b59b6; padding: 3px 6px; background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.2); border-radius: 3px; min-width: 35px; display: inline-block; text-align: center;">{{system.recup_resonnance_3.value}} h</span>
-										<input class="stat-input" style="width: 40px; font-size: 11px; padding: 2px 4px;" type="text" name="system.recup_resonnance_3.value_j" value="{{system.recup_resonnance_3.value_j}}" placeholder="h" />
+									<div class="stat-value"
+										style="height: auto; flex-direction: column; gap: 4px; padding-top: 4px;">
+										<span class="stat-display"
+											style="font-size: 12px; font-weight: 600; color: #9b59b6; padding: 3px 6px; background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.2); border-radius: 3px; min-width: 35px; display: inline-block; text-align: center;">{{system.recup_resonnance_3.value}}
+											h</span>
+										<input class="stat-input"
+											style="width: 40px; font-size: 11px; padding: 2px 4px;" type="text"
+											name="system.recup_resonnance_3.value_j"
+											value="{{system.recup_resonnance_3.value_j}}" placeholder="h" />
 									</div>
 								</div>{{/if}}
-								{{#if system.recup_resonnance_4.value}}{{#if system.recup_resonnance_3.value}}<div style="display: flex; align-items: center; padding-top: 20px;">
+								{{#if system.recup_resonnance_4.value}}{{#if system.recup_resonnance_3.value}}<div
+									style="display: flex; align-items: center; padding-top: 20px;">
 									<i class="fas fa-arrow-right" style="color: #9b59b6; font-size: 16px;"></i>
 								</div>{{/if}}<div class="stat-item" style="min-height: auto;">
 									<div class="stat-label">4ème</div>
-									<div class="stat-value" style="height: auto; flex-direction: column; gap: 4px; padding-top: 4px;">
-										<span class="stat-display" style="font-size: 12px; font-weight: 600; color: #9b59b6; padding: 3px 6px; background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.2); border-radius: 3px; min-width: 35px; display: inline-block; text-align: center;">{{system.recup_resonnance_4.value}} h</span>
-										<input class="stat-input" style="width: 40px; font-size: 11px; padding: 2px 4px;" type="text" name="system.recup_resonnance_4.value_j" value="{{system.recup_resonnance_4.value_j}}" placeholder="h" />
+									<div class="stat-value"
+										style="height: auto; flex-direction: column; gap: 4px; padding-top: 4px;">
+										<span class="stat-display"
+											style="font-size: 12px; font-weight: 600; color: #9b59b6; padding: 3px 6px; background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.2); border-radius: 3px; min-width: 35px; display: inline-block; text-align: center;">{{system.recup_resonnance_4.value}}
+											h</span>
+										<input class="stat-input"
+											style="width: 40px; font-size: 11px; padding: 2px 4px;" type="text"
+											name="system.recup_resonnance_4.value_j"
+											value="{{system.recup_resonnance_4.value_j}}" placeholder="h" />
 									</div>
 								</div>{{/if}}
-								{{#if system.recup_resonnance_5.value}}{{#if system.recup_resonnance_4.value}}<div style="display: flex; align-items: center; padding-top: 20px;">
+								{{#if system.recup_resonnance_5.value}}{{#if system.recup_resonnance_4.value}}<div
+									style="display: flex; align-items: center; padding-top: 20px;">
 									<i class="fas fa-arrow-right" style="color: #9b59b6; font-size: 16px;"></i>
 								</div>{{/if}}<div class="stat-item" style="min-height: auto;">
 									<div class="stat-label">5ème</div>
-									<div class="stat-value" style="height: auto; flex-direction: column; gap: 4px; padding-top: 4px;">
-										<span class="stat-display" style="font-size: 12px; font-weight: 600; color: #9b59b6; padding: 3px 6px; background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.2); border-radius: 3px; min-width: 35px; display: inline-block; text-align: center;">{{system.recup_resonnance_5.value}} h</span>
-										<input class="stat-input" style="width: 40px; font-size: 11px; padding: 2px 4px;" type="text" name="system.recup_resonnance_5.value_j" value="{{system.recup_resonnance_5.value_j}}" placeholder="h" />
+									<div class="stat-value"
+										style="height: auto; flex-direction: column; gap: 4px; padding-top: 4px;">
+										<span class="stat-display"
+											style="font-size: 12px; font-weight: 600; color: #9b59b6; padding: 3px 6px; background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.2); border-radius: 3px; min-width: 35px; display: inline-block; text-align: center;">{{system.recup_resonnance_5.value}}
+											h</span>
+										<input class="stat-input"
+											style="width: 40px; font-size: 11px; padding: 2px 4px;" type="text"
+											name="system.recup_resonnance_5.value_j"
+											value="{{system.recup_resonnance_5.value_j}}" placeholder="h" />
 									</div>
 								</div>{{/if}}
-								{{#if system.recup_resonnance_6.value}}{{#if system.recup_resonnance_5.value}}<div style="display: flex; align-items: center; padding-top: 20px;">
+								{{#if system.recup_resonnance_6.value}}{{#if system.recup_resonnance_5.value}}<div
+									style="display: flex; align-items: center; padding-top: 20px;">
 									<i class="fas fa-arrow-right" style="color: #9b59b6; font-size: 16px;"></i>
 								</div>{{/if}}<div class="stat-item" style="min-height: auto;">
 									<div class="stat-label">6ème</div>
-									<div class="stat-value" style="height: auto; flex-direction: column; gap: 4px; padding-top: 4px;">
-										<span class="stat-display" style="font-size: 12px; font-weight: 600; color: #9b59b6; padding: 3px 6px; background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.2); border-radius: 3px; min-width: 35px; display: inline-block; text-align: center;">{{system.recup_resonnance_6.value}} h</span>
-										<input class="stat-input" style="width: 40px; font-size: 11px; padding: 2px 4px;" type="text" name="system.recup_resonnance_6.value_j" value="{{system.recup_resonnance_6.value_j}}" placeholder="h" />
+									<div class="stat-value"
+										style="height: auto; flex-direction: column; gap: 4px; padding-top: 4px;">
+										<span class="stat-display"
+											style="font-size: 12px; font-weight: 600; color: #9b59b6; padding: 3px 6px; background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.2); border-radius: 3px; min-width: 35px; display: inline-block; text-align: center;">{{system.recup_resonnance_6.value}}
+											h</span>
+										<input class="stat-input"
+											style="width: 40px; font-size: 11px; padding: 2px 4px;" type="text"
+											name="system.recup_resonnance_6.value_j"
+											value="{{system.recup_resonnance_6.value_j}}" placeholder="h" />
 									</div>
 								</div>{{/if}}
-								{{#if system.recup_resonnance_7.value}}{{#if system.recup_resonnance_6.value}}<div style="display: flex; align-items: center; padding-top: 20px;">
+								{{#if system.recup_resonnance_7.value}}{{#if system.recup_resonnance_6.value}}<div
+									style="display: flex; align-items: center; padding-top: 20px;">
 									<i class="fas fa-arrow-right" style="color: #9b59b6; font-size: 16px;"></i>
 								</div>{{/if}}<div class="stat-item" style="min-height: auto;">
 									<div class="stat-label">7ème</div>
-									<div class="stat-value" style="height: auto; flex-direction: column; gap: 4px; padding-top: 4px;">
-										<span class="stat-display" style="font-size: 12px; font-weight: 600; color: #9b59b6; padding: 3px 6px; background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.2); border-radius: 3px; min-width: 35px; display: inline-block; text-align: center;">{{system.recup_resonnance_7.value}} h</span>
-										<input class="stat-input" style="width: 40px; font-size: 11px; padding: 2px 4px;" type="text" name="system.recup_resonnance_7.value_j" value="{{system.recup_resonnance_7.value_j}}" placeholder="h" />
+									<div class="stat-value"
+										style="height: auto; flex-direction: column; gap: 4px; padding-top: 4px;">
+										<span class="stat-display"
+											style="font-size: 12px; font-weight: 600; color: #9b59b6; padding: 3px 6px; background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.2); border-radius: 3px; min-width: 35px; display: inline-block; text-align: center;">{{system.recup_resonnance_7.value}}
+											h</span>
+										<input class="stat-input"
+											style="width: 40px; font-size: 11px; padding: 2px 4px;" type="text"
+											name="system.recup_resonnance_7.value_j"
+											value="{{system.recup_resonnance_7.value_j}}" placeholder="h" />
 									</div>
 								</div>{{/if}}
-								{{#if system.recup_resonnance_8.value}}{{#if system.recup_resonnance_7.value}}<div style="display: flex; align-items: center; padding-top: 20px;">
+								{{#if system.recup_resonnance_8.value}}{{#if system.recup_resonnance_7.value}}<div
+									style="display: flex; align-items: center; padding-top: 20px;">
 									<i class="fas fa-arrow-right" style="color: #9b59b6; font-size: 16px;"></i>
 								</div>{{/if}}<div class="stat-item" style="min-height: auto;">
 									<div class="stat-label">8ème</div>
-									<div class="stat-value" style="height: auto; flex-direction: column; gap: 4px; padding-top: 4px;">
-										<span class="stat-display" style="font-size: 12px; font-weight: 600; color: #9b59b6; padding: 3px 6px; background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.2); border-radius: 3px; min-width: 35px; display: inline-block; text-align: center;">{{system.recup_resonnance_8.value}} h</span>
-										<input class="stat-input" style="width: 40px; font-size: 11px; padding: 2px 4px;" type="text" name="system.recup_resonnance_8.value_j" value="{{system.recup_resonnance_8.value_j}}" placeholder="h" />
+									<div class="stat-value"
+										style="height: auto; flex-direction: column; gap: 4px; padding-top: 4px;">
+										<span class="stat-display"
+											style="font-size: 12px; font-weight: 600; color: #9b59b6; padding: 3px 6px; background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.2); border-radius: 3px; min-width: 35px; display: inline-block; text-align: center;">{{system.recup_resonnance_8.value}}
+											h</span>
+										<input class="stat-input"
+											style="width: 40px; font-size: 11px; padding: 2px 4px;" type="text"
+											name="system.recup_resonnance_8.value_j"
+											value="{{system.recup_resonnance_8.value_j}}" placeholder="h" />
 									</div>
 								</div>{{/if}}
-								{{#if system.recup_resonnance_9.value}}{{#if system.recup_resonnance_8.value}}<div style="display: flex; align-items: center; padding-top: 20px;">
+								{{#if system.recup_resonnance_9.value}}{{#if system.recup_resonnance_8.value}}<div
+									style="display: flex; align-items: center; padding-top: 20px;">
 									<i class="fas fa-arrow-right" style="color: #9b59b6; font-size: 16px;"></i>
 								</div>{{/if}}<div class="stat-item" style="min-height: auto;">
 									<div class="stat-label">9ème</div>
-									<div class="stat-value" style="height: auto; flex-direction: column; gap: 4px; padding-top: 4px;">
-										<span class="stat-display" style="font-size: 12px; font-weight: 600; color: #9b59b6; padding: 3px 6px; background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.2); border-radius: 3px; min-width: 35px; display: inline-block; text-align: center;">{{system.recup_resonnance_9.value}} h</span>
-										<input class="stat-input" style="width: 40px; font-size: 11px; padding: 2px 4px;" type="text" name="system.recup_resonnance_9.value_j" value="{{system.recup_resonnance_9.value_j}}" placeholder="h" />
+									<div class="stat-value"
+										style="height: auto; flex-direction: column; gap: 4px; padding-top: 4px;">
+										<span class="stat-display"
+											style="font-size: 12px; font-weight: 600; color: #9b59b6; padding: 3px 6px; background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.2); border-radius: 3px; min-width: 35px; display: inline-block; text-align: center;">{{system.recup_resonnance_9.value}}
+											h</span>
+										<input class="stat-input"
+											style="width: 40px; font-size: 11px; padding: 2px 4px;" type="text"
+											name="system.recup_resonnance_9.value_j"
+											value="{{system.recup_resonnance_9.value_j}}" placeholder="h" />
 									</div>
 								</div>{{/if}}
-								{{#if system.recup_resonnance_10.value}}{{#if system.recup_resonnance_9.value}}<div style="display: flex; align-items: center; padding-top: 20px;">
+								{{#if system.recup_resonnance_10.value}}{{#if system.recup_resonnance_9.value}}<div
+									style="display: flex; align-items: center; padding-top: 20px;">
 									<i class="fas fa-arrow-right" style="color: #9b59b6; font-size: 16px;"></i>
 								</div>{{/if}}<div class="stat-item" style="min-height: auto;">
 									<div class="stat-label">10ème</div>
-									<div class="stat-value" style="height: auto; flex-direction: column; gap: 4px; padding-top: 4px;">
-										<span class="stat-display" style="font-size: 12px; font-weight: 600; color: #9b59b6; padding: 3px 6px; background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.2); border-radius: 3px; min-width: 35px; display: inline-block; text-align: center;">{{system.recup_resonnance_10.value}} h</span>
-										<input class="stat-input" style="width: 40px; font-size: 11px; padding: 2px 4px;" type="text" name="system.recup_resonnance_10.value_j" value="{{system.recup_resonnance_10.value_j}}" placeholder="h" />
+									<div class="stat-value"
+										style="height: auto; flex-direction: column; gap: 4px; padding-top: 4px;">
+										<span class="stat-display"
+											style="font-size: 12px; font-weight: 600; color: #9b59b6; padding: 3px 6px; background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.2); border-radius: 3px; min-width: 35px; display: inline-block; text-align: center;">{{system.recup_resonnance_10.value}}
+											h</span>
+										<input class="stat-input"
+											style="width: 40px; font-size: 11px; padding: 2px 4px;" type="text"
+											name="system.recup_resonnance_10.value_j"
+											value="{{system.recup_resonnance_10.value_j}}" placeholder="h" />
 									</div>
 								</div>{{/if}}
-								{{#unless system.recup_resonnance_1.value}}{{#unless system.recup_resonnance_2.value}}{{#unless system.recup_resonnance_3.value}}{{#unless system.recup_resonnance_4.value}}{{#unless system.recup_resonnance_5.value}}{{#unless system.recup_resonnance_6.value}}{{#unless system.recup_resonnance_7.value}}{{#unless system.recup_resonnance_8.value}}{{#unless system.recup_resonnance_9.value}}{{#unless system.recup_resonnance_10.value}}
+								{{#unless system.recup_resonnance_1.value}}{{#unless
+								system.recup_resonnance_2.value}}{{#unless system.recup_resonnance_3.value}}{{#unless
+								system.recup_resonnance_4.value}}{{#unless system.recup_resonnance_5.value}}{{#unless
+								system.recup_resonnance_6.value}}{{#unless system.recup_resonnance_7.value}}{{#unless
+								system.recup_resonnance_8.value}}{{#unless system.recup_resonnance_9.value}}{{#unless
+								system.recup_resonnance_10.value}}
 								<div style="text-align: center; color: #666; font-style: italic; padding: 20px;">
 									Aucun point de Résonnance configuré
 								</div>
@@ -671,14 +831,19 @@
 						<br>
 						<div class="modern-section">
 							<div class="section-header">
-								<h3 class="masquer" style="text-align:center; color: var(--text-dark, #333); font-size: 16px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px;" value="melee">Récupération des points de Mêlée</h3>
+								<h3 class="masquer"
+									style="text-align:center; color: var(--text-dark, #333); font-size: 16px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px;"
+									value="melee">Récupération des points de Mêlée</h3>
 							</div>
 							{{#if system.masquer_melee}}
-							<div style="display: flex; justify-content: center; align-items: center; margin: 0 auto; width: 100%; min-height: 60px;">
+							<div
+								style="display: flex; justify-content: center; align-items: center; margin: 0 auto; width: 100%; min-height: 60px;">
 								<div class="stat-item" style="min-height: auto;">
 									<div class="stat-label">Récupération</div>
-									<div class="stat-value" style="height: auto; flex-direction: column; gap: 8px; padding: 8px;">
-										<span class="stat-display" style="font-size: 14px; font-weight: 600; color: #27ae60; padding: 8px 12px; background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.2); border-radius: 3px; min-width: 80px; display: inline-block; text-align: center;">
+									<div class="stat-value"
+										style="height: auto; flex-direction: column; gap: 8px; padding: 8px;">
+										<span class="stat-display"
+											style="font-size: 14px; font-weight: 600; color: #27ae60; padding: 8px 12px; background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.2); border-radius: 3px; min-width: 80px; display: inline-block; text-align: center;">
 											1d{{actor.system.caracs.adresse.value}} / heure
 										</span>
 									</div>
@@ -686,7 +851,8 @@
 							</div>
 							{{/if}}
 						</div>
-						<div class="weapon-feature-card advantages-card collapsed" onclick="this.classList.toggle('collapsed')">
+						<div class="weapon-feature-card advantages-card collapsed"
+							onclick="this.classList.toggle('collapsed')">
 							<h4 class="feature-title collapsible-header">
 								<i class="fas fa-plus-circle"></i> Paramétrer la Charge
 								<i class="fas fa-chevron-down collapse-icon"></i>
@@ -697,189 +863,166 @@
 										<div class="advantage-header">Av0</div>
 										<div class="advantage-field">
 											<label>Points de Mêlée</label>
-											<input {{#unless GM}}readonly="readonly"{{/unless}} 
-												class="modern-input advantage-input" 
-												type="text" 
-												name="system.talents_combat.charge.av0" 
-												value="{{system.talents_combat.charge.av0}}" 
-												data-dtype="Number"/>
+											<input {{#unless GM}}readonly="readonly" {{/unless}}
+												class="modern-input advantage-input" type="text"
+												name="system.talents_combat.charge.av0"
+												value="{{system.talents_combat.charge.av0}}" data-dtype="Number" />
 										</div>
 										<div class="advantage-field">
 											<label>1er Effet</label>
-											<input {{#unless GM}}readonly="readonly"{{/unless}} 
-												class="modern-input effect-input" 
-												type="text" 
-												name="system.talents_combat.charge.effet_ac_0_1" 
-												value="{{system.talents_combat.charge.effet_ac_0_1}}"/>
+											<input {{#unless GM}}readonly="readonly" {{/unless}}
+												class="modern-input effect-input" type="text"
+												name="system.talents_combat.charge.effet_ac_0_1"
+												value="{{system.talents_combat.charge.effet_ac_0_1}}" />
 										</div>
 										<div class="advantage-field">
 											<label>2ème Effet</label>
-											<input {{#unless GM}}readonly="readonly"{{/unless}} 
-												class="modern-input effect-input" 
-												type="text" 
-												name="system.talents_combat.charge.effet_ac_0_2" 
-												value="{{system.talents_combat.charge.effet_ac_0_2}}"/>
+											<input {{#unless GM}}readonly="readonly" {{/unless}}
+												class="modern-input effect-input" type="text"
+												name="system.talents_combat.charge.effet_ac_0_2"
+												value="{{system.talents_combat.charge.effet_ac_0_2}}" />
 										</div>
 										<div class="advantage-field">
 											<label>3ème Effet</label>
-											<input {{#unless GM}}readonly="readonly"{{/unless}} 
-												class="modern-input effect-input" 
-												type="text" 
-												name="system.talents_combat.charge.effet_ac_0_3" 
-												value="{{system.talents_combat.charge.effet_ac_0_3}}"/>
+											<input {{#unless GM}}readonly="readonly" {{/unless}}
+												class="modern-input effect-input" type="text"
+												name="system.talents_combat.charge.effet_ac_0_3"
+												value="{{system.talents_combat.charge.effet_ac_0_3}}" />
 										</div>
 									</div>
 									<div class="advantage-column">
 										<div class="advantage-header">Av1</div>
 										<div class="advantage-field">
 											<label>Points de Mêlée</label>
-											<input {{#unless GM}}readonly="readonly"{{/unless}} 
-												class="modern-input advantage-input" 
-												type="text" 
-												name="system.talents_combat.charge.av1" 
-												value="{{system.talents_combat.charge.av1}}" 
-												data-dtype="Number"/>
+											<input {{#unless GM}}readonly="readonly" {{/unless}}
+												class="modern-input advantage-input" type="text"
+												name="system.talents_combat.charge.av1"
+												value="{{system.talents_combat.charge.av1}}" data-dtype="Number" />
 										</div>
 										<div class="advantage-field">
 											<label>1er Effet</label>
-											<input {{#unless GM}}readonly="readonly"{{/unless}} 
-												class="modern-input effect-input" 
-												type="text" 
-												name="system.talents_combat.charge.effet_ac_1_1" 
-												value="{{system.talents_combat.charge.effet_ac_1_1}}"/>
+											<input {{#unless GM}}readonly="readonly" {{/unless}}
+												class="modern-input effect-input" type="text"
+												name="system.talents_combat.charge.effet_ac_1_1"
+												value="{{system.talents_combat.charge.effet_ac_1_1}}" />
 										</div>
 										<div class="advantage-field">
 											<label>2ème Effet</label>
-											<input {{#unless GM}}readonly="readonly"{{/unless}} 
-												class="modern-input effect-input" 
-												type="text" 
-												name="system.talents_combat.charge.effet_ac_1_2" 
-												value="{{system.talents_combat.charge.effet_ac_1_2}}"/>
+											<input {{#unless GM}}readonly="readonly" {{/unless}}
+												class="modern-input effect-input" type="text"
+												name="system.talents_combat.charge.effet_ac_1_2"
+												value="{{system.talents_combat.charge.effet_ac_1_2}}" />
 										</div>
 										<div class="advantage-field">
 											<label>3ème Effet</label>
-											<input {{#unless GM}}readonly="readonly"{{/unless}} 
-												class="modern-input effect-input" 
-												type="text" 
-												name="system.talents_combat.charge.effet_ac_1_3" 
-												value="{{system.talents_combat.charge.effet_ac_1_3}}"/>
+											<input {{#unless GM}}readonly="readonly" {{/unless}}
+												class="modern-input effect-input" type="text"
+												name="system.talents_combat.charge.effet_ac_1_3"
+												value="{{system.talents_combat.charge.effet_ac_1_3}}" />
 										</div>
 									</div>
 									<div class="advantage-column">
 										<div class="advantage-header">Av2</div>
 										<div class="advantage-field">
 											<label>Points de Mêlée</label>
-											<input {{#unless GM}}readonly="readonly"{{/unless}} 
-												class="modern-input advantage-input" 
-												type="text" 
-												name="system.talents_combat.charge.av2" 
-												value="{{system.talents_combat.charge.av2}}" 
-												data-dtype="Number"/>
+											<input {{#unless GM}}readonly="readonly" {{/unless}}
+												class="modern-input advantage-input" type="text"
+												name="system.talents_combat.charge.av2"
+												value="{{system.talents_combat.charge.av2}}" data-dtype="Number" />
 										</div>
 										<div class="advantage-field">
 											<label>1er Effet</label>
-											<input {{#unless GM}}readonly="readonly"{{/unless}} 
-												class="modern-input effect-input" 
-												type="text" 
-												name="system.talents_combat.charge.effet_ac_2_1" 
-												value="{{system.talents_combat.charge.effet_ac_2_1}}"/>
+											<input {{#unless GM}}readonly="readonly" {{/unless}}
+												class="modern-input effect-input" type="text"
+												name="system.talents_combat.charge.effet_ac_2_1"
+												value="{{system.talents_combat.charge.effet_ac_2_1}}" />
 										</div>
 										<div class="advantage-field">
 											<label>2ème Effet</label>
-											<input {{#unless GM}}readonly="readonly"{{/unless}} 
-												class="modern-input effect-input" 
-												type="text" 
-												name="system.talents_combat.charge.effet_ac_2_2" 
-												value="{{system.talents_combat.charge.effet_ac_2_2}}"/>
+											<input {{#unless GM}}readonly="readonly" {{/unless}}
+												class="modern-input effect-input" type="text"
+												name="system.talents_combat.charge.effet_ac_2_2"
+												value="{{system.talents_combat.charge.effet_ac_2_2}}" />
 										</div>
 										<div class="advantage-field">
 											<label>3ème Effet</label>
-											<input {{#unless GM}}readonly="readonly"{{/unless}} 
-												class="modern-input effect-input" 
-												type="text" 
-												name="system.talents_combat.charge.effet_ac_2_3" 
-												value="{{system.talents_combat.charge.effet_ac_2_3}}"/>
+											<input {{#unless GM}}readonly="readonly" {{/unless}}
+												class="modern-input effect-input" type="text"
+												name="system.talents_combat.charge.effet_ac_2_3"
+												value="{{system.talents_combat.charge.effet_ac_2_3}}" />
 										</div>
 									</div>
 									<div class="advantage-column">
 										<div class="advantage-header">Av3</div>
 										<div class="advantage-field">
 											<label>Points de Mêlée</label>
-											<input {{#unless GM}}readonly="readonly"{{/unless}} 
-												class="modern-input advantage-input" 
-												type="text" 
-												name="system.talents_combat.charge.av3" 
-												value="{{system.talents_combat.charge.av3}}" 
-												data-dtype="Number"/>
+											<input {{#unless GM}}readonly="readonly" {{/unless}}
+												class="modern-input advantage-input" type="text"
+												name="system.talents_combat.charge.av3"
+												value="{{system.talents_combat.charge.av3}}" data-dtype="Number" />
 										</div>
 										<div class="advantage-field">
 											<label>1er Effet</label>
-											<input {{#unless GM}}readonly="readonly"{{/unless}} 
-												class="modern-input effect-input" 
-												type="text" 
-												name="system.talents_combat.charge.effet_ac_3_1" 
-												value="{{system.talents_combat.charge.effet_ac_3_1}}"/>
+											<input {{#unless GM}}readonly="readonly" {{/unless}}
+												class="modern-input effect-input" type="text"
+												name="system.talents_combat.charge.effet_ac_3_1"
+												value="{{system.talents_combat.charge.effet_ac_3_1}}" />
 										</div>
 										<div class="advantage-field">
 											<label>2ème Effet</label>
-											<input {{#unless GM}}readonly="readonly"{{/unless}} 
-												class="modern-input effect-input" 
-												type="text" 
-												name="system.talents_combat.charge.effet_ac_3_2" 
-												value="{{system.talents_combat.charge.effet_ac_3_2}}"/>
+											<input {{#unless GM}}readonly="readonly" {{/unless}}
+												class="modern-input effect-input" type="text"
+												name="system.talents_combat.charge.effet_ac_3_2"
+												value="{{system.talents_combat.charge.effet_ac_3_2}}" />
 										</div>
 										<div class="advantage-field">
 											<label>3ème Effet</label>
-											<input {{#unless GM}}readonly="readonly"{{/unless}} 
-												class="modern-input effect-input" 
-												type="text" 
-												name="system.talents_combat.charge.effet_ac_3_3" 
-												value="{{system.talents_combat.charge.effet_ac_3_3}}"/>
+											<input {{#unless GM}}readonly="readonly" {{/unless}}
+												class="modern-input effect-input" type="text"
+												name="system.talents_combat.charge.effet_ac_3_3"
+												value="{{system.talents_combat.charge.effet_ac_3_3}}" />
 										</div>
 									</div>
 									<div class="advantage-column">
 										<div class="advantage-header">Av4</div>
 										<div class="advantage-field">
 											<label>Points de Mêlée</label>
-											<input {{#unless GM}}readonly="readonly"{{/unless}} 
-												class="modern-input advantage-input" 
-												type="text" 
-												name="system.talents_combat.charge.av4" 
-												value="{{system.talents_combat.charge.av4}}" 
-												data-dtype="Number"/>
+											<input {{#unless GM}}readonly="readonly" {{/unless}}
+												class="modern-input advantage-input" type="text"
+												name="system.talents_combat.charge.av4"
+												value="{{system.talents_combat.charge.av4}}" data-dtype="Number" />
 										</div>
 										<div class="advantage-field">
 											<label>1er Effet</label>
-											<input {{#unless GM}}readonly="readonly"{{/unless}} 
-												class="modern-input effect-input" 
-												type="text" 
-												name="system.talents_combat.charge.effet_ac_4_1" 
-												value="{{system.talents_combat.charge.effet_ac_4_1}}"/>
+											<input {{#unless GM}}readonly="readonly" {{/unless}}
+												class="modern-input effect-input" type="text"
+												name="system.talents_combat.charge.effet_ac_4_1"
+												value="{{system.talents_combat.charge.effet_ac_4_1}}" />
 										</div>
 										<div class="advantage-field">
 											<label>2ème Effet</label>
-											<input {{#unless GM}}readonly="readonly"{{/unless}} 
-												class="modern-input effect-input" 
-												type="text" 
-												name="system.talents_combat.charge.effet_ac_4_2" 
-												value="{{system.talents_combat.charge.effet_ac_4_2}}"/>
+											<input {{#unless GM}}readonly="readonly" {{/unless}}
+												class="modern-input effect-input" type="text"
+												name="system.talents_combat.charge.effet_ac_4_2"
+												value="{{system.talents_combat.charge.effet_ac_4_2}}" />
 										</div>
 										<div class="advantage-field">
 											<label>3ème Effet</label>
-											<input {{#unless GM}}readonly="readonly"{{/unless}} 
-												class="modern-input effect-input" 
-												type="text" 
-												name="system.talents_combat.charge.effet_ac_4_3" 
-												value="{{system.talents_combat.charge.effet_ac_4_3}}"/>
+											<input {{#unless GM}}readonly="readonly" {{/unless}}
+												class="modern-input effect-input" type="text"
+												name="system.talents_combat.charge.effet_ac_4_3"
+												value="{{system.talents_combat.charge.effet_ac_4_3}}" />
 										</div>
 									</div>
 								</div>
 								<div style="margin-top: 10px; font-size: 10px; color: #666; text-align: center;">
-									H=HANDICAPER, A=ASSOMMER, S=SONNER, R=RENVERSER, I=IMMOBILISER, P=POSITIONNEMENT, T=TENIR A DISTANCE, D=DÉFAUT DE LA CUIRASSE
+									H=HANDICAPER, A=ASSOMMER, S=SONNER, R=RENVERSER, I=IMMOBILISER, P=POSITIONNEMENT,
+									T=TENIR A DISTANCE, D=DÉFAUT DE LA CUIRASSE
 								</div>
 							</div>
 						</div>
-						<div class="weapon-feature-card advantages-card collapsed" onclick="this.classList.toggle('collapsed')">
+						<div class="weapon-feature-card advantages-card collapsed"
+							onclick="this.classList.toggle('collapsed')">
 							<h4 class="feature-title collapsible-header">
 								<i class="fas fa-plus-circle"></i> Paramétrer la Bagarre
 								<i class="fas fa-chevron-down collapse-icon"></i>
@@ -891,185 +1034,161 @@
 										<div class="advantage-header">Av0</div>
 										<div class="advantage-field">
 											<label>Points de Mêlée</label>
-											<input {{#unless GM}}readonly="readonly"{{/unless}} 
-												class="modern-input advantage-input" 
-												type="text" 
-												name="system.talents_combat.mainsnues.av0" 
-												value="{{system.talents_combat.mainsnues.av0}}" 
-												data-dtype="Number"/>
+											<input {{#unless GM}}readonly="readonly" {{/unless}}
+												class="modern-input advantage-input" type="text"
+												name="system.talents_combat.mainsnues.av0"
+												value="{{system.talents_combat.mainsnues.av0}}" data-dtype="Number" />
 										</div>
 										<div class="advantage-field">
 											<label>1er Effet</label>
-											<input {{#unless GM}}readonly="readonly"{{/unless}} 
-												class="modern-input effect-input" 
-												type="text" 
-												name="system.talents_combat.mainsnues.effet_ac_0_1" 
-												value="{{system.talents_combat.mainsnues.effet_ac_0_1}}"/>
+											<input {{#unless GM}}readonly="readonly" {{/unless}}
+												class="modern-input effect-input" type="text"
+												name="system.talents_combat.mainsnues.effet_ac_0_1"
+												value="{{system.talents_combat.mainsnues.effet_ac_0_1}}" />
 										</div>
 										<div class="advantage-field">
 											<label>2ème Effet</label>
-											<input {{#unless GM}}readonly="readonly"{{/unless}} 
-												class="modern-input effect-input" 
-												type="text" 
-												name="system.talents_combat.mainsnues.effet_ac_0_2" 
-												value="{{system.talents_combat.mainsnues.effet_ac_0_2}}"/>
+											<input {{#unless GM}}readonly="readonly" {{/unless}}
+												class="modern-input effect-input" type="text"
+												name="system.talents_combat.mainsnues.effet_ac_0_2"
+												value="{{system.talents_combat.mainsnues.effet_ac_0_2}}" />
 										</div>
 										<div class="advantage-field">
 											<label>3ème Effet</label>
-											<input {{#unless GM}}readonly="readonly"{{/unless}} 
-												class="modern-input effect-input" 
-												type="text" 
-												name="system.talents_combat.mainsnues.effet_ac_0_3" 
-												value="{{system.talents_combat.mainsnues.effet_ac_0_3}}"/>
+											<input {{#unless GM}}readonly="readonly" {{/unless}}
+												class="modern-input effect-input" type="text"
+												name="system.talents_combat.mainsnues.effet_ac_0_3"
+												value="{{system.talents_combat.mainsnues.effet_ac_0_3}}" />
 										</div>
 									</div>
 									<div class="advantage-column">
 										<div class="advantage-header">Av1</div>
 										<div class="advantage-field">
 											<label>Points de Mêlée</label>
-											<input {{#unless GM}}readonly="readonly"{{/unless}} 
-												class="modern-input advantage-input" 
-												type="text" 
-												name="system.talents_combat.mainsnues.av1" 
-												value="{{system.talents_combat.mainsnues.av1}}" 
-												data-dtype="Number"/>
+											<input {{#unless GM}}readonly="readonly" {{/unless}}
+												class="modern-input advantage-input" type="text"
+												name="system.talents_combat.mainsnues.av1"
+												value="{{system.talents_combat.mainsnues.av1}}" data-dtype="Number" />
 										</div>
 										<div class="advantage-field">
 											<label>1er Effet</label>
-											<input {{#unless GM}}readonly="readonly"{{/unless}} 
-												class="modern-input effect-input" 
-												type="text" 
-												name="system.talents_combat.mainsnues.effet_ac_1_1" 
-												value="{{system.talents_combat.mainsnues.effet_ac_1_1}}"/>
+											<input {{#unless GM}}readonly="readonly" {{/unless}}
+												class="modern-input effect-input" type="text"
+												name="system.talents_combat.mainsnues.effet_ac_1_1"
+												value="{{system.talents_combat.mainsnues.effet_ac_1_1}}" />
 										</div>
 										<div class="advantage-field">
 											<label>2ème Effet</label>
-											<input {{#unless GM}}readonly="readonly"{{/unless}} 
-												class="modern-input effect-input" 
-												type="text" 
-												name="system.talents_combat.mainsnues.effet_ac_1_2" 
-												value="{{system.talents_combat.mainsnues.effet_ac_1_2}}"/>
+											<input {{#unless GM}}readonly="readonly" {{/unless}}
+												class="modern-input effect-input" type="text"
+												name="system.talents_combat.mainsnues.effet_ac_1_2"
+												value="{{system.talents_combat.mainsnues.effet_ac_1_2}}" />
 										</div>
 										<div class="advantage-field">
 											<label>3ème Effet</label>
-											<input {{#unless GM}}readonly="readonly"{{/unless}} 
-												class="modern-input effect-input" 
-												type="text" 
-												name="system.talents_combat.mainsnues.effet_ac_1_3" 
-												value="{{system.talents_combat.mainsnues.effet_ac_1_3}}"/>
+											<input {{#unless GM}}readonly="readonly" {{/unless}}
+												class="modern-input effect-input" type="text"
+												name="system.talents_combat.mainsnues.effet_ac_1_3"
+												value="{{system.talents_combat.mainsnues.effet_ac_1_3}}" />
 										</div>
 									</div>
 									<div class="advantage-column">
 										<div class="advantage-header">Av2</div>
 										<div class="advantage-field">
 											<label>Points de Mêlée</label>
-											<input {{#unless GM}}readonly="readonly"{{/unless}} 
-												class="modern-input advantage-input" 
-												type="text" 
-												name="system.talents_combat.mainsnues.av2" 
-												value="{{system.talents_combat.mainsnues.av2}}" 
-												data-dtype="Number"/>
+											<input {{#unless GM}}readonly="readonly" {{/unless}}
+												class="modern-input advantage-input" type="text"
+												name="system.talents_combat.mainsnues.av2"
+												value="{{system.talents_combat.mainsnues.av2}}" data-dtype="Number" />
 										</div>
 										<div class="advantage-field">
 											<label>1er Effet</label>
-											<input {{#unless GM}}readonly="readonly"{{/unless}} 
-												class="modern-input effect-input" 
-												type="text" 
-												name="system.talents_combat.mainsnues.effet_ac_2_1" 
-												value="{{system.talents_combat.mainsnues.effet_ac_2_1}}"/>
+											<input {{#unless GM}}readonly="readonly" {{/unless}}
+												class="modern-input effect-input" type="text"
+												name="system.talents_combat.mainsnues.effet_ac_2_1"
+												value="{{system.talents_combat.mainsnues.effet_ac_2_1}}" />
 										</div>
 										<div class="advantage-field">
 											<label>2ème Effet</label>
-											<input {{#unless GM}}readonly="readonly"{{/unless}} 
-												class="modern-input effect-input" 
-												type="text" 
-												name="system.talents_combat.mainsnues.effet_ac_2_2" 
-												value="{{system.talents_combat.mainsnues.effet_ac_2_2}}"/>
+											<input {{#unless GM}}readonly="readonly" {{/unless}}
+												class="modern-input effect-input" type="text"
+												name="system.talents_combat.mainsnues.effet_ac_2_2"
+												value="{{system.talents_combat.mainsnues.effet_ac_2_2}}" />
 										</div>
 										<div class="advantage-field">
 											<label>3ème Effet</label>
-											<input {{#unless GM}}readonly="readonly"{{/unless}} 
-												class="modern-input effect-input" 
-												type="text" 
-												name="system.talents_combat.mainsnues.effet_ac_2_3" 
-												value="{{system.talents_combat.mainsnues.effet_ac_2_3}}"/>
+											<input {{#unless GM}}readonly="readonly" {{/unless}}
+												class="modern-input effect-input" type="text"
+												name="system.talents_combat.mainsnues.effet_ac_2_3"
+												value="{{system.talents_combat.mainsnues.effet_ac_2_3}}" />
 										</div>
 									</div>
 									<div class="advantage-column">
 										<div class="advantage-header">Av3</div>
 										<div class="advantage-field">
 											<label>Points de Mêlée</label>
-											<input {{#unless GM}}readonly="readonly"{{/unless}} 
-												class="modern-input advantage-input" 
-												type="text" 
-												name="system.talents_combat.mainsnues.av3" 
-												value="{{system.talents_combat.mainsnues.av3}}" 
-												data-dtype="Number"/>
+											<input {{#unless GM}}readonly="readonly" {{/unless}}
+												class="modern-input advantage-input" type="text"
+												name="system.talents_combat.mainsnues.av3"
+												value="{{system.talents_combat.mainsnues.av3}}" data-dtype="Number" />
 										</div>
 										<div class="advantage-field">
 											<label>1er Effet</label>
-											<input {{#unless GM}}readonly="readonly"{{/unless}} 
-												class="modern-input effect-input" 
-												type="text" 
-												name="system.talents_combat.mainsnues.effet_ac_3_1" 
-												value="{{system.talents_combat.mainsnues.effet_ac_3_1}}"/>
+											<input {{#unless GM}}readonly="readonly" {{/unless}}
+												class="modern-input effect-input" type="text"
+												name="system.talents_combat.mainsnues.effet_ac_3_1"
+												value="{{system.talents_combat.mainsnues.effet_ac_3_1}}" />
 										</div>
 										<div class="advantage-field">
 											<label>2ème Effet</label>
-											<input {{#unless GM}}readonly="readonly"{{/unless}} 
-												class="modern-input effect-input" 
-												type="text" 
-												name="system.talents_combat.mainsnues.effet_ac_3_2" 
-												value="{{system.talents_combat.mainsnues.effet_ac_3_2}}"/>
+											<input {{#unless GM}}readonly="readonly" {{/unless}}
+												class="modern-input effect-input" type="text"
+												name="system.talents_combat.mainsnues.effet_ac_3_2"
+												value="{{system.talents_combat.mainsnues.effet_ac_3_2}}" />
 										</div>
 										<div class="advantage-field">
 											<label>3ème Effet</label>
-											<input {{#unless GM}}readonly="readonly"{{/unless}} 
-												class="modern-input effect-input" 
-												type="text" 
-												name="system.talents_combat.mainsnues.effet_ac_3_3" 
-												value="{{system.talents_combat.mainsnues.effet_ac_3_3}}"/>
+											<input {{#unless GM}}readonly="readonly" {{/unless}}
+												class="modern-input effect-input" type="text"
+												name="system.talents_combat.mainsnues.effet_ac_3_3"
+												value="{{system.talents_combat.mainsnues.effet_ac_3_3}}" />
 										</div>
 									</div>
 									<div class="advantage-column">
 										<div class="advantage-header">Av4</div>
 										<div class="advantage-field">
 											<label>Points de Mêlée</label>
-											<input {{#unless GM}}readonly="readonly"{{/unless}} 
-												class="modern-input advantage-input" 
-												type="text" 
-												name="system.talents_combat.mainsnues.av4" 
-												value="{{system.talents_combat.mainsnues.av4}}" 
-												data-dtype="Number"/>
+											<input {{#unless GM}}readonly="readonly" {{/unless}}
+												class="modern-input advantage-input" type="text"
+												name="system.talents_combat.mainsnues.av4"
+												value="{{system.talents_combat.mainsnues.av4}}" data-dtype="Number" />
 										</div>
 										<div class="advantage-field">
 											<label>1er Effet</label>
-											<input {{#unless GM}}readonly="readonly"{{/unless}} 
-												class="modern-input effect-input" 
-												type="text" 
-												name="system.talents_combat.mainsnues.effet_ac_4_1" 
-												value="{{system.talents_combat.mainsnues.effet_ac_4_1}}"/>
+											<input {{#unless GM}}readonly="readonly" {{/unless}}
+												class="modern-input effect-input" type="text"
+												name="system.talents_combat.mainsnues.effet_ac_4_1"
+												value="{{system.talents_combat.mainsnues.effet_ac_4_1}}" />
 										</div>
 										<div class="advantage-field">
 											<label>2ème Effet</label>
-											<input {{#unless GM}}readonly="readonly"{{/unless}} 
-												class="modern-input effect-input" 
-												type="text" 
-												name="system.talents_combat.mainsnues.effet_ac_4_2" 
-												value="{{system.talents_combat.mainsnues.effet_ac_4_2}}"/>
+											<input {{#unless GM}}readonly="readonly" {{/unless}}
+												class="modern-input effect-input" type="text"
+												name="system.talents_combat.mainsnues.effet_ac_4_2"
+												value="{{system.talents_combat.mainsnues.effet_ac_4_2}}" />
 										</div>
 										<div class="advantage-field">
 											<label>3ème Effet</label>
-											<input {{#unless GM}}readonly="readonly"{{/unless}} 
-												class="modern-input effect-input" 
-												type="text" 
-												name="system.talents_combat.mainsnues.effet_ac_4_3" 
-												value="{{system.talents_combat.mainsnues.effet_ac_4_3}}"/>
+											<input {{#unless GM}}readonly="readonly" {{/unless}}
+												class="modern-input effect-input" type="text"
+												name="system.talents_combat.mainsnues.effet_ac_4_3"
+												value="{{system.talents_combat.mainsnues.effet_ac_4_3}}" />
 										</div>
 									</div>
 								</div>
 								<div style="margin-top: 10px; font-size: 10px; color: #666; text-align: center;">
-									H=HANDICAPER, A=ASSOMMER, S=SONNER, R=RENVERSER, I=IMMOBILISER, P=POSITIONNEMENT, T=TENIR A DISTANCE, D=DÉFAUT DE LA CUIRASSE
+									H=HANDICAPER, A=ASSOMMER, S=SONNER, R=RENVERSER, I=IMMOBILISER, P=POSITIONNEMENT,
+									T=TENIR A DISTANCE, D=DÉFAUT DE LA CUIRASSE
 								</div>
 								{{/if}}
 							</div>

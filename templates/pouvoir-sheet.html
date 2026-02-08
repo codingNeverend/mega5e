@@ -1,510 +1,575 @@
 <form class="{{cssClass}}" autocomplete="off">
 	<header class="sheet-header-item">
-		<span class="item-view" value="{{item.img}}"><img class="profile-img" src="{{item.img}}" data-edit="img" title="{{item.name}}"/></span>
-        <div class="header-fields-item">
-			 <div class="weapon-header-modern">
-                <div class="weapon-name-container">
-                    <h1 class="weapon-name"><input name="name" type="text" value="{{item.name}}" placeholder="Nom de l'arme"/></h1>
-                    <div class="weapon-type">Pouvoir</div>
-                </div>
-                
-                <div class="weapon-stats-grid-pouvoir">
-                    <div class="stat-item">
-                        <div class="stat-label">Nb</div>
-                        <div class="stat-value">
-                            <input type="text" class="stat-input" name="system.nb_onglets" value="{{system.nb_onglets}}" data-dtype="Number"/>
-                        </div>
-                    </div>
+		<span class="item-view" value="{{item.img}}"><img class="profile-img" src="{{item.img}}" data-edit="img"
+				title="{{item.name}}" /></span>
+		<div class="header-fields-item">
+			<div class="weapon-header-modern">
+				<div class="weapon-name-container">
+					<h1 class="weapon-name"><input name="name" type="text" value="{{item.name}}"
+							placeholder="Nom de l'arme" /></h1>
+					<div class="weapon-type">Pouvoir</div>
+				</div>
+
+				<div class="weapon-stats-grid-pouvoir">
+					<div class="stat-item">
+						<div class="stat-label">Nb</div>
+						<div class="stat-value">
+							<input type="text" class="stat-input" name="system.nb_onglets" value="{{system.nb_onglets}}"
+								data-dtype="Number" />
+						</div>
+					</div>
 
 					<div class="stat-item">
-                        <div class="stat-label">Sphère associée</div>
-                        <div class="stat-value">
-                            <input type="text" class="stat-input stat-input-wide" name="system.sphere_associee" value="{{system.sphere_associee}}" data-dtype="String"/>
-                        </div>
-                    </div>
+						<div class="stat-label">Sphère associée</div>
+						<div class="stat-value">
+							<input type="text" class="stat-input stat-input-wide" name="system.sphere_associee"
+								value="{{system.sphere_associee}}" data-dtype="String" />
+						</div>
+					</div>
 
 					<div class="stat-item">
-                        <div class="stat-label">Aide</div>
-                        <div class="stat-value">
-                            <input type="checkbox" id="aide" class="aide" name="system.aide_active" {{#if system.aide_active}}checked{{/if}}/>
-                        </div>
-                    </div>
+						<div class="stat-label">Aide</div>
+						<div class="stat-value">
+							<input type="checkbox" id="aide" class="aide" name="system.aide_active" {{#if
+								system.aide_active}}checked{{/if}} />
+						</div>
+					</div>
 				</div>
 			</div>
-        </div>
-    </header>
+		</div>
+	</header>
 
-    {{!-- Sheet Body --}}
-    <section class="sheet-body" style="margin:10px; padding: 0 5px;">
+	{{!-- Sheet Body --}}
+	<section class="sheet-body" style="margin:10px; padding: 0 5px;">
 
-	{{!-- DESCRIPTION Tab --}}
-	<div class="tab" data-group="primary" data-tab="description">
-		<h3>📋 Description du pouvoir</h3>
-		
-		<div class="weapon-feature-card collapsed" onclick="this.classList.toggle('collapsed')">
-			<h4 class="feature-title collapsible-header">
-				<i class="fas fa-tag"></i> Entête
-				<i class="fas fa-chevron-down collapse-icon"></i>
-			</h4>
-			<div class="card-content" onclick="event.stopPropagation();">
-				<div class="power-header-grid" onclick="event.stopPropagation();">
-					<div class="power-field">
-						<label for="power_name">Nom</label>
-						<input id="power_name" type="text" class="stat-input" name="system.label" value="{{system.label}}"/>
-					</div>
-					<div class="power-field">
-						<label for="power_icon">Icône</label>
-						<input id="power_icon" type="text" class="stat-input" name="system.icon" value="{{system.icon}}"/>
-					</div>
-				</div>
-			</div>
-		</div>
-		
-		<div class="weapon-feature-card" onclick="this.classList.toggle('collapsed')">
-			<h4 class="feature-title collapsible-header">
-				<i class="fas fa-scroll"></i> Description
-				<i class="fas fa-chevron-down collapse-icon"></i>
-			</h4>
-			<div class="card-content" onclick="event.stopPropagation();">
-				<div class="power-description" onclick="event.stopPropagation();">
-					{{editor enrichedBiography target="system.description" button=true editable=editable}}
-				</div>
-			</div>
-		</div>
-	</div>
-			
-	{{!-- Pouv1 Tab --}}
-	<div class="tab" data-group="primary" data-tab="pouv1">
-		<h3>⚡ Pouvoir 1</h3>
-		
-		<div class="weapon-feature-card collapsed" onclick="this.classList.toggle('collapsed')">
-			<h4 class="feature-title collapsible-header">
-				<i class="fas fa-tag"></i> Entête
-				<i class="fas fa-chevron-down collapse-icon"></i>
-			</h4>
-			<div class="card-content" onclick="event.stopPropagation();">
-				<div class="power-header-grid" onclick="event.stopPropagation();">
-					<div class="power-field">
-						<label for="pouvoir1_name">Nom</label>
-						<input id="pouvoir1_name" type="text" class="stat-input" name="system.pouvoir1.label" value="{{system.pouvoir1.label}}"/>
-					</div>
-					<div class="power-field">
-						<label for="pouvoir1_icon">Icône</label>
-						<input id="pouvoir1_icon" type="text" class="stat-input" name="system.pouvoir1.icon" value="{{system.pouvoir1.icon}}"/>
-					</div>
-				</div>
-			</div>
-		</div>
-		
-		<div class="weapon-feature-card collapsed" onclick="this.classList.toggle('collapsed')">
-			<h4 class="feature-title collapsible-header">
-				<i class="fas fa-scroll"></i> Description
-				<i class="fas fa-chevron-down collapse-icon"></i>
-			</h4>
-			<div class="card-content" onclick="event.stopPropagation();">
-				<div class="power-description" onclick="event.stopPropagation();">
-					{{editor pouv1 target="system.pouvoir1.description" button=true editable=editable}}
-				</div>
-			</div>
-		</div>
-		
-		<div class="weapon-feature-card collapsed" onclick="this.classList.toggle('collapsed')">
-			<h4 class="feature-title collapsible-header">
-				<i class="fas fa-star"></i> Grades
-				<i class="fas fa-chevron-down collapse-icon"></i>
-			</h4>
-			<div class="card-content" onclick="event.stopPropagation();">
-				<div class="power-grades-grid" onclick="event.stopPropagation();">
-					<div class="grade-field">
-						<label for="p1_grade1">Grade 1</label>
-						<input id="p1_grade1" type="text" class="stat-input" name="system.pouvoir1.grade1" value="{{system.pouvoir1.grade1}}"/>
-					</div>
-					<div class="grade-field">
-						<label for="p1_grade2">Grade 2</label>
-						<input id="p1_grade2" type="text" class="stat-input" name="system.pouvoir1.grade2" value="{{system.pouvoir1.grade2}}"/>
-					</div>
-					<div class="grade-field">
-						<label for="p1_grade3">Grade 3</label>
-						<input id="p1_grade3" type="text" class="stat-input" name="system.pouvoir1.grade3" value="{{system.pouvoir1.grade3}}"/>
-					</div>
-					<div class="grade-field">
-						<label for="p1_grade4">Grade 4</label>
-						<input id="p1_grade4" type="text" class="stat-input" name="system.pouvoir1.grade4" value="{{system.pouvoir1.grade4}}"/>
-					</div>
-					<div class="grade-field">
-						<label for="p1_grade5">Grade 5</label>
-						<input id="p1_grade5" type="text" class="stat-input" name="system.pouvoir1.grade5" value="{{system.pouvoir1.grade5}}"/>
-					</div>
-					<div class="grade-field">
-						<label for="p1_grade6">Grade 6</label>
-						<input id="p1_grade6" type="text" class="stat-input" name="system.pouvoir1.grade6" value="{{system.pouvoir1.grade6}}"/>
-					</div>
-					<div class="grade-field">
-						<label for="p1_grade7">Grade 7</label>
-						<input id="p1_grade7" type="text" class="stat-input" name="system.pouvoir1.grade7" value="{{system.pouvoir1.grade7}}"/>
-					</div>
-					<div class="grade-field">
-						<label for="p1_grade8">Grade 8</label>
-						<input id="p1_grade8" type="text" class="stat-input" name="system.pouvoir1.grade8" value="{{system.pouvoir1.grade8}}"/>
-					</div>
-					<div class="grade-field">
-						<label for="p1_grade9">Grade 9</label>
-						<input id="p1_grade9" type="text" class="stat-input" name="system.pouvoir1.grade9" value="{{system.pouvoir1.grade9}}"/>
-					</div>
-					<div class="grade-field">
-						<label for="p1_grade10">Grade 10</label>
-						<input id="p1_grade10" type="text" class="stat-input" name="system.pouvoir1.grade10" value="{{system.pouvoir1.grade10}}"/>
-					</div>
-					<div class="grade-field">
-						<label for="p1_grade11">Grade 11</label>
-						<input id="p1_grade11" type="text" class="stat-input" name="system.pouvoir1.grade11" value="{{system.pouvoir1.grade11}}"/>
-					</div>
-					<div class="grade-field">
-						<label for="p1_grade12">Grade 12</label>
-						<input id="p1_grade12" type="text" class="stat-input" name="system.pouvoir1.grade12" value="{{system.pouvoir1.grade12}}"/>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+		{{!-- DESCRIPTION Tab --}}
+		<div class="tab" data-group="primary" data-tab="description">
+			<h3>📋 Description du pouvoir</h3>
 
-	{{!-- Pouv2 Tab --}}
-	<div class="tab" data-group="primary" data-tab="pouv2">
-		<h3>⚡ Pouvoir 2</h3>
-		
-		<div class="weapon-feature-card collapsed" onclick="this.classList.toggle('collapsed')">
-			<h4 class="feature-title collapsible-header">
-				<i class="fas fa-tag"></i> Entête
-				<i class="fas fa-chevron-down collapse-icon"></i>
-			</h4>
-			<div class="card-content" onclick="event.stopPropagation();">
-				<div class="power-header-grid" onclick="event.stopPropagation();">
-					<div class="power-field">
-						<label for="pouvoir2_name">Nom</label>
-						<input id="pouvoir2_name" type="text" class="stat-input" name="system.pouvoir2.label" value="{{system.pouvoir2.label}}"/>
-					</div>
-					<div class="power-field">
-						<label for="pouvoir2_icon">Icône</label>
-						<input id="pouvoir2_icon" type="text" class="stat-input" name="system.pouvoir2.icon" value="{{system.pouvoir2.icon}}"/>
-					</div>
-				</div>
-			</div>
-		</div>
-		
-		<div class="weapon-feature-card collapsed" onclick="this.classList.toggle('collapsed')">
-			<h4 class="feature-title collapsible-header">
-				<i class="fas fa-scroll"></i> Description
-				<i class="fas fa-chevron-down collapse-icon"></i>
-			</h4>
-			<div class="card-content" onclick="event.stopPropagation();">
-				<div class="power-description" onclick="event.stopPropagation();">
-					{{editor pouv2 target="system.pouvoir2.description" button=true editable=editable}}
-				</div>
-			</div>
-		</div>
-		
-		<div class="weapon-feature-card collapsed" onclick="this.classList.toggle('collapsed')">
-			<h4 class="feature-title collapsible-header">
-				<i class="fas fa-star"></i> Grades
-				<i class="fas fa-chevron-down collapse-icon"></i>
-			</h4>
-			<div class="card-content" onclick="event.stopPropagation();">
-				<div class="power-grades-grid" onclick="event.stopPropagation();">
-					<div class="grade-field">
-						<label for="p2_grade1">Grade 1</label>
-						<input id="p2_grade1" type="text" class="stat-input" name="system.pouvoir2.grade1" value="{{system.pouvoir2.grade1}}"/>
-					</div>
-					<div class="grade-field">
-						<label for="p2_grade2">Grade 2</label>
-						<input id="p2_grade2" type="text" class="stat-input" name="system.pouvoir2.grade2" value="{{system.pouvoir2.grade2}}"/>
-					</div>
-					<div class="grade-field">
-						<label for="p2_grade3">Grade 3</label>
-						<input id="p2_grade3" type="text" class="stat-input" name="system.pouvoir2.grade3" value="{{system.pouvoir2.grade3}}"/>
-					</div>
-					<div class="grade-field">
-						<label for="p2_grade4">Grade 4</label>
-						<input id="p2_grade4" type="text" class="stat-input" name="system.pouvoir2.grade4" value="{{system.pouvoir2.grade4}}"/>
-					</div>
-					<div class="grade-field">
-						<label for="p2_grade5">Grade 5</label>
-						<input id="p2_grade5" type="text" class="stat-input" name="system.pouvoir2.grade5" value="{{system.pouvoir2.grade5}}"/>
-					</div>
-					<div class="grade-field">
-						<label for="p2_grade6">Grade 6</label>
-						<input id="p2_grade6" type="text" class="stat-input" name="system.pouvoir2.grade6" value="{{system.pouvoir2.grade6}}"/>
-					</div>
-					<div class="grade-field">
-						<label for="p2_grade7">Grade 7</label>
-						<input id="p2_grade7" type="text" class="stat-input" name="system.pouvoir2.grade7" value="{{system.pouvoir2.grade7}}"/>
-					</div>
-					<div class="grade-field">
-						<label for="p2_grade8">Grade 8</label>
-						<input id="p2_grade8" type="text" class="stat-input" name="system.pouvoir2.grade8" value="{{system.pouvoir2.grade8}}"/>
-					</div>
-					<div class="grade-field">
-						<label for="p2_grade9">Grade 9</label>
-						<input id="p2_grade9" type="text" class="stat-input" name="system.pouvoir2.grade9" value="{{system.pouvoir2.grade9}}"/>
-					</div>
-					<div class="grade-field">
-						<label for="p2_grade10">Grade 10</label>
-						<input id="p2_grade10" type="text" class="stat-input" name="system.pouvoir2.grade10" value="{{system.pouvoir2.grade10}}"/>
-					</div>
-					<div class="grade-field">
-						<label for="p2_grade11">Grade 11</label>
-						<input id="p2_grade11" type="text" class="stat-input" name="system.pouvoir2.grade11" value="{{system.pouvoir2.grade11}}"/>
-					</div>
-					<div class="grade-field">
-						<label for="p2_grade12">Grade 12</label>
-						<input id="p2_grade12" type="text" class="stat-input" name="system.pouvoir2.grade12" value="{{system.pouvoir2.grade12}}"/>
+			<div class="weapon-feature-card collapsed" onclick="this.classList.toggle('collapsed')">
+				<h4 class="feature-title collapsible-header">
+					<i class="fas fa-tag"></i> Entête
+					<i class="fas fa-chevron-down collapse-icon"></i>
+				</h4>
+				<div class="card-content" onclick="event.stopPropagation();">
+					<div class="power-header-grid" onclick="event.stopPropagation();">
+						<div class="power-field">
+							<label for="power_name">Nom</label>
+							<input id="power_name" type="text" class="stat-input" name="system.label"
+								value="{{system.label}}" />
+						</div>
+						<div class="power-field">
+							<label for="power_icon">Icône</label>
+							<input id="power_icon" type="text" class="stat-input" name="system.icon"
+								value="{{system.icon}}" />
+						</div>
 					</div>
 				</div>
 			</div>
-		</div>
-	</div>
 
-	{{!-- Pouv3 Tab --}}
-	<div class="tab" data-group="primary" data-tab="pouv3">
-		<h3>⚡ Pouvoir 3</h3>
-		
-		<div class="weapon-feature-card collapsed" onclick="this.classList.toggle('collapsed')">
-			<h4 class="feature-title collapsible-header">
-				<i class="fas fa-tag"></i> Entête
-				<i class="fas fa-chevron-down collapse-icon"></i>
-			</h4>
-			<div class="card-content" onclick="event.stopPropagation();">
-				<div class="power-header-grid" onclick="event.stopPropagation();">
-					<div class="power-field">
-						<label for="pouvoir3_name">Nom</label>
-						<input id="pouvoir3_name" type="text" class="stat-input" name="system.pouvoir3.label" value="{{system.pouvoir3.label}}"/>
-					</div>
-					<div class="power-field">
-						<label for="pouvoir3_icon">Icône</label>
-						<input id="pouvoir3_icon" type="text" class="stat-input" name="system.pouvoir3.icon" value="{{system.pouvoir3.icon}}"/>
+			<div class="weapon-feature-card" onclick="this.classList.toggle('collapsed')">
+				<h4 class="feature-title collapsible-header">
+					<i class="fas fa-scroll"></i> Description
+					<i class="fas fa-chevron-down collapse-icon"></i>
+				</h4>
+				<div class="card-content" onclick="event.stopPropagation();">
+					<div class="power-description" onclick="event.stopPropagation();">
+						{{editor enrichedBiography target="system.description" button=true editable=editable}}
 					</div>
 				</div>
 			</div>
 		</div>
-		
-		<div class="weapon-feature-card collapsed" onclick="this.classList.toggle('collapsed')">
-			<h4 class="feature-title collapsible-header">
-				<i class="fas fa-scroll"></i> Description
-				<i class="fas fa-chevron-down collapse-icon"></i>
-			</h4>
-			<div class="card-content" onclick="event.stopPropagation();">
-				<div class="power-description" onclick="event.stopPropagation();">
-					{{editor pouv3 target="system.pouvoir3.description" button=true editable=editable}}
-				</div>
-			</div>
-		</div>
-		
-		<div class="weapon-feature-card collapsed" onclick="this.classList.toggle('collapsed')">
-			<h4 class="feature-title collapsible-header">
-				<i class="fas fa-star"></i> Grades
-				<i class="fas fa-chevron-down collapse-icon"></i>
-			</h4>
-			<div class="card-content" onclick="event.stopPropagation();">
-				<div class="power-grades-grid" onclick="event.stopPropagation();">
-					<div class="grade-field">
-						<label for="p3_grade1">Grade 1</label>
-						<input id="p3_grade1" type="text" class="stat-input" name="system.pouvoir3.grade1" value="{{system.pouvoir3.grade1}}"/>
-					</div>
-					<div class="grade-field">
-						<label for="p3_grade2">Grade 2</label>
-						<input id="p3_grade2" type="text" class="stat-input" name="system.pouvoir3.grade2" value="{{system.pouvoir3.grade2}}"/>
-					</div>
-					<div class="grade-field">
-						<label for="p3_grade3">Grade 3</label>
-						<input id="p3_grade3" type="text" class="stat-input" name="system.pouvoir3.grade3" value="{{system.pouvoir3.grade3}}"/>
-					</div>
-					<div class="grade-field">
-						<label for="p3_grade4">Grade 4</label>
-						<input id="p3_grade4" type="text" class="stat-input" name="system.pouvoir3.grade4" value="{{system.pouvoir3.grade4}}"/>
-					</div>
-					<div class="grade-field">
-						<label for="p3_grade5">Grade 5</label>
-						<input id="p3_grade5" type="text" class="stat-input" name="system.pouvoir3.grade5" value="{{system.pouvoir3.grade5}}"/>
-					</div>
-					<div class="grade-field">
-						<label for="p3_grade6">Grade 6</label>
-						<input id="p3_grade6" type="text" class="stat-input" name="system.pouvoir3.grade6" value="{{system.pouvoir3.grade6}}"/>
-					</div>
-					<div class="grade-field">
-						<label for="p3_grade7">Grade 7</label>
-						<input id="p3_grade7" type="text" class="stat-input" name="system.pouvoir3.grade7" value="{{system.pouvoir3.grade7}}"/>
-					</div>
-					<div class="grade-field">
-						<label for="p3_grade8">Grade 8</label>
-						<input id="p3_grade8" type="text" class="stat-input" name="system.pouvoir3.grade8" value="{{system.pouvoir3.grade8}}"/>
-					</div>
-					<div class="grade-field">
-						<label for="p3_grade9">Grade 9</label>
-						<input id="p3_grade9" type="text" class="stat-input" name="system.pouvoir3.grade9" value="{{system.pouvoir3.grade9}}"/>
-					</div>
-					<div class="grade-field">
-						<label for="p3_grade10">Grade 10</label>
-						<input id="p3_grade10" type="text" class="stat-input" name="system.pouvoir3.grade10" value="{{system.pouvoir3.grade10}}"/>
-					</div>
-					<div class="grade-field">
-						<label for="p3_grade11">Grade 11</label>
-						<input id="p3_grade11" type="text" class="stat-input" name="system.pouvoir3.grade11" value="{{system.pouvoir3.grade11}}"/>
-					</div>
-					<div class="grade-field">
-						<label for="p3_grade12">Grade 12</label>
-						<input id="p3_grade12" type="text" class="stat-input" name="system.pouvoir3.grade12" value="{{system.pouvoir3.grade12}}"/>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
 
-	{{!-- Pouv4 Tab --}}
-	<div class="tab" data-group="primary" data-tab="pouv4">
-		<h3>⚡ Pouvoir 4</h3>
-		
-		<div class="weapon-feature-card collapsed" onclick="this.classList.toggle('collapsed')">
-			<h4 class="feature-title collapsible-header">
-				<i class="fas fa-tag"></i> Entête
-				<i class="fas fa-chevron-down collapse-icon"></i>
-			</h4>
-			<div class="card-content" onclick="event.stopPropagation();">
-				<div class="power-header-grid" onclick="event.stopPropagation();">
-					<div class="power-field">
-						<label for="pouvoir4_name">Nom</label>
-						<input id="pouvoir4_name" type="text" class="stat-input" name="system.pouvoir4.label" value="{{system.pouvoir4.label}}"/>
+		{{!-- Pouv1 Tab --}}
+		<div class="tab" data-group="primary" data-tab="pouv1">
+			<h3>⚡ Pouvoir 1</h3>
+
+			<div class="weapon-feature-card collapsed" onclick="this.classList.toggle('collapsed')">
+				<h4 class="feature-title collapsible-header">
+					<i class="fas fa-tag"></i> Entête
+					<i class="fas fa-chevron-down collapse-icon"></i>
+				</h4>
+				<div class="card-content" onclick="event.stopPropagation();">
+					<div class="power-header-grid" onclick="event.stopPropagation();">
+						<div class="power-field">
+							<label for="pouvoir1_name">Nom</label>
+							<input id="pouvoir1_name" type="text" class="stat-input" name="system.pouvoir1.label"
+								value="{{system.pouvoir1.label}}" />
+						</div>
+						<div class="power-field">
+							<label for="pouvoir1_icon">Icône</label>
+							<input id="pouvoir1_icon" type="text" class="stat-input" name="system.pouvoir1.icon"
+								value="{{system.pouvoir1.icon}}" />
+						</div>
 					</div>
-					<div class="power-field">
-						<label for="pouvoir4_icon">Icône</label>
-						<input id="pouvoir4_icon" type="text" class="stat-input" name="system.pouvoir4.icon" value="{{system.pouvoir4.icon}}"/>
+				</div>
+			</div>
+
+			<div class="weapon-feature-card collapsed" onclick="this.classList.toggle('collapsed')">
+				<h4 class="feature-title collapsible-header">
+					<i class="fas fa-scroll"></i> Description
+					<i class="fas fa-chevron-down collapse-icon"></i>
+				</h4>
+				<div class="card-content" onclick="event.stopPropagation();">
+					<div class="power-description" onclick="event.stopPropagation();">
+						{{editor pouv1 target="system.pouvoir1.description" button=true editable=editable}}
+					</div>
+				</div>
+			</div>
+
+			<div class="weapon-feature-card collapsed" onclick="this.classList.toggle('collapsed')">
+				<h4 class="feature-title collapsible-header">
+					<i class="fas fa-star"></i> Grades
+					<i class="fas fa-chevron-down collapse-icon"></i>
+				</h4>
+				<div class="card-content" onclick="event.stopPropagation();">
+					<div class="power-grades-grid" onclick="event.stopPropagation();">
+						<div class="grade-field">
+							<label for="p1_grade1">Grade 1</label>
+							<input id="p1_grade1" type="text" class="stat-input" name="system.pouvoir1.grade1"
+								value="{{system.pouvoir1.grade1}}" />
+						</div>
+						<div class="grade-field">
+							<label for="p1_grade2">Grade 2</label>
+							<input id="p1_grade2" type="text" class="stat-input" name="system.pouvoir1.grade2"
+								value="{{system.pouvoir1.grade2}}" />
+						</div>
+						<div class="grade-field">
+							<label for="p1_grade3">Grade 3</label>
+							<input id="p1_grade3" type="text" class="stat-input" name="system.pouvoir1.grade3"
+								value="{{system.pouvoir1.grade3}}" />
+						</div>
+						<div class="grade-field">
+							<label for="p1_grade4">Grade 4</label>
+							<input id="p1_grade4" type="text" class="stat-input" name="system.pouvoir1.grade4"
+								value="{{system.pouvoir1.grade4}}" />
+						</div>
+						<div class="grade-field">
+							<label for="p1_grade5">Grade 5</label>
+							<input id="p1_grade5" type="text" class="stat-input" name="system.pouvoir1.grade5"
+								value="{{system.pouvoir1.grade5}}" />
+						</div>
+						<div class="grade-field">
+							<label for="p1_grade6">Grade 6</label>
+							<input id="p1_grade6" type="text" class="stat-input" name="system.pouvoir1.grade6"
+								value="{{system.pouvoir1.grade6}}" />
+						</div>
+						<div class="grade-field">
+							<label for="p1_grade7">Grade 7</label>
+							<input id="p1_grade7" type="text" class="stat-input" name="system.pouvoir1.grade7"
+								value="{{system.pouvoir1.grade7}}" />
+						</div>
+						<div class="grade-field">
+							<label for="p1_grade8">Grade 8</label>
+							<input id="p1_grade8" type="text" class="stat-input" name="system.pouvoir1.grade8"
+								value="{{system.pouvoir1.grade8}}" />
+						</div>
+						<div class="grade-field">
+							<label for="p1_grade9">Grade 9</label>
+							<input id="p1_grade9" type="text" class="stat-input" name="system.pouvoir1.grade9"
+								value="{{system.pouvoir1.grade9}}" />
+						</div>
+						<div class="grade-field">
+							<label for="p1_grade10">Grade 10</label>
+							<input id="p1_grade10" type="text" class="stat-input" name="system.pouvoir1.grade10"
+								value="{{system.pouvoir1.grade10}}" />
+						</div>
+						<div class="grade-field">
+							<label for="p1_grade11">Grade 11</label>
+							<input id="p1_grade11" type="text" class="stat-input" name="system.pouvoir1.grade11"
+								value="{{system.pouvoir1.grade11}}" />
+						</div>
+						<div class="grade-field">
+							<label for="p1_grade12">Grade 12</label>
+							<input id="p1_grade12" type="text" class="stat-input" name="system.pouvoir1.grade12"
+								value="{{system.pouvoir1.grade12}}" />
+						</div>
 					</div>
 				</div>
 			</div>
 		</div>
-		
-		<div class="weapon-feature-card collapsed" onclick="this.classList.toggle('collapsed')">
-			<h4 class="feature-title collapsible-header">
-				<i class="fas fa-scroll"></i> Description
-				<i class="fas fa-chevron-down collapse-icon"></i>
-			</h4>
-			<div class="card-content" onclick="event.stopPropagation();">
-				<div class="power-description" onclick="event.stopPropagation();">
-					{{editor pouv4 target="system.pouvoir4.description" button=true editable=editable}}
-				</div>
-			</div>
-		</div>
-		
-		<div class="weapon-feature-card collapsed" onclick="this.classList.toggle('collapsed')">
-			<h4 class="feature-title collapsible-header">
-				<i class="fas fa-star"></i> Grades
-				<i class="fas fa-chevron-down collapse-icon"></i>
-			</h4>
-			<div class="card-content" onclick="event.stopPropagation();">
-				<div class="power-grades-grid" onclick="event.stopPropagation();">
-					<div class="grade-field">
-						<label for="p4_grade1">Grade 1</label>
-						<input id="p4_grade1" type="text" class="stat-input" name="system.pouvoir4.grade1" value="{{system.pouvoir4.grade1}}"/>
-					</div>
-					<div class="grade-field">
-						<label for="p4_grade2">Grade 2</label>
-						<input id="p4_grade2" type="text" class="stat-input" name="system.pouvoir4.grade2" value="{{system.pouvoir4.grade2}}"/>
-					</div>
-					<div class="grade-field">
-						<label for="p4_grade3">Grade 3</label>
-						<input id="p4_grade3" type="text" class="stat-input" name="system.pouvoir4.grade3" value="{{system.pouvoir4.grade3}}"/>
-					</div>
-					<div class="grade-field">
-						<label for="p4_grade4">Grade 4</label>
-						<input id="p4_grade4" type="text" class="stat-input" name="system.pouvoir4.grade4" value="{{system.pouvoir4.grade4}}"/>
-					</div>
-					<div class="grade-field">
-						<label for="p4_grade5">Grade 5</label>
-						<input id="p4_grade5" type="text" class="stat-input" name="system.pouvoir4.grade5" value="{{system.pouvoir4.grade5}}"/>
-					</div>
-					<div class="grade-field">
-						<label for="p4_grade6">Grade 6</label>
-						<input id="p4_grade6" type="text" class="stat-input" name="system.pouvoir4.grade6" value="{{system.pouvoir4.grade6}}"/>
-					</div>
-					<div class="grade-field">
-						<label for="p4_grade7">Grade 7</label>
-						<input id="p4_grade7" type="text" class="stat-input" name="system.pouvoir4.grade7" value="{{system.pouvoir4.grade7}}"/>
-					</div>
-					<div class="grade-field">
-						<label for="p4_grade8">Grade 8</label>
-						<input id="p4_grade8" type="text" class="stat-input" name="system.pouvoir4.grade8" value="{{system.pouvoir4.grade8}}"/>
-					</div>
-					<div class="grade-field">
-						<label for="p4_grade9">Grade 9</label>
-						<input id="p4_grade9" type="text" class="stat-input" name="system.pouvoir4.grade9" value="{{system.pouvoir4.grade9}}"/>
-					</div>
-					<div class="grade-field">
-						<label for="p4_grade10">Grade 10</label>
-						<input id="p4_grade10" type="text" class="stat-input" name="system.pouvoir4.grade10" value="{{system.pouvoir4.grade10}}"/>
-					</div>
-					<div class="grade-field">
-						<label for="p4_grade11">Grade 11</label>
-						<input id="p4_grade11" type="text" class="stat-input" name="system.pouvoir4.grade11" value="{{system.pouvoir4.grade11}}"/>
-					</div>
-					<div class="grade-field">
-						<label for="p4_grade12">Grade 12</label>
-						<input id="p4_grade12" type="text" class="stat-input" name="system.pouvoir4.grade12" value="{{system.pouvoir4.grade12}}"/>
+
+		{{!-- Pouv2 Tab --}}
+		<div class="tab" data-group="primary" data-tab="pouv2">
+			<h3>⚡ Pouvoir 2</h3>
+
+			<div class="weapon-feature-card collapsed" onclick="this.classList.toggle('collapsed')">
+				<h4 class="feature-title collapsible-header">
+					<i class="fas fa-tag"></i> Entête
+					<i class="fas fa-chevron-down collapse-icon"></i>
+				</h4>
+				<div class="card-content" onclick="event.stopPropagation();">
+					<div class="power-header-grid" onclick="event.stopPropagation();">
+						<div class="power-field">
+							<label for="pouvoir2_name">Nom</label>
+							<input id="pouvoir2_name" type="text" class="stat-input" name="system.pouvoir2.label"
+								value="{{system.pouvoir2.label}}" />
+						</div>
+						<div class="power-field">
+							<label for="pouvoir2_icon">Icône</label>
+							<input id="pouvoir2_icon" type="text" class="stat-input" name="system.pouvoir2.icon"
+								value="{{system.pouvoir2.icon}}" />
+						</div>
 					</div>
 				</div>
 			</div>
+
+			<div class="weapon-feature-card collapsed" onclick="this.classList.toggle('collapsed')">
+				<h4 class="feature-title collapsible-header">
+					<i class="fas fa-scroll"></i> Description
+					<i class="fas fa-chevron-down collapse-icon"></i>
+				</h4>
+				<div class="card-content" onclick="event.stopPropagation();">
+					<div class="power-description" onclick="event.stopPropagation();">
+						{{editor pouv2 target="system.pouvoir2.description" button=true editable=editable}}
+					</div>
+				</div>
+			</div>
+
+			<div class="weapon-feature-card collapsed" onclick="this.classList.toggle('collapsed')">
+				<h4 class="feature-title collapsible-header">
+					<i class="fas fa-star"></i> Grades
+					<i class="fas fa-chevron-down collapse-icon"></i>
+				</h4>
+				<div class="card-content" onclick="event.stopPropagation();">
+					<div class="power-grades-grid" onclick="event.stopPropagation();">
+						<div class="grade-field">
+							<label for="p2_grade1">Grade 1</label>
+							<input id="p2_grade1" type="text" class="stat-input" name="system.pouvoir2.grade1"
+								value="{{system.pouvoir2.grade1}}" />
+						</div>
+						<div class="grade-field">
+							<label for="p2_grade2">Grade 2</label>
+							<input id="p2_grade2" type="text" class="stat-input" name="system.pouvoir2.grade2"
+								value="{{system.pouvoir2.grade2}}" />
+						</div>
+						<div class="grade-field">
+							<label for="p2_grade3">Grade 3</label>
+							<input id="p2_grade3" type="text" class="stat-input" name="system.pouvoir2.grade3"
+								value="{{system.pouvoir2.grade3}}" />
+						</div>
+						<div class="grade-field">
+							<label for="p2_grade4">Grade 4</label>
+							<input id="p2_grade4" type="text" class="stat-input" name="system.pouvoir2.grade4"
+								value="{{system.pouvoir2.grade4}}" />
+						</div>
+						<div class="grade-field">
+							<label for="p2_grade5">Grade 5</label>
+							<input id="p2_grade5" type="text" class="stat-input" name="system.pouvoir2.grade5"
+								value="{{system.pouvoir2.grade5}}" />
+						</div>
+						<div class="grade-field">
+							<label for="p2_grade6">Grade 6</label>
+							<input id="p2_grade6" type="text" class="stat-input" name="system.pouvoir2.grade6"
+								value="{{system.pouvoir2.grade6}}" />
+						</div>
+						<div class="grade-field">
+							<label for="p2_grade7">Grade 7</label>
+							<input id="p2_grade7" type="text" class="stat-input" name="system.pouvoir2.grade7"
+								value="{{system.pouvoir2.grade7}}" />
+						</div>
+						<div class="grade-field">
+							<label for="p2_grade8">Grade 8</label>
+							<input id="p2_grade8" type="text" class="stat-input" name="system.pouvoir2.grade8"
+								value="{{system.pouvoir2.grade8}}" />
+						</div>
+						<div class="grade-field">
+							<label for="p2_grade9">Grade 9</label>
+							<input id="p2_grade9" type="text" class="stat-input" name="system.pouvoir2.grade9"
+								value="{{system.pouvoir2.grade9}}" />
+						</div>
+						<div class="grade-field">
+							<label for="p2_grade10">Grade 10</label>
+							<input id="p2_grade10" type="text" class="stat-input" name="system.pouvoir2.grade10"
+								value="{{system.pouvoir2.grade10}}" />
+						</div>
+						<div class="grade-field">
+							<label for="p2_grade11">Grade 11</label>
+							<input id="p2_grade11" type="text" class="stat-input" name="system.pouvoir2.grade11"
+								value="{{system.pouvoir2.grade11}}" />
+						</div>
+						<div class="grade-field">
+							<label for="p2_grade12">Grade 12</label>
+							<input id="p2_grade12" type="text" class="stat-input" name="system.pouvoir2.grade12"
+								value="{{system.pouvoir2.grade12}}" />
+						</div>
+					</div>
+				</div>
+			</div>
 		</div>
-	</div>
+
+		{{!-- Pouv3 Tab --}}
+		<div class="tab" data-group="primary" data-tab="pouv3">
+			<h3>⚡ Pouvoir 3</h3>
+
+			<div class="weapon-feature-card collapsed" onclick="this.classList.toggle('collapsed')">
+				<h4 class="feature-title collapsible-header">
+					<i class="fas fa-tag"></i> Entête
+					<i class="fas fa-chevron-down collapse-icon"></i>
+				</h4>
+				<div class="card-content" onclick="event.stopPropagation();">
+					<div class="power-header-grid" onclick="event.stopPropagation();">
+						<div class="power-field">
+							<label for="pouvoir3_name">Nom</label>
+							<input id="pouvoir3_name" type="text" class="stat-input" name="system.pouvoir3.label"
+								value="{{system.pouvoir3.label}}" />
+						</div>
+						<div class="power-field">
+							<label for="pouvoir3_icon">Icône</label>
+							<input id="pouvoir3_icon" type="text" class="stat-input" name="system.pouvoir3.icon"
+								value="{{system.pouvoir3.icon}}" />
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="weapon-feature-card collapsed" onclick="this.classList.toggle('collapsed')">
+				<h4 class="feature-title collapsible-header">
+					<i class="fas fa-scroll"></i> Description
+					<i class="fas fa-chevron-down collapse-icon"></i>
+				</h4>
+				<div class="card-content" onclick="event.stopPropagation();">
+					<div class="power-description" onclick="event.stopPropagation();">
+						{{editor pouv3 target="system.pouvoir3.description" button=true editable=editable}}
+					</div>
+				</div>
+			</div>
+
+			<div class="weapon-feature-card collapsed" onclick="this.classList.toggle('collapsed')">
+				<h4 class="feature-title collapsible-header">
+					<i class="fas fa-star"></i> Grades
+					<i class="fas fa-chevron-down collapse-icon"></i>
+				</h4>
+				<div class="card-content" onclick="event.stopPropagation();">
+					<div class="power-grades-grid" onclick="event.stopPropagation();">
+						<div class="grade-field">
+							<label for="p3_grade1">Grade 1</label>
+							<input id="p3_grade1" type="text" class="stat-input" name="system.pouvoir3.grade1"
+								value="{{system.pouvoir3.grade1}}" />
+						</div>
+						<div class="grade-field">
+							<label for="p3_grade2">Grade 2</label>
+							<input id="p3_grade2" type="text" class="stat-input" name="system.pouvoir3.grade2"
+								value="{{system.pouvoir3.grade2}}" />
+						</div>
+						<div class="grade-field">
+							<label for="p3_grade3">Grade 3</label>
+							<input id="p3_grade3" type="text" class="stat-input" name="system.pouvoir3.grade3"
+								value="{{system.pouvoir3.grade3}}" />
+						</div>
+						<div class="grade-field">
+							<label for="p3_grade4">Grade 4</label>
+							<input id="p3_grade4" type="text" class="stat-input" name="system.pouvoir3.grade4"
+								value="{{system.pouvoir3.grade4}}" />
+						</div>
+						<div class="grade-field">
+							<label for="p3_grade5">Grade 5</label>
+							<input id="p3_grade5" type="text" class="stat-input" name="system.pouvoir3.grade5"
+								value="{{system.pouvoir3.grade5}}" />
+						</div>
+						<div class="grade-field">
+							<label for="p3_grade6">Grade 6</label>
+							<input id="p3_grade6" type="text" class="stat-input" name="system.pouvoir3.grade6"
+								value="{{system.pouvoir3.grade6}}" />
+						</div>
+						<div class="grade-field">
+							<label for="p3_grade7">Grade 7</label>
+							<input id="p3_grade7" type="text" class="stat-input" name="system.pouvoir3.grade7"
+								value="{{system.pouvoir3.grade7}}" />
+						</div>
+						<div class="grade-field">
+							<label for="p3_grade8">Grade 8</label>
+							<input id="p3_grade8" type="text" class="stat-input" name="system.pouvoir3.grade8"
+								value="{{system.pouvoir3.grade8}}" />
+						</div>
+						<div class="grade-field">
+							<label for="p3_grade9">Grade 9</label>
+							<input id="p3_grade9" type="text" class="stat-input" name="system.pouvoir3.grade9"
+								value="{{system.pouvoir3.grade9}}" />
+						</div>
+						<div class="grade-field">
+							<label for="p3_grade10">Grade 10</label>
+							<input id="p3_grade10" type="text" class="stat-input" name="system.pouvoir3.grade10"
+								value="{{system.pouvoir3.grade10}}" />
+						</div>
+						<div class="grade-field">
+							<label for="p3_grade11">Grade 11</label>
+							<input id="p3_grade11" type="text" class="stat-input" name="system.pouvoir3.grade11"
+								value="{{system.pouvoir3.grade11}}" />
+						</div>
+						<div class="grade-field">
+							<label for="p3_grade12">Grade 12</label>
+							<input id="p3_grade12" type="text" class="stat-input" name="system.pouvoir3.grade12"
+								value="{{system.pouvoir3.grade12}}" />
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		{{!-- Pouv4 Tab --}}
+		<div class="tab" data-group="primary" data-tab="pouv4">
+			<h3>⚡ Pouvoir 4</h3>
+
+			<div class="weapon-feature-card collapsed" onclick="this.classList.toggle('collapsed')">
+				<h4 class="feature-title collapsible-header">
+					<i class="fas fa-tag"></i> Entête
+					<i class="fas fa-chevron-down collapse-icon"></i>
+				</h4>
+				<div class="card-content" onclick="event.stopPropagation();">
+					<div class="power-header-grid" onclick="event.stopPropagation();">
+						<div class="power-field">
+							<label for="pouvoir4_name">Nom</label>
+							<input id="pouvoir4_name" type="text" class="stat-input" name="system.pouvoir4.label"
+								value="{{system.pouvoir4.label}}" />
+						</div>
+						<div class="power-field">
+							<label for="pouvoir4_icon">Icône</label>
+							<input id="pouvoir4_icon" type="text" class="stat-input" name="system.pouvoir4.icon"
+								value="{{system.pouvoir4.icon}}" />
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="weapon-feature-card collapsed" onclick="this.classList.toggle('collapsed')">
+				<h4 class="feature-title collapsible-header">
+					<i class="fas fa-scroll"></i> Description
+					<i class="fas fa-chevron-down collapse-icon"></i>
+				</h4>
+				<div class="card-content" onclick="event.stopPropagation();">
+					<div class="power-description" onclick="event.stopPropagation();">
+						{{editor pouv4 target="system.pouvoir4.description" button=true editable=editable}}
+					</div>
+				</div>
+			</div>
+
+			<div class="weapon-feature-card collapsed" onclick="this.classList.toggle('collapsed')">
+				<h4 class="feature-title collapsible-header">
+					<i class="fas fa-star"></i> Grades
+					<i class="fas fa-chevron-down collapse-icon"></i>
+				</h4>
+				<div class="card-content" onclick="event.stopPropagation();">
+					<div class="power-grades-grid" onclick="event.stopPropagation();">
+						<div class="grade-field">
+							<label for="p4_grade1">Grade 1</label>
+							<input id="p4_grade1" type="text" class="stat-input" name="system.pouvoir4.grade1"
+								value="{{system.pouvoir4.grade1}}" />
+						</div>
+						<div class="grade-field">
+							<label for="p4_grade2">Grade 2</label>
+							<input id="p4_grade2" type="text" class="stat-input" name="system.pouvoir4.grade2"
+								value="{{system.pouvoir4.grade2}}" />
+						</div>
+						<div class="grade-field">
+							<label for="p4_grade3">Grade 3</label>
+							<input id="p4_grade3" type="text" class="stat-input" name="system.pouvoir4.grade3"
+								value="{{system.pouvoir4.grade3}}" />
+						</div>
+						<div class="grade-field">
+							<label for="p4_grade4">Grade 4</label>
+							<input id="p4_grade4" type="text" class="stat-input" name="system.pouvoir4.grade4"
+								value="{{system.pouvoir4.grade4}}" />
+						</div>
+						<div class="grade-field">
+							<label for="p4_grade5">Grade 5</label>
+							<input id="p4_grade5" type="text" class="stat-input" name="system.pouvoir4.grade5"
+								value="{{system.pouvoir4.grade5}}" />
+						</div>
+						<div class="grade-field">
+							<label for="p4_grade6">Grade 6</label>
+							<input id="p4_grade6" type="text" class="stat-input" name="system.pouvoir4.grade6"
+								value="{{system.pouvoir4.grade6}}" />
+						</div>
+						<div class="grade-field">
+							<label for="p4_grade7">Grade 7</label>
+							<input id="p4_grade7" type="text" class="stat-input" name="system.pouvoir4.grade7"
+								value="{{system.pouvoir4.grade7}}" />
+						</div>
+						<div class="grade-field">
+							<label for="p4_grade8">Grade 8</label>
+							<input id="p4_grade8" type="text" class="stat-input" name="system.pouvoir4.grade8"
+								value="{{system.pouvoir4.grade8}}" />
+						</div>
+						<div class="grade-field">
+							<label for="p4_grade9">Grade 9</label>
+							<input id="p4_grade9" type="text" class="stat-input" name="system.pouvoir4.grade9"
+								value="{{system.pouvoir4.grade9}}" />
+						</div>
+						<div class="grade-field">
+							<label for="p4_grade10">Grade 10</label>
+							<input id="p4_grade10" type="text" class="stat-input" name="system.pouvoir4.grade10"
+								value="{{system.pouvoir4.grade10}}" />
+						</div>
+						<div class="grade-field">
+							<label for="p4_grade11">Grade 11</label>
+							<input id="p4_grade11" type="text" class="stat-input" name="system.pouvoir4.grade11"
+								value="{{system.pouvoir4.grade11}}" />
+						</div>
+						<div class="grade-field">
+							<label for="p4_grade12">Grade 12</label>
+							<input id="p4_grade12" type="text" class="stat-input" name="system.pouvoir4.grade12"
+								value="{{system.pouvoir4.grade12}}" />
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
 
 		{{!-- Aide Tab --}}
-	<div class="tab" data-group="primary" data-tab="aide">
-		<h3>🎆 Aide</h3>
-		
-		<div class="weapon-feature-card collapsed" onclick="this.classList.toggle('collapsed')">
-			<h4 class="feature-title collapsible-header">
-				<i class="fas fa-tag"></i> Entête
-				<i class="fas fa-chevron-down collapse-icon"></i>
-			</h4>
-			<div class="card-content" onclick="event.stopPropagation();">
-				<div class="power-header-grid" onclick="event.stopPropagation();">
-					<div class="power-field">
-						<label for="aide_name">Nom</label>
-						<input id="aide_name" type="text" class="stat-input" name="system.aide.label" value="{{system.aide.label}}"/>
+		<div class="tab" data-group="primary" data-tab="aide">
+			<h3>🎆 Aide</h3>
+
+			<div class="weapon-feature-card collapsed" onclick="this.classList.toggle('collapsed')">
+				<h4 class="feature-title collapsible-header">
+					<i class="fas fa-tag"></i> Entête
+					<i class="fas fa-chevron-down collapse-icon"></i>
+				</h4>
+				<div class="card-content" onclick="event.stopPropagation();">
+					<div class="power-header-grid" onclick="event.stopPropagation();">
+						<div class="power-field">
+							<label for="aide_name">Nom</label>
+							<input id="aide_name" type="text" class="stat-input" name="system.aide.label"
+								value="{{system.aide.label}}" />
+						</div>
+						<div class="power-field">
+							<label for="aide_icon">Icône</label>
+							<input id="aide_icon" type="text" class="stat-input" name="system.aide.icon"
+								value="{{system.aide.icon}}" />
+						</div>
 					</div>
-					<div class="power-field">
-						<label for="aide_icon">Icône</label>
-						<input id="aide_icon" type="text" class="stat-input" name="system.aide.icon" value="{{system.aide.icon}}"/>
+				</div>
+			</div>
+
+			<div class="weapon-feature-card" onclick="this.classList.toggle('collapsed')">
+				<h4 class="feature-title collapsible-header">
+					<i class="fas fa-scroll"></i> Description
+					<i class="fas fa-chevron-down collapse-icon"></i>
+				</h4>
+				<div class="card-content" onclick="event.stopPropagation();">
+					<div class="power-description" onclick="event.stopPropagation();">
+						{{editor aide target="system.aide.description" button=true editable=editable}}
 					</div>
 				</div>
 			</div>
 		</div>
-		
-		<div class="weapon-feature-card" onclick="this.classList.toggle('collapsed')">
-			<h4 class="feature-title collapsible-header">
-				<i class="fas fa-scroll"></i> Description
-				<i class="fas fa-chevron-down collapse-icon"></i>
-			</h4>
-			<div class="card-content" onclick="event.stopPropagation();">
-				<div class="power-description" onclick="event.stopPropagation();">
-					{{editor aide target="system.aide.description" button=true editable=editable}}
-				</div>
-			</div>
-		</div>
-	</div>
 
-    </section>
+	</section>
 
-	    {{!-- Invisible trigger zone for side tabs --}}
-    <div class="side-trigger-zone"></div>
+	{{!-- Invisible trigger zone for side tabs --}}
+	<div class="side-trigger-zone"></div>
 
-      {{!-- Side Tab Navigation - outside the main content --}}
-    <nav class="side-tabs" data-group="primary">
-        <a class="side-tab-item" data-tab="description" title="DESCRIPTION">
-            <i class="fas fa-file-text"></i>
-        </a>
-      	<a class="side-tab-item" data-tab="pouv1">P1</a>
+	{{!-- Side Tab Navigation - outside the main content --}}
+	<nav class="side-tabs" data-group="primary">
+		<a class="side-tab-item" data-tab="description" title="DESCRIPTION">
+			<i class="fas fa-file-text"></i>
+		</a>
+		<a class="side-tab-item" data-tab="pouv1">P1</a>
 		{{#ifsuperior system.nb_onglets 1}}<a class="side-tab-item" data-tab="pouv2">P2</a>{{/ifsuperior}}
 		{{#ifsuperior system.nb_onglets 2}}<a class="side-tab-item" data-tab="pouv3">P3</a>{{/ifsuperior}}
 		{{#ifsuperior system.nb_onglets 3}}<a class="side-tab-item" data-tab="pouv4">P4</a>{{/ifsuperior}}
 		{{#if system.aide_active}}<a class="side-tab-item" data-tab="aide">Aide</a>{{/if}}
-    </nav>
+	</nav>
 
 
 </form>
