@@ -3,7 +3,7 @@
  * @extends {foundry.appv1.sheets.ActorSheet}
  */
 
-import { safeDocumentUpdate } from "./mega-utils.js";
+import { safeDocumentUpdate, checkEffectsState } from "./mega-utils.js";
 
 class TabbedDialog extends Dialog {
   constructor(data, options = {}) {
@@ -868,10 +868,9 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
 
                   /****************************** Effets spéciaux Armes courtes, longues************************************/
 
-                  if (!canvas.fxmaster)
-                    ui.notifications.error(
-                      "Les effets dépendent du module FXMaster. Assurez-vous de l'avoir installé",
-                    );
+                  const effectsState = checkEffectsState();
+                  if (!effectsState.shouldContinue) return;
+
                   const wait = (delay) =>
                     new Promise((resolve) => setTimeout(resolve, delay));
 
@@ -879,11 +878,7 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
                   let targets = Array.from(game.user.targets);
                   let offX = Number(arme[0].system.effet_offX?.value || 0);
                   let offY = Number(arme[0].system.effet_offY?.value || 0);
-                  const effets_speciaux = game.settings.get(
-                    "mega",
-                    "effets_speciaux",
-                  );
-                  console.log("effets_speciaux : " + effets_speciaux);
+                  const effets_speciaux = effectsState.shouldPlayEffects;
                   /**********  Animation avec Sequence  ****************************/
                   if (Array.from(game.user.targets).length !== 0) {
                     let target = Array.from(game.user.targets)[0];
@@ -901,12 +896,17 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
                         .stretchTo(target)
                         .repeats(2, 200, 300)
                         .play();
-                      new Sequence()
-                        .sound()
-                        .file(arme[0].system.sound?.value || "")
-                        .fadeInAudio(500)
-                        .fadeOutAudio(500)
-                        .play();
+                      if (
+                        arme[0].system.sound?.value &&
+                        arme[0].system.sound.value.trim() !== ""
+                      ) {
+                        new Sequence()
+                          .sound()
+                          .file(arme[0].system.sound.value)
+                          .fadeInAudio(500)
+                          .fadeOutAudio(500)
+                          .play();
+                      }
                     }
                   }
 
@@ -4055,10 +4055,9 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
         if (game.user.targets.size == 0)
           ui.notifications.error("Vous devez selectionner au moins une cible");
 
-        if (!canvas.fxmaster)
-          ui.notifications.error(
-            "Les effets dépendent du module FXMaster. Assurez-vous de l'avoir installé",
-          );
+        const effectsState = checkEffectsState();
+        if (!effectsState.shouldContinue) return;
+
         const wait = (delay) =>
           new Promise((resolve) => setTimeout(resolve, delay));
 
@@ -4085,7 +4084,7 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
             }
             break;
         }
-        const effets_speciaux = game.settings.get("mega", "effets_speciaux");
+        const effets_speciaux = effectsState.shouldPlayEffects;
 
         if (game.modules.get("sequencer")?.active && effets_speciaux) {
           let sequence = new Sequence()
@@ -4792,16 +4791,15 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
           if (canvas.tokens.controlled.length == 0)
             ui.notifications.error("Veuillez sélectionner votre token");
           ///Check if Module dependencies are installed or returns an error to the user
-          if (!canvas.fxmaster)
-            ui.notifications.error(
-              "This macro depends on the FXMaster module. Make sure it is installed and enabled",
-            );
+          const effectsState = checkEffectsState();
+          if (!effectsState.shouldContinue) return;
+
           const wait = (delay) =>
             new Promise((resolve) => setTimeout(resolve, delay));
 
           let selectedToken = canvas.tokens.controlled[0];
           let targets = Array.from(game.user.targets);
-          const effets_speciaux = game.settings.get("mega", "effets_speciaux");
+          const effets_speciaux = effectsState.shouldPlayEffects;
           let offX = Number(arme[0].system.effet_offX.value);
           let offY = Number(arme[0].system.effet_offY.value);
           for (let target of targets) {

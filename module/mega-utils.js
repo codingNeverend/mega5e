@@ -70,3 +70,51 @@ export function safeDocumentUpdate(document, data, options = {}) {
     return null;
   }
 }
+
+/**
+ * Vérifie si le module FXMaster est installé et activé
+ * @returns {boolean} True si FXMaster est disponible
+ */
+export function checkFXMaster() {
+  return game.modules.get("fxmaster")?.active || false;
+}
+
+/**
+ * Affiche un message d'erreur si FXMaster n'est pas disponible
+ * @returns {boolean} True si FXMaster est disponible, False sinon
+ */
+export function requireFXMaster() {
+  if (!checkFXMaster()) {
+    ui.notifications.error(
+      "Les effets dépendent du module FXMaster. Veuillez l'installer et l'activer depuis la gestion des modules.",
+      { permanent: false, console: false },
+    );
+    return false;
+  }
+  return true;
+}
+
+/**
+ * Vérifie l'état des effets spéciaux et de FXMaster
+ * @returns {{shouldContinue: boolean, shouldPlayEffects: boolean}} État des effets
+ */
+export function checkEffectsState() {
+  const effets_speciaux = game.settings.get("mega", "effets_speciaux");
+
+  // Si les effets spéciaux sont désactivés, continuer SANS effets
+  if (!effets_speciaux) {
+    return { shouldContinue: true, shouldPlayEffects: false };
+  }
+
+  // Si les effets spéciaux sont activés, vérifier FXMaster
+  if (!checkFXMaster()) {
+    ui.notifications.error(
+      "Les effets dépendent du module FXMaster. Veuillez l'installer et l'activer depuis la gestion des modules.",
+      { permanent: false, console: false },
+    );
+    return { shouldContinue: false, shouldPlayEffects: false };
+  }
+
+  // Effets activés ET FXMaster disponible
+  return { shouldContinue: true, shouldPlayEffects: true };
+}

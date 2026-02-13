@@ -3,7 +3,12 @@
  * @extends {foundry.appv1.sheets.ActorSheet}
  */
 
-import { safeDocumentUpdate, getMegaAPI } from "./mega-utils.js";
+import {
+  safeDocumentUpdate,
+  getMegaAPI,
+  requireFXMaster,
+  checkEffectsState,
+} from "./mega-utils.js";
 
 class TabbedDialog extends Dialog {
   constructor(data, options = {}) {
@@ -1669,19 +1674,15 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
 
                     /****************************** Effets spéciaux Armes courtes, longues************************************/
 
-                    if (!game.modules.get("fxmaster")?.active)
-                      ui.notifications.error(
-                        "Les effets dépendent du module Gambit's FXMaster. Assurez-vous de l'avoir installé",
-                      );
+                    const effectsState = checkEffectsState();
+                    if (!effectsState.shouldContinue) return;
+
                     const wait = (delay) =>
                       new Promise((resolve) => setTimeout(resolve, delay));
 
                     let selectedToken = canvas.tokens.controlled[0];
                     let targets = Array.from(game.user.targets);
-                    const effets_speciaux = game.settings.get(
-                      "mega",
-                      "effets_speciaux",
-                    );
+                    const effets_speciaux = effectsState.shouldPlayEffects;
                     let offX = Number(arme[0].system.effet_offX.value);
                     let offY = Number(arme[0].system.effet_offY.value);
                     /**********  Animation avec Sequence  ****************************/
@@ -1701,12 +1702,17 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
                           .stretchTo(target)
                           .repeats(2, 200, 300)
                           .play();
-                        new Sequence()
-                          .sound()
-                          .file(arme[0].system.sound.value)
-                          .fadeInAudio(500)
-                          .fadeOutAudio(500)
-                          .play();
+                        if (
+                          arme[0].system.sound.value &&
+                          arme[0].system.sound.value.trim() !== ""
+                        ) {
+                          new Sequence()
+                            .sound()
+                            .file(arme[0].system.sound.value)
+                            .fadeInAudio(500)
+                            .fadeOutAudio(500)
+                            .play();
+                        }
                       }
                     }
 
@@ -4267,7 +4273,6 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
       ) {
         pouvoirOK = false;
       }
-      console.log("Pouvoir OK : " + pouvoirOK);
       const spesAssociees = speAssocie(talentName);
       if (
         !this.actor.system.spe1.value &&
@@ -4295,7 +4300,6 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
             icon: `<i class="fas fa-link"></i>`,
           };
         } else {
-          console.log(this.actor.system.spe1.value);
           btns["btn_spes1"] = {
             label: this.actor.system.spe1.value,
             callback: () => (bonus = this.actor.system.rg_spe_1.value),
@@ -6075,10 +6079,7 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
         if (game.user.targets.size == 0)
           ui.notifications.error("Vous devez selectionner au moins une cible");
 
-        if (!game.modules.get("fxmaster")?.active)
-          ui.notifications.error(
-            "Les effets dépendent du module Gambit's FXMaster. Assurez-vous de l'avoir installé",
-          );
+        if (!requireFXMaster()) return;
         const wait = (delay) =>
           new Promise((resolve) => setTimeout(resolve, delay));
         let target = Array.from(game.user.targets)[0];
@@ -6104,7 +6105,7 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
             son_arme = game.settings.get("mega", "bagarre_son_path");
             break;
         }
-        const effets_speciaux = game.settings.get("mega", "effets_speciaux");
+        const effets_speciaux = true; // Déjà vérifié dans requireFXMasterForEffects()
         if (game.modules.get("sequencer")?.active && effets_speciaux) {
           new Sequence()
             .effect()
@@ -6116,12 +6117,14 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
             .stretchTo(target)
             .repeats(3, 200, 300)
             .play();
-          new Sequence()
-            .sound()
-            .file(son_arme)
-            .fadeInAudio(500)
-            .fadeOutAudio(500)
-            .play();
+          if (son_arme && son_arme.trim() !== "") {
+            new Sequence()
+              .sound()
+              .file(son_arme)
+              .fadeInAudio(500)
+              .fadeOutAudio(500)
+              .play();
+          }
         }
 
         result_diff =
@@ -6615,16 +6618,15 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
         }
         son_arme = arme[0].system.son;
         if (Array.from(game.user.targets).length != 0) {
-          if (!game.modules.get("fxmaster")?.active)
-            ui.notifications.error(
-              "This macro depends on the Gambit's FXMaster module. Make sure it is installed and enabled",
-            );
+          const effectsState = checkEffectsState();
+          if (!effectsState.shouldContinue) return;
+
           const wait = (delay) =>
             new Promise((resolve) => setTimeout(resolve, delay));
 
           let selectedToken = canvas.tokens.controlled[0];
           let targets = Array.from(game.user.targets);
-          const effets_speciaux = game.settings.get("mega", "effets_speciaux");
+          const effets_speciaux = effectsState.shouldPlayEffects;
           let offX = Number(arme[0].system.effet_offX.value);
           let offY = Number(arme[0].system.effet_offY.value);
           for (let target of targets) {
@@ -6642,7 +6644,10 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
                 .stretchTo(target)
                 .repeats(3, 200, 300)
                 .play();
-              if (arme[0].system.sound.value) {
+              if (
+                arme[0].system.sound.value &&
+                arme[0].system.sound.value.trim() !== ""
+              ) {
                 new Sequence()
                   .sound()
                   .file(arme[0].system.sound.value)
@@ -7334,26 +7339,6 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
             let comp = ev.currentTarget.getAttribute("value");
             let marge = "";
             let de_domaine = "";
-            // if (
-            //   comp !== "communication" &&
-            //   comp !== "pratique" &&
-            //   comp !== "culture_milieux"
-            // ) {
-            //   type_test = "traits";
-            // } else {
-            //   type_test = "domaines";
-            // }
-            // if (type_test === "traits") {
-            //   console.log('traits');
-            //   de_domaine =
-            //     parseFloat(act.system.caracs[comp].value) +
-            //     parseFloat(ardence_domaine);
-            // } else {
-            //   console.log('domaines');
-            //   de_domaine =
-            //     parseFloat(act.system.domaines[comp].value) +
-            //     parseFloat(ardence_domaine);
-            // }
             let de_trait1 =
               parseFloat(act.system.caracs[carac].value) +
               parseFloat(ardence_trait1);
@@ -8424,13 +8409,15 @@ function animPouvoir() {
       // .stretchTo(target)
       .waitUntilFinished(-1100)
       .play();
-    new Sequence()
-      .sound()
-      .file(pouvoir_son_path)
-      // .fadeInAudio(500)
-      // .fadeOutAudio(500)
-      .volume(2)
-      .play();
+    if (pouvoir_son_path && pouvoir_son_path.trim() !== "") {
+      new Sequence()
+        .sound()
+        .file(pouvoir_son_path)
+        // .fadeInAudio(500)
+        // .fadeOutAudio(500)
+        .volume(2)
+        .play();
+    }
   }
 }
 

@@ -644,64 +644,81 @@ Hooks.once("init", async function () {
   });
 });
 
-// Fonction pour afficher la page d'accueil avec fond d'image
+// Fonction pour afficher le message de bienvenue dans le chat
 async function showWelcomeScreen() {
-  // Charge le contenu du fichier HTML
-  const response = await fetch("systems/mega/templates/welcome.html");
-  const htmlContent = await response.text();
+  // Détection du thème FoundryVTT
+  const isDarkTheme =
+    document.body.classList.contains("dark") ||
+    window.matchMedia("(prefers-color-scheme: dark)").matches ||
+    !window.matchMedia("(prefers-color-scheme: light)").matches;
 
-  // Crée une dialog avec le fond d'image
-  new Dialog(
-    {
-      title: "Bienvenue dans MEGA 5ème Paradigme",
-      content: `
-      <div style="
-        background-image: url('systems/mega/images/Backgrounds/table.png');
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-        min-height: 500px;
-        padding: 20px;
-        border-radius: 8px;
-        color: white;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
-      ">
-        <div style="
-          background-color: rgba(0, 0, 0, 0.7);
-          padding: 20px;
-          border-radius: 8px;
-          backdrop-filter: blur(2px);
-        ">
-          ${htmlContent}
-        </div>
+  // Styles pour thème sombre
+  const darkStyles = {
+    container:
+      "border: 2px solid #ff6600; border-radius: 10px; padding: 15px; background: transparent; color: #000000; margin: 10px 0;",
+    title: "color: #ff6600; text-align: center; margin: 0 0 15px 0;",
+    text: "margin: 10px 0;",
+    quote:
+      "border-left: 3px solid #ff6600; padding-left: 15px; margin: 15px 0; font-style: italic; color: #3a3737;",
+    quoteHighlight: "margin: 5px 0; color: #ff6600;",
+    quoteLine: "margin: 5px 0;",
+    hr: "border: 1px solid #ff6600; margin: 15px 0;",
+    footer: "margin: 10px 0; font-size: 0.9em; color: #cccccc;",
+  };
+
+  // Styles pour thème clair
+  const lightStyles = {
+    container:
+      "border: 2px solid #ff6600; border-radius: 10px; padding: 15px; background: transparent; color: #212529; margin: 10px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1);",
+    title: "color: #ff6600; text-align: center; margin: 0 0 15px 0;",
+    text: "margin: 10px 0;",
+    quote:
+      "border-left: 3px solid #ff6600; padding-left: 15px; margin: 15px 0; font-style: italic; color: #6c757d; background-color: rgba(255, 102, 0, 0.05); border-radius: 5px; padding: 10px 15px;",
+    quoteHighlight: "margin: 5px 0; color: #ff6600; font-weight: bold;",
+    quoteLine: "margin: 5px 0;",
+    hr: "border: 1px solid #ff6600; margin: 15px 0;",
+    footer: "margin: 10px 0; font-size: 0.9em; color: #6c757d;",
+  };
+
+  const styles = isDarkTheme ? darkStyles : lightStyles;
+
+  // Contenu du message de bienvenue adaptatif
+  const welcomeMessage = `
+    <div style="${styles.container}">
+      <h3 style="${styles.title}">🌟 MEGA 5ème Paradigme 🌟</h3>
+      <p style="${styles.text}"><strong>Bienvenue dans Mega 5ème paradigme !</strong></p>
+      <p style="${styles.text}">Cher aventurier,</p>
+      <p style="${styles.text}">Nous sommes ravis de vous accueillir dans l'univers captivant de <strong>Mega 5ème paradigme</strong>.</p>
+      <p style="${styles.text}">Préparez-vous à explorer des mondes inconnus, à relever des défis épiques et à vivre des aventures inoubliables.</p>
+      <p style="${styles.text}">Que vous soyez un vétéran de Mega ou un nouveau venu, ce système est conçu pour offrir une expérience immersive et dynamique. Plongez dans l'action, laissez libre cours à votre imagination et faites de chaque session un moment mémorable.</p>
+      <p style="${styles.text}"><strong>Bon jeu et que l'aventure commence !</strong></p>
+      <div style="${styles.quote}">
+        <p style="${styles.quoteLine}">&laquo; Quand la puissance galactique est désarmée,</p>
+        <p style="${styles.quoteLine}">Quand un grain de sable menace l'univers entier,</p>
+        <p style="${styles.quoteLine}">Ou que le bout de l'univers est trop loin,</p>
+        <p style="${styles.quoteLine}">Quand un génie distrait s'est perdu dans le cosmos,</p>
+        <p style="${styles.quoteLine}">Quand un inconscient a pris la mauvaise porte,</p>
+        <p style="${styles.quoteLine}">Quand un maître de l'univers en veut encore plus,</p>
+        <p style="${styles.quoteLine}">Quand soudain les poules ont toujours eu des dents,</p>
+        <p style="${styles.quoteLine}">Il serait peut-être temps d'appeler les</p>
+        <p style="${styles.quoteHighlight}"><strong>Messagers galactiques</strong>... &raquo;</p>
       </div>
-    `,
-      buttons: {
-        ok: {
-          label: "Commencer l'aventure !",
-          callback: () => {},
-        },
-      },
-      default: "ok",
-      render: (html) => {
-        // Gère le lien vers les paramètres si présent
-        const settingsLink = html.find("#settings-link");
-        if (settingsLink.length) {
-          settingsLink.on("click", function (event) {
-            event.preventDefault();
-            if (typeof game !== "undefined" && game.settings) {
-              game.settings.sheet.render(true);
-            }
-          });
-        }
-      },
+      <hr style="${styles.hr}">
+      <p style="${styles.footer}">
+        <i class="fas fa-info-circle"></i> Vous pouvez modifier l'apparence de votre interface ou activer les effets spéciaux dans les paramètres de Mega 5ème paradigme.
+      </p>
+      <p style="${styles.footer}">Pour les effets spéciaux, le module Sequencer est nécessaire.</p>
+    </div>
+  `;
+
+  // Envoie le message de bienvenue dans le chat
+  ChatMessage.create({
+    content: welcomeMessage,
+    whisper: [game.user.id], // Message privé pour l'utilisateur qui lance le monde
+    speaker: {
+      alias: "Système MEGA",
     },
-    {
-      width: 800,
-      height: 600,
-      resizable: true,
-    },
-  ).render(true);
+  });
 }
 
 // Fonction pour créer une scène par défaut avec image de fond
@@ -751,17 +768,6 @@ async function createDefaultScene() {
 }
 
 Hooks.once("ready", async () => {
-  // Check if player or GM has already launched the world
-  if (!game.user.getFlag("mega", "firstLaunch")) {
-    // Crée une scène par défaut avec image de fond si aucune scène n'existe
-    await createDefaultScene();
-
-    // Affiche la page d'accueil avec le fond d'image
-    showWelcomeScreen();
-
-    // Mark world as launched for this player or GM
-    await game.user.setFlag("mega", "firstLaunch", true);
-  }
   const IMG_PATH = foundry.utils.getRoute("systems/mega/images/logo.png");
   const LOGO_ID = "mega-logo";
   const STYLE_ID = "mega-logo-style";
@@ -801,6 +807,27 @@ Hooks.once("ready", async () => {
     }
   `;
   document.head.appendChild(style);
+});
+
+// Hook pour afficher le message de bienvenue après les messages de FoundryVTT
+Hooks.once("ready", async () => {
+  // Check if player or GM has already launched the world
+  if (!game.user.getFlag("mega", "firstLaunch")) {
+    console.log(
+      "MEGA: Premier lancement détecté, affichage du message de bienvenue",
+    );
+
+    // Affiche le message de bienvenue avec un délai pour laisser FoundryVTT afficher ses messages
+    setTimeout(() => {
+      console.log("MEGA: Affichage du message de bienvenue");
+      showWelcomeScreen();
+    }, 5000); // Délai de 5 secondes pour s'assurer que les messages de FoundryVTT sont affichés
+
+    // Mark world as launched for this player or GM
+    await game.user.setFlag("mega", "firstLaunch", true);
+  } else {
+    console.log("MEGA: Message de bienvenue déjà affiché");
+  }
 });
 
 Hooks.on("createItem", (item, options, userId) => {

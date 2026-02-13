@@ -107,12 +107,88 @@ export class Arme_longue_Sheet extends foundry.appv1.sheets.ItemSheet {
         this._onClickAttributeControl.bind(this),
       );
 
-    html.find(".lire_son").click((ev) => {
+    html.find(".play-sound-btn").click(async (ev) => {
       let chemin_son = this.object.system.sound.value;
-      foundry.audio.AudioHelper.play(
-        { src: chemin_son, volume: 1, autoplay: true, loop: false },
-        true,
-      );
+      if (chemin_son && chemin_son.trim() !== "") {
+        try {
+          // Vérifier si le fichier existe
+          const response = await fetch(chemin_son, { method: "HEAD" });
+          if (response.ok) {
+            foundry.audio.AudioHelper.play(
+              { src: chemin_son, volume: 1, autoplay: true, loop: false },
+              true,
+            );
+          } else {
+            ui.notifications.warn(
+              "Le fichier audio spécifié n'est pas valide ou n'existe pas.",
+            );
+          }
+        } catch (error) {
+          ui.notifications.warn(
+            "Le fichier audio spécifié n'est pas valide ou n'existe pas.",
+          );
+        }
+      } else {
+        ui.notifications.warn("Aucun fichier audio configuré pour cette arme.");
+      }
+    });
+
+    html.find(".preview-video-btn").click(async (ev) => {
+      let chemin_video = this.object.system.effet_arme.value;
+      if (chemin_video && chemin_video.trim() !== "") {
+        try {
+          // Vérifier si le fichier existe
+          const response = await fetch(chemin_video, { method: "HEAD" });
+          if (response.ok) {
+            // Créer une fenêtre pour afficher la vidéo
+            new Dialog(
+              {
+                title: "Aperçu de l'effet vidéo",
+                content: `<div style="text-align: center;">
+                        <video width="400" controls autoplay>
+                          <source src="${chemin_video}" type="video/webm">
+                          <source src="${chemin_video}" type="video/mp4">
+                          Votre navigateur ne supporte pas la lecture vidéo.
+                        </video>
+                      </div>`,
+                buttons: {
+                  close: {
+                    label: "Fermer",
+                    callback: () => {},
+                  },
+                },
+                default: "close",
+                render: (html) => {
+                  // Gestion des erreurs de chargement vidéo
+                  const video = html.find("video")[0];
+                  if (video) {
+                    video.addEventListener("error", () => {
+                      ui.notifications.error(
+                        "Impossible de charger la vidéo. Vérifiez le chemin d'accès.",
+                      );
+                    });
+                  }
+                },
+              },
+              {
+                width: 460,
+                height: 320,
+                resizable: true,
+              },
+            ).render(true);
+          } else {
+            ui.notifications.warn(
+              "Le fichier vidéo spécifié n'est pas valide ou n'existe pas.",
+            );
+          }
+        } catch (error) {
+          ui.notifications.warn(
+            "Le fichier vidéo spécifié n'est pas valide ou n'existe pas.",
+          );
+        }
+      } else {
+        ui.notifications.warn("Aucun fichier vidéo configuré pour cette arme.");
+      }
     });
 
     html.find(".item-view").contextmenu((ev) => {

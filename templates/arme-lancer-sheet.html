@@ -383,9 +383,17 @@
 							<label for="video-path">
 								<i class="fas fa-film"></i> Chemin de la vidéo
 							</label>
-							<input type="text" id="video-path" class="modern-input" name="system.effet_arme.value"
-								value="{{system.effet_arme.value}}"
-								placeholder="modules/mon-module/videos/effet.webm" />
+							<div class="sound-input-group">
+								<input type="text" id="video-path" class="modern-input" name="system.effet_arme.value"
+									value="{{system.effet_arme.value}}"
+									placeholder="modules/mon-module/videos/effet.webm" />
+								<button type="button" class="preview-video-btn" title="Visualiser la vidéo">
+									<span class="voir_video" data-type="verouillage"
+										value="{{system.effet_arme.value}}">
+										<i class="fas fa-play"></i>
+									</span>
+								</button>
+							</div>
 						</div>
 
 						<div class="media-fields-row">
