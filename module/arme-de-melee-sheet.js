@@ -1,3 +1,5 @@
+import { activateOffsetPicker } from "./mega-utils.js";
+
 /**
  * Extend the basic ItemSheet with some very simple modifications
  * @extends {foundry.appv1.sheets.ItemSheet}
@@ -95,6 +97,61 @@ export class Arme_de_melee_Sheet extends foundry.appv1.sheets.ItemSheet {
   activateListeners(html) {
     super.activateListeners(html);
 
+    // Navigation entre onglets à la molette de la souris
+    html[0].addEventListener(
+      "wheel",
+      (event) => {
+        const tabItems = html.find(".side-tabs .side-tab-item");
+        if (!tabItems.length) return;
+        const tabs = tabItems.map((_, el) => el.dataset.tab).get();
+        const activeTab = this._tabs[0].active;
+        const currentIndex = tabs.indexOf(activeTab);
+        if (currentIndex === -1) return;
+        // Molette vers le haut (deltaY < 0) → onglet précédent, vers le bas → onglet suivant
+        const direction = event.deltaY < 0 ? -1 : 1;
+        const newIndex = (currentIndex + direction + tabs.length) % tabs.length;
+        const newTab = tabs[newIndex];
+        // Mettre à jour la classe active sur les boutons
+        tabItems.removeClass("active");
+        tabItems.filter(`[data-tab="${newTab}"]`).addClass("active");
+        this._tabs[0].activate(newTab);
+      },
+      { passive: true },
+    );
+
+    // Gestion des blocs collapsibles avec persistence localStorage
+    const _collapseKey = `mega-collapse-${this.item.id}`;
+    const _collapseStates = JSON.parse(
+      localStorage.getItem(_collapseKey) || "{}",
+    );
+    html.find(".weapon-feature-card").each(function (index) {
+      const key = `card-${index}`;
+      const $card = $(this);
+      const $content = $card.find(".card-content");
+      $content.css("transition", "none");
+      if (key in _collapseStates) {
+        if (_collapseStates[key]) {
+          $card.addClass("collapsed");
+        } else {
+          $card.removeClass("collapsed");
+        }
+      }
+      requestAnimationFrame(() =>
+        requestAnimationFrame(() => $content.css("transition", "")),
+      );
+    });
+    html.find(".collapsible-header").on("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      const card = $(this).closest(".weapon-feature-card");
+      card.toggleClass("collapsed");
+      const states = {};
+      html.find(".weapon-feature-card").each(function (idx) {
+        states[`card-${idx}`] = $(this).hasClass("collapsed");
+      });
+      localStorage.setItem(_collapseKey, JSON.stringify(states));
+    });
+
     // Everything below here is only needed if the sheet is editable
     if (!this.options.editable) return;
 
@@ -191,6 +248,43 @@ export class Arme_de_melee_Sheet extends foundry.appv1.sheets.ItemSheet {
       }
     });
 
+    // Bouton FilePicker : parcourir les fichiers vidéo
+    html.find(".browse-video-btn").click((ev) => {
+      ev.preventDefault();
+      new FilePicker({
+        type: "video",
+        current: this.object.system.effet_arme.value || "",
+        callback: (path) => {
+          html.find('input[name="system.effet_arme.value"]').val(path);
+          this.object.update({ "system.effet_arme.value": path });
+        },
+      }).browse();
+    });
+
+    // Bouton FilePicker : parcourir les fichiers audio
+    html.find(".browse-sound-btn").click((ev) => {
+      ev.preventDefault();
+      new FilePicker({
+        type: "audio",
+        current: this.object.system.sound.value || "",
+        callback: (path) => {
+          html.find('input[name="system.sound.value"]').val(path);
+          this.object.update({ "system.sound.value": path });
+        },
+      }).browse();
+    });
+
+    // Bouton mire : sélection du décalage X/Y sur le canvas
+    html.find(".pick-offset-btn").click((ev) => {
+      ev.preventDefault();
+      activateOffsetPicker((offX, offY) => {
+        this.object.update({
+          "system.effet_offX.value": offX,
+          "system.effet_offY.value": offY,
+        });
+      });
+    });
+
     html.find(".item-view").contextmenu((ev) => {
       let img = ev.currentTarget.getAttribute("value");
       new ImagePopout(img, {
@@ -259,8 +353,9 @@ export class Arme_de_melee_Sheet extends foundry.appv1.sheets.ItemSheet {
       }
     });
 
-    html.find(".type_degat").click((ev) => {
-      let type_degat = ev.currentTarget.getAttribute("value");
+    html.find(".damage-type-item").click((ev) => {
+      if (!game.user.isGM) return;
+      let type_degat = ev.currentTarget.getAttribute("data-type");
       if (this.object.system.type_degats.balles.etat) {
         this.object.update({ "system.type_degats.balles.etat": false });
       } else if (this.object.system.type_degats.lame.etat) {

@@ -143,7 +143,7 @@ function getDocument(entity, skipCheck) {
 }
 
 function getUniqueID() {
-  return `${game.user.id}-${Date.now()}-${randomID()}`;
+  return `${game.user.id}-${Date.now()}-${foundry.utils.randomID()}`;
 }
 
 function extendedUuid(document) {

@@ -1,0 +1,921 @@
+<div class="tnt-outer">
+    <div class="tnt-side-label"><span>TALENTS</span></div>
+    <table class="tnt-table">
+        <colgroup>
+            <col class="tnt-col-name" />
+            <col class="tnt-col-val" />
+            <col class="tnt-col-name" />
+            <col class="tnt-col-val" />
+            <col class="tnt-col-name" />
+            <col class="tnt-col-val" />
+        </colgroup>
+        <thead>
+            <tr>
+                <th class="tnt-dh tnt-comm" colspan="2">{{comp.label}}COMMUNICATION <span class="tnt-dd">d<input {{#if
+                            system.verouille}}disabled="disabled" {{/if}} class="comb tnt-di" type="text"
+                            name="system.domaines.communication.value" value="{{system.domaines.communication.value}}"
+                            data-dtype="Number" /></span></th>
+                <th class="tnt-dh tnt-prat" colspan="2">{{comp.label}}PRATIQUE <span class="tnt-dd">d<input {{#if
+                            system.verouille}}disabled="disabled" {{/if}} class="comb tnt-di" type="text"
+                            name="system.domaines.pratique.value" value="{{system.domaines.pratique.value}}"
+                            data-dtype="Number" /></span></th>
+                <th class="tnt-dh tnt-cult" colspan="2">{{comp.label}}CULTURE MILIEU...<span class="info_talents"
+                        value="talents">&nbsp;<img class="icon_info" src="systems/mega/images/info.svg"></span> <span
+                        class="tnt-dd">d<input {{#if system.verouille}}disabled="disabled" {{/if}} class="comb tnt-di"
+                            type="text" name="system.domaines.culture_milieux.value"
+                            value="{{system.domaines.culture_milieux.value}}" data-dtype="Number" /></span></th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- ===== INTERPRÉTER | OBSERVER | HABITÉS ===== -->
+            <tr class="tnt-gr">
+                <td class="tnt-nc">
+                    <div class="tnt-nr">
+                        <div class="tooltip"><span class="talents_rollable"
+                                value="interpreter"><b>{{system.talents.interpreter.label}}</b></span><span
+                                class="tooltiptext">{{system.talents.interpreter.description}}</span></div><span
+                            class="tnt-dots"></span>
+                    </div>
+                </td>
+                <td class="tnt-vc">d {{#if system.verouille}}{{#ifequal system.talents.interpreter.value
+                    99}}X{{else}}<input disabled="disabled" class="comb tnt-vi" type="text"
+                        name="system.talents.interpreter.value" value="{{system.talents.interpreter.value}}"
+                        data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb tnt-vi" type="text"
+                        name="system.talents.interpreter.value" value="{{system.talents.interpreter.value}}"
+                        data-dtype="Number" />{{/if}}</td>
+                <td class="tnt-nc">
+                    <div class="tnt-nr">
+                        <div class="tooltip"><span class="talents_rollable"
+                                value="observer"><b>{{system.talents.observer.label}}</b></span><span
+                                class="tooltiptext">{{system.talents.observer.description}}</span></div><span
+                            class="tnt-dots"></span>
+                    </div>
+                </td>
+                <td class="tnt-vc">d {{#if system.verouille}}{{#ifequal system.talents.observer.value
+                    99}}X{{else}}<input disabled="disabled" class="comb tnt-vi" type="text"
+                        name="system.talents.observer.value" value="{{system.talents.observer.value}}"
+                        data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb tnt-vi" type="text"
+                        name="system.talents.observer.value" value="{{system.talents.observer.value}}"
+                        data-dtype="Number" />{{/if}}</td>
+                <td class="tnt-nc">
+                    <div class="tnt-nr">
+                        <div class="tooltip"><span class="talents_rollable"
+                                value="habites"><b>{{system.talents.habites.label}}</b></span><span
+                                class="tooltiptext">{{system.talents.habites.description}}</span></div><span
+                            class="tnt-dots"></span>
+                    </div>
+                </td>
+                <td class="tnt-vc">d {{#if system.verouille}}{{#ifequal system.talents.habites.value 99}}X{{else}}<input
+                        disabled="disabled" class="comb tnt-vi" type="text" name="system.talents.habites.value"
+                        value="{{system.talents.habites.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input
+                        class="comb tnt-vi" type="text" name="system.talents.habites.value"
+                        value="{{system.talents.habites.value}}" data-dtype="Number" />{{/if}}</td>
+            </tr>
+            {{#unless (courtMetrage)}}
+            <tr>
+                <td class="tnt-nc">
+                    <div class="tnt-nr">
+                        <div class="tooltip"><span class="talents_rollable"
+                                value="langage_corporel">{{system.talents.langage_corporel.label}}</span><span
+                                class="tooltiptext">{{system.talents.langage_corporel.description}}</span></div><span
+                            class="tnt-dots"></span>
+                    </div>
+                </td>
+                <td class="tnt-vc">d {{#if system.verouille}}{{#ifequal system.talents.langage_corporel.value
+                    99}}X{{else}}<input disabled="disabled" class="comb tnt-vi" type="text"
+                        name="system.talents.langage_corporel.value" value="{{system.talents.langage_corporel.value}}"
+                        data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb tnt-vi" type="text"
+                        name="system.talents.langage_corporel.value" value="{{system.talents.langage_corporel.value}}"
+                        data-dtype="Number" />{{/if}}</td>
+                <td class="tnt-nc">
+                    <div class="tnt-nr">
+                        <div class="tooltip"><span class="talents_rollable"
+                                value="chercher_objet">{{system.talents.chercher_objet.label}}</span><span
+                                class="tooltiptext">{{system.talents.chercher_objet.description}}</span></div><span
+                            class="tnt-dots"></span>
+                    </div>
+                </td>
+                <td class="tnt-vc">d {{#if system.verouille}}{{#ifequal system.talents.chercher_objet.value
+                    99}}X{{else}}<input disabled="disabled" class="comb tnt-vi" type="text"
+                        name="system.talents.chercher_objet.value" value="{{system.talents.chercher_objet.value}}"
+                        data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb tnt-vi" type="text"
+                        name="system.talents.chercher_objet.value" value="{{system.talents.chercher_objet.value}}"
+                        data-dtype="Number" />{{/if}}</td>
+                <td class="tnt-nc">
+                    <div class="tnt-nr">
+                        <div class="tooltip"><span class="talents_rollable"
+                                value="megalopoles">{{system.talents.megalopoles.label}}</span><span
+                                class="tooltiptext">{{system.talents.megalopoles.description}}</span></div><span
+                            class="tnt-dots"></span>
+                    </div>
+                </td>
+                <td class="tnt-vc">d {{#if system.verouille}}{{#ifequal system.talents.megalopoles.value
+                    99}}X{{else}}<input disabled="disabled" class="comb tnt-vi" type="text"
+                        name="system.talents.megalopoles.value" value="{{system.talents.megalopoles.value}}"
+                        data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb tnt-vi" type="text"
+                        name="system.talents.megalopoles.value" value="{{system.talents.megalopoles.value}}"
+                        data-dtype="Number" />{{/if}}</td>
+            </tr>
+            <tr>
+                <td class="tnt-nc">
+                    <div class="tnt-nr">
+                        <div class="tooltip"><span class="talents_rollable"
+                                value="codes">{{system.talents.codes.label}}</span><span
+                                class="tooltiptext">{{system.talents.codes.description}}</span></div><span
+                            class="tnt-dots"></span>
+                    </div>
+                </td>
+                <td class="tnt-vc">d {{#if system.verouille}}{{#ifequal system.talents.codes.value 99}}X{{else}}<input
+                        disabled="disabled" class="comb tnt-vi" type="text" name="system.talents.codes.value"
+                        value="{{system.talents.codes.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input
+                        class="comb tnt-vi" type="text" name="system.talents.codes.value"
+                        value="{{system.talents.codes.value}}" data-dtype="Number" />{{/if}}</td>
+                <td class="tnt-nc">
+                    <div class="tnt-nr">
+                        <div class="tooltip"><span class="talents_rollable"
+                                value="remarquer_detail">{{system.talents.remarquer_detail.label}}</span><span
+                                class="tooltiptext">{{system.talents.remarquer_detail.description}}</span></div><span
+                            class="tnt-dots"></span>
+                    </div>
+                </td>
+                <td class="tnt-vc">d {{#if system.verouille}}{{#ifequal system.talents.remarquer_detail.value
+                    99}}X{{else}}<input disabled="disabled" class="comb tnt-vi" type="text"
+                        name="system.talents.remarquer_detail.value" value="{{system.talents.remarquer_detail.value}}"
+                        data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb tnt-vi" type="text"
+                        name="system.talents.remarquer_detail.value" value="{{system.talents.remarquer_detail.value}}"
+                        data-dtype="Number" />{{/if}}</td>
+                <td class="tnt-nc">
+                    <div class="tnt-nr">
+                        <div class="tooltip"><span class="talents_rollable"
+                                value="cites">{{system.talents.cites.label}}</span><span
+                                class="tooltiptext">{{system.talents.cites.description}}</span></div><span
+                            class="tnt-dots"></span>
+                    </div>
+                </td>
+                <td class="tnt-vc">d {{#if system.verouille}}{{#ifequal system.talents.cites.value 99}}X{{else}}<input
+                        disabled="disabled" class="comb tnt-vi" type="text" name="system.talents.cites.value"
+                        value="{{system.talents.cites.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input
+                        class="comb tnt-vi" type="text" name="system.talents.cites.value"
+                        value="{{system.talents.cites.value}}" data-dtype="Number" />{{/if}}</td>
+            </tr>
+            <tr>
+                <td class="tnt-nc">
+                    <div class="tnt-nr">
+                        <div class="tooltip"><span class="talents_rollable"
+                                value="expressions_artistiques">{{system.talents.expressions_artistiques.label}}</span><span
+                                class="tooltiptext">{{system.talents.expressions_artistiques.description}}</span></div>
+                        <span class="tnt-dots"></span>
+                    </div>
+                </td>
+                <td class="tnt-vc">d {{#if system.verouille}}{{#ifequal system.talents.expressions_artistiques.value
+                    99}}X{{else}}<input disabled="disabled" class="comb tnt-vi" type="text"
+                        name="system.talents.expressions_artistiques.value"
+                        value="{{system.talents.expressions_artistiques.value}}"
+                        data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb tnt-vi" type="text"
+                        name="system.talents.expressions_artistiques.value"
+                        value="{{system.talents.expressions_artistiques.value}}" data-dtype="Number" />{{/if}}</td>
+                <td class="tnt-nc">
+                    <div class="tnt-nr">
+                        <div class="tooltip"><span class="talents_rollable"
+                                value="veille_vigilance">{{system.talents.veille_vigilance.label}}</span><span
+                                class="tooltiptext">{{system.talents.veille_vigilance.description}}</span></div><span
+                            class="tnt-dots"></span>
+                    </div>
+                </td>
+                <td class="tnt-vc">d {{#if system.verouille}}{{#ifequal system.talents.veille_vigilance.value
+                    99}}X{{else}}<input disabled="disabled" class="comb tnt-vi" type="text"
+                        name="system.talents.veille_vigilance.value" value="{{system.talents.veille_vigilance.value}}"
+                        data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb tnt-vi" type="text"
+                        name="system.talents.veille_vigilance.value" value="{{system.talents.veille_vigilance.value}}"
+                        data-dtype="Number" />{{/if}}</td>
+                <td class="tnt-nc">
+                    <div class="tnt-nr">
+                        <div class="tooltip"><span class="talents_rollable"
+                                value="rural">{{system.talents.rural.label}}</span><span
+                                class="tooltiptext">{{system.talents.rural.description}}</span></div><span
+                            class="tnt-dots"></span>
+                    </div>
+                </td>
+                <td class="tnt-vc">d {{#if system.verouille}}{{#ifequal system.talents.rural.value 99}}X{{else}}<input
+                        disabled="disabled" class="comb tnt-vi" type="text" name="system.talents.rural.value"
+                        value="{{system.talents.rural.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input
+                        class="comb tnt-vi" type="text" name="system.talents.rural.value"
+                        value="{{system.talents.rural.value}}" data-dtype="Number" />{{/if}}</td>
+            </tr>
+            {{/unless}}
+            <!-- ===== PARAÎTRE | FURTIVITÉ | SAUVAGES ===== -->
+            <tr class="tnt-gr">
+                <td class="tnt-nc">
+                    <div class="tnt-nr">
+                        <div class="tooltip"><span class="talents_rollable"
+                                value="paraitre"><b>{{system.talents.paraitre.label}}</b></span><span
+                                class="tooltiptext">{{system.talents.paraitre.description}}</span></div><span
+                            class="tnt-dots"></span>
+                    </div>
+                </td>
+                <td class="tnt-vc">d {{#if system.verouille}}{{#ifequal system.talents.paraitre.value
+                    99}}X{{else}}<input disabled="disabled" class="comb tnt-vi" type="text"
+                        name="system.talents.paraitre.value" value="{{system.talents.paraitre.value}}"
+                        data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb tnt-vi" type="text"
+                        name="system.talents.paraitre.value" value="{{system.talents.paraitre.value}}"
+                        data-dtype="Number" />{{/if}}</td>
+                <td class="tnt-nc">
+                    <div class="tnt-nr">
+                        <div class="tooltip"><span class="talents_rollable"
+                                value="furtivite"><b>{{system.talents.furtivite.label}}</b></span><span
+                                class="tooltiptext">{{system.talents.furtivite.description}}</span></div><span
+                            class="tnt-dots"></span>
+                    </div>
+                </td>
+                <td class="tnt-vc">d {{#if system.verouille}}{{#ifequal system.talents.furtivite.value
+                    99}}X{{else}}<input disabled="disabled" class="comb tnt-vi" type="text"
+                        name="system.talents.furtivite.value" value="{{system.talents.furtivite.value}}"
+                        data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb tnt-vi" type="text"
+                        name="system.talents.furtivite.value" value="{{system.talents.furtivite.value}}"
+                        data-dtype="Number" />{{/if}}</td>
+                <td class="tnt-nc">
+                    <div class="tnt-nr">
+                        <div class="tooltip"><span class="talents_rollable"
+                                value="sauvages"><b>{{system.talents.sauvages.label}}</b></span><span
+                                class="tooltiptext">{{system.talents.sauvages.description}}</span></div><span
+                            class="tnt-dots"></span>
+                    </div>
+                </td>
+                <td class="tnt-vc">d {{#if system.verouille}}{{#ifequal system.talents.sauvages.value
+                    99}}X{{else}}<input disabled="disabled" class="comb tnt-vi" type="text"
+                        name="system.talents.sauvages.value" value="{{system.talents.sauvages.value}}"
+                        data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb tnt-vi" type="text"
+                        name="system.talents.sauvages.value" value="{{system.talents.sauvages.value}}"
+                        data-dtype="Number" />{{/if}}</td>
+            </tr>
+            {{#unless (courtMetrage)}}
+            <tr>
+                <td class="tnt-nc">
+                    <div class="tnt-nr">
+                        <div class="tooltip"><span class="talents_rollable"
+                                value="bluffer_deguisement">{{system.talents.bluffer_deguisement.label}}</span><span
+                                class="tooltiptext">{{system.talents.bluffer_deguisement.description}}</span></div><span
+                            class="tnt-dots"></span>
+                    </div>
+                </td>
+                <td class="tnt-vc">d {{#if system.verouille}}{{#ifequal system.talents.bluffer_deguisement.value
+                    99}}X{{else}}<input disabled="disabled" class="comb tnt-vi" type="text"
+                        name="system.talents.bluffer_deguisement.value"
+                        value="{{system.talents.bluffer_deguisement.value}}"
+                        data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb tnt-vi" type="text"
+                        name="system.talents.bluffer_deguisement.value"
+                        value="{{system.talents.bluffer_deguisement.value}}" data-dtype="Number" />{{/if}}</td>
+                <td class="tnt-nc">
+                    <div class="tnt-nr">
+                        <div class="tooltip"><span class="talents_rollable"
+                                value="agir_sans_bruit">{{system.talents.agir_sans_bruit.label}}</span><span
+                                class="tooltiptext">{{system.talents.agir_sans_bruit.description}}</span></div><span
+                            class="tnt-dots"></span>
+                    </div>
+                </td>
+                <td class="tnt-vc">d {{#if system.verouille}}{{#ifequal system.talents.agir_sans_bruit.value
+                    99}}X{{else}}<input disabled="disabled" class="comb tnt-vi" type="text"
+                        name="system.talents.agir_sans_bruit.value" value="{{system.talents.agir_sans_bruit.value}}"
+                        data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb tnt-vi" type="text"
+                        name="system.talents.agir_sans_bruit.value" value="{{system.talents.agir_sans_bruit.value}}"
+                        data-dtype="Number" />{{/if}}</td>
+                <td class="tnt-nc">
+                    <div class="tnt-nr">
+                        <div class="tooltip"><span class="talents_rollable"
+                                value="foret_jungle">{{system.talents.foret_jungle.label}}</span><span
+                                class="tooltiptext">{{system.talents.foret_jungle.description}}</span></div><span
+                            class="tnt-dots"></span>
+                    </div>
+                </td>
+                <td class="tnt-vc">d {{#if system.verouille}}{{#ifequal system.talents.foret_jungle.value
+                    99}}X{{else}}<input disabled="disabled" class="comb tnt-vi" type="text"
+                        name="system.talents.foret_jungle.value" value="{{system.talents.foret_jungle.value}}"
+                        data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb tnt-vi" type="text"
+                        name="system.talents.foret_jungle.value" value="{{system.talents.foret_jungle.value}}"
+                        data-dtype="Number" />{{/if}}</td>
+            </tr>
+            <tr>
+                <td class="tnt-nc">
+                    <div class="tnt-nr">
+                        <div class="tooltip"><span class="talents_rollable"
+                                value="impressionner">{{system.talents.impressionner.label}}</span><span
+                                class="tooltiptext">{{system.talents.impressionner.description}}</span></div><span
+                            class="tnt-dots"></span>
+                    </div>
+                </td>
+                <td class="tnt-vc">d {{#if system.verouille}}{{#ifequal system.talents.impressionner.value
+                    99}}X{{else}}<input disabled="disabled" class="comb tnt-vi" type="text"
+                        name="system.talents.impressionner.value" value="{{system.talents.impressionner.value}}"
+                        data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb tnt-vi" type="text"
+                        name="system.talents.impressionner.value" value="{{system.talents.impressionner.value}}"
+                        data-dtype="Number" />{{/if}}</td>
+                <td class="tnt-nc">
+                    <div class="tnt-nr">
+                        <div class="tooltip"><span class="talents_rollable"
+                                value="se_disimuler_filer">{{system.talents.se_disimuler_filer.label}}</span><span
+                                class="tooltiptext">{{system.talents.se_disimuler_filer.description}}</span></div><span
+                            class="tnt-dots"></span>
+                    </div>
+                </td>
+                <td class="tnt-vc">d {{#if system.verouille}}{{#ifequal system.talents.se_disimuler_filer.value
+                    99}}X{{else}}<input disabled="disabled" class="comb tnt-vi" type="text"
+                        name="system.talents.se_disimuler_filer.value"
+                        value="{{system.talents.se_disimuler_filer.value}}"
+                        data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb tnt-vi" type="text"
+                        name="system.talents.se_disimuler_filer.value"
+                        value="{{system.talents.se_disimuler_filer.value}}" data-dtype="Number" />{{/if}}</td>
+                <td class="tnt-nc">
+                    <div class="tnt-nr">
+                        <div class="tooltip"><span class="talents_rollable"
+                                value="savane_steppe_marecages">{{system.talents.savane_steppe_marecages.label}}</span><span
+                                class="tooltiptext">{{system.talents.savane_steppe_marecages.description}}</span></div>
+                        <span class="tnt-dots"></span>
+                    </div>
+                </td>
+                <td class="tnt-vc">d {{#if system.verouille}}{{#ifequal system.talents.savane_steppe_marecages.value
+                    99}}X{{else}}<input disabled="disabled" class="comb tnt-vi" type="text"
+                        name="system.talents.savane_steppe_marecages.value"
+                        value="{{system.talents.savane_steppe_marecages.value}}"
+                        data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb tnt-vi" type="text"
+                        name="system.talents.savane_steppe_marecages.value"
+                        value="{{system.talents.savane_steppe_marecages.value}}" data-dtype="Number" />{{/if}}</td>
+            </tr>
+            <tr>
+                <td class="tnt-nc">
+                    <div class="tnt-nr">
+                        <div class="tooltip"><span class="talents_rollable"
+                                value="paraitre_sans_interet">{{system.talents.paraitre_sans_interet.label}}</span><span
+                                class="tooltiptext">{{system.talents.paraitre_sans_interet.description}}</span></div>
+                        <span class="tnt-dots"></span>
+                    </div>
+                </td>
+                <td class="tnt-vc">d {{#if system.verouille}}{{#ifequal system.talents.paraitre_sans_interet.value
+                    99}}X{{else}}<input disabled="disabled" class="comb tnt-vi" type="text"
+                        name="system.talents.paraitre_sans_interet.value"
+                        value="{{system.talents.paraitre_sans_interet.value}}"
+                        data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb tnt-vi" type="text"
+                        name="system.talents.paraitre_sans_interet.value"
+                        value="{{system.talents.paraitre_sans_interet.value}}" data-dtype="Number" />{{/if}}</td>
+                <td class="tnt-nc">
+                    <div class="tnt-nr">
+                        <div class="tooltip"><span class="talents_rollable"
+                                value="camouflage">{{system.talents.camouflage.label}}</span><span
+                                class="tooltiptext">{{system.talents.camouflage.description}}</span></div><span
+                            class="tnt-dots"></span>
+                    </div>
+                </td>
+                <td class="tnt-vc">d {{#if system.verouille}}{{#ifequal system.talents.camouflage.value
+                    99}}X{{else}}<input disabled="disabled" class="comb tnt-vi" type="text"
+                        name="system.talents.camouflage.value" value="{{system.talents.camouflage.value}}"
+                        data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb tnt-vi" type="text"
+                        name="system.talents.camouflage.value" value="{{system.talents.camouflage.value}}"
+                        data-dtype="Number" />{{/if}}</td>
+                <td class="tnt-nc">
+                    <div class="tnt-nr">
+                        <div class="tooltip"><span class="talents_rollable"
+                                value="desert">{{system.talents.desert.label}}</span><span
+                                class="tooltiptext">{{system.talents.desert.description}}</span></div><span
+                            class="tnt-dots"></span>
+                    </div>
+                </td>
+                <td class="tnt-vc">d {{#if system.verouille}}{{#ifequal system.talents.desert.value 99}}X{{else}}<input
+                        disabled="disabled" class="comb tnt-vi" type="text" name="system.talents.desert.value"
+                        value="{{system.talents.desert.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input
+                        class="comb tnt-vi" type="text" name="system.talents.desert.value"
+                        value="{{system.talents.desert.value}}" data-dtype="Number" />{{/if}}</td>
+            </tr>
+            {{/unless}}
+            <!-- ===== PERSUADER | ACROBATIES | SCIENTECHS ===== -->
+            <tr class="tnt-gr">
+                <td class="tnt-nc">
+                    <div class="tnt-nr">
+                        <div class="tooltip"><span class="talents_rollable"
+                                value="persuader"><b>{{system.talents.persuader.label}}</b></span><span
+                                class="tooltiptext">{{system.talents.persuader.description}}</span></div><span
+                            class="tnt-dots"></span>
+                    </div>
+                </td>
+                <td class="tnt-vc">d {{#if system.verouille}}{{#ifequal system.talents.persuader.value
+                    99}}X{{else}}<input disabled="disabled" class="comb tnt-vi" type="text"
+                        name="system.talents.persuader.value" value="{{system.talents.persuader.value}}"
+                        data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb tnt-vi" type="text"
+                        name="system.talents.persuader.value" value="{{system.talents.persuader.value}}"
+                        data-dtype="Number" />{{/if}}</td>
+                <td class="tnt-nc">
+                    <div class="tnt-nr">
+                        <div class="tooltip"><span class="talents_rollable"
+                                value="acrobaties"><b>{{system.talents.acrobaties.label}}</b></span><span
+                                class="tooltiptext">{{system.talents.acrobaties.description}}</span></div><span
+                            class="tnt-dots"></span>
+                    </div>
+                </td>
+                <td class="tnt-vc">d {{#if system.verouille}}{{#ifequal system.talents.acrobaties.value
+                    99}}X{{else}}<input disabled="disabled" class="comb tnt-vi" type="text"
+                        name="system.talents.acrobaties.value" value="{{system.talents.acrobaties.value}}"
+                        data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb tnt-vi" type="text"
+                        name="system.talents.acrobaties.value" value="{{system.talents.acrobaties.value}}"
+                        data-dtype="Number" />{{/if}}</td>
+                <td class="tnt-nc">
+                    <div class="tnt-nr">
+                        <div class="tooltip"><span class="talents_rollable"
+                                value="scientechs"><b>{{system.talents.scientechs.label}}</b></span><span
+                                class="tooltiptext">{{system.talents.scientechs.description}}</span></div><span
+                            class="tnt-dots"></span>
+                    </div>
+                </td>
+                <td class="tnt-vc">d {{#if system.verouille}}{{#ifequal system.talents.scientechs.value
+                    99}}X{{else}}<input disabled="disabled" class="comb tnt-vi" type="text"
+                        name="system.talents.scientechs.value" value="{{system.talents.scientechs.value}}"
+                        data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb tnt-vi" type="text"
+                        name="system.talents.scientechs.value" value="{{system.talents.scientechs.value}}"
+                        data-dtype="Number" />{{/if}}</td>
+            </tr>
+            {{#unless (courtMetrage)}}
+            <tr>
+                <td class="tnt-nc">
+                    <div class="tnt-nr">
+                        <div class="tooltip"><span class="talents_rollable"
+                                value="convaincre_expliquer">{{system.talents.convaincre_expliquer.label}}</span><span
+                                class="tooltiptext">{{system.talents.convaincre_expliquer.description}}</span></div>
+                        <span class="tnt-dots"></span>
+                    </div>
+                </td>
+                <td class="tnt-vc">d {{#if system.verouille}}{{#ifequal system.talents.convaincre_expliquer.value
+                    99}}X{{else}}<input disabled="disabled" class="comb tnt-vi" type="text"
+                        name="system.talents.convaincre_expliquer.value"
+                        value="{{system.talents.convaincre_expliquer.value}}"
+                        data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb tnt-vi" type="text"
+                        name="system.talents.convaincre_expliquer.value"
+                        value="{{system.talents.convaincre_expliquer.value}}" data-dtype="Number" />{{/if}}</td>
+                <td class="tnt-nc">
+                    <div class="tnt-nr">
+                        <div class="tooltip"><span class="talents_rollable"
+                                value="minutie">{{system.talents.minutie.label}}</span><span
+                                class="tooltiptext">{{system.talents.minutie.description}}</span></div><span
+                            class="tnt-dots"></span>
+                    </div>
+                </td>
+                <td class="tnt-vc">d {{#if system.verouille}}{{#ifequal system.talents.minutie.value 99}}X{{else}}<input
+                        disabled="disabled" class="comb tnt-vi" type="text" name="system.talents.minutie.value"
+                        value="{{system.talents.minutie.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input
+                        class="comb tnt-vi" type="text" name="system.talents.minutie.value"
+                        value="{{system.talents.minutie.value}}" data-dtype="Number" />{{/if}}</td>
+                <td class="tnt-nc">
+                    <div class="tnt-nr">
+                        <div class="tooltip"><span class="talents_rollable"
+                                value="indus">{{system.talents.indus.label}}</span><span
+                                class="tooltiptext">{{system.talents.indus.description}}</span></div><span
+                            class="tnt-dots"></span>
+                    </div>
+                </td>
+                <td class="tnt-vc">d {{#if system.verouille}}{{#ifequal system.talents.indus.value 99}}X{{else}}<input
+                        disabled="disabled" class="comb tnt-vi" type="text" name="system.talents.indus.value"
+                        value="{{system.talents.indus.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input
+                        class="comb tnt-vi" type="text" name="system.talents.indus.value"
+                        value="{{system.talents.indus.value}}" data-dtype="Number" />{{/if}}</td>
+            </tr>
+            <tr>
+                <td class="tnt-nc">
+                    <div class="tnt-nr">
+                        <div class="tooltip"><span class="talents_rollable"
+                                value="baratiner_tromper_culot">{{system.talents.baratiner_tromper_culot.label}}</span><span
+                                class="tooltiptext">{{system.talents.baratiner_tromper_culot.description}}</span></div>
+                        <span class="tnt-dots"></span>
+                    </div>
+                </td>
+                <td class="tnt-vc">d {{#if system.verouille}}{{#ifequal system.talents.baratiner_tromper_culot.value
+                    99}}X{{else}}<input disabled="disabled" class="comb tnt-vi" type="text"
+                        name="system.talents.baratiner_tromper_culot.value"
+                        value="{{system.talents.baratiner_tromper_culot.value}}"
+                        data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb tnt-vi" type="text"
+                        name="system.talents.baratiner_tromper_culot.value"
+                        value="{{system.talents.baratiner_tromper_culot.value}}" data-dtype="Number" />{{/if}}</td>
+                <td class="tnt-nc">
+                    <div class="tnt-nr">
+                        <div class="tooltip"><span class="talents_rollable"
+                                value="acrobatie">{{system.talents.acrobatie.label}}</span><span
+                                class="tooltiptext">{{system.talents.acrobatie.description}}</span></div><span
+                            class="tnt-dots"></span>
+                    </div>
+                </td>
+                <td class="tnt-vc">d {{#if system.verouille}}{{#ifequal system.talents.acrobatie.value
+                    99}}X{{else}}<input disabled="disabled" class="comb tnt-vi" type="text"
+                        name="system.talents.acrobatie.value" value="{{system.talents.acrobatie.value}}"
+                        data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb tnt-vi" type="text"
+                        name="system.talents.acrobatie.value" value="{{system.talents.acrobatie.value}}"
+                        data-dtype="Number" />{{/if}}</td>
+                <td class="tnt-nc">
+                    <div class="tnt-nr">
+                        <div class="tooltip"><span class="talents_rollable"
+                                value="militaire">{{system.talents.militaire.label}}</span><span
+                                class="tooltiptext">{{system.talents.militaire.description}}</span></div><span
+                            class="tnt-dots"></span>
+                    </div>
+                </td>
+                <td class="tnt-vc">d {{#if system.verouille}}{{#ifequal system.talents.militaire.value
+                    99}}X{{else}}<input disabled="disabled" class="comb tnt-vi" type="text"
+                        name="system.talents.militaire.value" value="{{system.talents.militaire.value}}"
+                        data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb tnt-vi" type="text"
+                        name="system.talents.militaire.value" value="{{system.talents.militaire.value}}"
+                        data-dtype="Number" />{{/if}}</td>
+            </tr>
+            <tr>
+                <td class="tnt-nc">
+                    <div class="tnt-nr">
+                        <div class="tooltip"><span class="talents_rollable"
+                                value="imposer_ses_vues">{{system.talents.imposer_ses_vues.label}}</span><span
+                                class="tooltiptext">{{system.talents.imposer_ses_vues.description}}</span></div><span
+                            class="tnt-dots"></span>
+                    </div>
+                </td>
+                <td class="tnt-vc">d {{#if system.verouille}}{{#ifequal system.talents.imposer_ses_vues.value
+                    99}}X{{else}}<input disabled="disabled" class="comb tnt-vi" type="text"
+                        name="system.talents.imposer_ses_vues.value" value="{{system.talents.imposer_ses_vues.value}}"
+                        data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb tnt-vi" type="text"
+                        name="system.talents.imposer_ses_vues.value" value="{{system.talents.imposer_ses_vues.value}}"
+                        data-dtype="Number" />{{/if}}</td>
+                <td class="tnt-nc">
+                    <div class="tnt-nr">
+                        <div class="tooltip"><span class="talents_rollable"
+                                value="effort_prolonge">{{system.talents.effort_prolonge.label}}</span><span
+                                class="tooltiptext">{{system.talents.effort_prolonge.description}}</span></div><span
+                            class="tnt-dots"></span>
+                    </div>
+                </td>
+                <td class="tnt-vc">d {{#if system.verouille}}{{#ifequal system.talents.effort_prolonge.value
+                    99}}X{{else}}<input disabled="disabled" class="comb tnt-vi" type="text"
+                        name="system.talents.effort_prolonge.value" value="{{system.talents.effort_prolonge.value}}"
+                        data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb tnt-vi" type="text"
+                        name="system.talents.effort_prolonge.value" value="{{system.talents.effort_prolonge.value}}"
+                        data-dtype="Number" />{{/if}}</td>
+                <td class="tnt-nc">
+                    <div class="tnt-nr">
+                        <div class="tooltip"><span class="talents_rollable"
+                                value="vaisseaux">{{system.talents.vaisseaux.label}}</span><span
+                                class="tooltiptext">{{system.talents.vaisseaux.description}}</span></div><span
+                            class="tnt-dots"></span>
+                    </div>
+                </td>
+                <td class="tnt-vc">d {{#if system.verouille}}{{#ifequal system.talents.vaisseaux.value
+                    99}}X{{else}}<input disabled="disabled" class="comb tnt-vi" type="text"
+                        name="system.talents.vaisseaux.value" value="{{system.talents.vaisseaux.value}}"
+                        data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb tnt-vi" type="text"
+                        name="system.talents.vaisseaux.value" value="{{system.talents.vaisseaux.value}}"
+                        data-dtype="Number" />{{/if}}</td>
+            </tr>
+            {{/unless}}
+            <!-- ===== TISSER DES LIENS | MANIPS | POUVOIR ===== -->
+            <tr class="tnt-gr">
+                <td class="tnt-nc">
+                    <div class="tnt-nr">
+                        <div class="tooltip"><span class="talents_rollable"
+                                value="tisser_des_liens"><b>{{system.talents.tisser_des_liens.label}}</b></span><span
+                                class="tooltiptext">{{system.talents.tisser_des_liens.description}}</span></div><span
+                            class="tnt-dots"></span>
+                    </div>
+                </td>
+                <td class="tnt-vc">d {{#if system.verouille}}{{#ifequal system.talents.tisser_des_liens.value
+                    99}}X{{else}}<input disabled="disabled" class="comb tnt-vi" type="text"
+                        name="system.talents.tisser_des_liens.value" value="{{system.talents.tisser_des_liens.value}}"
+                        data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb tnt-vi" type="text"
+                        name="system.talents.tisser_des_liens.value" value="{{system.talents.tisser_des_liens.value}}"
+                        data-dtype="Number" />{{/if}}</td>
+                <td class="tnt-nc">
+                    <div class="tnt-nr">
+                        <div class="tooltip"><span class="talents_rollable"
+                                value="manips"><b>{{system.talents.manips.label}}</b></span><span
+                                class="tooltiptext">{{system.talents.manips.description}}</span></div><span
+                            class="tnt-dots"></span>
+                    </div>
+                </td>
+                <td class="tnt-vc">d {{#if system.verouille}}{{#ifequal system.talents.manips.value 99}}X{{else}}<input
+                        disabled="disabled" class="comb tnt-vi" type="text" name="system.talents.manips.value"
+                        value="{{system.talents.manips.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input
+                        class="comb tnt-vi" type="text" name="system.talents.manips.value"
+                        value="{{system.talents.manips.value}}" data-dtype="Number" />{{/if}}</td>
+                <td class="tnt-nc">
+                    <div class="tnt-nr">
+                        <div class="tooltip"><span class="talents_rollable"
+                                value="pouvoir"><b>{{system.talents.pouvoir.label}}</b></span><span
+                                class="tooltiptext">{{system.talents.pouvoir.description}}</span></div><span
+                            class="tnt-dots"></span>
+                    </div>
+                </td>
+                <td class="tnt-vc">d {{#if system.verouille}}{{#ifequal system.talents.pouvoir.value 99}}X{{else}}<input
+                        disabled="disabled" class="comb tnt-vi" type="text" name="system.talents.pouvoir.value"
+                        value="{{system.talents.pouvoir.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input
+                        class="comb tnt-vi" type="text" name="system.talents.pouvoir.value"
+                        value="{{system.talents.pouvoir.value}}" data-dtype="Number" />{{/if}}</td>
+            </tr>
+            {{#unless (courtMetrage)}}
+            <tr>
+                <td class="tnt-nc">
+                    <div class="tnt-nr">
+                        <div class="tooltip"><span class="talents_rollable"
+                                value="charmer_captiver_apprivoiser">{{system.talents.charmer_captiver_apprivoiser.label}}</span><span
+                                class="tooltiptext">{{system.talents.charmer_captiver_apprivoiser.description}}</span>
+                        </div><span class="tnt-dots"></span>
+                    </div>
+                </td>
+                <td class="tnt-vc">d {{#if system.verouille}}{{#ifequal
+                    system.talents.charmer_captiver_apprivoiser.value 99}}X{{else}}<input disabled="disabled"
+                        class="comb tnt-vi" type="text" name="system.talents.charmer_captiver_apprivoiser.value"
+                        value="{{system.talents.charmer_captiver_apprivoiser.value}}"
+                        data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb tnt-vi" type="text"
+                        name="system.talents.charmer_captiver_apprivoiser.value"
+                        value="{{system.talents.charmer_captiver_apprivoiser.value}}" data-dtype="Number" />{{/if}}</td>
+                <td class="tnt-nc">
+                    <div class="tnt-nr">
+                        <div class="tooltip"><span class="talents_rollable"
+                                value="vivant">{{system.talents.vivant.label}}</span><span
+                                class="tooltiptext">{{system.talents.vivant.description}}</span></div><span
+                            class="tnt-dots"></span>
+                    </div>
+                </td>
+                <td class="tnt-vc">d {{#if system.verouille}}{{#ifequal system.talents.vivant.value 99}}X{{else}}<input
+                        disabled="disabled" class="comb tnt-vi" type="text" name="system.talents.vivant.value"
+                        value="{{system.talents.vivant.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input
+                        class="comb tnt-vi" type="text" name="system.talents.vivant.value"
+                        value="{{system.talents.vivant.value}}" data-dtype="Number" />{{/if}}</td>
+                <td class="tnt-nc">
+                    <div class="tnt-nr">
+                        <div class="tooltip"><span class="talents_rollable"
+                                value="business">{{system.talents.business.label}}</span><span
+                                class="tooltiptext">{{system.talents.business.description}}</span></div><span
+                            class="tnt-dots"></span>
+                    </div>
+                </td>
+                <td class="tnt-vc">d {{#if system.verouille}}{{#ifequal system.talents.business.value
+                    99}}X{{else}}<input disabled="disabled" class="comb tnt-vi" type="text"
+                        name="system.talents.business.value" value="{{system.talents.business.value}}"
+                        data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb tnt-vi" type="text"
+                        name="system.talents.business.value" value="{{system.talents.business.value}}"
+                        data-dtype="Number" />{{/if}}</td>
+            </tr>
+            <tr>
+                <td class="tnt-nc">
+                    <div class="tnt-nr">
+                        <div class="tooltip"><span class="talents_rollable"
+                                value="inspirer_fidelite">{{system.talents.inspirer_fidelite.label}}</span><span
+                                class="tooltiptext">{{system.talents.inspirer_fidelite.description}}</span></div><span
+                            class="tnt-dots"></span>
+                    </div>
+                </td>
+                <td class="tnt-vc">d {{#if system.verouille}}{{#ifequal system.talents.inspirer_fidelite.value
+                    99}}X{{else}}<input disabled="disabled" class="comb tnt-vi" type="text"
+                        name="system.talents.inspirer_fidelite.value" value="{{system.talents.inspirer_fidelite.value}}"
+                        data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb tnt-vi" type="text"
+                        name="system.talents.inspirer_fidelite.value" value="{{system.talents.inspirer_fidelite.value}}"
+                        data-dtype="Number" />{{/if}}</td>
+                <td class="tnt-nc">
+                    <div class="tnt-nr">
+                        <div class="tooltip"><span class="talents_rollable"
+                                value="mecanique">{{system.talents.mecanique.label}}</span><span
+                                class="tooltiptext">{{system.talents.mecanique.description}}</span></div><span
+                            class="tnt-dots"></span>
+                    </div>
+                </td>
+                <td class="tnt-vc">d {{#if system.verouille}}{{#ifequal system.talents.mecanique.value
+                    99}}X{{else}}<input disabled="disabled" class="comb tnt-vi" type="text"
+                        name="system.talents.mecanique.value" value="{{system.talents.mecanique.value}}"
+                        data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb tnt-vi" type="text"
+                        name="system.talents.mecanique.value" value="{{system.talents.mecanique.value}}"
+                        data-dtype="Number" />{{/if}}</td>
+                <td class="tnt-nc">
+                    <div class="tnt-nr">
+                        <div class="tooltip"><span class="talents_rollable"
+                                value="autorites">{{system.talents.autorites.label}}</span><span
+                                class="tooltiptext">{{system.talents.autorites.description}}</span></div><span
+                            class="tnt-dots"></span>
+                    </div>
+                </td>
+                <td class="tnt-vc">d {{#if system.verouille}}{{#ifequal system.talents.autorites.value
+                    99}}X{{else}}<input disabled="disabled" class="comb tnt-vi" type="text"
+                        name="system.talents.autorites.value" value="{{system.talents.autorites.value}}"
+                        data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb tnt-vi" type="text"
+                        name="system.talents.autorites.value" value="{{system.talents.autorites.value}}"
+                        data-dtype="Number" />{{/if}}</td>
+            </tr>
+            <tr>
+                <td class="tnt-nc">
+                    <div class="tnt-nr">
+                        <div class="tooltip"><span class="talents_rollable"
+                                value="assujettir_dompter">{{system.talents.assujettir_dompter.label}}</span><span
+                                class="tooltiptext">{{system.talents.assujettir_dompter.description}}</span></div><span
+                            class="tnt-dots"></span>
+                    </div>
+                </td>
+                <td class="tnt-vc">d {{#if system.verouille}}{{#ifequal system.talents.assujettir_dompter.value
+                    99}}X{{else}}<input disabled="disabled" class="comb tnt-vi" type="text"
+                        name="system.talents.assujettir_dompter.value"
+                        value="{{system.talents.assujettir_dompter.value}}"
+                        data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb tnt-vi" type="text"
+                        name="system.talents.assujettir_dompter.value"
+                        value="{{system.talents.assujettir_dompter.value}}" data-dtype="Number" />{{/if}}</td>
+                <td class="tnt-nc">
+                    <div class="tnt-nr">
+                        <div class="tooltip"><span class="talents_rollable"
+                                value="electronique">{{system.talents.electronique.label}}</span><span
+                                class="tooltiptext">{{system.talents.electronique.description}}</span></div><span
+                            class="tnt-dots"></span>
+                    </div>
+                </td>
+                <td class="tnt-vc">d {{#if system.verouille}}{{#ifequal system.talents.electronique.value
+                    99}}X{{else}}<input disabled="disabled" class="comb tnt-vi" type="text"
+                        name="system.talents.electronique.value" value="{{system.talents.electronique.value}}"
+                        data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb tnt-vi" type="text"
+                        name="system.talents.electronique.value" value="{{system.talents.electronique.value}}"
+                        data-dtype="Number" />{{/if}}</td>
+                <td class="tnt-nc">
+                    <div class="tnt-nr">
+                        <div class="tooltip"><span class="talents_rollable"
+                                value="spirituel">{{system.talents.spirituel.label}}</span><span
+                                class="tooltiptext">{{system.talents.spirituel.description}}</span></div><span
+                            class="tnt-dots"></span>
+                    </div>
+                </td>
+                <td class="tnt-vc">d {{#if system.verouille}}{{#ifequal system.talents.spirituel.value
+                    99}}X{{else}}<input disabled="disabled" class="comb tnt-vi" type="text"
+                        name="system.talents.spirituel.value" value="{{system.talents.spirituel.value}}"
+                        data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb tnt-vi" type="text"
+                        name="system.talents.spirituel.value" value="{{system.talents.spirituel.value}}"
+                        data-dtype="Number" />{{/if}}</td>
+            </tr>
+            {{/unless}}
+            <!-- ===== DIRIGER | CONDUIRE | CLANDESTINS ===== -->
+            <tr class="tnt-gr">
+                <td class="tnt-nc">
+                    <div class="tnt-nr">
+                        <div class="tooltip"><span class="talents_rollable"
+                                value="diriger"><b>{{system.talents.diriger.label}}</b></span><span
+                                class="tooltiptext">{{system.talents.diriger.description}}</span></div><span
+                            class="tnt-dots"></span>
+                    </div>
+                </td>
+                <td class="tnt-vc">d {{#if system.verouille}}{{#ifequal system.talents.diriger.value 99}}X{{else}}<input
+                        disabled="disabled" class="comb tnt-vi" type="text" name="system.talents.diriger.value"
+                        value="{{system.talents.diriger.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input
+                        class="comb tnt-vi" type="text" name="system.talents.diriger.value"
+                        value="{{system.talents.diriger.value}}" data-dtype="Number" />{{/if}}</td>
+                <td class="tnt-nc">
+                    <div class="tnt-nr">
+                        <div class="tooltip"><span class="talents_rollable"
+                                value="conduire"><b>{{system.talents.conduire.label}}</b></span><span
+                                class="tooltiptext">{{system.talents.conduire.description}}</span></div><span
+                            class="tnt-dots"></span>
+                    </div>
+                </td>
+                <td class="tnt-vc">d {{#if system.verouille}}{{#ifequal system.talents.conduire.value
+                    99}}X{{else}}<input disabled="disabled" class="comb tnt-vi" type="text"
+                        name="system.talents.conduire.value" value="{{system.talents.conduire.value}}"
+                        data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb tnt-vi" type="text"
+                        name="system.talents.conduire.value" value="{{system.talents.conduire.value}}"
+                        data-dtype="Number" />{{/if}}</td>
+                <td class="tnt-nc">
+                    <div class="tnt-nr">
+                        <div class="tooltip"><span class="talents_rollable"
+                                value="clandestins"><b>{{system.talents.clandestins.label}}</b></span><span
+                                class="tooltiptext">{{system.talents.clandestins.description}}</span></div><span
+                            class="tnt-dots"></span>
+                    </div>
+                </td>
+                <td class="tnt-vc">d {{#if system.verouille}}{{#ifequal system.talents.clandestins.value
+                    99}}X{{else}}<input disabled="disabled" class="comb tnt-vi" type="text"
+                        name="system.talents.clandestins.value" value="{{system.talents.clandestins.value}}"
+                        data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb tnt-vi" type="text"
+                        name="system.talents.clandestins.value" value="{{system.talents.clandestins.value}}"
+                        data-dtype="Number" />{{/if}}</td>
+            </tr>
+            {{#unless (courtMetrage)}}
+            <tr>
+                <td class="tnt-nc">
+                    <div class="tnt-nr">
+                        <div class="tooltip"><span class="talents_rollable"
+                                value="coordonner">{{system.talents.coordonner.label}}</span><span
+                                class="tooltiptext">{{system.talents.coordonner.description}}</span></div><span
+                            class="tnt-dots"></span>
+                    </div>
+                </td>
+                <td class="tnt-vc">d {{#if system.verouille}}{{#ifequal system.talents.coordonner.value
+                    99}}X{{else}}<input disabled="disabled" class="comb tnt-vi" type="text"
+                        name="system.talents.coordonner.value" value="{{system.talents.coordonner.value}}"
+                        data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb tnt-vi" type="text"
+                        name="system.talents.coordonner.value" value="{{system.talents.coordonner.value}}"
+                        data-dtype="Number" />{{/if}}</td>
+                <td class="tnt-nc">
+                    <div class="tnt-nr">
+                        <div class="tooltip"><span class="talents_rollable"
+                                value="animal">{{system.talents.animal.label}}</span><span
+                                class="tooltiptext">{{system.talents.animal.description}}</span></div><span
+                            class="tnt-dots"></span>
+                    </div>
+                </td>
+                <td class="tnt-vc">d {{#if system.verouille}}{{#ifequal system.talents.animal.value 99}}X{{else}}<input
+                        disabled="disabled" class="comb tnt-vi" type="text" name="system.talents.animal.value"
+                        value="{{system.talents.animal.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input
+                        class="comb tnt-vi" type="text" name="system.talents.animal.value"
+                        value="{{system.talents.animal.value}}" data-dtype="Number" />{{/if}}</td>
+                <td class="tnt-nc">
+                    <div class="tnt-nr">
+                        <div class="tooltip"><span class="talents_rollable"
+                                value="pegre">{{system.talents.pegre.label}}</span><span
+                                class="tooltiptext">{{system.talents.pegre.description}}</span></div><span
+                            class="tnt-dots"></span>
+                    </div>
+                </td>
+                <td class="tnt-vc">d {{#if system.verouille}}{{#ifequal system.talents.pegre.value 99}}X{{else}}<input
+                        disabled="disabled" class="comb tnt-vi" type="text" name="system.talents.pegre.value"
+                        value="{{system.talents.pegre.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input
+                        class="comb tnt-vi" type="text" name="system.talents.pegre.value"
+                        value="{{system.talents.pegre.value}}" data-dtype="Number" />{{/if}}</td>
+            </tr>
+            <tr>
+                <td class="tnt-nc">
+                    <div class="tnt-nr">
+                        <div class="tooltip"><span class="talents_rollable"
+                                value="commander">{{system.talents.commander.label}}</span><span
+                                class="tooltiptext">{{system.talents.commander.description}}</span></div><span
+                            class="tnt-dots"></span>
+                    </div>
+                </td>
+                <td class="tnt-vc">d {{#if system.verouille}}{{#ifequal system.talents.commander.value
+                    99}}X{{else}}<input disabled="disabled" class="comb tnt-vi" type="text"
+                        name="system.talents.commander.value" value="{{system.talents.commander.value}}"
+                        data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb tnt-vi" type="text"
+                        name="system.talents.commander.value" value="{{system.talents.commander.value}}"
+                        data-dtype="Number" />{{/if}}</td>
+                <td class="tnt-nc">
+                    <div class="tnt-nr">
+                        <div class="tooltip"><span class="talents_rollable"
+                                value="vehicules_legers">{{system.talents.vehicules_legers.label}}</span><span
+                                class="tooltiptext">{{system.talents.vehicules_legers.description}}</span></div><span
+                            class="tnt-dots"></span>
+                    </div>
+                </td>
+                <td class="tnt-vc">d {{#if system.verouille}}{{#ifequal system.talents.vehicules_legers.value
+                    99}}X{{else}}<input disabled="disabled" class="comb tnt-vi" type="text"
+                        name="system.talents.vehicules_legers.value" value="{{system.talents.vehicules_legers.value}}"
+                        data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb tnt-vi" type="text"
+                        name="system.talents.vehicules_legers.value" value="{{system.talents.vehicules_legers.value}}"
+                        data-dtype="Number" />{{/if}}</td>
+                <td class="tnt-nc">
+                    <div class="tnt-nr">
+                        <div class="tooltip"><span class="talents_rollable"
+                                value="contestations">{{system.talents.contestations.label}}</span><span
+                                class="tooltiptext">{{system.talents.contestations.description}}</span></div><span
+                            class="tnt-dots"></span>
+                    </div>
+                </td>
+                <td class="tnt-vc">d {{#if system.verouille}}{{#ifequal system.talents.contestations.value
+                    99}}X{{else}}<input disabled="disabled" class="comb tnt-vi" type="text"
+                        name="system.talents.contestations.value" value="{{system.talents.contestations.value}}"
+                        data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb tnt-vi" type="text"
+                        name="system.talents.contestations.value" value="{{system.talents.contestations.value}}"
+                        data-dtype="Number" />{{/if}}</td>
+            </tr>
+            <tr>
+                <td class="tnt-nc">
+                    <div class="tnt-nr">
+                        <div class="tooltip"><span class="talents_rollable"
+                                value="former">{{system.talents.former.label}}</span><span
+                                class="tooltiptext">{{system.talents.former.description}}</span></div><span
+                            class="tnt-dots"></span>
+                    </div>
+                </td>
+                <td class="tnt-vc">d {{#if system.verouille}}{{#ifequal system.talents.former.value 99}}X{{else}}<input
+                        disabled="disabled" class="comb tnt-vi" type="text" name="system.talents.former.value"
+                        value="{{system.talents.former.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input
+                        class="comb tnt-vi" type="text" name="system.talents.former.value"
+                        value="{{system.talents.former.value}}" data-dtype="Number" />{{/if}}</td>
+                <td class="tnt-nc">
+                    <div class="tnt-nr">
+                        <div class="tooltip"><span class="talents_rollable"
+                                value="vehicules_lourds">{{system.talents.vehicules_lourds.label}}</span><span
+                                class="tooltiptext">{{system.talents.vehicules_lourds.description}}</span></div><span
+                            class="tnt-dots"></span>
+                    </div>
+                </td>
+                <td class="tnt-vc">d {{#if system.verouille}}{{#ifequal system.talents.vehicules_lourds.value
+                    99}}X{{else}}<input disabled="disabled" class="comb tnt-vi" type="text"
+                        name="system.talents.vehicules_lourds.value" value="{{system.talents.vehicules_lourds.value}}"
+                        data-dtype="Number" />{{/ifequal}}{{else}}<input class="comb tnt-vi" type="text"
+                        name="system.talents.vehicules_lourds.value" value="{{system.talents.vehicules_lourds.value}}"
+                        data-dtype="Number" />{{/if}}</td>
+                <td class="tnt-nc">
+                    <div class="tnt-nr">
+                        <div class="tooltip"><span class="talents_rollable"
+                                value="marge">{{system.talents.marge.label}}</span><span
+                                class="tooltiptext">{{system.talents.marge.description}}</span></div><span
+                            class="tnt-dots"></span>
+                    </div>
+                </td>
+                <td class="tnt-vc">d {{#if system.verouille}}{{#ifequal system.talents.marge.value 99}}X{{else}}<input
+                        disabled="disabled" class="comb tnt-vi" type="text" name="system.talents.marge.value"
+                        value="{{system.talents.marge.value}}" data-dtype="Number" />{{/ifequal}}{{else}}<input
+                        class="comb tnt-vi" type="text" name="system.talents.marge.value"
+                        value="{{system.talents.marge.value}}" data-dtype="Number" />{{/if}}</td>
+            </tr>
+            {{/unless}}
+        </tbody>
+    </table>
+</div>

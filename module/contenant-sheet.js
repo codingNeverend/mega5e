@@ -46,6 +46,39 @@ export class SimpleContenantSheet extends foundry.appv1.sheets.ActorSheet {
   activateListeners(html) {
     super.activateListeners(html);
 
+    // Gestion des blocs collapsibles avec persistence localStorage
+    const _collapseKey = `mega-collapse-${this.item.id}`;
+    const _collapseStates = JSON.parse(
+      localStorage.getItem(_collapseKey) || "{}",
+    );
+    html.find(".weapon-feature-card").each(function (index) {
+      const key = `card-${index}`;
+      const $card = $(this);
+      const $content = $card.find(".card-content");
+      $content.css("transition", "none");
+      if (key in _collapseStates) {
+        if (_collapseStates[key]) {
+          $card.addClass("collapsed");
+        } else {
+          $card.removeClass("collapsed");
+        }
+      }
+      requestAnimationFrame(() =>
+        requestAnimationFrame(() => $content.css("transition", "")),
+      );
+    });
+    html.find(".collapsible-header").on("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      const card = $(this).closest(".weapon-feature-card");
+      card.toggleClass("collapsed");
+      const states = {};
+      html.find(".weapon-feature-card").each(function (idx) {
+        states[`card-${idx}`] = $(this).hasClass("collapsed");
+      });
+      localStorage.setItem(_collapseKey, JSON.stringify(states));
+    });
+
     // Everything below here is only needed if the sheet is editable
     if (!this.options.editable) return;
 
@@ -73,12 +106,12 @@ export class SimpleContenantSheet extends foundry.appv1.sheets.ActorSheet {
         ({ playerId, quantity }) => {
           const actor = game.actors.get(playerId);
           const currentItem = currentActor.items.find(
-            (item) => item.id === currentItemId
+            (item) => item.id === currentItemId,
           );
           const currentItemQuantity = currentItem.data.data.quantity;
           if (quantity > currentItemQuantity) {
             return ui.notifications.error(
-              `Vous ne pouvez pas offrir plus que vous n'avez`
+              `Vous ne pouvez pas offrir plus que vous n'avez`,
             );
           } else {
             const updateItem = {
@@ -89,7 +122,7 @@ export class SimpleContenantSheet extends foundry.appv1.sheets.ActorSheet {
               duplicatedItem.data.quantity = quantity;
               const existingItem = getItemFromInvoByName(
                 actor,
-                duplicatedItem.name
+                duplicatedItem.name,
               );
               if (existingItem) {
                 const updateItem = {
@@ -100,7 +133,7 @@ export class SimpleContenantSheet extends foundry.appv1.sheets.ActorSheet {
                 actor.createEmbeddedEntity("OwnedItem", duplicatedItem);
               }
               console.log(
-                `Giving item: ${currentItem.id} to actor ${actor.id}`
+                `Giving item: ${currentItem.id} to actor ${actor.id}`,
               );
               if (currentItem.data.data.quantity === 0) {
                 currentItem.delete();
@@ -108,7 +141,7 @@ export class SimpleContenantSheet extends foundry.appv1.sheets.ActorSheet {
             });
           }
         },
-        { acceptLabel: "Donner objet", filteredPCList }
+        { acceptLabel: "Donner objet", filteredPCList },
       );
       d.render(true);
     }
@@ -137,7 +170,7 @@ export class SimpleContenantSheet extends foundry.appv1.sheets.ActorSheet {
       .on(
         "click",
         ".attribute-control",
-        this._onClickAttributeControl.bind(this)
+        this._onClickAttributeControl.bind(this),
       );
   }
 
@@ -233,7 +266,7 @@ export class SimpleContenantSheet extends foundry.appv1.sheets.ActorSheet {
       let k = v["key"].trim();
       if (/[\s\.]/.test(k))
         return ui.notifications.error(
-          "Attribute keys may not contain spaces or periods"
+          "Attribute keys may not contain spaces or periods",
         );
       delete v["key"];
       obj[k] = v;
@@ -253,7 +286,7 @@ export class SimpleContenantSheet extends foundry.appv1.sheets.ActorSheet {
           obj[e[0]] = e[1];
           return obj;
         },
-        { _id: this.object._id, "data.attributes": attributes }
+        { _id: this.object._id, "data.attributes": attributes },
       );
 
     // Update the Actor
@@ -405,7 +438,7 @@ export class SimpleContenantSheet extends foundry.appv1.sheets.ActorSheet {
           ptardence,
           ardence_trait,
           ardence_domaine,
-          ardence_talent
+          ardence_talent,
         ),
     });
 
@@ -468,7 +501,7 @@ export class SimpleContenantSheet extends foundry.appv1.sheets.ActorSheet {
           ptardence,
           ardence_trait,
           ardence_domaine,
-          ardence_talent
+          ardence_talent,
         ),
     });
 
@@ -557,7 +590,7 @@ export class SimpleContenantSheet extends foundry.appv1.sheets.ActorSheet {
         ptardence,
         ardence_trait,
         ardence_domaine,
-        ardence_talent
+        ardence_talent,
       );
     }
   }
@@ -572,7 +605,7 @@ export class SimpleContenantSheet extends foundry.appv1.sheets.ActorSheet {
     ptardence,
     ardence_trait,
     ardence_domaine,
-    ardence_talent
+    ardence_talent,
   ) {
     let comp = ev.currentTarget.getAttribute("value");
     let nomComp = this.actor.data.data.talents[comp].label;
@@ -660,7 +693,7 @@ export class SimpleContenantSheet extends foundry.appv1.sheets.ActorSheet {
         ardence_domaine +
         talent_maudit;
       de_domaine = parseFloat(
-        this.actor.data.data.pouvoirs.rg_pouvoir_psi_1.value
+        this.actor.data.data.pouvoirs.rg_pouvoir_psi_1.value,
       );
       de_domaine += ardence_trait;
       // faire test si de_talent ===0!
@@ -901,7 +934,7 @@ export class SimpleContenantSheet extends foundry.appv1.sheets.ActorSheet {
           ptardence,
           ardence_domaine,
           ardence_trait1,
-          ardence_trait2
+          ardence_trait2,
         ),
     });
 
@@ -916,7 +949,7 @@ export class SimpleContenantSheet extends foundry.appv1.sheets.ActorSheet {
     ptardence,
     ardence_domaine,
     ardence_trait1,
-    ardence_trait2
+    ardence_trait2,
   ) {
     let comp = ev.currentTarget.getAttribute("value");
     let de_domaine =

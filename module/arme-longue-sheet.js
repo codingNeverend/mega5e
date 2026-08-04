@@ -1,3 +1,5 @@
+import { activateOffsetPicker } from "./mega-utils.js";
+
 /**
  * Extend the basic ItemSheet with some very simple modifications
  * @extends {foundry.appv1.sheets.ItemSheet}
@@ -95,6 +97,61 @@ export class Arme_longue_Sheet extends foundry.appv1.sheets.ItemSheet {
   activateListeners(html) {
     super.activateListeners(html);
 
+    // Navigation entre onglets à la molette de la souris
+    html[0].addEventListener(
+      "wheel",
+      (event) => {
+        const tabItems = html.find(".side-tabs .side-tab-item");
+        if (!tabItems.length) return;
+        const tabs = tabItems.map((_, el) => el.dataset.tab).get();
+        const activeTab = this._tabs[0].active;
+        const currentIndex = tabs.indexOf(activeTab);
+        if (currentIndex === -1) return;
+        // Molette vers le haut (deltaY < 0) → onglet précédent, vers le bas → onglet suivant
+        const direction = event.deltaY < 0 ? -1 : 1;
+        const newIndex = (currentIndex + direction + tabs.length) % tabs.length;
+        const newTab = tabs[newIndex];
+        // Mettre à jour la classe active sur les boutons
+        tabItems.removeClass("active");
+        tabItems.filter(`[data-tab="${newTab}"]`).addClass("active");
+        this._tabs[0].activate(newTab);
+      },
+      { passive: true },
+    );
+
+    // Gestion des blocs collapsibles avec persistence localStorage
+    const _collapseKey = `mega-collapse-${this.item.id}`;
+    const _collapseStates = JSON.parse(
+      localStorage.getItem(_collapseKey) || "{}",
+    );
+    html.find(".weapon-feature-card").each(function (index) {
+      const key = `card-${index}`;
+      const $card = $(this);
+      const $content = $card.find(".card-content");
+      $content.css("transition", "none");
+      if (key in _collapseStates) {
+        if (_collapseStates[key]) {
+          $card.addClass("collapsed");
+        } else {
+          $card.removeClass("collapsed");
+        }
+      }
+      requestAnimationFrame(() =>
+        requestAnimationFrame(() => $content.css("transition", "")),
+      );
+    });
+    html.find(".collapsible-header").on("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      const card = $(this).closest(".weapon-feature-card");
+      card.toggleClass("collapsed");
+      const states = {};
+      html.find(".weapon-feature-card").each(function (idx) {
+        states[`card-${idx}`] = $(this).hasClass("collapsed");
+      });
+      localStorage.setItem(_collapseKey, JSON.stringify(states));
+    });
+
     // Everything below here is only needed if the sheet is editable
     if (!this.options.editable) return;
 
@@ -191,6 +248,43 @@ export class Arme_longue_Sheet extends foundry.appv1.sheets.ItemSheet {
       }
     });
 
+    // Bouton FilePicker : parcourir les fichiers vidéo
+    html.find(".browse-video-btn").click((ev) => {
+      ev.preventDefault();
+      new FilePicker({
+        type: "video",
+        current: this.object.system.effet_arme.value || "",
+        callback: (path) => {
+          html.find('input[name="system.effet_arme.value"]').val(path);
+          this.object.update({ "system.effet_arme.value": path });
+        },
+      }).browse();
+    });
+
+    // Bouton FilePicker : parcourir les fichiers audio
+    html.find(".browse-sound-btn").click((ev) => {
+      ev.preventDefault();
+      new FilePicker({
+        type: "audio",
+        current: this.object.system.sound.value || "",
+        callback: (path) => {
+          html.find('input[name="system.sound.value"]').val(path);
+          this.object.update({ "system.sound.value": path });
+        },
+      }).browse();
+    });
+
+    // Bouton mire : sélection du décalage X/Y sur le canvas
+    html.find(".pick-offset-btn").click((ev) => {
+      ev.preventDefault();
+      activateOffsetPicker((offX, offY) => {
+        this.object.update({
+          "system.effet_offX.value": offX,
+          "system.effet_offY.value": offY,
+        });
+      });
+    });
+
     html.find(".item-view").contextmenu((ev) => {
       let img = ev.currentTarget.getAttribute("value");
       new ImagePopout(img, {
@@ -210,7 +304,7 @@ export class Arme_longue_Sheet extends foundry.appv1.sheets.ItemSheet {
         left: 10,
       };
       let description = "";
-      let icon1 = "polar-star.svg";
+      let icon1 = "fas fa-shield-alt";
       let pouvoir = ev.currentTarget.getAttribute("value");
       description =
         '<table><tbody><tr><td style="background-color:var(--accent-color);"><strong>Imm&eacute;diat</strong>:</td></tr><tr><td><ul><li><strong>H</strong> <img style="vertical-align:middle;border:none;width:18px;height:18px" src="systems/mega/images/fleche_droite.png"><strong> Handicaper</strong></li></ul><p>     La douleur emp&ecirc;che la cible d\'utiliser normalement un membre.</p><ul><li><strong>A</strong> <img style="vertical-align:middle;border:none;width:18px;height:18px" src="systems/mega/images/fleche_droite.png"><strong> Assommer</strong></li></ul><p>     La cible est inconsciente pendant (Av)d4 Round(s)</p><ul><li><strong>S</strong> <img style="vertical-align:middle;border:none;width:18px;height:18px" src="systems/mega/images/fleche_droite.png"><strong> Sonner</strong></li></ul><p>     La cible subit un malus de -4Rg &agrave; ses ATT et -2 &agrave; sa DEF pendant (Av)d4 Round(s)</p><ul><li><strong>R</strong> <img style="vertical-align:middle;border:none;width:18px;height:18px" src="systems/mega/images/fleche_droite.png"><strong> Renverser</strong></li></ul><p>     La cible chute et doit consommer une action pour se relever</p><ul><li><strong>I</strong> <img style="vertical-align:middle;border:none;width:18px;height:18px" src="systems/mega/images/fleche_droite.png"><strong> Immobiliser</strong></li></ul><p>     La cible est immobilis&eacute;e et ne peut plus combattre tant qu\'elle ne s\'est pas lib&eacute;r&eacute;e.<br/>     Tant que la cible est mmobilis&eacute;e, elle et l\'Attaquant ne peuvent pas faire d\'actions autres que : D&eacute;fenses avec Malus, maintenir ou rompre l\'immobilisation ou &eacute;gocier.</p><ul><li><strong>V</strong> <img style="vertical-align:middle;border:none;width:18px;height:18px" src="systems/mega/images/fleche_droite.png"><strong> Vitesse</strong></li></ul></td></tr><tr><td style="background-color:var(--accent-color);"><strong>Prochaine Action</strong>:</td></tr><tr><td><p><strong>P</strong> <img style="vertical-align:middle;border:none;width:18px;height:18px" src="systems/mega/images/fleche_droite.png"><strong> Positionnement </strong>(Roleplay, ou DEF +1 Niv et ATT Adv -2Rg)</p><p>     Le personnage prend une position favorable par rapport &agrave; l\'adversaire et profitera de bonus au prochain Round.</p><p>     DEF +1 et, au choix, +4Rg au choix en ATT pour lui ou -4Rg en ATT pour son adversaire</p></td></tr><tr><td style="background-color:var(--accent-color);"><strong>Prochaine DEF</strong>:</td></tr><tr><td><p><strong>T</strong> <img style="vertical-align:middle;border:none;width:18px;height:18px" src="systems/mega/images/fleche_droite.png"><strong> Tenir &agrave; distance </strong>(Imm&eacute;diat : D&eacute;g&acirc;t 0, Prochaine DEF +1 Niv, Adv : ATT -2Rg)</p><p>     Le personnage fait de grans moulinets avec une arme d\'allonge &eacute;gale ou sup&eacute;rieure &agrave; celle de son adversaire.</p><p>     Il ne fait pas de d&eacute;g&acirc;ts mais ses Av sont convertis ainsi :<br/>     Pour chaque AV : prochaine DEF+1 et -2Rg &agrave; la prochaine ATT pour l\'adversaire.</p><p>     Cet effet permet de dialoguer avec des adversaires sans les blesser et en prenant moins de risques qu\'avec l\'Esquive mais est clairement agressif.</p></td></tr><tr><td style="background-color:var(--accent-color);"><strong>Prochaine ATT</strong>:</td></tr><tr><td><p><strong>D</strong> <img style="vertical-align:middle;border:none;width:18px;height:18px" src="systems/mega/images/fleche_droite.png"><strong> D&eacute;faut de la cuirasse</strong> (+2Av &agrave; la prochaine ATT qui touche sur cet Adv)</p><p>     Le personnage a rep&eacute;r&eacute; une faille dans la protection de l\'adversaire :<br/>     Il a +2Av &agrave; la prochaine attaque qui touche cet adversaire.</p></td></tr></tbody></table>';
@@ -296,8 +390,9 @@ export class Arme_longue_Sheet extends foundry.appv1.sheets.ItemSheet {
       }
     });
 
-    html.find(".type_degat").click((ev) => {
-      let type_degat = ev.currentTarget.getAttribute("value");
+    html.find(".damage-type-item").click((ev) => {
+      if (!game.user.isGM) return;
+      let type_degat = ev.currentTarget.getAttribute("data-type");
       if (this.object.system.type_degats.balles.etat) {
         this.object.update({ "system.type_degats.balles.etat": false });
       } else if (this.object.system.type_degats.lame.etat) {

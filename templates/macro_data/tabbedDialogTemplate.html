@@ -1,49 +1,193 @@
-<div
-  class="dialog-content"
-  style="
-    background-image: url('systems/mega/images/fond.png');
-    background-position: center;
-    background-attachment: fixed;
-    background-repeat: no-repeat;
+<div class="dialog-content" style="
     font-family: 'Mega', sans-serif;
-  "
->
-  <script>
-    function setActive(element) {
-      // Supprimer la classe active de tous les éléments de classe svg
-      const images = document.querySelectorAll(".svg");
-      images.forEach((img) => img.classList.remove("active"));
+  ">
+  <style>
+    /* --- Cartes de grade (_showPouvoirDetails) --- */
+    .spd-description {
+      padding: 10px 14px;
+      font-size: 13px;
+      line-height: 1.6;
+      color: #c8e8d4;
+      border-left: 3px solid rgba(130, 224, 170, 0.5);
+      margin: 8px 8px 12px;
+      background: rgba(10, 45, 22, 0.45);
+      border-radius: 0 6px 6px 0;
+    }
 
-      // Ajouter la classe active à l'image cliquée
-      element.classList.add("active");
+    .spd-grades-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      padding: 0 8px 12px;
+    }
+
+    .spd-grade-card {
+      border-radius: 7px;
+      padding: 9px 11px;
+      position: relative;
+    }
+
+    .spd-grade-card.active {
+      background: linear-gradient(135deg, rgba(12, 166, 71, 0.58) 0%, rgba(8, 100, 45, 0.48) 100%);
+      border: 1px solid rgba(12, 166, 71, 0.60);
+      box-shadow: 0 2px 8px rgba(12, 166, 71, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+      color: #ddf5e8;
+    }
+
+    .spd-grade-card.inactive {
+      background: rgba(15, 25, 19, 0.35);
+      border: 1px solid rgba(70, 85, 75, 0.32);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.32);
+      color: #5a6e62;
+    }
+
+    .spd-grade-card.current {
+      border-color: rgba(55, 230, 125, 0.88);
+      box-shadow: 0 0 14px rgba(12, 166, 71, 0.50), 0 2px 8px rgba(12, 166, 71, 0.30), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    }
+
+    .spd-grade-card.current::after {
+      content: "✦ actuel";
+      position: absolute;
+      top: -9px;
+      right: 10px;
+      background: linear-gradient(135deg, rgba(12, 166, 71, 0.92), rgba(8, 110, 48, 0.92));
+      color: #e8fff2;
+      font-size: 9px;
+      padding: 1px 7px;
+      border-radius: 8px;
+      font-weight: bold;
+      letter-spacing: 0.4px;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+    }
+
+    .spd-grade-badge {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: bold;
+      padding: 2px 9px;
+      border-radius: 10px;
+      margin-bottom: 5px;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+    }
+
+    .spd-grade-card.active .spd-grade-badge,
+    .spd-grade-card.current .spd-grade-badge {
+      background: rgba(12, 166, 71, 0.45);
+      color: #b5f0ca;
+      border: 1px solid rgba(12, 166, 71, 0.65);
+    }
+
+    .spd-grade-card.inactive .spd-grade-badge {
+      background: rgba(45, 55, 50, 0.55);
+      color: #c0cec7;
+      border: 1px solid rgba(65, 78, 70, 0.42);
+    }
+
+    .spd-grade-text {
+      font-size: 12.5px;
+      line-height: 1.55;
+    }
+
+    /* --- Onglet général (description du pouvoir) --- */
+    .spd-general-content {
+      margin: 14px 10px;
+      padding: 16px 22px;
+      font-size: 13.5px;
+      line-height: 1.78;
+      color: #d6f0e2;
+      background: linear-gradient(155deg, rgba(8, 48, 24, 0.68) 0%, rgba(5, 28, 14, 0.48) 100%);
+      border: 1px solid rgba(80, 195, 135, 0.22);
+      border-left: 4px solid rgba(75, 195, 125, 0.72);
+      border-radius: 0 9px 9px 0;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03), 0 3px 14px rgba(0, 0, 0, 0.38);
+    }
+
+    /* --- Onglet aide --- */
+    .spd-aide-content {
+      margin: 14px 10px;
+      padding: 16px 22px;
+      font-size: 13.5px;
+      line-height: 1.78;
+      color: #d6f0e2;
+      background: linear-gradient(155deg, rgba(8, 48, 24, 0.68) 0%, rgba(5, 28, 14, 0.48) 100%);
+      border: 1px solid rgba(80, 195, 135, 0.22);
+      border-left: 4px solid rgba(75, 195, 125, 0.72);
+      border-radius: 0 9px 9px 0;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03), 0 3px 14px rgba(0, 0, 0, 0.38);
+    }
+  </style>
+
+  <script>
+    // Observer pour surveiller les changements d'onglets FoundryVTT
+    function setupTabObserver() {
+      const container = document.querySelector('.modern-tabs');
+      if (!container) return;
+
+      // Fonction pour mettre à jour les icônes
+      function updateIcons() {
+        // Retirer highlight de toutes les icônes
+        container.querySelectorAll('.modern-tab-icon').forEach(icon => {
+          icon.classList.remove('highlight');
+        });
+
+        // Ajouter highlight à l'onglet actif
+        const activeTab = container.querySelector('.item.active');
+        if (activeTab) {
+          const activeIcon = activeTab.querySelector('.modern-tab-icon');
+          if (activeIcon) {
+            activeIcon.classList.add('highlight');
+          }
+        }
+      }
+
+      // Observer les changements de classe sur les onglets
+      const observer = new MutationObserver(function (mutations) {
+        let shouldUpdate = false;
+        mutations.forEach(function (mutation) {
+          if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+            shouldUpdate = true;
+          }
+        });
+        if (shouldUpdate) {
+          setTimeout(updateIcons, 10);
+        }
+      });
+
+      // Observer tous les onglets
+      container.querySelectorAll('.item').forEach(tab => {
+        observer.observe(tab, { attributes: true, attributeFilter: ['class'] });
+      });
+
+      // Mise à jour initiale
+      updateIcons();
+    }
+
+    // Démarrer l'observation quand le DOM est prêt
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', setupTabObserver);
+    } else {
+      setTimeout(setupTabObserver, 100);
     }
   </script>
-  <div style="margin:10px; margin-bottom:2px; padding-right:15px;padding-bottom:15px;border:1px;border-radius:50px;background-color: var(--opacity-clear-color); border-image: linear-gradient(90deg, rgba(60,74,83,0.90), rgba(60,74,83,.00)) 1; border-left:none; border-top:none; border-right:none;">
-  <nav class="tabs" data-group="primary-tabs">
-    {{#each tabs}}
-    <!-- <b><center><a class="item" data-tab="{{id}}"><i class="{{icon}}" style="color:#e6a418"></i><br>{{title}}</a></center></b> -->
-    <b><center>
-        <a data-tab="{{id}}" onclick="setActive(this.querySelector('img'))">
-          <img
-            onclick="setActive(this)"
-            class="svg {{#if (eq id 'tab1')}}active{{/if}}"
-            width="32px"
-            style ="border:2px var(--accent-color) solid; box-shadow: 0 0 10px rgba(0, 0, 0, 0.452);"
-            src="{{icon}}"
-          />
-          <br />{{title}}</a
-        >
-      </center></b
-    >
-    {{/each}}
-  </nav>
-</div>
-  <br />
-  <div class="dialog-header">{{{header}}}</div>
+
+  <div class="modern-tabs-container spd-tabs-top">
+    <nav class="tabs modern-tabs" data-group="primary-tabs" role="tablist">
+      {{#each tabs}}
+      <a class="item modern-tab {{#if (eq id 'tab1')}}active{{/if}}" data-tab="{{id}}" role="tab"
+        aria-selected="{{#if (eq id 'tab1')}}true{{else}}false{{/if}}" aria-label="{{title}}">
+        <img class="modern-tab-icon {{#if (eq id 'tab1')}}active{{/if}}" src="{{icon}}" alt="{{title}}" />
+        <span class="modern-tab-title">{{title}}</span>
+      </a>
+      {{/each}}
+    </nav>
+  </div>
+  <div class="dialog-header spd-dialog-header">{{{header}}}</div>
 
   <section class="tab-content">
     {{#each tabs}}
-    <div  class="tab" data-tab="{{id}}" data-group="primary-tabs">
+    <div class="tab" data-tab="{{id}}" data-group="primary-tabs">
       {{{content}}}
     </div>
     {{/each}}

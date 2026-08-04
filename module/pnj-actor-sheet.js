@@ -3,7 +3,12 @@
  * @extends {foundry.appv1.sheets.ActorSheet}
  */
 
-import { safeDocumentUpdate, checkEffectsState } from "./mega-utils.js";
+import {
+  safeDocumentUpdate,
+  checkEffectsState,
+  flashMagicHalo,
+  startButtonParticles,
+} from "./mega-utils.js";
 
 class TabbedDialog extends Dialog {
   constructor(data, options = {}) {
@@ -48,7 +53,7 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
   /** @override */
   static get defaultOptions() {
     return foundry.utils.mergeObject(super.defaultOptions, {
-      classes: ["mega", "sheet", "actor"],
+      classes: ["mega", "sheet", "actor", "pnj-sheet"],
       template: "systems/mega/templates/pnj-actor-sheet.html",
       width: 860,
       height: 568,
@@ -73,11 +78,86 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
     context.system = actorData.system;
     context.GM = game.user.isGM;
 
+    // Résolution des images d'items pour les badges combat (img absent du schéma template.json)
+    for (const [slotKey, itemType, idx] of [
+      ["mainsnues1", "Attaque sp\u00e9ciale", 0],
+      ["mainsnues2", "Attaque sp\u00e9ciale", 1],
+      ["mainsnues3", "Attaque sp\u00e9ciale", 2],
+      ["armescourtes_1", "Arme courte", 0],
+      ["armescourtes_2", "Arme courte", 1],
+      ["armeslongues_1", "Arme longue", 0],
+      ["armeslongues_2", "Arme longue", 1],
+      ["lancer_1", "Arme de lancer", 0],
+      ["lancer_2", "Arme de lancer", 1],
+      ["tir_1", "Arme de tir", 0],
+      ["tir_2", "Arme de tir", 1],
+    ]) {
+      const slot = context.system.talents_combat?.[slotKey];
+      if (!slot) continue;
+      const equipped = this.actor.items.filter(
+        (i) => i.type === itemType && i.system.equipe === true,
+      );
+      const item = equipped[idx];
+      const rawImg = item && slot.label === item.name ? item.img || "" : "";
+      slot.img =
+        rawImg && !rawImg.startsWith("/") && !rawImg.startsWith("http")
+          ? "/" + rawImg
+          : rawImg;
+    }
+    // Résolution des images pour les protections
+    const equippedProt = this.actor.items.filter(
+      (i) => i.type === "Protection" && i.system.equipe === true,
+    );
+    ["p1", "p2", "p3"].forEach((k, idx) => {
+      const slot = context.system.protections?.[k];
+      if (!slot) return;
+      const item = equippedProt[idx];
+      const rawImg = item && slot.label === item.name ? item.img || "" : "";
+      slot.img =
+        rawImg && !rawImg.startsWith("/") && !rawImg.startsWith("http")
+          ? "/" + rawImg
+          : rawImg;
+    });
+
     // Prepare character data and items.
     this._prepareItems(context);
 
     context.rollData = context.actor.getRollData();
-    context.enrichedBiography =
+
+    // Calcul du tableau de défense par localisation
+    context.defenseParLocalisation = this._computeDefenseByLocalisation();
+
+    // Somme des DEF de base des protections équipées
+    context.def_prot_total = this.actor.items
+      .filter((i) => i.type === "Protection" && i.system.equipe === true)
+      .reduce((sum, i) => sum + (Number(i.system.def) || 0), 0);
+
+    // Badges DEF réelle (même style que la fenêtre de localisation)
+    {
+      const _tc = {
+        choc: "#e67e22",
+        lame: "#b0bec5",
+        balle: "#2980b9",
+        feu: "#e74c3c",
+        froid: "#5dade2",
+        acide: "#2ecc71",
+        rayon: "#9b59b6",
+      };
+      const _bd =
+        (Number(context.system.def?.value) || 0) +
+        (Number(context.system.def_modif?.value) || 0) +
+        (Number(context.system.bonus_armes_def) || 0);
+      for (const [key, color] of Object.entries(_tc)) {
+        const val = Number(context.system[`protect_${key}`]?.value) || 0;
+        const bonus = val - _bd;
+        context[`protect_${key}_badge`] =
+          bonus > 0
+            ? `<span style="display:inline-block;background:linear-gradient(135deg,${color}dd,${color}88);color:#fff;border-radius:5px;padding:2px 8px;font-weight:bold;font-size:0.92em;box-shadow:0 1px 4px rgba(0,0,0,0.45);min-width:28px;text-align:center;">${val}<sup style="font-size:0.65em;margin-left:1px;opacity:0.85;">+${bonus}</sup></span>`
+            : `<span style="display:inline-block;background:linear-gradient(135deg,${color}dd,${color}88);color:#fff;border-radius:5px;padding:2px 8px;font-weight:bold;font-size:0.92em;box-shadow:0 1px 4px rgba(0,0,0,0.45);min-width:28px;text-align:center;">${val}<sup style="font-size:0.65em;margin-left:1px;opacity:0.5;">0</sup></span>`;
+      }
+    }
+
+    context.enrichedBiography_actor =
       await foundry.applications.ux.TextEditor.implementation.enrichHTML(
         this.object.system.biography,
         { async: true },
@@ -91,10 +171,12 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
     let pnj_height = "";
 
     if (this.actor.system.reduit === 1) {
-      this.position.width = 860; // Nouvelle largeur
+      const bonusArmes = Number(context.system.bonus_armes_def) || 0;
+      this.position.width = 917 + (bonusArmes > 0 ? 120 : 0);
       this.position.height = 568;
     } else {
-      this.position.width = 898; // Nouvelle largeur
+      const bonusArmes = Number(context.system.bonus_armes_def) || 0;
+      this.position.width = 921 + (bonusArmes > 0 ? 120 : 0);
       this.position.height = 715;
     }
     return context;
@@ -106,52 +188,287 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
   activateListeners(html) {
     super.activateListeners(html);
 
+    html.find(".melee-impair-indicator").on("click", (ev) => {
+      if (this.actor.system.verouille) return;
+      this.actor.update({ "system.melee_impair": 0 });
+    });
+
+    // Navigation entre onglets à la molette de la souris
+    html[0].addEventListener(
+      "wheel",
+      (event) => {
+        const tabItems = html.find(".side-tabs .side-tab-item");
+        if (!tabItems.length) return;
+        const tabs = tabItems.map((_, el) => el.dataset.tab).get();
+        const activeTab = this._tabs[0].active;
+        const currentIndex = tabs.indexOf(activeTab);
+        if (currentIndex === -1) return;
+        // Molette vers le haut (deltaY < 0) → onglet précédent, vers le bas → onglet suivant
+        const direction = event.deltaY < 0 ? -1 : 1;
+        const newIndex = (currentIndex + direction + tabs.length) % tabs.length;
+        const newTab = tabs[newIndex];
+        // Mettre à jour la classe active sur les boutons
+        tabItems.removeClass("active");
+        tabItems.filter(`[data-tab="${newTab}"]`).addClass("active");
+        this._tabs[0].activate(newTab);
+        // Déclencher l'ajustement de hauteur pour le nouvel onglet
+        this._handleCombatTabResize(newTab);
+      },
+      { passive: true },
+    );
+
+    // Forcer la couleur blanche sur les valeurs de domaines
+    html.find("input.tnt-di").css("color", "#ffffff");
+
+    // Mode comparse (reduit=2) : masquer les valeurs de domaines, afficher D majuscule sur les dés de talents
+    if (this.actor.system.reduit === 2) {
+      html.find(".tnt-dh .tnt-dd").hide();
+      // En mode comparse, tous les en-têtes de domaine sont gris (verrouillé ou non)
+      html
+        .find(".tnt-dh")
+        .removeAttr("data-val")
+        .css("background", "linear-gradient(135deg, #6e6e6e 0%, #9e9e9e 100%)");
+      html.find(".tnt-vc").each(function () {
+        // Mode verrouillé : dice-badge span
+        $(this)
+          .find(".dice-badge")
+          .each(function () {
+            const txt = $(this).text();
+            if (txt.charAt(0) === "d") $(this).text("D" + txt.slice(1));
+          });
+        // Mode déverrouillé : nœud texte "d " avant l'input
+        $(this)
+          .contents()
+          .filter(function () {
+            return this.nodeType === 3;
+          })
+          .each(function () {
+            this.textContent = this.textContent.replace(/\bd\b/g, "D");
+          });
+      });
+    }
+
+    // Gestion des blocs collapsibles avec persistence localStorage
+    const _collapseKey = `mega-collapse-${this.actor.id}`;
+    const _collapseStates = JSON.parse(
+      localStorage.getItem(_collapseKey) || "{}",
+    );
+    html.find(".weapon-feature-card").each(function (index) {
+      const key = `card-${index}`;
+      const $card = $(this);
+      const $content = $card.find(".card-content");
+      $content.css("transition", "none");
+      if (key in _collapseStates) {
+        if (_collapseStates[key]) {
+          $card.addClass("collapsed");
+        } else {
+          $card.removeClass("collapsed");
+        }
+      }
+      requestAnimationFrame(() =>
+        requestAnimationFrame(() => $content.css("transition", "")),
+      );
+    });
+    html.find(".collapsible-header").on("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      const card = $(this).closest(".weapon-feature-card");
+      card.toggleClass("collapsed");
+      const states = {};
+      html.find(".weapon-feature-card").each(function (idx) {
+        states[`card-${idx}`] = $(this).hasClass("collapsed");
+      });
+      localStorage.setItem(_collapseKey, JSON.stringify(states));
+    });
+
     // Gestionnaire pour les boutons latéraux
     html.find(".side-tab-item").click(this._onSideTabClick.bind(this));
 
+    // Toggle Cumul & Défis
+    html.find(".cumul-toggle").on("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      const $panel = $(this).closest(".cumul-panel");
+      const $body = $panel.find(".cumul-body");
+      const $arrow = $panel.find(".cumul-arrow");
+      const isOpen = $body.is(":visible");
+      $body.slideToggle(180);
+      $arrow.toggleClass("rotated", !isOpen);
+    });
+
     // Initialiser l'onglet actif au chargement
     this._initializeActiveSideTab(html);
+
+    // === SPÉ : affichage progressif ===
+    const $speOuter = html.find(".spe-outer");
+    if ($speOuter.length) {
+      const $rows = $speOuter.find(".spe-row");
+      const isEditable = this.options.editable && !this.actor.system.verouille;
+      let lastFilledIdx = -1;
+      $rows.each(function (i) {
+        const val = ($(this).attr("data-spe-val") || "").trim();
+        if (val !== "") lastFilledIdx = i;
+      });
+      const firstEmptyVisible = isEditable
+        ? Math.min(lastFilledIdx + 1, $rows.length - 1)
+        : lastFilledIdx;
+      $rows.each(function (i) {
+        $(this).find(".spe-add-btn").hide();
+        if (i <= firstEmptyVisible) {
+          $(this).show();
+        } else {
+          $(this).hide();
+        }
+      });
+      if (isEditable && firstEmptyVisible < $rows.length - 1) {
+        $rows.eq(firstEmptyVisible).find(".spe-add-btn").show();
+      }
+      $speOuter.on("click", ".spe-add-btn", function () {
+        const $row = $(this).closest(".spe-row");
+        const $allRows = $speOuter.find(".spe-row");
+        const idx = $allRows.index($row);
+        const $nextRow = $allRows.eq(idx + 1);
+        if ($nextRow.length) {
+          $row.find(".spe-add-btn").hide();
+          $nextRow.show();
+          if ($allRows.eq(idx + 2).length) {
+            $nextRow.find(".spe-add-btn").show();
+          }
+        }
+      });
+    }
+
+    // === TALENTS ANNEXES : affichage progressif ===
+    const $tanOuter = html.find(".tan-outer");
+    if ($tanOuter.length) {
+      const $rows = $tanOuter.find(".tan-row");
+      const isEditable = this.options.editable && !this.actor.system.verouille;
+      let lastFilledIdx = -1;
+      $rows.each(function (i) {
+        const val = ($(this).attr("data-tan-val") || "").trim();
+        if (val !== "") lastFilledIdx = i;
+      });
+      const firstEmptyVisible = isEditable
+        ? Math.min(lastFilledIdx + 1, $rows.length - 1)
+        : lastFilledIdx;
+      $rows.each(function (i) {
+        $(this).find(".tan-add-btn").hide();
+        if (i <= firstEmptyVisible) {
+          $(this).show();
+        } else {
+          $(this).hide();
+        }
+      });
+      if (isEditable && firstEmptyVisible < $rows.length - 1) {
+        $rows.eq(firstEmptyVisible).find(".tan-add-btn").show();
+      }
+      $tanOuter.on("click", ".tan-add-btn", function () {
+        const $row = $(this).closest(".tan-row");
+        const $allRows = $tanOuter.find(".tan-row");
+        const idx = $allRows.index($row);
+        const $nextRow = $allRows.eq(idx + 1);
+        if ($nextRow.length) {
+          $row.find(".tan-add-btn").hide();
+          $nextRow.show();
+          if ($allRows.eq(idx + 2).length) {
+            $nextRow.find(".tan-add-btn").show();
+          }
+        }
+      });
+    }
 
     //active ou désactive les effets spéciaux
     const effets_speciaux = game.settings.get("mega", "effets_speciaux");
     const retraitAuto = game.settings.get("mega", "retraitAuto");
 
+    // Clic sur un cercle (dot) d'ardence ou de résonnance (fonctionne en mode verrouillé aussi)
+    html.find(".tpc-dots").on("click", ".tpc-dot", (ev) => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      const $dot = $(ev.currentTarget);
+      const $dots = $dot.closest(".tpc-dots");
+      const field = $dots.data("field");
+      if (!field) return;
+      const idx = parseInt($dot.data("dot-index"), 10);
+      const current = foundry.utils.getProperty(this.actor, field) ?? 0;
+      let newVal;
+      if (idx === current) {
+        newVal = current - 1;
+      } else if (idx === current + 1) {
+        newVal = current + 1;
+      } else return;
+      this.actor.update({ [field]: Math.max(0, newVal) });
+    });
+
     // Everything below here is only needed if the sheet is editable
     if (!this.options.editable) return;
 
+    // Boutons +/- pour ajuster le max d'ardence et résonnance
+    html.find(".pts-adj-btn").on("click", (ev) => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      const field = ev.currentTarget.dataset.field;
+      const isInc = ev.currentTarget.classList.contains("pts-adj-inc");
+      const current = foundry.utils.getProperty(this.actor, field) ?? 0;
+      if (!isInc) {
+        const valueField = field.replace(/\.max$/, ".value");
+        const value = foundry.utils.getProperty(this.actor, valueField) ?? 0;
+        if (value >= current) return;
+      }
+      const newVal = Math.max(0, current + (isInc ? 1 : -1));
+      this.actor.update({ [field]: newVal });
+    });
+
     // Edition de l'inventaire
-    html.find(".item-edit").click((ev) => {
-      // const li = $(ev.currentTarget).parents(".item");
-      // const item = this.actor.items.get(li.data("itemId"));
-      // const item2 = ev.currentTarget.getAttribute("id");
-      // console.log("li : "+li);
-      // item2.sheet.render(true);
+    html.find(".item-edit").on("contextmenu", (ev) => {
       const itemId = ev.currentTarget.getAttribute("id");
       const item = this.actor.items.get(itemId);
       if (item) {
+        if (item.type === "Pouvoir" && !game.user.isGM) {
+          ui.notifications.warn(
+            "Vous ne pouvez pas ouvrir cet item. Pour obtenir de l'information, cliquez droit sur le pouvoir dans l'onglet ATTRIBUTS",
+          );
+          return;
+        }
         item.sheet.render(true);
       }
     });
 
-    html.find(".item-edit").on("contextmenu", (ev) => {
-      const itemId = ev.currentTarget.getAttribute("id");
+    // Clic droit sur une protection dans l'onglet combat → ouvre la fiche
+    html.find(".protection-combat-row").on("contextmenu", (ev) => {
+      ev.preventDefault();
+      const itemId = ev.currentTarget.getAttribute("data-item-id");
       const item = this.actor.items.get(itemId);
+      if (item) item.sheet.render(true);
+    });
+
+    // Supression de l'inventaire
+    html.find(".item-delete").click((ev) => {
+      const card = $(ev.currentTarget).closest(".inventory-item-card");
       let supItem = 0;
       let dialog_item_delete = new Dialog({
-        title: "SUPPRESSION",
+        title: "Suppression d'un item",
         content:
-          "<div class='card-header'><span><img src='systems/mega/images/gears.gif' width=30px; height=30px; style='border:none'>SUPPRESSION D'UN ITEM</span></div>&nbsp",
+          "<div class='card-header'><span><i class='fas fa-trash'></i> SUPPRESSION</span></div>" +
+          "<div style='padding:12px 8px;text-align:center'><i class='fas fa-trash' style='font-size:2em;color:#e74c3c;display:block;margin-bottom:8px'></i><span class='bouton_texte'>Êtes-vous sûr ?</span></div>",
         buttons: {
           non: {
-            label: "NON",
+            label: "<i class='fas fa-times'></i> NON",
             callback: () => (supItem = 0),
           },
           oui: {
-            label: "OUI",
+            label: "<i class='fas fa-check'></i> OUI",
             callback: () => {
+              const itemId = card.find("img.item-edit").attr("id");
+              const item = this.actor.items.get(itemId);
+              if (!item) {
+                ui.notifications.error("Item introuvable");
+                return;
+              }
               item.delete();
-              // li.slideUp(200, () => this.render(false));
-              ui.notifications.info("L'item a été supprimé");
+              card.slideUp(200, () => this.render(false));
+              // eslint-disable-next-line no-undef
+              ui.notifications.warn("L'item a été supprimé");
             },
           },
         },
@@ -161,34 +478,38 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
       dialog_item_delete.render(true);
     });
 
-    // Supression de l'inventaire
-    html.find(".item-delete").click((ev) => {
-      const li = $(ev.currentTarget).parents(".item");
-      let supItem = 0;
-      let dialog_item_delete = new Dialog({
-        title: "SUPPRESSION",
-        content:
-          "<div class='card-header'><span><img src='systems/mega/images/gears.gif' width=30px; height=30px; style='border:none'>SUPPRESSION D'UN ITEM</span></div>&nbsp",
-        buttons: {
-          non: {
-            label: "NON",
-            callback: () => (supItem = 0),
-          },
-          oui: {
-            label: "OUI",
-            callback: () => {
-              // this.actor.deleteEmbeddedDocuments('Item',[li.data("itemId")]); //Déprécié V12
-              const item = this.actor.items.get(li.data("itemId"));
-              item.delete();
-              li.slideUp(200, () => this.render(false));
-              ui.notifications.info("L'item a été supprimé");
-            },
-          },
-        },
-        default: "non",
-        close: function () {},
-      });
-      dialog_item_delete.render(true);
+    // Toggle équipement d'une arme dans l'onglet combat (PNJ)
+    html.find(".item-equipe-toggle").click(async (ev) => {
+      ev.stopPropagation();
+      ev.preventDefault();
+      const itemId = ev.currentTarget.getAttribute("data-item-id");
+      const item = this.actor.items.get(itemId);
+      if (!item) return;
+
+      const currentEquipe = item.system.equipe || false;
+      const itemType = item.type;
+      const maxEquipe =
+        itemType === "Attaque spéciale" || itemType === "Protection" ? 3 : 2;
+
+      if (currentEquipe) {
+        await item.update({ "system.equipe": false });
+      } else {
+        const currentCount = this.actor.items.filter(
+          (i) => i.type === itemType && i.system.equipe === true,
+        ).length;
+
+        if (currentCount >= maxEquipe) {
+          const msg =
+            itemType === "Attaque spéciale"
+              ? `Vous ne pouvez activer que ${maxEquipe} attaques spéciales simultanément dans l'onglet combat. Désactivez-en une d'abord.`
+              : itemType === "Pouvoir"
+                ? `Vous ne pouvez activer que ${maxEquipe} pouvoirs résonants simultanément. Désactivez-en un d'abord.`
+                : `Vous ne pouvez activer que ${maxEquipe} armes de ce type simultanément dans l'onglet combat. Désactivez-en une d'abord.`;
+          ui.notifications.warn(msg);
+          return;
+        }
+        await item.update({ "system.equipe": true });
+      }
     });
 
     html.find(".item-view").click((ev) => {
@@ -224,6 +545,65 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
         this.actor.update({ "system.combat_large": true });
       } else this.actor.update({ "system.combat_large": false });
       console.log("combat_large : " + this.actor.system.combat_large);
+    });
+
+    html.find(".toggle_prot_rows").click((ev) => {
+      this.actor.update({
+        "system.prot_def_masquee": !this.actor.system.prot_def_masquee,
+      });
+    });
+
+    html.find(".toggle_def_manuel").click(async (ev) => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      const goingManual = !this.actor.system.def_manuel;
+      if (!goingManual) {
+        // Retour en auto : effacer la valeur manuelle pour que prepareDerivedData recalcule
+        await this.actor.update({
+          "system.def_manuel": false,
+          "system.def.value": 0,
+        });
+      } else {
+        await this.actor.update({ "system.def_manuel": true });
+      }
+    });
+
+    html.find(".toggle_initiative_manuel").click(async (ev) => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      const goingManual = !this.actor.system.initiative_manuel;
+      if (!goingManual) {
+        await this.actor.update({
+          "system.initiative_manuel": false,
+          "system.derives.initiative.d1": 0,
+          "system.derives.initiative.d2": 0,
+        });
+      } else {
+        await this.actor.update({ "system.initiative_manuel": true });
+      }
+    });
+
+    html.find(".toggle_esquive_manuel").click(async (ev) => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      const goingManual = !this.actor.system.esquive_manuel;
+      if (!goingManual) {
+        await this.actor.update({
+          "system.esquive_manuel": false,
+          "system.derives.esquive.d1.value": 0,
+          "system.derives.esquive.d2.value": 0,
+          "system.derives.esquive.d3.value": 0,
+        });
+      } else {
+        await this.actor.update({ "system.esquive_manuel": true });
+      }
+    });
+
+    // Tableau de défense par localisation
+    html.find(".btn-defense-localisation").click((ev) => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      this._onShowDefenseLocalisation();
     });
 
     //Masque ou développe les encarts dans l'onglet MJ
@@ -311,25 +691,6 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
       let talentc = ev.currentTarget.getAttribute("value");
     });
 
-    // Gestion des protections
-    function toggleProtection(protection) {
-      const selection = this.actor.system.protections[protection].selection;
-      this.actor.system.protections[protection].selection = !selection;
-      this.actor.update({
-        [`system.protections.${protection}.selection`]: !selection,
-      });
-    }
-
-    html
-      .find(".active_protection_p1")
-      .click((ev) => toggleProtection.call(this, "p1"));
-    html
-      .find(".active_protection_p2")
-      .click((ev) => toggleProtection.call(this, "p2"));
-    html
-      .find(".active_protection_p3")
-      .click((ev) => toggleProtection.call(this, "p3"));
-
     /****************************************************** Clique sur un talent de combat ****************************************/
     html.find(".clic_technique_combat").click((ev) => {
       if (!this.token) {
@@ -374,44 +735,46 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
         top: 100,
         left: 100,
         width: 400,
-        height: 200,
+        classes: ["dialog", "window-dialog"],
       };
 
       const myDialogOptions_test = {
         top: 100,
         left: 100,
         width: 400,
-        height: 200,
+        classes: ["dialog", "window-dialog"],
       };
 
       const myDialogOptions_ardence = {
         top: 100,
         left: 100,
         width: 380,
-        height: 200,
+        classes: ["dialog", "window-dialog"],
       };
 
       const myDialogOptions_traits = {
         top: 100,
         left: 100,
         width: 920,
-        height: 200,
+        classes: ["dialog", "window-dialog"],
       };
       const myDialogOptions_spes = {
         top: 100,
         left: 100,
         width: 900,
-        height: 200,
+        classes: ["dialog", "window-dialog"],
       };
       const myDialogOptions_diff = {
         top: 100,
         left: 100,
         width: 1000,
+        classes: ["dialog", "window-dialog"],
       };
       const myDialogOptions_bonus = {
         top: 100,
         left: 100,
         width: 500,
+        classes: ["dialog", "window-dialog"],
       };
       let r = new Roll("1d10");
 
@@ -433,24 +796,54 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
 
       /******************************* Dialogue Nombre de points d'Ardence *********************/
 
-      if (this.actor.system.pts_ardence.value >= 1) {
-        btns_ar[1] = { label: 1, callback: () => (ptardence = 1) };
+      const _fireIconCombat =
+        "<i class='fas fa-fire' style='color:#ff7900'></i>";
+      for (let i = 1; i <= this.actor.system.pts_ardence.value; i++) {
+        btns_ar[i] = {
+          label: _fireIconCombat.repeat(i) + " " + i,
+          callback: () => (ptardence = i),
+        };
       }
-      if (this.actor.system.pts_ardence.value >= 2) {
-        btns_ar[1] = { label: 1, callback: () => (ptardence = 1) };
-        btns_ar[2] = { label: 2, callback: () => (ptardence = 2) };
+      let bonus = "";
+      var btns = {};
+      btns["NoSpe"] = { label: "Aucune SPE", callback: () => (bonus = 0) };
+      if (this.actor.system.spe1.value !== "") {
+        btns["btn_spes1"] = {
+          label: this.actor.system.spe1.value,
+          callback: () => (bonus = this.actor.system.rg_spe_1.value),
+        };
       }
-      if (this.actor.system.pts_ardence.value >= 3) {
-        btns_ar[1] = { label: 1, callback: () => (ptardence = 1) };
-        btns_ar[2] = { label: 2, callback: () => (ptardence = 2) };
-        btns_ar[3] = { label: 3, callback: () => (ptardence = 3) };
+      if (this.actor.system.spe2.value !== "") {
+        btns["btn_spes2"] = {
+          label: this.actor.system.spe2.value,
+          callback: () => (bonus = this.actor.system.rg_spe_2.value),
+        };
       }
-      if (this.actor.system.pts_ardence.value >= 4) {
-        btns_ar[1] = { label: 1, callback: () => (ptardence = 1) };
-        btns_ar[2] = { label: 2, callback: () => (ptardence = 2) };
-        btns_ar[3] = { label: 3, callback: () => (ptardence = 3) };
-        btns_ar[4] = { label: 4, callback: () => (ptardence = 4) };
+      if (this.actor.system.spe3.value !== "") {
+        btns["btn_spes3"] = {
+          label: this.actor.system.spe3.value,
+          callback: () => (bonus = this.actor.system.rg_spe_3.value),
+        };
       }
+      if (this.actor.system.spe4.value !== "") {
+        btns["btn_spes4"] = {
+          label: this.actor.system.spe4.value,
+          callback: () => (bonus = this.actor.system.rg_spe_4.value),
+        };
+      }
+      if (this.actor.system.spe5.value !== "") {
+        btns["btn_spes5"] = {
+          label: this.actor.system.spe5.value,
+          callback: () => (bonus = this.actor.system.rg_spe_5.value),
+        };
+      }
+      if (this.actor.system.spe6.value !== "") {
+        btns["btn_spes6"] = {
+          label: this.actor.system.spe6.value,
+          callback: () => (bonus = this.actor.system.rg_spe_6.value),
+        };
+      }
+      let _skipSpe = Object.keys(btns).length <= 1;
       console.log(this.actor.system.talents_combat[comp].bonus); //TODO : à supprimer
       if (this.actor.system.talents_combat[comp].bonus !== "adr") {
         /******************************* Combat Armes de tir ou lancer *********************/
@@ -459,15 +852,15 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
           {
             title: label.toUpperCase(),
             content:
-              "<div class='card-header'><span><img src='systems/mega/images/gears.gif' width=30px; height=30px; style='border:none'>ARDENCE</span></div>&nbsp" +
-              "<br><span class='bouton_texte'>Voulez-vous placer des points d'ardence ?</span><br><br>",
+              "<div class='card-header'><span><i class='fas fa-fire'></i> ARDENCE</span></div>" +
+              "<div style='padding:12px 8px;text-align:center'><span class='bouton_texte'>Voulez-vous placer des points d'<b>ardence</b> ?</span></div>",
             buttons: {
               oui: {
-                label: "NON",
+                label: "<i class='fas fa-times'></i> NON",
                 callback: () => (ardence = 0),
               },
               non: {
-                label: "OUI",
+                label: "<i class='fas fa-fire'></i> OUI",
                 callback: () => (ardence = 1),
               },
             },
@@ -479,27 +872,21 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
                     {
                       title: label.toUpperCase(),
                       content:
-                        "<div class='card-header'><span>Vous avez " +
+                        "<div class='card-header'><span><i class='fas fa-fire'></i> Vous avez " +
                         toto +
                         " pts d'ardence</span></div>" +
-                        "<br><span class='bouton_texte'>Combien souhaitez-vous en placer ?</span><br><br>",
+                        "<div style='padding:12px 8px;text-align:center'><span class='bouton_texte'>Combien souhaitez-vous en placer ?</span></div>",
                       buttons: btns_ar,
                       //close: () => d.render(true)
                       close: function () {
                         if (ptardence !== "") {
-                          if (ptardence === 1) {
-                            ardence_combat = 2;
+                          ardence_combat = ptardence * 2;
+                          if (_skipSpe) {
+                            bonus = 0;
+                            dialog_BONUS.render(true);
+                          } else {
+                            d2.render(true);
                           }
-                          if (ptardence === 2) {
-                            ardence_combat = 4;
-                          }
-                          if (ptardence === 3) {
-                            ardence_combat = 6;
-                          }
-                          if (ptardence === 4) {
-                            ardence_combat = 8;
-                          }
-                          dialog_BONUS.render(true);
                         }
                       },
                     },
@@ -507,7 +894,12 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
                   );
                   dialog_ardence.render(true);
                 } else {
-                  dialog_BONUS.render(true);
+                  if (_skipSpe) {
+                    bonus = 0;
+                    dialog_BONUS.render(true);
+                  } else {
+                    d2.render(true);
+                  }
                 }
               }
             },
@@ -533,17 +925,41 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
           {
             title: label.toUpperCase(),
             content:
-              "<div class='card-header'><span><img src='systems/mega/images/gears.gif' width=30px; height=30px; style='border:none'>DIFF</span></div>&nbsp" +
-              '<br><span class="bouton_texte">Sélectionnez la DIFF.</span><br><br>',
+              "<div class='card-header'><span><i class='fas fa-bullseye'></i> DIFFICULTÉ</span></div>" +
+              "<div style='padding:12px 8px;text-align:center'><i class='fas fa-bullseye' style='font-size:2em;color:#aaa;display:block;margin-bottom:8px'></i><span class='bouton_texte'>Sélectionnez la <b>DIFF</b>.</span></div>",
             buttons: buttons,
             default: "10",
             close: () => {
               if (diff !== "") {
-                this.testTir(Nom_acteur, comp, diff, ptardence, bonuspool);
+                this.testTir(
+                  Nom_acteur,
+                  comp,
+                  diff,
+                  ptardence,
+                  bonuspool,
+                  bonus,
+                );
               }
             },
           },
           myDialogOptions_diff,
+        );
+
+        let d2 = new Dialog(
+          {
+            title: label.toUpperCase(),
+            content:
+              "<div class='card-header'><span><i class='fas fa-link'></i> SPÉ ASSOCIÉE</span></div>" +
+              "<div style='padding:12px 8px;text-align:center'><i class='fas fa-link' style='font-size:2em;color:#aaa;display:block;margin-bottom:8px'></i><span class='bouton_texte'>Voulez-vous utiliser une <b>SPÉ</b> ?</span></div>",
+            buttons: btns,
+            default: "NoSpe",
+            close: function () {
+              if (bonus !== "") {
+                dialog_BONUS.render(true);
+              }
+            },
+          },
+          myDialogOptions_spes,
         );
 
         /******************************* Construction de la fenêtre de dialogue BONUS pour un combat de tir ou lancer ************************************/
@@ -555,9 +971,11 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
           let label = "";
           for (let i = min; i <= max; i++) {
             if (i > 0) {
-              label = "+" + i.toString();
+              label = `<span style="color:#4caf50;font-weight:bold">+${i}</span>`;
+            } else if (i < 0) {
+              label = `<span style="color:#f44336;font-weight:bold">${i}</span>`;
             } else {
-              label = i.toString();
+              label = `<b>0</b>`;
             }
             buttons[`b${i}`] = {
               label: label,
@@ -574,8 +992,8 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
           {
             title: label.toUpperCase(),
             content:
-              "<div class='card-header'><span><img src='systems/mega/images/gears.gif' width=30px; height=30px; style='border:none'>BONUS/MALUS</span></div>&nbsp" +
-              "<br><span class='bouton_texte'>Sélectionnez le BONUS/MALUS à ajouter au pool</span><br><br>",
+              "<div class='card-header'><span><i class='fas fa-plus-minus'></i> BONUS / MALUS</span></div>" +
+              "<div style='padding:12px 8px;text-align:center'><span class='bouton_texte'>Sélectionnez le <b>Bonus/Malus</b> à ajouter au pool</span></div>",
             buttons: bonusButtons,
             default: "b0",
             close: () => {
@@ -587,18 +1005,26 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
           myDialogOptions_bonus,
         );
         if (
-          this.actor.system.reduit === 1 &&
+          this.actor.system.reduit >= 1 &&
           this.actor.system.talents_combat[comp].score === 0
         ) {
           ui.notifications.error(
             `La fiche est mode comparse. Vous devez affecter un Rang au talent pour pouvoir lancer un jet.`,
           );
         } else {
-          if (this.actor.system.pts_ardence.value > 0) {
-            dialog_ardence_choix.render(true);
-          } // Si le joeur a des points d'ardence, on lance la fenêtre ardence sinon on envoie direct la DIFF
+          if (
+            this.actor.system.reduit == 1 ||
+            this.actor.system.pts_ardence.value === 0
+          ) {
+            if (_skipSpe) {
+              bonus = 0;
+              dialog_BONUS.render(true);
+            } else {
+              d2.render(true);
+            }
+          } // En mode figurant ou sans ardence, on va direct à la DIFF
           else {
-            dialog_DIFF.render(true);
+            dialog_ardence_choix.render(true);
           }
         }
       } else {
@@ -608,17 +1034,17 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
           {
             title: label.toUpperCase(),
             content:
-              "<div class='card-header'><span><img src='systems/mega/images/gears.gif' width=30px; height=30px; style='border:none'>ARDENCE</span></div>&nbsp" +
-              "<br><span class='bouton_texte'>Voulez-vous placer des points d'ardence ?</span><br><br>",
+              "<div class='card-header'><span><i class='fas fa-fire'></i> ARDENCE</span></div>" +
+              "<div style='padding:12px 8px;text-align:center'><i class='fas fa-fire' style='font-size:2em;color:#ff7900;display:block;margin-bottom:8px'></i><span class='bouton_texte'>Voulez-vous placer des points d'<b>ardence</b> ?</span></div>",
             buttons: {
               oui: {
-                label: "NON",
+                label: "<i class='fas fa-times'></i> NON",
                 // open: function() { $(this).addClass('yescls') },
                 // icons: { primary: "ui-icon-check", secondary: "ui-icon-circle-check" },
                 callback: () => (ardence = 0),
               },
               non: {
-                label: "OUI",
+                label: "<i class='fas fa-fire'></i> OUI",
                 callback: () => (ardence = 1),
               },
             },
@@ -630,27 +1056,21 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
                     {
                       title: label.toUpperCase(),
                       content:
-                        "<div class='card-header'><span>Vous avez " +
+                        "<div class='card-header'><span><i class='fas fa-fire' style='color:#ff7900'></i> Vous avez <b style='color:#ff7900'>" +
                         toto +
-                        " pts d'ardence</span></div>" +
-                        "<br><span class='bouton_texte'>Combien souhaitez-vous en placer ?</span><br><br>",
+                        "</b> pts d'ardence</span></div>" +
+                        "<div style='padding:12px 8px;text-align:center'><span class='bouton_texte'>Combien souhaitez-vous <b>en placer</b> ?</span></div>",
                       buttons: btns_ar,
                       //close: () => d.render(true)
                       close: function () {
                         if (ptardence !== "") {
-                          if (ptardence === 1) {
-                            ardence_combat = 2;
+                          ardence_combat = ptardence * 2;
+                          if (_skipSpe) {
+                            bonus = 0;
+                            dialog_BONUS.render(true);
+                          } else {
+                            d2.render(true);
                           }
-                          if (ptardence === 2) {
-                            ardence_combat = 4;
-                          }
-                          if (ptardence === 3) {
-                            ardence_combat = 6;
-                          }
-                          if (ptardence === 4) {
-                            ardence_combat = 8;
-                          }
-                          dialog_BONUS.render(true);
                         }
                       },
                     },
@@ -658,7 +1078,12 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
                   );
                   dialog_ardence.render(true);
                 } else {
-                  dialog_BONUS.render(true);
+                  if (_skipSpe) {
+                    bonus = 0;
+                    dialog_BONUS.render(true);
+                  } else {
+                    d2.render(true);
+                  }
                 }
               }
             },
@@ -666,7 +1091,7 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
           myDialogOptions_ardence,
         );
 
-        /******************************* Dialogue DIFF *********************/
+        /******************************* Dialogue DIFF **********************/
         function generateDiffButtons(min, max) {
           let buttons = {};
           if (Array.from(game.user.targets).length !== 0) {
@@ -699,10 +1124,10 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
           {
             title: label.toUpperCase(),
             content:
-              "<div class='card-header'><span><img src='systems/mega/images/gears.gif' width=30px; height=30px; style='border:none'>DIFF</span></div>&nbsp" +
-              '<br><span class="bouton_texte">' +
+              "<div class='card-header'><span><i class='fas fa-bullseye'></i> DIFFICULTÉ</span></div>" +
+              "<div style='padding:12px 8px;text-align:center'><i class='fas fa-bullseye' style='font-size:2em;color:#aaa;display:block;margin-bottom:8px'></i><span class='bouton_texte'>" +
               msg +
-              "</span><br><br>",
+              "</span></div>",
             buttons: generateDiffButtons(4, 30),
             default: "DEF",
             close: () => {
@@ -741,11 +1166,15 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
                     this.actor.system.combat_modif.value +
                     this.actor.system.domaines.combat.value;
                 }
+                mod = mod + bonus;
                 //dododada
                 if (mod !== 0) {
                   if (this.actor.system.talents_combat[comp].bonus === "adr") {
                     if (bonuspool !== 0) {
-                      if (this.actor.system.reduit == 1) {
+                      if (
+                        this.actor.system.reduit == 1 ||
+                        this.actor.system.reduit == 2
+                      ) {
                         r = new Roll("1d" + mod + "+" + bonuspool);
                       } else {
                         r = new Roll(
@@ -760,7 +1189,10 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
                         );
                       }
                     } else {
-                      if (this.actor.system.reduit == 1) {
+                      if (
+                        this.actor.system.reduit == 1 ||
+                        this.actor.system.reduit == 2
+                      ) {
                         r = new Roll("1d" + mod);
                       } else {
                         r = new Roll(
@@ -776,7 +1208,10 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
                   } else {
                     //Normalement, on ne passe jamais ici !!!
                     if (bonuspool !== 0) {
-                      if (this.actor.system.reduit == 1) {
+                      if (
+                        this.actor.system.reduit == 1 ||
+                        this.actor.system.reduit == 2
+                      ) {
                         r = new Roll("1d" + mod + "+" + bonuspool);
                       } else {
                         r = new Roll(
@@ -791,7 +1226,10 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
                         );
                       }
                     } else {
-                      if (this.actor.system.reduit == 1) {
+                      if (
+                        this.actor.system.reduit == 1 ||
+                        this.actor.system.reduit == 2
+                      ) {
                         r = new Roll("1d" + mod);
                       } else {
                         r = new Roll(
@@ -846,6 +1284,13 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
                   }
                 }
 
+                // Supprimer les termes 1d0 de la formule (valeur à 0)
+                const _cleanedCombatFormula = r.formula
+                  .replace(/1d0\s*\+\s*/g, "")
+                  .replace(/\s*\+\s*1d0\b/g, "")
+                  .trim();
+                if (_cleanedCombatFormula !== r.formula)
+                  r = new Roll(_cleanedCombatFormula);
                 let type_jet = this.actor.system.talents_combat[comp].label;
                 r.evaluate().then(() => {
                   let resultat = r.total;
@@ -916,19 +1361,19 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
                   if (result_final >= 0) {
                     marge = Math.floor(result_final / 3);
                     result_diff =
-                      '<p style="background-color:#A3B6BB; color:white; font-size: 22px; text-align:center; text-shadow: 1px 1px 2px black;"> DIFF ' +
+                      '<div class="mega-roll-diff"><i class="fas fa-bullseye"></i> DIFF ' +
                       def_temp +
-                      '</p></div></span><div><span><b><p style="background-color:green; color:white; text-align:center; text-shadow: 1px 1px 2px black; font-size: 16px;";>Reussite - Marge de reussite : ' +
+                      '</div><div class="mega-roll-success"><i class="fas fa-check-circle"></i> Réussite <span class="mega-roll-margin">Marge : ' +
                       marge +
-                      "</p></b></div></span>";
+                      "</span></div>";
                   } else {
                     marge = Math.ceil(result_final / 3);
                     result_diff =
-                      '<div><span><b><p style="background-color:#A3B6BB; color:white; font-size: 22px; text-align:center; text-shadow: 1px 1px 2px black;">DIFF ' +
+                      '<div class="mega-roll-diff"><i class="fas fa-bullseye"></i> DIFF ' +
                       def_temp +
-                      '</p></div></span><div><span><b><p style="background-color:red; color:white; text-align:center; text-shadow: 1px 1px 2px black; font-size: 16px;";>Echec - Marge d\'echec : ' +
+                      '</div><div class="mega-roll-failure"><i class="fas fa-times-circle"></i> Échec <span class="mega-roll-margin">Marge : ' +
                       marge +
-                      "</p></b></div></span>";
+                      "</span></div>";
                   }
                   if (marge === 0 && result_final >= 0) {
                     melee_perdue = this.actor.system.talents_combat[comp].av0;
@@ -978,133 +1423,139 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
                   switch (effet_coup1) {
                     case "H":
                       effet_coup1 =
-                        '<span><div class="chat_effet_immediat">Immédiat : HANDICAPER</div></Span>';
+                        '<div class="chat_effet_immediat"><i class="fas fa-bolt"></i> Immédiat : HANDICAPER</div>';
                       break;
                     case "A":
                       effet_coup1 =
-                        '<span><div class="chat_effet_immediat">Immédiat : ASSOMMER</div></Span>';
+                        '<div class="chat_effet_immediat"><i class="fas fa-bolt"></i> Immédiat : ASSOMMER</div>';
                       break;
                     case "S":
                       effet_coup1 =
-                        '<span><div class="chat_effet_immediat">Immédiat : SONNER</div></Span>';
+                        '<div class="chat_effet_immediat"><i class="fas fa-bolt"></i> Immédiat : SONNER</div>';
                       break;
                     case "R":
                       effet_coup1 =
-                        '<span><div class="chat_effet_immediat">Immédiat : RENVERSER</div></Span>';
+                        '<div class="chat_effet_immediat"><i class="fas fa-bolt"></i> Immédiat : RENVERSER</div>';
                       break;
                     case "I":
                       effet_coup1 =
-                        '<div class="chat_effet_immediat">Immédiate : IMMOBILISER</div>';
+                        '<div class="chat_effet_immediat"><i class="fas fa-bolt"></i> Immédiat : IMMOBILISER</div>';
                       break;
                     case "P":
                       effet_coup1 =
-                        '<span><div class="chat_effet_action">Prochaine action : POSITIONNEMENT</div></Span>';
+                        '<div class="chat_effet_action"><i class="fas fa-running"></i> Prochaine action : POSITIONNEMENT</div>';
                       break;
                     case "T":
                       effet_coup1 =
-                        '<span><div class="chat_effet_att">Prochaine attaque : TENIR A DISTANCE</div></Span>';
+                        '<div class="chat_effet_att"><i class="fas fa-bullseye"></i> Prochaine attaque : TENIR A DISTANCE</div>';
                       break;
                     case "D":
                       effet_coup1 =
-                        '<span><div class="chat_effet_att">Prochaine défense : DÉFAUT DE LA CUIRASSE</div></Span>';
+                        '<div class="chat_effet_def"><i class="fas fa-shield-alt"></i> Prochaine défense : DÉFAUT DE LA CUIRASSE</div>';
                       break;
                   }
                   switch (effet_coup2) {
                     case "H":
                       effet_coup1 =
-                        '<span><div class="chat_effet_immediat">Immédiat : HANDICAPER</div></Span>';
+                        '<div class="chat_effet_immediat"><i class="fas fa-bolt"></i> Immédiat : HANDICAPER</div>';
                       break;
                     case "A":
                       effet_coup1 =
-                        '<span><div class="chat_effet_immediat">Immédiat : ASSOMMER</div></Span>';
+                        '<div class="chat_effet_immediat"><i class="fas fa-bolt"></i> Immédiat : ASSOMMER</div>';
                       break;
                     case "S":
                       effet_coup1 =
-                        '<span><div class="chat_effet_immediat">Immédiat : SONNER</div></Span>';
+                        '<div class="chat_effet_immediat"><i class="fas fa-bolt"></i> Immédiat : SONNER</div>';
                       break;
                     case "R":
                       effet_coup1 =
-                        '<span><div class="chat_effet_immediat">Immédiat : RENVERSER</div></Span>';
+                        '<div class="chat_effet_immediat"><i class="fas fa-bolt"></i> Immédiat : RENVERSER</div>';
                       break;
                     case "I":
                       effet_coup1 =
-                        '<div class="chat_effet_immediat">Immédiate : IMMOBILISER</div>';
+                        '<div class="chat_effet_immediat"><i class="fas fa-bolt"></i> Immédiat : IMMOBILISER</div>';
                       break;
                     case "P":
                       effet_coup1 =
-                        '<span><div class="chat_effet_action">Prochaine action : POSITIONNEMENT</div></Span>';
+                        '<div class="chat_effet_action"><i class="fas fa-running"></i> Prochaine action : POSITIONNEMENT</div>';
                       break;
                     case "T":
                       effet_coup1 =
-                        '<span><div class="chat_effet_att">Prochaine attaque : TENIR A DISTANCE</div></Span>';
+                        '<div class="chat_effet_att"><i class="fas fa-bullseye"></i> Prochaine attaque : TENIR A DISTANCE</div>';
                       break;
                     case "D":
                       effet_coup1 =
-                        '<span><div class="chat_effet_att">Prochaine défense : DÉFAUT DE LA CUIRASSE</div></Span>';
+                        '<div class="chat_effet_def"><i class="fas fa-shield-alt"></i> Prochaine défense : DÉFAUT DE LA CUIRASSE</div>';
                       break;
                   }
                   switch (effet_coup3) {
                     case "H":
                       effet_coup1 =
-                        '<span><div class="chat_effet_immediat">Immédiat : HANDICAPER</div></Span>';
+                        '<div class="chat_effet_immediat"><i class="fas fa-bolt"></i> Immédiat : HANDICAPER</div>';
                       break;
                     case "A":
                       effet_coup1 =
-                        '<span><div class="chat_effet_immediat">Immédiat : ASSOMMER</div></Span>';
+                        '<div class="chat_effet_immediat"><i class="fas fa-bolt"></i> Immédiat : ASSOMMER</div>';
                       break;
                     case "S":
                       effet_coup1 =
-                        '<span><div class="chat_effet_immediat">Immédiat : SONNER</div></Span>';
+                        '<div class="chat_effet_immediat"><i class="fas fa-bolt"></i> Immédiat : SONNER</div>';
                       break;
                     case "R":
                       effet_coup1 =
-                        '<span><div class="chat_effet_immediat">Immédiat : RENVERSER</div></Span>';
+                        '<div class="chat_effet_immediat"><i class="fas fa-bolt"></i> Immédiat : RENVERSER</div>';
                       break;
                     case "I":
                       effet_coup1 =
-                        '<div class="chat_effet_immediat">Immédiate : IMMOBILISER</div>';
+                        '<div class="chat_effet_immediat"><i class="fas fa-bolt"></i> Immédiat : IMMOBILISER</div>';
                       break;
                     case "P":
                       effet_coup1 =
-                        '<span><div class="chat_effet_action">Prochaine action : POSITIONNEMENT</div></Span>';
+                        '<div class="chat_effet_action"><i class="fas fa-running"></i> Prochaine action : POSITIONNEMENT</div>';
                       break;
                     case "T":
                       effet_coup1 =
-                        '<span><div class="chat_effet_att">Prochaine attaque : TENIR A DISTANCE</div></Span>';
+                        '<div class="chat_effet_att"><i class="fas fa-bullseye"></i> Prochaine attaque : TENIR A DISTANCE</div>';
                       break;
                     case "D":
                       effet_coup1 =
-                        '<span><div class="chat_effet_att">Prochaine défense : DÉFAUT DE LA CUIRASSE</div></Span>';
+                        '<div class="chat_effet_def"><i class="fas fa-shield-alt"></i> Prochaine défense : DÉFAUT DE LA CUIRASSE</div>';
                       break;
                   }
 
                   if (letale) {
                     melee_perdue = calcMeleePerdue(marge, comp, this.actor);
                     if (marge == 0 && result_final >= 0) {
-                      vie_perdue = calcViePerdue(marge, comp, this.actor);
+                      const _dmc1p = calcViePerdue(
+                        melee_perdue,
+                        comp,
+                        this.actor,
+                      );
+                      vie_perdue = _dmc1p.vie_perdue;
                       result_diff +=
-                        '<p class="result_diff"> ' +
+                        '<div class="mega-roll-damage-melee"><i class="fas fa-shield-alt"></i> ' +
                         currentTarget.name +
-                        " PERD " +
+                        " perd <strong>" +
                         melee_perdue +
-                        " points de melee</p>";
+                        "</strong>pt de Mêlée</div>";
                       result_diff +=
-                        '<p class="result_diff"> ' +
+                        '<div class="mega-roll-damage-vie"><i class="fas fa-heart"></i> ' +
                         currentTarget.name +
-                        " perd " +
+                        " perd <strong>" +
                         vie_perdue +
-                        " points de vie</p>";
+                        "</strong>pt de Vie</div>";
                       if (retraitAuto) {
                         game.modules
                           .get("megasocket")
-                          .api.documentUpdate(currentTarget, {
+                          ?.api?.documentUpdate(currentTarget, {
                             "system.health.value":
                               currentTarget.system.health.value - vie_perdue,
+                            "system.melee_impair": _dmc1p.new_melee_impair,
                           })
-                          .then(() => {
+                          ?.then(() => {
                             game.modules
                               .get("megasocket")
-                              .api.documentUpdate(currentTarget, {
+                              ?.api?.documentUpdate(currentTarget, {
                                 "system.power.value":
                                   currentTarget.system.power.value -
                                   melee_perdue,
@@ -1162,9 +1613,9 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
                           comp +
                           " data-melee=" +
                           melee_perdue +
-                          "> Conso 0Av <br> -" +
+                          "><i class='fas fa-coins'></i> <b>0Av</b><br>-" +
                           melee_perdue +
-                          "pt de Mêlée " +
+                          " pt Mêlée " +
                           effet_0av_1 +
                           " " +
                           effet_0av_2 +
@@ -1184,9 +1635,9 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
                           comp +
                           " data-melee=" +
                           melee_perdue_1av +
-                          "> Conso 1Av <br> -" +
+                          "><i class='fas fa-coins'></i> <b>1Av</b><br>-" +
                           melee_perdue_1av +
-                          "pt de Mêlée " +
+                          " pt Mêlée " +
                           effet_1av_1 +
                           " " +
                           effet_1av_2 +
@@ -1230,9 +1681,9 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
                           comp +
                           " data-melee=" +
                           melee_perdue +
-                          "> Conso 0Av <br> -" +
+                          "><i class='fas fa-coins'></i> <b>0Av</b><br>-" +
                           melee_perdue +
-                          "pt de Mêlée " +
+                          " pt Mêlée " +
                           effet_0av_1 +
                           " " +
                           effet_0av_2 +
@@ -1252,9 +1703,9 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
                           comp +
                           " data-melee=" +
                           melee_perdue_1av +
-                          "> Conso 1Av <br> -" +
+                          "><i class='fas fa-coins'></i> <b>1Av</b><br>-" +
                           melee_perdue_1av +
-                          "pt de Mêlée " +
+                          " pt Mêlée " +
                           effet_1av_1 +
                           " " +
                           effet_1av_2 +
@@ -1274,9 +1725,9 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
                           comp +
                           " data-melee=" +
                           melee_perdue_2av +
-                          "> Conso 2Av <br> -" +
+                          "><i class='fas fa-coins'></i> <b>2Av</b><br>-" +
                           melee_perdue_2av +
-                          "pt de Mêlée " +
+                          " pt Mêlée " +
                           effet_2av_1 +
                           " " +
                           effet_2av_2 +
@@ -1328,9 +1779,9 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
                           comp +
                           " data-melee=" +
                           melee_perdue +
-                          "> Conso 0Av <br> -" +
+                          "><i class='fas fa-coins'></i> <b>0Av</b><br>-" +
                           melee_perdue +
-                          "pt de Mêlée " +
+                          " pt Mêlée " +
                           effet_0av_1 +
                           " " +
                           effet_0av_2 +
@@ -1350,9 +1801,9 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
                           comp +
                           " data-melee=" +
                           melee_perdue_1av +
-                          "> Conso 1Av <br> -" +
+                          "><i class='fas fa-coins'></i> <b>1Av</b><br>-" +
                           melee_perdue_1av +
-                          "pt de Mêlée " +
+                          " pt Mêlée " +
                           effet_1av_1 +
                           " " +
                           effet_1av_2 +
@@ -1372,9 +1823,9 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
                           comp +
                           " data-melee=" +
                           melee_perdue_2av +
-                          "> Conso 2Av <br> -" +
+                          "><i class='fas fa-coins'></i> <b>2Av</b><br>-" +
                           melee_perdue_2av +
-                          "pt de Mêlée " +
+                          " pt Mêlée " +
                           effet_2av_1 +
                           " " +
                           effet_2av_2 +
@@ -1394,9 +1845,9 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
                           comp +
                           " data-melee=" +
                           melee_perdue_3av +
-                          "> Conso 3Av <br> -" +
+                          "><i class='fas fa-coins'></i> <b>3Av</b><br>-" +
                           melee_perdue_3av +
-                          "pt de Mêlée " +
+                          " pt Mêlée " +
                           effet_3av_1 +
                           " " +
                           effet_3av_2 +
@@ -1417,11 +1868,11 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
                         "<div class='card-header'><span>" +
                         type_jet +
                         "</span></div><br>" +
-                        '<div><span><b><p style="font-size: 18px; text-align:center;;";>' +
+                        '<div class="mega-roll-attacker"><i class="fas fa-crosshairs"></i> ' +
                         Nom_acteur +
                         " attaque " +
                         nomCible +
-                        "</b></p></span></div>" +
+                        "</div>" +
                         affichage,
                       speaker: ChatMessage.getSpeaker({ actor: this.token }),
                     });
@@ -1433,15 +1884,15 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
                           "<div class='card-header'><span>" +
                           type_jet +
                           "</span></div><br>" +
-                          '<div><span><b><p style="font-size: 18px; text-align:center;";>' +
+                          '<div class="mega-roll-attacker"><i class="fas fa-crosshairs"></i> ' +
                           Nom_acteur +
                           " attaque " +
                           game.user.targets.values().next().value.name +
-                          "</b></p></span></div>" +
+                          "</div>" +
                           result_diff +
-                          '<table border="1"><colgroup><col></colgroup><tbody><tr><td style="text-align: center;"><strong>' +
+                          '<div class="result_diff">' +
                           noLetaleMsg +
-                          "</strong></td></tr></tbody></table>",
+                          "</div>",
                         speaker: ChatMessage.getSpeaker({
                           actor: this.actor,
                         }),
@@ -1466,6 +1917,23 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
           myDialogOptions_diff,
         );
 
+        let d2 = new Dialog(
+          {
+            title: label.toUpperCase(),
+            content:
+              "<div class='card-header'><span><i class='fas fa-link'></i> SPÉ ASSOCIÉE</span></div>" +
+              "<div style='padding:12px 8px;text-align:center'><i class='fas fa-link' style='font-size:2em;color:#aaa;display:block;margin-bottom:8px'></i><span class='bouton_texte'>Voulez-vous utiliser une <b>SPÉ</b> ?</span></div>",
+            buttons: btns,
+            default: "NoSpe",
+            close: function () {
+              if (bonus !== "") {
+                dialog_BONUS.render(true);
+              }
+            },
+          },
+          myDialogOptions_spes,
+        );
+
         /******************************* Dialogue Bonus *********************/
         let bonuspool = "";
 
@@ -1475,9 +1943,11 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
           let label = "";
           for (let i = min; i <= max; i++) {
             if (i > 0) {
-              label = "+" + i.toString();
+              label = `<span style="color:#4caf50;font-weight:bold">+${i}</span>`;
+            } else if (i < 0) {
+              label = `<span style="color:#f44336;font-weight:bold">${i}</span>`;
             } else {
-              label = i.toString();
+              label = `<b>0</b>`;
             }
             buttons[`b${i}`] = {
               label: label,
@@ -1493,8 +1963,8 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
           {
             title: label.toUpperCase(),
             content:
-              "<div class='card-header'><span><img src='systems/mega/images/gears.gif' width=30px; height=30px; style='border:none'>BONUS/MALUS</span></div>&nbsp" +
-              "<br><span class='bouton_texte'>Sélectionnez le BONUS/MALUS à ajouter au pool</span><br><br>",
+              "<div class='card-header'><span><i class='fas fa-plus-minus'></i> BONUS / MALUS</span></div>" +
+              "<div style='padding:12px 8px;text-align:center'><span class='bouton_texte'>Sélectionnez le <b>Bonus/Malus</b> à ajouter au pool</span></div>",
             buttons: bonusButtons,
             default: "b0",
             close: () => {
@@ -1504,24 +1974,32 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
           myDialogOptions_bonus,
         );
         if (
-          this.actor.system.reduit === 1 &&
+          this.actor.system.reduit >= 1 &&
           this.actor.system.talents_combat[comp].score === 0
         ) {
           ui.notifications.error(
             `La fiche est mode comparse. Vous devez affecter un Rang au talent pour pouvoir lancer un jet.`,
           );
         } else {
-          if (this.actor.system.pts_ardence.value > 0) {
+          if (
+            this.actor.system.reduit == 1 ||
+            this.actor.system.pts_ardence.value === 0
+          ) {
+            if (_skipSpe) {
+              bonus = 0;
+              dialog_BONUS.render(true);
+            } else {
+              d2.render(true);
+            }
+          } //En mode figurant ou sans ardence, on va direct au BONUS
+          else {
             dialog_ardence_choix.render(true);
           } //Si le joueur a de l'ardence
-          else {
-            dialog_BONUS.render(true);
-          } //Sinon on lance la fenêtre de DIFF directement
         }
       }
     });
 
-    /******************************* Combats sans arme (mains nues, techniques, charge) *********************/
+    /******************************* Combats sans arme (mains nues, techniques, charge) **********************/
     html.find(".clic_mainsnues").click((ev) => {
       if (!this.token) {
         ui.notifications.error(
@@ -1529,7 +2007,7 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
         );
         return;
       }
-      let diff = 0;
+      let diff = null;
       let comp = ev.currentTarget.getAttribute("value");
       let effet_arme = "";
       let ardence = "";
@@ -1545,66 +2023,95 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
         top: 100,
         left: 100,
         width: 400,
-        height: 200,
+        classes: ["dialog", "window-dialog"],
       };
 
       const myDialogOptions_test = {
         top: 100,
         left: 100,
         width: 400,
-        height: 200,
+        classes: ["dialog", "window-dialog"],
       };
 
       const myDialogOptions_ardence = {
         top: 100,
         left: 100,
         width: 380,
-        height: 200,
+        classes: ["dialog", "window-dialog"],
       };
 
       const myDialogOptions_traits = {
         top: 100,
         left: 100,
         width: 920,
-        height: 200,
+        classes: ["dialog", "window-dialog"],
       };
       const myDialogOptions_spes = {
         top: 100,
         left: 100,
         width: 900,
-        height: 200,
+        classes: ["dialog", "window-dialog"],
       };
       const myDialogOptions_diff = {
         top: 100,
         left: 100,
         width: 1000,
-        // height: 200
+        classes: ["dialog", "window-dialog"],
       };
       const myDialogOptions_bonus = {
         top: 100,
         left: 100,
         width: 500,
-        // height: 200
+        classes: ["dialog", "window-dialog"],
       };
       let r = new Roll("1d10");
-      if (this.actor.system.pts_ardence.value >= 1) {
-        btns_ar[1] = { label: 1, callback: () => (ptardence = 1) };
+      const _fireIconMN = "<i class='fas fa-fire' style='color:#ff7900'></i>";
+      for (let i = 1; i <= this.actor.system.pts_ardence.value; i++) {
+        btns_ar[i] = {
+          label: _fireIconMN.repeat(i) + " " + i,
+          callback: () => (ptardence = i),
+        };
       }
-      if (this.actor.system.pts_ardence.value >= 2) {
-        btns_ar[1] = { label: 1, callback: () => (ptardence = 1) };
-        btns_ar[2] = { label: 2, callback: () => (ptardence = 2) };
+      let bonus = "";
+      var btns = {};
+      btns["NoSpe"] = { label: "Aucune SPE", callback: () => (bonus = 0) };
+      if (this.actor.system.spe1.value !== "") {
+        btns["btn_spes1"] = {
+          label: this.actor.system.spe1.value,
+          callback: () => (bonus = this.actor.system.rg_spe_1.value),
+        };
       }
-      if (this.actor.system.pts_ardence.value >= 3) {
-        btns_ar[1] = { label: 1, callback: () => (ptardence = 1) };
-        btns_ar[2] = { label: 2, callback: () => (ptardence = 2) };
-        btns_ar[3] = { label: 3, callback: () => (ptardence = 3) };
+      if (this.actor.system.spe2.value !== "") {
+        btns["btn_spes2"] = {
+          label: this.actor.system.spe2.value,
+          callback: () => (bonus = this.actor.system.rg_spe_2.value),
+        };
       }
-      if (this.actor.system.pts_ardence.value >= 4) {
-        btns_ar[1] = { label: 1, callback: () => (ptardence = 1) };
-        btns_ar[2] = { label: 2, callback: () => (ptardence = 2) };
-        btns_ar[3] = { label: 3, callback: () => (ptardence = 3) };
-        btns_ar[4] = { label: 4, callback: () => (ptardence = 4) };
+      if (this.actor.system.spe3.value !== "") {
+        btns["btn_spes3"] = {
+          label: this.actor.system.spe3.value,
+          callback: () => (bonus = this.actor.system.rg_spe_3.value),
+        };
       }
+      if (this.actor.system.spe4.value !== "") {
+        btns["btn_spes4"] = {
+          label: this.actor.system.spe4.value,
+          callback: () => (bonus = this.actor.system.rg_spe_4.value),
+        };
+      }
+      if (this.actor.system.spe5.value !== "") {
+        btns["btn_spes5"] = {
+          label: this.actor.system.spe5.value,
+          callback: () => (bonus = this.actor.system.rg_spe_5.value),
+        };
+      }
+      if (this.actor.system.spe6.value !== "") {
+        btns["btn_spes6"] = {
+          label: this.actor.system.spe6.value,
+          callback: () => (bonus = this.actor.system.rg_spe_6.value),
+        };
+      }
+      let _skipSpe = Object.keys(btns).length <= 1;
       let type_poings = Math.floor(Math.random() * 3);
       switch (type_poings) {
         case 0:
@@ -1632,15 +2139,15 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
         {
           title: label.toUpperCase(),
           content:
-            "<div class='card-header'><span><img src='systems/mega/images/gears.gif' width=30px; height=30px; style='border:none'>ARDENCE</span></div>&nbsp" +
-            "<br><span class='bouton_texte'>Voulez-vous placer des points d'ardence ?</span><br><br>",
+            "<div class='card-header'><span><i class='fas fa-fire'></i> ARDENCE</span></div>" +
+            "<div style='padding:12px 8px;text-align:center'><i class='fas fa-fire' style='font-size:2em;color:#ff7900;display:block;margin-bottom:8px'></i><span class='bouton_texte'>Voulez-vous placer des points d'<b>ardence</b> ?</span></div>",
           buttons: {
             oui: {
-              label: "NON",
+              label: "<i class='fas fa-times'></i> NON",
               callback: () => (ardence = 0),
             },
             non: {
-              label: "OUI",
+              label: "<i class='fas fa-fire'></i> OUI",
               callback: () => (ardence = 1),
             },
           },
@@ -1652,27 +2159,21 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
                   {
                     title: label.toUpperCase(),
                     content:
-                      "<div class='card-header'><span>Vous avez " +
+                      "<div class='card-header'><span><i class='fas fa-fire' style='color:#ff7900'></i> Vous avez <b style='color:#ff7900'>" +
                       toto +
-                      " pts d'ardence</span></div>" +
-                      "<br><span class='bouton_texte'>Combien souhaitez-vous en placer ?</span><br><br>",
+                      "</b> pts d'ardence</span></div>" +
+                      "<div style='padding:12px 8px;text-align:center'><span class='bouton_texte'>Combien souhaitez-vous <b>en placer</b> ?</span></div>",
                     buttons: btns_ar,
                     //close: () => d.render(true)
                     close: function () {
                       if (ptardence !== "") {
-                        if (ptardence === 1) {
-                          ardence_combat = 2;
+                        ardence_combat = ptardence * 2;
+                        if (_skipSpe) {
+                          bonus = 0;
+                          dialog_BONUS.render(true);
+                        } else {
+                          d2.render(true);
                         }
-                        if (ptardence === 2) {
-                          ardence_combat = 4;
-                        }
-                        if (ptardence === 3) {
-                          ardence_combat = 6;
-                        }
-                        if (ptardence === 4) {
-                          ardence_combat = 8;
-                        }
-                        dialog_BONUS.render(true);
                       }
                     },
                   },
@@ -1680,7 +2181,12 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
                 );
                 dialog_ardence.render(true);
               } else {
-                dialog_BONUS.render(true);
+                if (_skipSpe) {
+                  bonus = 0;
+                  dialog_BONUS.render(true);
+                } else {
+                  d2.render(true);
+                }
               }
             }
           },
@@ -1702,7 +2208,6 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
             callback: () => (diff = i),
           };
         }
-
         return buttons;
       }
 
@@ -1710,17 +2215,34 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
         {
           title: label.toUpperCase(),
           content:
-            "<div class='card-header'><span><img src='systems/mega/images/gears.gif' width=30px; height=30px; style='border:none'>DIFF</span></div>&nbsp" +
-            '<br><span class="bouton_texte">Sélectionnez la DIFF ou "DEF" pour que la DIFF soit égale à la DEF de la cible.</span><br><br>',
+            "<div class='card-header'><span><i class='fas fa-bullseye'></i> DIFFICULTÉ</span></div>" +
+            "<div style='padding:12px 8px;text-align:center'><i class='fas fa-bullseye' style='font-size:2em;color:#aaa;display:block;margin-bottom:8px'></i><span class='bouton_texte'>Sélectionnez la DIFF ou \"DEF\" pour que la DIFF soit égale à la DEF de la cible.</span></div>",
           buttons: generateDiffButtons(4, 27),
           default: "DEF",
           close: () => {
-            if (diff2 !== "") {
-              this.testmainsnues(comp, diff, ptardence, bonuspool);
+            if (diff !== null) {
+              this.testmainsnues(comp, diff, ptardence, bonuspool, bonus);
             }
           },
         },
         myDialogOptions_diff,
+      );
+
+      let d2 = new Dialog(
+        {
+          title: label.toUpperCase(),
+          content:
+            "<div class='card-header'><span><i class='fas fa-link'></i> SPÉ ASSOCIÉE</span></div>" +
+            "<div style='padding:12px 8px;text-align:center'><i class='fas fa-link' style='font-size:2em;color:#aaa;display:block;margin-bottom:8px'></i><span class='bouton_texte'>Voulez-vous utiliser une <b>SPÉ</b> ?</span></div>",
+          buttons: btns,
+          default: "NoSpe",
+          close: function () {
+            if (bonus !== "") {
+              dialog_BONUS.render(true);
+            }
+          },
+        },
+        myDialogOptions_spes,
       );
 
       // Fonction pour générer les boutons dynamiquement
@@ -1729,9 +2251,11 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
         let label = "";
         for (let i = min; i <= max; i++) {
           if (i > 0) {
-            label = "+" + i.toString();
+            label = `<span style="color:#4caf50;font-weight:bold">+${i}</span>`;
+          } else if (i < 0) {
+            label = `<span style="color:#f44336;font-weight:bold">${i}</span>`;
           } else {
-            label = i.toString();
+            label = `<b>0</b>`;
           }
           buttons[`b${i}`] = {
             label: label,
@@ -1747,8 +2271,8 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
         {
           title: label.toUpperCase(),
           content:
-            "<div class='card-header'><span><img src='systems/mega/images/gears.gif' width=30px; height=30px; style='border:none'>BONUS/MALUS</span></div>&nbsp" +
-            "<br><span class='bouton_texte'>Sélectionnez le BONUS/MALUS à ajouter au pool</span><br><br>",
+            "<div class='card-header'><span><i class='fas fa-plus-minus'></i> BONUS / MALUS</span></div>" +
+            "<div style='padding:12px 8px;text-align:center'><span class='bouton_texte'>Sélectionnez le <b>Bonus/Malus</b> à ajouter au pool</span></div>",
           buttons: bonusButtons,
           default: "b0",
           close: () => {
@@ -1760,24 +2284,65 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
         myDialogOptions_bonus,
       );
       if (
-        this.actor.system.reduit === 1 &&
+        this.actor.system.reduit >= 1 &&
         this.actor.system.talents_combat[comp].score === 0
       ) {
         ui.notifications.error(
           `La fiche est mode comparse. Vous devez affecter un Rang au talent pour pouvoir lancer un jet.`,
         );
       } else {
-        if (this.actor.system.pts_ardence.value > 0) {
-          dialog_ardence_choix.render(true);
+        if (
+          this.actor.system.reduit == 1 ||
+          this.actor.system.pts_ardence.value === 0
+        ) {
+          if (_skipSpe) {
+            bonus = 0;
+            dialog_BONUS.render(true);
+          } else {
+            d2.render(true);
+          }
         } else {
-          dialog_BONUS.render(true);
+          dialog_ardence_choix.render(true);
         }
+      }
+    });
+
+    // Clic droit sur une arme de technique de combat pour ouvrir sa fiche
+    html.find(".clic_technique_combat").on("contextmenu", (ev) => {
+      ev.preventDefault();
+      let comp = ev.currentTarget.getAttribute("value");
+      let objet = this.actor.system.talents_combat[comp].label;
+      let arme = this.actor.items.filter((i) => i.name === objet);
+
+      if (arme && arme.length > 0) {
+        arme[0].sheet.render(true);
+      } else {
+        ui.notifications.error(`Arme '${objet}' non trouvée dans l'inventaire`);
+      }
+    });
+
+    // Clic droit sur une attaque spéciale (mains nues) pour ouvrir sa fiche
+    html.find(".clic_mainsnues").on("contextmenu", (ev) => {
+      ev.preventDefault();
+      let comp = ev.currentTarget.getAttribute("value");
+      let objet = this.actor.system.talents_combat[comp].label;
+      let arme = this.actor.items.filter((i) => i.name === objet);
+
+      if (arme && arme.length > 0) {
+        arme[0].sheet.render(true);
+      } else if (objet && objet.trim() !== "") {
+        ui.notifications.error(`Arme '${objet}' non trouvée dans l'inventaire`);
       }
     });
 
     /************************************** Tests Initiatives ou Esquive ******************************/
     html.find(".combat_rollable").click((ev) => {
       let comp = ev.currentTarget.getAttribute("value");
+      // Supprimer les termes 1d0 de la formule (valeur à 0)
+      comp = comp
+        .replace(/1d0\s*\+\s*/g, "")
+        .replace(/\s*\+\s*1d0\b/g, "")
+        .trim();
       let act = this.actor;
       let nom = ev.currentTarget.getAttribute("label");
       let dataType = ev.currentTarget.getAttribute("data-type");
@@ -1785,6 +2350,7 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
       const myDialogOptions = {
         top: 100,
         left: 100,
+        classes: ["dialog", "window-dialog"],
       };
 
       function generateDiffButtons(min, max) {
@@ -1808,7 +2374,9 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
       let d = new Dialog(
         {
           title: "DIFF",
-          content: "<div class='card-header'><span>DIFF</span></div>",
+          content:
+            "<div class='card-header'><span><i class='fas fa-bullseye'></i> DIFFICULTÉ</span></div>" +
+            "<div style='padding:12px 8px;text-align:center'><i class='fas fa-bullseye' style='font-size:2em;color:#aaa;display:block;margin-bottom:8px'></i><span class='bouton_texte'>Sélectionnez la <b>DIFF</b></span></div>",
           buttons: generateDiffButtons(4, 27),
           default: "NC",
           close: function () {
@@ -1821,23 +2389,23 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
                 if (final > 0) {
                   final = Math.floor(final / 3);
                   result_diff =
-                    '<p style="background-color:#A3B6BB; color:white; font-size: 22px; text-align:center; text-shadow: 1px 1px 2px black;"> DIFF ' +
+                    '<div class="mega-roll-diff"><i class="fas fa-bullseye"></i> DIFF ' +
                     diff +
-                    '</p></div></span><div><span><b><p style="background-color:green; color:white; text-align:center; text-shadow: 1px 1px 2px black; font-size: 16px;";>Reussite - Marge de reussite : ' +
+                    '</div><div class="mega-roll-success"><i class="fas fa-check-circle"></i> Réussite <span class="mega-roll-margin">Marge : ' +
                     final +
-                    "</p></b></div></span>";
+                    "</span></div>";
                 } else {
                   final = Math.ceil(final / 3);
                   result_diff =
-                    '<div><span><b><p style="background-color:#A3B6BB; color:white; font-size: 22px; text-align:center; text-shadow: 1px 1px 2px black;">DIFF ' +
+                    '<div class="mega-roll-diff"><i class="fas fa-bullseye"></i> DIFF ' +
                     diff +
-                    '</p></div></span><div><span><b><p style="background-color:red; color:white; text-align:center; text-shadow: 1px 1px 2px black; font-size: 16px;";>Echec - Marge d\'echec : ' +
+                    '</div><div class="mega-roll-failure"><i class="fas fa-times-circle"></i> Échec <span class="mega-roll-margin">Marge : ' +
                     final +
-                    "</p></b></div></span>";
+                    "</span></div>";
                 }
               } else {
                 result_diff =
-                  '<div><span><b><p style="background-color:#A3B6BB; color:white; font-size: 22px; text-align:center; text-shadow: 1px 1px 2px black;">DIFF NC</p></div></span><div>';
+                  '<div class="mega-roll-diff mega-roll-diff-nc"><i class="fas fa-question-circle"></i> DIFF NC</div>';
               }
               r.toMessage({
                 flavor:
@@ -1922,15 +2490,23 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
     });
 
     html.find(".reduit").click((ev) => {
-      let etat = ev.currentTarget.getAttribute("value");
-      if (etat == 1) {
-        this.actor.update({ "system.reduit": 0 });
-        ui.notifications.info("Le PNJ devient acteur !");
-        this.position.width = 898; // Nouvelle largeur
+      let etat = parseInt(ev.currentTarget.getAttribute("value"));
+      if (etat === 1) {
+        // figurant → comparse
+        this.actor.update({ "system.reduit": 2 });
+        this.position.width = 921;
         this.position.height = 715;
+        ui.notifications.info("Le PNJ devient comparse !");
+      } else if (etat === 2) {
+        // comparse → acteur
+        this.actor.update({ "system.reduit": 0 });
+        this.position.width = 921;
+        this.position.height = 715;
+        ui.notifications.info("Le PNJ devient acteur !");
       } else {
+        // acteur → figurant
         this.actor.update({ "system.reduit": 1 });
-        this.position.width = 851; // Nouvelle largeur
+        this.position.width = 917;
         this.position.height = 568;
         ui.notifications.info("Le PNJ devient figurant !");
       }
@@ -1947,42 +2523,246 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
       }
     });
 
+    // Clic sur un pouvoir résonant dans la table PNJ → test de pouvoir direct
+    // Clic droit sur un pouvoir résonant PNJ pour afficher les détails
+    // Bouton toggle activation des pouvoirs PSI du PNJ
+    html.find(".toggle-pouvoirs-pnj").click((ev) => {
+      const currentlyActive = this.actor.system.pouvoirs.pouvoirs_actifs;
+      const updates = { "system.pouvoirs.pouvoirs_actifs": !currentlyActive };
+      if (currentlyActive) {
+        updates["system.pts_resonnance.value"] = 0;
+      }
+      this.actor.update(updates);
+    });
+
+    html.find(".pouvoir_psi_pnj").on("contextmenu", (ev) => {
+      ev.preventDefault();
+      const slotKey = ev.currentTarget.getAttribute("value"); // "pouvoir_psi_1" ou "pouvoir_psi_2"
+      this._showPouvoirDetails(slotKey);
+    });
+
+    html.find(".pouvoir_psi_pnj").click((ev) => {
+      if (!this.actor.system.pouvoirs.pouvoirs_actifs) return;
+      ui.notifications.warn(
+        "Pour utiliser un POUVOIR, sélectionnez d'abord un TALENT.",
+      );
+    });
+
     html.find(".pouvoir_rollable").click((ev) => {
+      flashMagicHalo(html);
       let dataType = ev.currentTarget.getAttribute("data-type");
       let rgtotal = 0;
       let r = new Roll("1d10");
       if (dataType == "Transit") {
-        let spe_transit = this.actor.system.pouvoirs.spe_transit.value;
-        let score_transit = this.actor.system.pouvoirs.transit.value;
-        rgtotal = score_transit + spe_transit;
+        let spe_transit = this.actor.system.pouvoirs.spe_transit?.value || 0;
+        let score_transit = this.actor.system.pouvoirs.transit?.value || 0;
+        rgtotal = Math.max(1, score_transit + spe_transit);
         r = new Roll(
           "1d" +
             rgtotal +
             "+1d" +
-            this.actor.system.caracs.resonnance.value +
+            Math.max(1, this.actor.system.caracs.resonnance?.value || 1) +
             "+1d" +
-            this.actor.system.caracs.sens.value,
+            Math.max(1, this.actor.system.caracs.sens?.value || 1),
         );
       } else if (dataType == "Transfert") {
-        let spe_transfert = this.actor.system.pouvoirs.spe_transfert.value;
-        let score_transfert = this.actor.system.pouvoirs.transfert.value;
-        rgtotal = score_transfert + spe_transfert;
+        let spe_transfert =
+          this.actor.system.pouvoirs.spe_transfert?.value || 0;
+        let score_transfert = this.actor.system.pouvoirs.transfert?.value || 0;
+        rgtotal = Math.max(1, score_transfert + spe_transfert);
         r = new Roll(
           "1d" +
             rgtotal +
             "+1d" +
-            this.actor.system.caracs.resonnance.value +
+            Math.max(1, this.actor.system.caracs.resonnance?.value || 1) +
             "+1d" +
-            this.actor.system.caracs.caractere.value,
+            Math.max(1, this.actor.system.caracs.caractere?.value || 1),
         );
       }
-      r.toMessage({
-        flavor: "<div class='card-header'><span>" + dataType + "</span></div>",
-        speaker: ChatMessage.getSpeaker({ actor: this.actor }),
-      });
+      r.evaluate().then(() =>
+        r.toMessage({
+          flavor:
+            "<div class='card-header'><span>" + dataType + "</span></div>",
+          speaker: ChatMessage.getSpeaker({ actor: this.actor }),
+        }),
+      );
+    });
+
+    // Clic sur la valeur du talent (dice-badge ou input) → déclenche le même jet que l'intitulé
+    html.find(".tnt-vc .dice-badge, .tnt-vc input.tnt-vi").on("click", (ev) => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      $(ev.currentTarget)
+        .closest("td.tnt-vc")
+        .prev("td.tnt-nc")
+        .find(".talents_rollable")
+        .trigger("click");
+    });
+
+    // Clic droit sur un talent : afficher la description
+    html.find(".talents_rollable").on("contextmenu", (ev) => {
+      ev.preventDefault();
+      const span = ev.currentTarget;
+      const label = $(span).text().trim();
+      const description = $(span).siblings(".tooltiptext").text().trim();
+      if (!description) return;
+
+      new Dialog(
+        {
+          title: label,
+          content: `<div class="defn-popup"><div class="defn-vert-label">Définition</div><div class="defn-body"><p>${description}</p></div></div>`,
+          buttons: {},
+        },
+        {
+          width: 440,
+          classes: ["dialog", "talent-info-dialog"],
+        },
+      ).render(true);
     });
 
     html.find(".talents_rollable").click((ev) => {
+      // ── Mode comparse (reduit=2) : jet simplifié 1d talent + spé ──
+      if (this.actor.system.reduit === 2) {
+        const comp = ev.currentTarget.getAttribute("value");
+        const talentName = this.actor.system.talents[comp].label;
+        const talentVal = this.actor.system.talents[comp].value;
+        if (!talentVal || talentVal <= 0) {
+          ui.notifications.error(
+            "Ce talent n'a pas de valeur. Impossible de lancer un jet.",
+          );
+          return;
+        }
+        let bonus = "";
+        let diff = 22;
+
+        // Construction des boutons de spé
+        const btns_spe = {};
+        btns_spe["NoSpe"] = {
+          label: "Aucune SPE",
+          callback: () => (bonus = 0),
+        };
+        if (this.actor.system.spe1.value !== "") {
+          btns_spe["btn_spes1"] = {
+            label: this.actor.system.spe1.value,
+            callback: () => (bonus = this.actor.system.rg_spe_1.value),
+          };
+        }
+        if (this.actor.system.spe2.value !== "") {
+          btns_spe["btn_spes2"] = {
+            label: this.actor.system.spe2.value,
+            callback: () => (bonus = this.actor.system.rg_spe_2.value),
+          };
+        }
+        if (this.actor.system.spe3.value !== "") {
+          btns_spe["btn_spes3"] = {
+            label: this.actor.system.spe3.value,
+            callback: () => (bonus = this.actor.system.rg_spe_3.value),
+          };
+        }
+        if (this.actor.system.spe4.value !== "") {
+          btns_spe["btn_spes4"] = {
+            label: this.actor.system.spe4.value,
+            callback: () => (bonus = this.actor.system.rg_spe_4.value),
+          };
+        }
+
+        const myDialogOptions_spes = {
+          top: 100,
+          left: 100,
+          width: 900,
+          classes: ["dialog", "window-dialog"],
+        };
+        const myDialogOptions_diff = {
+          top: 100,
+          left: 100,
+          width: 1000,
+          classes: ["dialog", "window-dialog"],
+        };
+
+        const buttonsNC_diff = {
+          NC: {
+            label: "NC",
+            callback: () => {
+              diff = 0;
+            },
+          },
+        };
+        for (let i = 4; i <= 27; i++) {
+          buttonsNC_diff[`b${i}`] = {
+            label: `${i}`,
+            callback: ((val) => () => {
+              diff = val;
+            })(i),
+          };
+        }
+
+        const d_diff = new Dialog(
+          {
+            title: talentName.toUpperCase(),
+            content:
+              `<div class='card-header'><span><i class='fas fa-bullseye'></i> DIFFICULTÉ</span></div>` +
+              `<div style='padding:12px 8px;text-align:center'>` +
+              `<i class='fas fa-bullseye' style='font-size:2em;color:#aaa;display:block;margin-bottom:8px'></i>` +
+              `<span class='bouton_texte'>Sélectionnez la DIFF ou "NC" si elle n'est pas communiquée</span></div>`,
+            buttons: buttonsNC_diff,
+            default: "NC",
+            close: () => {
+              if (diff === 22) return; // fermé sans sélection
+              const de = bonus > 0 ? talentVal + bonus : talentVal;
+              const r = new Roll(`1d${de}`);
+              r.evaluate().then(() => {
+                let result_diff = "";
+                if (diff !== 0) {
+                  let final = r.total - diff;
+                  if (final >= 0) {
+                    final = Math.floor(final / 3);
+                    result_diff =
+                      `<div class="mega-roll-diff"><i class="fas fa-bullseye"></i> DIFF ${diff}</div>` +
+                      `<div class="mega-roll-success"><i class="fas fa-check-circle"></i> Réussite ` +
+                      `<span class="mega-roll-margin">Marge : ${final}</span></div>`;
+                  } else {
+                    final = Math.ceil(final / 3);
+                    result_diff =
+                      `<div class="mega-roll-diff"><i class="fas fa-bullseye"></i> DIFF ${diff}</div>` +
+                      `<div class="mega-roll-failure"><i class="fas fa-times-circle"></i> Échec ` +
+                      `<span class="mega-roll-margin">Marge : ${final}</span></div>`;
+                  }
+                } else {
+                  result_diff = `<div class="mega-roll-diff mega-roll-diff-nc"><i class="fas fa-question-circle"></i> DIFF NC</div>`;
+                }
+                r.toMessage({
+                  flavor: `<div class='card-header'><span>${talentName}</span></div><div><span>${result_diff}</span></div>`,
+                  speaker: ChatMessage.getSpeaker({ actor: this.actor }),
+                });
+              });
+            },
+          },
+          myDialogOptions_diff,
+        );
+
+        const d_spe = new Dialog(
+          {
+            title: "SPE",
+            content:
+              `<div class='card-header'><span><i class='fas fa-link'></i> SPÉ ASSOCIÉE</span></div>` +
+              `<div style='padding:12px 8px;text-align:center'><i class='fas fa-link' style='font-size:2em;color:#aaa;display:block;margin-bottom:8px'></i>` +
+              `<span class='bouton_texte'>Voulez-vous utiliser une <b>SPÉ</b> ?</span></div>`,
+            buttons: btns_spe,
+            default: "NoSpe",
+            close: function () {
+              if (bonus !== "") {
+                d_diff.render(true);
+              }
+            },
+          },
+          myDialogOptions_spes,
+        );
+
+        d_spe.render(true);
+        return;
+      }
+      // ── Fin mode comparse ──
+
       let pouvoir;
       let carac = "";
       let bonus = "";
@@ -1995,57 +2775,67 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
       let ptardence = 0;
       let comp = ev.currentTarget.getAttribute("value");
       let talentName = this.actor.system.talents[comp].label;
+      let numPouv = 1;
+      let pouvoirPresent = this.actor.system.pouvoirs.pouvoir_psi_2.label;
+      let pouvoirOK = this.actor.system.pouvoirs.pouvoirs_actifs === true;
+      if (
+        pouvoirOK &&
+        this.actor.system.pouvoirs.pouvoir_psi_1.label === "" &&
+        this.actor.system.pouvoirs.pouvoir_psi_2.label === ""
+      ) {
+        pouvoirOK = false;
+      }
       const myDialogOptions = {
         top: 100,
         left: 100,
         width: 400,
-        height: 200,
+        classes: ["dialog", "window-dialog"],
       };
 
       const myDialogOptions_numPouv = {
         top: 100,
         left: 100,
         width: 400,
-        height: 200,
+        classes: ["dialog", "window-dialog"],
       };
 
       const myDialogOptions_test = {
         top: 100,
         left: 100,
         width: 400,
-        height: 200,
+        classes: ["dialog", "window-dialog"],
       };
 
       const myDialogOptions_ardence = {
         top: 100,
         left: 100,
         width: 380,
-        height: 200,
+        classes: ["dialog", "window-dialog"],
       };
 
       const myDialogOptions_traits = {
         top: 100,
         left: 100,
         width: 920,
-        height: 200,
+        classes: ["dialog", "window-dialog"],
       };
       const myDialogOptions_spes = {
         top: 100,
         left: 100,
         width: 900,
-        height: 200,
+        classes: ["dialog", "window-dialog"],
       };
       const myDialogOptions_diff = {
         top: 100,
         left: 100,
         width: 1000,
-        // height: 200
+        classes: ["dialog", "window-dialog"],
       };
       const myDialogOptions_bonus = {
         top: 100,
         left: 100,
         width: 500,
-        // height: 200
+        classes: ["dialog", "window-dialog"],
       };
       btns["NoSpe"] = { label: "Aucune SPE", callback: () => (bonus = 0) };
       if (this.actor.system.spe1.value !== "") {
@@ -2078,41 +2868,31 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
       // if (this.actor.system.spe6.value!=="") {
       // 	btns[this.actor.system.spe6.value] = { label: this.actor.system.spe6.value, callback: () => bonus = this.actor.system.rg_spe_6.value};
       // }
+      let _skipSpe = Object.keys(btns).length <= 1;
 
-      if (this.actor.system.pts_ardence.value >= 1) {
-        btns_ar[1] = { label: 1, callback: () => (ptardence = 1) };
-      }
-      if (this.actor.system.pts_ardence.value >= 2) {
-        btns_ar[1] = { label: 1, callback: () => (ptardence = 1) };
-        btns_ar[2] = { label: 2, callback: () => (ptardence = 2) };
-      }
-      if (this.actor.system.pts_ardence.value >= 3) {
-        btns_ar[1] = { label: 1, callback: () => (ptardence = 1) };
-        btns_ar[2] = { label: 2, callback: () => (ptardence = 2) };
-        btns_ar[3] = { label: 3, callback: () => (ptardence = 3) };
-      }
-      if (this.actor.system.pts_ardence.value >= 4) {
-        btns_ar[1] = { label: 1, callback: () => (ptardence = 1) };
-        btns_ar[2] = { label: 2, callback: () => (ptardence = 2) };
-        btns_ar[3] = { label: 3, callback: () => (ptardence = 3) };
-        btns_ar[4] = { label: 4, callback: () => (ptardence = 4) };
+      const _fireIconTal = "<i class='fas fa-fire' style='color:#ff7900'></i>";
+      for (let i = 1; i <= this.actor.system.pts_ardence.value; i++) {
+        btns_ar[i] = {
+          label: _fireIconTal.repeat(i) + " " + i,
+          callback: () => (ptardence = i),
+        };
       }
       let pts_reso = this.actor.system.pts_resonnance.value;
       let d_ard = new Dialog(
         {
           title: talentName.toUpperCase(),
           content:
-            "<div class='card-header'><span><img src='systems/mega/images/gears.gif' width=30px; height=30px; style='border:none'>ARDENCE</span></div>&nbsp" +
-            "<br><span class='bouton_texte'>Voulez-vous placer des points d'ardence ?</span><br><br>",
+            "<div class='card-header'><span><i class='fas fa-fire'></i> ARDENCE</span></div>" +
+            "<div style='padding:12px 8px;text-align:center'><i class='fas fa-fire' style='font-size:2em;color:#ff7900;display:block;margin-bottom:8px'></i><span class='bouton_texte'>Voulez-vous placer des points d'<b>ardence</b> ?</span></div>",
           buttons: {
             oui: {
-              label: "NON",
+              label: "<i class='fas fa-times'></i> NON",
               // open: function() { $(this).addClass('yescls') },
               // icons: { primary: "ui-icon-check", secondary: "ui-icon-circle-check" },
               callback: () => (ardence = 0),
             },
             non: {
-              label: "OUI",
+              label: "<i class='fas fa-fire'></i> OUI",
               callback: () => (ardence = 1),
             },
           },
@@ -2123,7 +2903,11 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
               d_ard2.render(true);
             }
             if (ardence === 0) {
-              d.render(true);
+              if (pouvoirOK) {
+                d0.render(true);
+              } else {
+                d.render(true);
+              }
             }
           },
         },
@@ -2134,45 +2918,77 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
         {
           title: talentName.toUpperCase(),
           content:
-            "<div class='card-header'><span>Vous avez " +
+            "<div class='card-header'><span><i class='fas fa-fire' style='color:#ff7900'></i> Vous avez <b style='color:#ff7900'>" +
             this.actor.system.pts_ardence.value +
-            " pts d'ardence</span></div>" +
-            "<br><span class='bouton_texte'>Combien souhaitez-vous en placer ?</span><br><br>",
+            "</b> pts d'ardence</span></div>" +
+            "<div style='padding:12px 8px;text-align:center'><span class='bouton_texte'>Combien souhaitez-vous <b>en placer</b> ?</span></div>",
           buttons: btns_ar,
           //close: () => d.render(true)
           close: function () {
-            d.render(true);
+            if (pouvoirOK) {
+              d0.render(true);
+            } else {
+              d.render(true);
+            }
           },
         },
         myDialogOptions,
       );
 
+      const _psiDisabled = pts_reso <= 0;
+      let _stopBtnParticles = null;
+
       let d0 = new Dialog(
         {
           title: talentName.toUpperCase(),
           content:
-            "<div class='card-header'><span><img src='systems/mega/images/gears.gif' width=30px; height=30px; style='border:none'>TEST</span></div>&nbsp" +
-            "<br><span class='bouton_texte'>Quel type de TEST souhaitez-vous réaliser ?</span><br><br>",
+            "<div class='card-header'><span><i class='fas fa-dice-d20'></i> TYPE DE TEST</span></div>" +
+            "<div style='padding:12px 8px;text-align:center'><span class='bouton_texte'>Quel type de <b>TEST</b> souhaitez-vous réaliser ?</span></div>",
           buttons: {
             talent: {
               label:
                 '<span class="bouton_talent"><i class="fas fa-sign-language"></i> Trait</span>',
-              // open: function() { $(this).addClass('yescls') },
-              // icons: { primary: "ui-icon-check", secondary: "ui-icon-circle-check" },
               callback: () => (pouvoir = 0),
             },
             pouvoir: {
-              label:
-                '<span class="bouton_pouvoir"><i class="fas fa-podcast"></i> Pouvoir PSI</span>',
-              callback: () => (pouvoir = 1),
+              label: _psiDisabled
+                ? '<span class="bouton_pouvoir mega-psi-disabled"><i class="fas fa-ban"></i> Plus de Résonance</span>'
+                : '<span class="bouton_pouvoir"><i class="fas fa-podcast"></i> Pouvoir PSI</span>',
+              callback: () => {
+                if (_psiDisabled) return;
+                pouvoir = 1;
+                flashMagicHalo(html);
+              },
             },
           },
           default: "talent",
-          //close: () => d.render(true)
+          render: (dlgHtml) => {
+            if (_psiDisabled) {
+              const btn = dlgHtml.find('[data-button="pouvoir"]');
+              btn.prop("disabled", true).addClass("mega-psi-btn-disabled");
+            } else {
+              const btn = dlgHtml.find('[data-button="pouvoir"]')[0];
+              if (btn) {
+                btn.classList.add("mega-psi-active");
+                _stopBtnParticles = startButtonParticles(btn);
+              }
+            }
+          },
           close: function () {
-            //if (pouvoir===1) {d2.render(true);}
+            if (_stopBtnParticles) {
+              _stopBtnParticles();
+              _stopBtnParticles = null;
+            }
             if (pouvoir === 1) {
-              d2.render(true);
+              if (pouvoirPresent) numPouvoir.render(true);
+              else {
+                if (_skipSpe) {
+                  bonus = 0;
+                  d3.render(true);
+                } else {
+                  d2.render(true);
+                }
+              }
             }
             if (pouvoir === 0) {
               d.render(true);
@@ -2182,12 +2998,44 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
         myDialogOptions_test,
       );
 
+      let numPouvoir = new Dialog(
+        {
+          title: talentName.toUpperCase(),
+          content:
+            "<div class='card-header'><span><i class='fas fa-podcast'></i> POUVOIR PSI</span></div>" +
+            "<div style='padding:12px 8px;text-align:center'><i class='fas fa-podcast' style='font-size:2em;color:#9b59b6;display:block;margin-bottom:8px'></i><span class='bouton_texte'>Quel <b>Pouvoir PSI</b> souhaitez-vous utiliser ?</span></div>",
+          buttons: {
+            pouvoir1: {
+              label:
+                `<i class="fas fa-podcast" style="color:#9b59b6"></i> ` +
+                this.actor.system.pouvoirs.pouvoir_psi_1.label,
+              callback: () => (numPouv = 1),
+            },
+            pouvoir2: {
+              label:
+                `<i class="fas fa-podcast" style="color:#9b59b6"></i> ` +
+                this.actor.system.pouvoirs.pouvoir_psi_2.label,
+              callback: () => (numPouv = 2),
+            },
+          },
+          close: function () {
+            if (_skipSpe) {
+              bonus = 0;
+              d3.render(true);
+            } else {
+              d2.render(true);
+            }
+          },
+        },
+        myDialogOptions_numPouv,
+      );
+
       let d = new Dialog(
         {
           title: talentName.toUpperCase(),
           content:
-            "<div class='card-header'><span><img src='systems/mega/images/gears.gif' width=30px; height=30px; style='border:none'>TRAIT</span></div>&nbsp" +
-            "<br><span class='bouton_texte'>Quel TRAIT voulez-vous utiliser ?</span><br><br>",
+            "<div class='card-header'><span><i class='fas fa-sign-language'></i> TRAIT</span></div>" +
+            "<div style='padding:12px 8px;text-align:center'><span class='bouton_texte'>Quel <b>TRAIT</b> voulez-vous utiliser ?</span></div>",
           buttons: {
             aucun: {
               label: '<p style="background-color:tomato;">AUCUN</p>',
@@ -2235,7 +3083,12 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
           close: function () {
             pouvoir = 0;
             if (carac !== "") {
-              d2.render(true);
+              if (_skipSpe) {
+                bonus = 0;
+                d3.render(true);
+              } else {
+                d2.render(true);
+              }
             }
           },
         },
@@ -2245,14 +3098,18 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
       if (this.actor.system.pts_ardence.value !== 0) {
         d_ard.render(true);
       } else {
-        d.render(true);
+        if (pouvoirOK) {
+          d0.render(true);
+        } else {
+          d.render(true);
+        }
       }
       let d2 = new Dialog(
         {
           title: "SPE",
           content:
-            "<div class='card-header'><span><img src='systems/mega/images/gears.gif' width=30px; height=30px; style='border:none'>SPE associee</span></div>&nbsp" +
-            "<br><span class='bouton_texte'>Voulez-vous utiliser une SPE ?</span><br><br>",
+            "<div class='card-header'><span><i class='fas fa-link'></i> SPÉ ASSOCIÉE</span></div>" +
+            "<div style='padding:12px 8px;text-align:center'><i class='fas fa-link' style='font-size:2em;color:#aaa;display:block;margin-bottom:8px'></i><span class='bouton_texte'>Voulez-vous utiliser une <b>SPÉ</b> ?</span></div>",
           buttons: btns,
           default: "non",
           // close: () => d3.render(true)
@@ -2272,9 +3129,11 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
         let label = "";
         for (let i = min; i <= max; i++) {
           if (i > 0) {
-            label = "+" + i.toString();
+            label = `<span style="color:#4caf50;font-weight:bold">+${i}</span>`;
+          } else if (i < 0) {
+            label = `<span style="color:#f44336;font-weight:bold">${i}</span>`;
           } else {
-            label = i.toString();
+            label = `<b>0</b>`;
           }
           buttons[`b${i}`] = {
             label: label,
@@ -2290,8 +3149,8 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
         {
           title: talentName.toUpperCase(),
           content:
-            "<div class='card-header'><span><img src='systems/mega/images/gears.gif' width=30px; height=30px; style='border:none'>BONUS/MALUS</span></div>&nbsp" +
-            "<br><span class='bouton_texte'>Sélectionnez le BONUS/MALUS à ajouter au pool</span><br><br>",
+            "<div class='card-header'><span><i class='fas fa-plus-minus'></i> BONUS / MALUS</span></div>" +
+            "<div style='padding:12px 8px;text-align:center'><span class='bouton_texte'>Sélectionnez le <b>Bonus/Malus</b> à ajouter au pool</span></div>",
           buttons: bonusButtons,
           default: "b0",
           close: function () {
@@ -2325,13 +3184,14 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
         {
           title: talentName.toUpperCase(),
           content:
-            "<div class='card-header'><span><img src='systems/mega/images/gears.gif' width=30px; height=30px; style='border:none'>DIFF</span></div>&nbsp" +
-            '<br><span class="bouton_texte">Sélectionnez la DIFF ou "NC" si elle n\'est pas communiquée</span><br><br>',
+            "<div class='card-header'><span><i class='fas fa-bullseye'></i> DIFFICULTÉ</span></div>" +
+            "<div style='padding:12px 8px;text-align:center'><i class='fas fa-bullseye' style='font-size:2em;color:#aaa;display:block;margin-bottom:8px'></i><span class='bouton_texte'>Sélectionnez la DIFF ou \"NC\" si elle n'est pas communiquée</span></div>",
           buttons: generateDiffButtons(4, 27),
           default: "NC",
           // close: () => this.testComp(ev, carac, bonus, bonuspool, pouvoir,diff,ptardence)
           close: () => {
             if (diff !== 22) {
+              this._numPouv = numPouv;
               this.testComp(
                 ev,
                 carac,
@@ -2361,46 +3221,46 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
         top: 100,
         left: 100,
         width: 400,
-        height: 200,
+        classes: ["dialog", "window-dialog"],
       };
 
       const myDialogOptions_test = {
         top: 100,
         left: 100,
         width: 400,
-        height: 200,
+        classes: ["dialog", "window-dialog"],
       };
 
       const myDialogOptions_ardence = {
         top: 100,
         left: 100,
         width: 380,
-        height: 200,
+        classes: ["dialog", "window-dialog"],
       };
 
       const myDialogOptions_traits = {
         top: 100,
         left: 100,
         width: 920,
-        height: 200,
+        classes: ["dialog", "window-dialog"],
       };
       const myDialogOptions_spes = {
         top: 100,
         left: 100,
         width: 900,
-        height: 200,
+        classes: ["dialog", "window-dialog"],
       };
       const myDialogOptions_diff = {
         top: 100,
         left: 100,
         width: 1000,
-        // height: 200
+        classes: ["dialog", "window-dialog"],
       };
       const myDialogOptions_bonus = {
         top: 100,
         left: 100,
         width: 500,
-        // height: 200
+        classes: ["dialog", "window-dialog"],
       };
       btns["NoSpe"] = { label: "Aucune SPE", callback: () => (bonus = 0) };
       if (this.actor.system.spe1.value !== "") {
@@ -2479,78 +3339,22 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
         {
           title: "DIFF",
           content:
-            "<div class='card-header'><span><img src='systems/mega/images/gears.gif' width=30px; height=30px; style='border:none'>DIFF</span></div>" +
-            '<br><span class="bouton_texte">Sélectionnez la DIFF ou "NC" si elle n\'est pas communiquée</span><br><br>',
+            "<div class='card-header'><span><i class='fas fa-bullseye'></i> DIFFICULTÉ</span></div>" +
+            "<div style='padding:12px 8px;text-align:center'><i class='fas fa-bullseye' style='font-size:2em;color:#aaa;display:block;margin-bottom:8px'></i><span class='bouton_texte'>Sélectionnez la DIFF ou \"NC\" si elle n'est pas communiquée</span></div>",
           buttons: generateDiffButtons(4, 27),
           default: "NC",
           close: () => {
             if (diff !== "") {
               let rollFormula = "";
-              switch (Rang) {
-                case 2:
-                case "2":
-                  rollFormula = "1d2";
-                  break;
-                case 4:
-                case "4":
-                  rollFormula = "1d4";
-                  break;
-                case 6:
-                case "6":
-                  rollFormula = "1d6";
-                  break;
-                case 8:
-                case "8":
-                  rollFormula = "1d8";
-                  break;
-                case 10:
-                case "10":
-                  rollFormula = "1d10";
-                  break;
-                case 12:
-                case "12":
-                  rollFormula = "1d12";
-                  break;
-                case 14:
-                case "14":
-                  rollFormula = "1d10+1d4";
-                  break;
-                case 16:
-                case "16":
-                  rollFormula = "1d10+1d6";
-                  break;
-                case 18:
-                case "18":
-                  rollFormula = "1d10+1d8";
-                  break;
-                case 20:
-                case "20":
-                  rollFormula = "1d10+1d10";
-                  break;
-                case 22:
-                case "22":
-                  rollFormula = "1d10+1d12";
-                  break;
-                case 24:
-                case "24":
-                  rollFormula = "1d10+1d10+1d4";
-                  break;
-                case 26:
-                case "26":
-                  rollFormula = "1d10+1d10+1d6";
-                  break;
-                case 28:
-                case "28":
-                  rollFormula = "1d10+1d10+1d8";
-                  break;
-                case 30:
-                case "30":
-                  rollFormula = "1d10+1d10+1d10";
-                  break;
-                case 32:
-                case "32":
-                  rollFormula = "1d10+1d10+1d12";
-                  break;
+              {
+                let remaining = Number(Rang);
+                const dice = [];
+                while (remaining > 12) {
+                  dice.push("1d10");
+                  remaining -= 10;
+                }
+                if (remaining > 0) dice.push(`1d${remaining}`);
+                rollFormula = dice.length > 0 ? dice.join("+") : "1d10";
               }
               let r = new Roll(rollFormula);
               r.evaluate().then(() => {
@@ -2562,23 +3366,23 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
                   if (final > 0) {
                     final = Math.floor(final / 3);
                     result_diff =
-                      '<p style="background-color:#A3B6BB; color:white; font-size: 22px; text-align:center; text-shadow: 1px 1px 2px black;">DIFF ' +
+                      '<div class="mega-roll-diff"><i class="fas fa-bullseye"></i> DIFF ' +
                       diff +
-                      '</p></div></span><div><span><b><p style="background-color:green; color:white; text-align:center; text-shadow: 1px 1px 2px black; font-size: 16px;";>Reussite - Marge de reussite : ' +
+                      '</div><div class="mega-roll-success"><i class="fas fa-check-circle"></i> Réussite <span class="mega-roll-margin">Marge : ' +
                       final +
-                      "</p></b></div></span>";
+                      "</span></div>";
                   } else {
                     final = Math.ceil(final / 3);
                     result_diff =
-                      '<p style="background-color:#A3B6BB; color:white; font-size: 22px; text-align:center; text-shadow: 1px 1px 2px black;">DIFF ' +
+                      '<div class="mega-roll-diff"><i class="fas fa-bullseye"></i> DIFF ' +
                       diff +
-                      '</p></div></span><div><span><b><p style="background-color:red; color:white; text-align:center; text-shadow: 1px 1px 2px black; font-size: 16px;";>Echec - Marge d\'echec : ' +
+                      '</div><div class="mega-roll-failure"><i class="fas fa-times-circle"></i> Échec <span class="mega-roll-margin">Marge : ' +
                       final +
-                      "</p></b></div></span>";
+                      "</span></div>";
                   }
                 } else {
                   result_diff =
-                    '<p style="background-color:#A3B6BB; color:white; font-size: 22px; text-align:center; text-shadow: 1px 1px 2px black;">DIFF NC</p></div></span>';
+                    '<div class="mega-roll-diff mega-roll-diff-nc"><i class="fas fa-question-circle"></i> DIFF NC</div>';
                 }
                 r.toMessage({
                   flavor:
@@ -2601,13 +3405,13 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
         {
           title: "SPE",
           content:
-            "<div class='card-header'><span><img src='systems/mega/images/gears.gif' width=30px; height=30px; style='border:none'>SPE associee</span></div>&nbsp" +
-            "<br><span class='bouton_texte'>Voulez-vous utiliser une SPE ?</span><br><br>",
+            "<div class='card-header'><span><i class='fas fa-link'></i> SPÉ ASSOCIÉE</span></div>" +
+            "<div style='padding:12px 8px;text-align:center'><i class='fas fa-link' style='font-size:2em;color:#aaa;display:block;margin-bottom:8px'></i><span class='bouton_texte'>Voulez-vous utiliser une <b>SPÉ</b> ?</span></div>",
           buttons: btns,
           default: "non",
           // close: () => d3.render(true)
           close: function () {
-            Rang = Rang + bonus;
+            Rang = Number(Rang) + Number(bonus);
             d_diff.render(true);
           },
         },
@@ -2636,28 +3440,135 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
       const myDialogOptions = {
         resizable: true,
         initial_tab: "tab1",
-        width: 690,
-        height: 890,
+        width: 640,
+        height: 831,
         top: 10,
         left: 10,
       };
       let description = "";
       let icon1 = "systems/mega/images/polar-star.svg";
       let pouvoir = ev.currentTarget.getAttribute("value");
+      const _row = (bg, letter, title, subtitle, desc) =>
+        `<div style="display:flex;align-items:flex-start;gap:10px;padding:6px 4px;border-bottom:1px solid rgba(128,128,128,0.12);">` +
+        `<span style="background:${bg};color:#fff;font-weight:bold;font-size:13px;min-width:26px;height:26px;border-radius:13px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;font-family:monospace;">${letter}</span>` +
+        `<div style="flex:1;"><strong>${title}</strong>` +
+        (subtitle
+          ? `<span style="opacity:0.55;font-size:11px;margin-left:6px;">${subtitle}</span>`
+          : "") +
+        (desc
+          ? `<div style="opacity:0.75;font-size:12px;margin-top:2px;">${desc}</div>`
+          : "") +
+        `</div></div>`;
+      const _section = (bg, icon, label, rows) =>
+        `<div style="margin-bottom:12px;">` +
+        `<div style="background:${bg};color:#fff;padding:5px 10px;border-radius:4px;font-weight:bold;font-size:11px;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">` +
+        `<i class="fas fa-${icon}" style="margin-right:5px;"></i>${label}</div>` +
+        rows +
+        `</div>`;
       description =
-        '<table><tbody><tr><td style="background-color:var(--accent-color);"><strong>Imm&eacute;diat</strong>:</td></tr><tr><td><ul><li><strong>H</strong> <img style="vertical-align:middle;border:none;width:18px;height:18px" src="systems/mega/images/fleche_droite.png"><strong> Handicaper</strong></li></ul><p>     La douleur emp&ecirc;che la cible d\'utiliser normalement un membre.</p><ul><li><strong>A</strong> <img style="vertical-align:middle;border:none;width:18px;height:18px" src="systems/mega/images/fleche_droite.png"><strong> Assommer</strong></li></ul><p>     La cible est inconsciente pendant (Av)d4 Round(s)</p><ul><li><strong>S</strong> <img style="vertical-align:middle;border:none;width:18px;height:18px" src="systems/mega/images/fleche_droite.png"><strong> Sonner</strong></li></ul><p>     La cible subit un malus de -4Rg &agrave; ses ATT et -2 &agrave; sa DEF pendant (Av)d4 Round(s)</p><ul><li><strong>R</strong> <img style="vertical-align:middle;border:none;width:18px;height:18px" src="systems/mega/images/fleche_droite.png"><strong> Renverser</strong></li></ul><p>     La cible chute et doit consommer une action pour se relever</p><ul><li><strong>I</strong> <img style="vertical-align:middle;border:none;width:18px;height:18px" src="systems/mega/images/fleche_droite.png"><strong> Immobiliser</strong></li></ul><p>     La cible est immobilis&eacute;e et ne peut plus combattre tant qu\'elle ne s\'est pas lib&eacute;r&eacute;e.<br/>     Tant que la cible est mmobilis&eacute;e, elle et l\'Attaquant ne peuvent pas faire d\'actions autres que : D&eacute;fenses avec Malus, maintenir ou rompre l\'immobilisation ou &eacute;gocier.</p><ul><li><strong>V</strong> <img style="vertical-align:middle;border:none;width:18px;height:18px" src="systems/mega/images/fleche_droite.png"><strong> Vitesse</strong></li></ul></td></tr><tr><td style="background-color:var(--accent-color);"><strong>Prochaine Action</strong>:</td></tr><tr><td><p><strong>P</strong> <img style="vertical-align:middle;border:none;width:18px;height:18px" src="systems/mega/images/fleche_droite.png"><strong> Positionnement </strong>(Roleplay, ou DEF +1 Niv et ATT Adv -2Rg)</p><p>     Le personnage prend une position favorable par rapport &agrave; l\'adversaire et profitera de bonus au prochain Round.</p><p>     DEF +1 et, au choix, +4Rg au choix en ATT pour lui ou -4Rg en ATT pour son adversaire</p></td></tr><tr><td style="background-color:var(--accent-color);"><strong>Prochaine DEF</strong>:</td></tr><tr><td><p><strong>T</strong> <img style="vertical-align:middle;border:none;width:18px;height:18px" src="systems/mega/images/fleche_droite.png"><strong> Tenir &agrave; distance </strong>(Imm&eacute;diat : D&eacute;g&acirc;t 0, Prochaine DEF +1 Niv, Adv : ATT -2Rg)</p><p>     Le personnage fait de grans moulinets avec une arme d\'allonge &eacute;gale ou sup&eacute;rieure &agrave; celle de son adversaire.</p><p>     Il ne fait pas de d&eacute;g&acirc;ts mais ses Av sont convertis ainsi :<br/>     Pour chaque AV : prochaine DEF+1 et -2Rg &agrave; la prochaine ATT pour l\'adversaire.</p><p>     Cet effet permet de dialoguer avec des adversaires sans les blesser et en prenant moins de risques qu\'avec l\'Esquive mais est clairement agressif.</p></td></tr><tr><td style="background-color:var(--accent-color);"><strong>Prochaine ATT</strong>:</td></tr><tr><td><p><strong>D</strong> <img style="vertical-align:middle;border:none;width:18px;height:18px" src="systems/mega/images/fleche_droite.png"><strong> D&eacute;faut de la cuirasse</strong> (+2Av &agrave; la prochaine ATT qui touche sur cet Adv)</p><p>     Le personnage a rep&eacute;r&eacute; une faille dans la protection de l\'adversaire :<br/>     Il a +2Av &agrave; la prochaine attaque qui touche cet adversaire.</p></td></tr></tbody></table>';
+        `<div style="padding:12px 14px;font-size:13px;line-height:1.45;">` +
+        _section(
+          "rgba(200,55,40,0.82)",
+          "bolt",
+          "Imm&eacute;diat",
+          _row(
+            "rgba(200,55,40,0.85)",
+            "H",
+            "Handicaper",
+            "",
+            "La douleur emp&ecirc;che la cible d'utiliser normalement un membre.",
+          ) +
+            _row(
+              "rgba(200,55,40,0.85)",
+              "A",
+              "Assommer",
+              "",
+              "La cible est inconsciente pendant <em>(Av)d4</em> Round(s).",
+            ) +
+            _row(
+              "rgba(200,55,40,0.85)",
+              "S",
+              "Sonner",
+              "",
+              "Malus de <strong>-4Rg</strong> aux ATT et <strong>-2</strong> &agrave; la DEF pendant <em>(Av)d4</em> Round(s).",
+            ) +
+            _row(
+              "rgba(200,55,40,0.85)",
+              "R",
+              "Renverser",
+              "",
+              "La cible chute et doit consommer une action pour se relever.",
+            ) +
+            _row(
+              "rgba(200,55,40,0.85)",
+              "I",
+              "Immobiliser",
+              "",
+              "La cible ne peut plus combattre tant qu'elle ne s'est pas lib&eacute;r&eacute;e. Elle et l'Attaquant ne peuvent que : D&eacute;fenses avec Malus, maintenir/rompre l'immobilisation ou n&eacute;gocier.",
+            ) +
+            _row("rgba(200,55,40,0.85)", "V", "Vitesse", "", ""),
+        ) +
+        _section(
+          "rgba(41,128,185,0.82)",
+          "clock",
+          "Prochaine Action",
+          _row(
+            "rgba(41,128,185,0.85)",
+            "P",
+            "Positionnement",
+            "Roleplay, ou DEF +1 Niv et ATT Adv -2Rg",
+            "Position favorable : DEF +1 et, au choix, +4Rg en ATT (lui) ou -4Rg en ATT (adversaire) au prochain Round.",
+          ),
+        ) +
+        _section(
+          "rgba(39,174,96,0.82)",
+          "shield-alt",
+          "Prochaine DEF",
+          _row(
+            "rgba(39,174,96,0.85)",
+            "T",
+            "Tenir &agrave; distance",
+            "Imm&eacute;diat : D&eacute;g&acirc;t 0, Prochaine DEF +1 Niv, Adv : ATT -2Rg",
+            "Grands moulinets avec une arme d'allonge &eacute;gale ou sup&eacute;rieure. Pas de d&eacute;g&acirc;ts : pour chaque Av → DEF +1 et ATT adv -2Rg. Permet de dialoguer sans blesser.",
+          ),
+        ) +
+        _section(
+          "rgba(130,60,170,0.82)",
+          "crosshairs",
+          "Prochaine ATT",
+          _row(
+            "rgba(130,60,170,0.85)",
+            "D",
+            "D&eacute;faut de la cuirasse",
+            "+2Av &agrave; la prochaine ATT qui touche",
+            "Faille rep&eacute;r&eacute;e dans la protection adverse : +2Av &agrave; la prochaine attaque qui touche cet adversaire.",
+          ),
+        ) +
+        `</div>`;
       let d = new TabbedDialog(
         {
           title: "Informations Effets Spéciaux",
-          header: "",
+          header:
+            `<div style="background:linear-gradient(135deg,rgba(40,40,60,0.92) 0%,rgba(70,30,30,0.88) 100%);border-radius:6px;padding:14px 18px 12px;margin-bottom:6px;display:flex;align-items:center;gap:14px;border-left:4px solid rgba(200,55,40,0.90);">` +
+            `<div style="flex-shrink:0;width:42px;height:42px;background:rgba(200,55,40,0.20);border-radius:50%;border:2px solid rgba(200,55,40,0.60);display:flex;align-items:center;justify-content:center;">` +
+            `<i class="fas fa-khanda" style="font-size:20px;color:rgba(220,100,80,1);"></i></div>` +
+            `<div>` +
+            `<div style="font-size:15px;font-weight:bold;letter-spacing:0.5px;color:#f0ede8;margin-bottom:3px;">Effets Sp&eacute;ciaux de Combat</div>` +
+            `<div style="display:flex;gap:6px;flex-wrap:wrap;">` +
+            `<span style="background:rgba(200,55,40,0.70);color:#fff;font-size:10px;padding:1px 7px;border-radius:10px;font-weight:bold;"><i class="fas fa-bolt" style="margin-right:3px;"></i>Imm&eacute;diat</span>` +
+            `<span style="background:rgba(41,128,185,0.70);color:#fff;font-size:10px;padding:1px 7px;border-radius:10px;font-weight:bold;"><i class="fas fa-clock" style="margin-right:3px;"></i>Prochaine Action</span>` +
+            `<span style="background:rgba(39,174,96,0.70);color:#fff;font-size:10px;padding:1px 7px;border-radius:10px;font-weight:bold;"><i class="fas fa-shield-alt" style="margin-right:3px;"></i>Prochaine DEF</span>` +
+            `<span style="background:rgba(130,60,170,0.70);color:#fff;font-size:10px;padding:1px 7px;border-radius:10px;font-weight:bold;"><i class="fas fa-crosshairs" style="margin-right:3px;"></i>Prochaine ATT</span>` +
+            `</div></div></div>`,
           footer: "",
           tabs: [
             { title: "Effets de combat", content: description, icon: icon1 },
           ],
           buttons: {},
           default: "two",
-          render: (html) =>
-            console.log("Register interactivity in the rendered dialog"),
+          render: (html) => {
+            html.closest(".app").find(".modern-tabs-container").hide();
+          },
           close: (html) =>
             console.log(
               "This always is logged no matter which option is chosen",
@@ -2672,30 +3583,126 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
       const myDialogOptions = {
         resizable: true,
         initial_tab: "tab1",
-        width: 600,
-        height: 450,
+        width: 580,
+        height: 620,
         top: 10,
         left: 10,
       };
-      let description = "";
-      let icon1 = "polar-star.png";
-      let pouvoir = ev.currentTarget.getAttribute("value");
-      description =
-        "<p ><strong>Echelle des talents&nbsp;:</strong></p><ul><li ><strong>X </strong>(renseigner <strong>99 </strong>dans la fiche)&nbsp;= <strong>Talent d&eacute;test&eacute;&nbsp;</strong>: pratique &eacute;vit&eacute;, quasi phobique.</li><li ><strong>-2Rg</strong>&nbsp;= <strong>Talent maudit&nbsp;</strong>: pratique maudite, mauvais feeling, toujours un probl&egrave;me.</li><li><strong>d0</strong>&nbsp;= Pratique rare, au minimum, pas d&rsquo;entra&icirc;nement particulier.</li><li ><strong>d2</strong>&nbsp;= Pratique vaguement exerc&eacute;e.</li><li ><strong>d4</strong> = Pratique correcte, apprise ou travaill&eacute;e.</li><li ><strong>d6</strong> = Pratique fr&eacute;quente, travaill&eacute;e et r&eacute;guli&egrave;rement exerc&eacute;e.</li><li ><strong>d8 </strong>= Pratique tr&egrave;s exerc&eacute;e, bonne intuition et anticipation des probl&egrave;mes.</li><li ><strong>d10</strong> = Pratique essentielle du personnage, r&eacute;fl&eacute;chie, travaill&eacute;e et exerc&eacute;e quotidiennement, m&ecirc;me virtuellement.</li><li ><strong>d12 </strong>= Pratique essentielle travaill&eacute;e quotidiennement, intensivement, au d&eacute;triment d&rsquo;autres activit&eacute;s.</li><li ><strong>d14 </strong>= Hors-norme.</li></ul>";
-
+      let icon1 = "systems/mega/images/histogram.svg";
+      const _trow = (badge, badgeBg, label, desc) =>
+        `<div style="display:flex;align-items:flex-start;gap:10px;padding:6px 4px;border-bottom:1px solid rgba(128,128,128,0.12);">` +
+        `<span style="background:${badgeBg};color:#fff;font-weight:bold;font-size:12px;min-width:36px;height:26px;border-radius:13px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;font-family:monospace;letter-spacing:-0.5px;">${badge}</span>` +
+        `<div style="flex:1;font-size:12.5px;line-height:1.4;">${desc}</div>` +
+        `</div>`;
+      const description =
+        `<div style="padding:12px 14px;font-size:13px;line-height:1.45;">` +
+        _trow(
+          "\u2715",
+          "rgba(160,30,30,0.85)",
+          "Talent d\u00e9test\u00e9",
+          "<strong>Talent d\u00e9test\u00e9</strong> <span style='opacity:0.6;font-size:11px;'>(saisir 99 dans la fiche)</span><br><span style='opacity:0.75;'>Pratique &eacute;vit&eacute;e, quasi phobique.</span>",
+        ) +
+        _trow(
+          "-2Rg",
+          "rgba(200,80,20,0.85)",
+          "Talent maudit",
+          "<strong>Talent maudit</strong><br><span style='opacity:0.75;'>Pratique maudite, mauvais feeling, toujours un probl\u00e8me.</span>",
+        ) +
+        _trow(
+          "d0",
+          "rgba(100,100,110,0.80)",
+          "",
+          "Pratique rare, au minimum &mdash; pas d&rsquo;entra\u00eenement particulier.",
+        ) +
+        _trow(
+          "d2",
+          "rgba(110,100,80,0.82)",
+          "",
+          "Pratique vaguement exerc\u00e9e.",
+        ) +
+        _trow(
+          "d4",
+          "rgba(160,130,20,0.85)",
+          "",
+          "Pratique correcte, apprise ou travaill\u00e9e.",
+        ) +
+        _trow(
+          "d6",
+          "rgba(60,150,80,0.85)",
+          "",
+          "Pratique fr\u00e9quente, travaill\u00e9e et r\u00e9guli\u00e8rement exerc\u00e9e.",
+        ) +
+        _trow(
+          "d8",
+          "rgba(30,140,100,0.85)",
+          "",
+          "Pratique tr\u00e8s exerc\u00e9e &mdash; bonne intuition et anticipation des probl\u00e8mes.",
+        ) +
+        _trow(
+          "d10",
+          "rgba(30,100,180,0.85)",
+          "",
+          "Pratique essentielle du personnage, r\u00e9fl\u00e9chie, travaill\u00e9e et exerc\u00e9e quotidiennement, m\u00eame virtuellement.",
+        ) +
+        _trow(
+          "d12",
+          "rgba(80,50,170,0.85)",
+          "",
+          "Pratique essentielle travaill\u00e9e quotidiennement, intensivement, au d\u00e9triment d&rsquo;autres activit\u00e9s.",
+        ) +
+        _trow(
+          "d14",
+          "rgba(130,30,140,0.90)",
+          "",
+          "<strong>Hors-norme.</strong>",
+        ) +
+        `</div>`;
       let d = new TabbedDialog(
         {
           title: "Informations Domaines et Talents",
-          header: "",
+          header:
+            `<div style="background:linear-gradient(135deg,rgba(30,40,60,0.92) 0%,rgba(30,60,40,0.88) 100%);border-radius:6px;padding:14px 18px 12px;margin-bottom:6px;display:flex;align-items:center;gap:14px;border-left:4px solid rgba(60,150,80,0.90);">` +
+            `<div style="flex-shrink:0;width:42px;height:42px;background:rgba(60,150,80,0.20);border-radius:50%;border:2px solid rgba(60,150,80,0.60);display:flex;align-items:center;justify-content:center;">` +
+            `<i class="fas fa-chart-bar" style="font-size:20px;color:rgba(100,200,130,1);"></i></div>` +
+            `<div>` +
+            `<div style="font-size:15px;font-weight:bold;letter-spacing:0.5px;color:#f0ede8;margin-bottom:3px;">&Eacute;chelle des Domaines &amp; Talents</div>` +
+            `<div style="opacity:0.65;font-size:11.5px;">Du talent d\u00e9test\u00e9 au hors-norme &mdash; 10 niveaux de ma\u00eetrise</div>` +
+            `</div></div>`,
           footer: "",
           tabs: [
             { title: "Domaines et Talents", content: description, icon: icon1 },
           ],
           buttons: {},
+          render: (html) => {
+            html.closest(".app").find(".modern-tabs-container").hide();
+          },
         },
         myDialogOptions,
       );
       d.render(true);
+    });
+
+    // Clic droit sur le libellé d'un trait : afficher la description
+    html.find(".tpc-name.traits_rollable").on("contextmenu", (ev) => {
+      ev.preventDefault();
+      const span = ev.currentTarget;
+      const comp = span.getAttribute("value");
+      const label =
+        this.actor.system.caracs[comp]?.label || $(span).text().trim();
+      const description = this.actor.system.caracs[comp]?.description || "";
+      if (!description) return;
+
+      new Dialog(
+        {
+          title: label,
+          content: `<div class="defn-popup"><div class="defn-vert-label">Définition</div><div class="defn-body"><p>${description}</p></div></div>`,
+          buttons: {},
+        },
+        {
+          width: 440,
+          classes: ["dialog", "talent-info-dialog"],
+        },
+      ).render(true);
     });
 
     html.find(".traits_rollable").click((ev) => {
@@ -2718,74 +3725,64 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
         top: 100,
         left: 100,
         width: 400,
-        height: 200,
+        classes: ["dialog", "window-dialog"],
       };
 
       const myDialogOptions_test = {
         top: 100,
         left: 100,
         width: 400,
-        height: 200,
+        classes: ["dialog", "window-dialog"],
       };
 
       const myDialogOptions_ardence = {
         top: 100,
         left: 100,
         width: 380,
-        height: 200,
+        classes: ["dialog", "window-dialog"],
       };
 
       const myDialogOptions_traits = {
         top: 100,
         left: 100,
         width: 920,
-        height: 200,
+        classes: ["dialog", "window-dialog"],
       };
       const myDialogOptions_spes = {
         top: 100,
         left: 100,
         width: 900,
-        height: 200,
+        classes: ["dialog", "window-dialog"],
       };
       const myDialogOptions_diff = {
         top: 100,
         left: 100,
         width: 1000,
-        // height: 200
+        classes: ["dialog", "window-dialog"],
       };
       const myDialogOptions_bonus = {
         top: 100,
         left: 100,
         width: 500,
-        // height: 200
+        classes: ["dialog", "window-dialog"],
       };
       // animationJet();
-      if (this.actor.system.pts_ardence.value >= 1) {
-        btns_ar[1] = { label: 1, callback: () => (ptardence = 1) };
-      }
-      if (this.actor.system.pts_ardence.value >= 2) {
-        btns_ar[1] = { label: 1, callback: () => (ptardence = 1) };
-        btns_ar[2] = { label: 2, callback: () => (ptardence = 2) };
-      }
-      if (this.actor.system.pts_ardence.value >= 3) {
-        btns_ar[1] = { label: 1, callback: () => (ptardence = 1) };
-        btns_ar[2] = { label: 2, callback: () => (ptardence = 2) };
-        btns_ar[3] = { label: 3, callback: () => (ptardence = 3) };
-      }
-      if (this.actor.system.pts_ardence.value >= 4) {
-        btns_ar[1] = { label: 1, callback: () => (ptardence = 1) };
-        btns_ar[2] = { label: 2, callback: () => (ptardence = 2) };
-        btns_ar[3] = { label: 3, callback: () => (ptardence = 3) };
-        btns_ar[4] = { label: 4, callback: () => (ptardence = 4) };
+      const _fireIconTrait =
+        "<i class='fas fa-fire' style='color:#ff7900'></i>";
+      for (let i = 1; i <= this.actor.system.pts_ardence.value; i++) {
+        btns_ar[i] = {
+          label: _fireIconTrait.repeat(i) + " " + i,
+          callback: () => (ptardence = i),
+        };
       }
       let d_ard2 = new Dialog(
         {
           title: traitName,
           content:
-            "<div class='card-header'><span>Vous avez " +
+            "<div class='card-header'><span><i class='fas fa-fire' style='color:#ff7900'></i> Vous avez <b style='color:#ff7900'>" +
             this.actor.system.pts_ardence.value +
-            " pts d'ardence</span></div>" +
-            "<br><span class='bouton_texte'>Combien souhaitez-vous en placer ?</span><br><br>",
+            "</b> pts d'ardence</span></div>" +
+            "<div style='padding:12px 8px;text-align:center'><span class='bouton_texte'>Combien souhaitez-vous <b>en placer</b> ?</span></div>",
           buttons: btns_ar,
           //close: () => d.render(true)
           close: function () {
@@ -2799,17 +3796,17 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
         {
           title: traitName,
           content:
-            "<div class='card-header'><span><img src='systems/mega/images/gears.gif' width=30px; height=30px; style='border:none'>ARDENCE</span></div>&nbsp" +
-            "<br><span class='bouton_texte'>Voulez-vous placer des points d'ardence ?</span><br><br>",
+            "<div class='card-header'><span><i class='fas fa-fire'></i> ARDENCE</span></div>" +
+            "<div style='padding:12px 8px;text-align:center'><i class='fas fa-fire' style='font-size:2em;color:#ff7900;display:block;margin-bottom:8px'></i><span class='bouton_texte'>Voulez-vous placer des points d'<b>ardence</b> ?</span></div>",
           buttons: {
             oui: {
-              label: "NON",
+              label: "<i class='fas fa-times'></i> NON",
               // open: function() { $(this).addClass('yescls') },
               // icons: { primary: "ui-icon-check", secondary: "ui-icon-circle-check" },
               callback: () => (ardence = 0),
             },
             non: {
-              label: "OUI",
+              label: "<i class='fas fa-fire'></i> OUI",
               callback: () => (ardence = 1),
             },
           },
@@ -2831,8 +3828,8 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
         {
           title: traitName,
           content:
-            "<div class='card-header'><span><img src='systems/mega/images/gears.gif' width=30px; height=30px; style='border:none'>TYPE DE TEST<span></div>&nbsp" +
-            "<br><span class='bouton_texte'>Quel type de TEST souhaitez-vous réaliser ?</span><br><br>",
+            "<div class='card-header'><span><i class='fas fa-dice-d20'></i> TYPE DE TEST</span></div>" +
+            "<div style='padding:12px 8px;text-align:center'><span class='bouton_texte'>Quel type de <b>TEST</b> souhaitez-vous réaliser ?</span></div>",
           buttons: {
             duel: {
               label: "DUEL",
@@ -2867,8 +3864,8 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
         {
           title: traitName,
           content:
-            "<div class='card-header'><span><img src='systems/mega/images/gears.gif' width=30px; height=30px; style='border:none'>TRAIT N°2<span></div>&nbsp" +
-            "<br><span class='bouton_texte'>Quel TRAIT voulez-vous utiliser ?</span><br><br>",
+            "<div class='card-header'><span><i class='fas fa-sign-language'></i> TRAIT N°2</span></div>" +
+            "<div style='padding:12px 8px;text-align:center'><span class='bouton_texte'>Quel <b>TRAIT</b> voulez-vous utiliser ?</span></div>",
           buttons: {
             vivacite: {
               label: "VIVACITE",
@@ -2937,8 +3934,8 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
         {
           title: traitName,
           content:
-            "<div class='card-header'><span><img src='systems/mega/images/gears.gif' width=30px; height=30px; style='border:none'>DOMAINE</span></div>&nbsp" +
-            "<br><span class='bouton_texte'>Quel DOMAINE voulez-vous utiliser ?</span><br><br>",
+            "<div class='card-header'><span><i class='fas fa-globe'></i> DOMAINE</span></div>" +
+            "<div style='padding:12px 8px;text-align:center'><span class='bouton_texte'>Quel <b>DOMAINE</b> voulez-vous utiliser ?</span></div>",
           buttons: {
             COMMUNICATION: {
               label: "COMMUNICATION",
@@ -2972,9 +3969,11 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
         let label = "";
         for (let i = min; i <= max; i++) {
           if (i > 0) {
-            label = "+" + i.toString();
+            label = `<span style="color:#4caf50;font-weight:bold">+${i}</span>`;
+          } else if (i < 0) {
+            label = `<span style="color:#f44336;font-weight:bold">${i}</span>`;
           } else {
-            label = i.toString();
+            label = `<b>0</b>`;
           }
           buttons[`b${i}`] = {
             label: label,
@@ -2989,8 +3988,8 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
         {
           title: traitName,
           content:
-            "<div class='card-header'><span><img src='systems/mega/images/gears.gif' width=30px; height=30px; style='border:none'>BONUS/MALUS</span></div>&nbsp" +
-            "<br><span class='bouton_texte'>Sélectionnez le BONUS/MALUS à ajouter au pool</span><br><br>",
+            "<div class='card-header'><span><i class='fas fa-plus-minus'></i> BONUS / MALUS</span></div>" +
+            "<div style='padding:12px 8px;text-align:center'><span class='bouton_texte'>Sélectionnez le <b>Bonus/Malus</b> à ajouter au pool</span></div>",
           buttons: bonusButtons,
           default: "b0",
           close: function () {
@@ -3024,8 +4023,8 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
         {
           title: traitName,
           content:
-            "<div class='card-header'><span><img src='systems/mega/images/gears.gif' width=30px; height=30px; style='border:none'>DIFF</span></div>&nbsp" +
-            '<br><span class="bouton_texte">Sélectionnez la DIFF ou "NC" si elle n\'est pas communiquée</span><br><br>',
+            "<div class='card-header'><span><i class='fas fa-bullseye'></i> DIFFICULTÉ</span></div>" +
+            "<div style='padding:12px 8px;text-align:center'><i class='fas fa-bullseye' style='font-size:2em;color:#aaa;display:block;margin-bottom:8px'></i><span class='bouton_texte'>Sélectionnez la DIFF ou \"NC\" si elle n'est pas communiquée</span></div>",
           buttons: generateDiffButtons(4, 27),
           default: "NC",
           close: () => {
@@ -3060,6 +4059,219 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
 
   //Inventaire par type
 
+  /**
+   * Calcule la somme des bonus de défense par localisation et par type d'attaque.
+   */
+  _computeDefenseByLocalisation() {
+    const zones = [
+      { key: "tete", label: "Tête" },
+      { key: "poitrine", label: "Poitrine" },
+      { key: "ventre", label: "Ventre" },
+      { key: "bras_g", label: "Bras gauche" },
+      { key: "bras_d", label: "Bras droit" },
+      { key: "main_g", label: "Main gauche" },
+      { key: "main_d", label: "Main droite" },
+      { key: "jambe_g", label: "Jambe gauche" },
+      { key: "jambe_d", label: "Jambe droite" },
+      { key: "pied_g", label: "Pied gauche" },
+      { key: "pied_d", label: "Pied droit" },
+    ];
+    const types = ["choc", "lame", "balle", "feu", "froid", "acide", "rayon"];
+
+    const equippedProtections = this.actor.items.filter(
+      (i) => i.type === "Protection" && i.system.equipe === true,
+    );
+
+    const sys = this.actor.system;
+    const baseDef =
+      (Number(sys.def?.value) || 0) +
+      (Number(sys.def_modif?.value) || 0) +
+      (Number(sys.bonus_armes_def) || 0);
+
+    return zones.map((zone) => {
+      const row = { label: zone.label };
+      for (const type of types) {
+        let total = baseDef;
+        for (const prot of equippedProtections) {
+          const c = prot.system.caracs;
+          if (Number(c[`def_${zone.key}`]) === 1) {
+            total += Number(c[`def_${type}`]) || 0;
+          }
+        }
+        row[type] = total;
+      }
+      return row;
+    });
+  }
+
+  /**
+   * Affiche un dialogue popup avec le tableau des défenses par localisation.
+   */
+  _onShowDefenseLocalisation() {
+    const data = this._computeDefenseByLocalisation();
+    const typeKeys = [
+      "choc",
+      "lame",
+      "balle",
+      "feu",
+      "froid",
+      "acide",
+      "rayon",
+    ];
+    const typeConfig = {
+      choc: {
+        label: "Choc",
+        icon: "systems/mega/images/flint-spark.svg",
+        color: "#e67e22",
+        bg: "rgba(230,126,34,0.18)",
+      },
+      lame: {
+        label: "Lame",
+        icon: "systems/mega/images/blade-fall.svg",
+        color: "#b0bec5",
+        bg: "rgba(176,190,197,0.15)",
+      },
+      balle: {
+        label: "Balle",
+        icon: "systems/mega/images/silver-bullet.svg",
+        color: "#2980b9",
+        bg: "rgba(41,128,185,0.18)",
+      },
+      feu: {
+        label: "Feu",
+        icon: "systems/mega/images/fire.svg",
+        color: "#e74c3c",
+        bg: "rgba(231,76,60,0.18)",
+      },
+      froid: {
+        label: "Froid",
+        icon: "systems/mega/images/frozen-orb.svg",
+        color: "#5dade2",
+        bg: "rgba(93,173,226,0.18)",
+      },
+      acide: {
+        label: "Acide",
+        icon: "systems/mega/images/chemical-drop.svg",
+        color: "#2ecc71",
+        bg: "rgba(46,204,113,0.18)",
+      },
+      rayon: {
+        label: "Rayon",
+        icon: "systems/mega/images/ringed-beam.svg",
+        color: "#9b59b6",
+        bg: "rgba(155,89,182,0.18)",
+      },
+    };
+
+    const sys = this.actor.system;
+    const baseDef =
+      (Number(sys.def?.value) || 0) +
+      (Number(sys.def_modif?.value) || 0) +
+      (Number(sys.bonus_armes_def) || 0);
+    const nbProtections = this.actor.items.filter(
+      (i) => i.type === "Protection" && i.system.equipe,
+    ).length;
+
+    let headerCells = `<th style="text-align:left; padding:6px 10px; background:rgba(0,0,0,0.35); color:#ccc; font-size:0.75em; letter-spacing:0.08em; white-space:nowrap;">ZONE</th>`;
+    for (const key of typeKeys) {
+      const t = typeConfig[key];
+      headerCells += `<th style="text-align:center; padding:6px 4px; background:${t.bg}; border-bottom:3px solid ${t.color}; min-width:54px;">
+        <img src="${t.icon}" style="width:22px;height:22px;display:block;margin:0 auto 3px;filter:drop-shadow(0 1px 2px rgba(0,0,0,0.5));" title="${t.label}" />
+        <span style="font-size:0.7em; color:${t.color}; font-weight:bold; letter-spacing:0.04em;">${t.label.toUpperCase()}</span>
+      </th>`;
+    }
+
+    let bodyRows = "";
+    data.forEach((row, idx) => {
+      const rowBg =
+        idx % 2 === 0 ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.1)";
+      let cells = `<td class="loc-zone-cell" data-rowidx="${idx}" style="padding:5px 10px; font-weight:600; font-size:0.85em; background:rgba(0,0,0,0.18); border-right:1px solid rgba(255,255,255,0.07); white-space:nowrap; color:#ddd; transition:background 0.3s,box-shadow 0.3s;">
+        <i class="fas fa-chevron-right" style="font-size:0.55em; margin-right:5px; opacity:0.4; vertical-align:middle;"></i>${row.label}
+      </td>`;
+      for (const key of typeKeys) {
+        const val = row[key];
+        const t = typeConfig[key];
+        const bonus = val - baseDef;
+        let badge;
+        if (bonus > 0) {
+          badge = `<span style="display:inline-block; background:linear-gradient(135deg,${t.color}dd,${t.color}88); color:#fff; border-radius:5px; padding:2px 8px; font-weight:bold; font-size:0.92em; box-shadow:0 1px 4px rgba(0,0,0,0.45); min-width:28px; text-align:center;">${val}<sup style="font-size:0.65em; margin-left:1px; opacity:0.85;">+${bonus}</sup></span>`;
+        } else {
+          badge = `<span style="display:inline-block; background:linear-gradient(135deg,${t.color}dd,${t.color}88); color:#fff; border-radius:5px; padding:2px 8px; font-weight:bold; font-size:0.92em; box-shadow:0 1px 4px rgba(0,0,0,0.45); min-width:28px; text-align:center;">${val}<sup style="font-size:0.65em; margin-left:1px; opacity:0.5;">0</sup></span>`;
+        }
+        cells += `<td class="loc-val-cell" data-rowidx="${idx}" style="text-align:center; padding:4px 3px; background:${rowBg}; transition:background 0.3s,box-shadow 0.3s;">${badge}</td>`;
+      }
+      bodyRows += `<tr data-zone-idx="${idx}">${cells}</tr>`;
+    });
+
+    const content = `
+      <style>
+        @keyframes loc-pulse {
+          0%,100% { box-shadow: inset 0 0 0 2px rgba(255,215,0,0.9); background: rgba(255,215,0,0.18) !important; }
+          50%      { box-shadow: inset 0 0 0 2px #ffd700;             background: rgba(255,215,0,0.32) !important; }
+        }
+        .loc-highlighted { animation: loc-pulse 1.1s ease-in-out infinite !important; }
+        #btn-random-loc { display:inline-flex !important; align-items:center; gap:6px; padding:6px 12px !important;
+          background:linear-gradient(135deg,#c0392b,#8e2417) !important; border:none !important; border-radius:6px !important;
+          color:#fff !important; font-weight:bold; font-size:0.82em !important; cursor:pointer;
+          box-shadow:0 2px 6px rgba(0,0,0,0.5) !important; transition:transform 0.1s,box-shadow 0.1s !important;
+          min-width:unset !important; width:auto !important; }
+        #btn-random-loc:hover { transform:scale(1.06); box-shadow:0 3px 10px rgba(192,57,43,0.7) !important; }
+        #btn-random-loc:active { transform:scale(0.95); }
+        @keyframes dice-spin { 0%{transform:rotate(0deg) scale(1.3)} 100%{transform:rotate(360deg) scale(1.3)} }
+        .dice-rolling { animation: dice-spin 0.4s linear; }
+      </style>
+      <div style="font-family:inherit; margin:-4px; padding-bottom:50px;">
+        <div style="background:linear-gradient(135deg,rgba(14,68,114,0.75),rgba(26,111,168,0.5)); padding:12px 16px; margin-bottom:12px; border-radius:4px; display:flex; align-items:center; gap:12px;">
+          <i class="fas fa-person" style="font-size:2em; color:#7ec8f0; text-shadow:0 0 10px rgba(126,200,240,0.6);"></i>
+          <div style="flex:1;">
+            <div style="font-weight:bold; font-size:1.05em; color:#e8f4ff; text-shadow:0 1px 3px rgba(0,0,0,0.5);">${this.actor.name}</div>
+            <div style="font-size:0.78em; color:#acd4ee; margin-top:3px;">
+              <i class="fas fa-shield-halved" style="margin-right:4px;"></i>DEF de base : <strong style="color:#fff; font-size:1.1em;">${baseDef}</strong>
+              &nbsp;&nbsp;<i class="fas fa-vest" style="margin-right:4px;"></i>Protections : <strong style="color:#fff;">${nbProtections}</strong>
+            </div>
+          </div>
+          <div style="display:flex; flex-direction:column; align-items:center; gap:5px;">
+            <button id="btn-random-loc"><i class="fas fa-dice-d6"></i> Zone al&eacute;atoire</button>
+            <span id="random-loc-result" style="font-size:0.75em; color:#fde68a; font-weight:bold; min-height:1.2em; text-align:center; text-shadow:0 0 8px rgba(253,230,138,0.7); letter-spacing:0.04em;"></span>
+          </div>
+        </div>
+        <div style="overflow-x:auto;">
+          <table style="width:100%; border-collapse:collapse; font-size:0.87em;">
+            <thead><tr>${headerCells}</tr></thead>
+            <tbody id="loc-table-body">${bodyRows}</tbody>
+          </table>
+        </div>
+        <div style="margin-top:10px; font-size:0.7em; color:#666; text-align:right; padding-right:2px;">
+          <i class="fas fa-circle-info" style="margin-right:3px;"></i>Les badges colorés indiquent un bonus de protection actif. Le bouton dé tire une zone au hasard.
+        </div>
+      </div>
+    `;
+
+    new Dialog(
+      {
+        title: `Défense par localisation — ${this.actor.name}`,
+        content,
+        buttons: { close: { label: "<i class='fas fa-times'></i> Fermer" } },
+        default: "close",
+        render: (html) => {
+          html.find("#btn-random-loc").on("click", function () {
+            const idx = Math.floor(Math.random() * data.length);
+            html.find("td.loc-highlighted").removeClass("loc-highlighted");
+            html.find(`td[data-rowidx="${idx}"]`).addClass("loc-highlighted");
+            html.find("#random-loc-result").text(`➤ ${data[idx].label}`);
+            const $icon = $(this).find(".fa-dice-d6");
+            $icon.addClass("dice-rolling");
+            setTimeout(() => $icon.removeClass("dice-rolling"), 420);
+            const $row = html.find(`tr[data-zone-idx="${idx}"]`);
+            if ($row.length)
+              $row[0].scrollIntoView({ behavior: "smooth", block: "nearest" });
+          });
+        },
+      },
+      { width: 640, height: "auto", classes: ["window-dialog"] },
+    ).render(true);
+  }
+
   _prepareItems(context) {
     const gear = [];
     const objet = [];
@@ -3069,6 +4281,7 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
     const lancer = [];
     const melee = [];
     const protections = [];
+    const pouvoir = [];
 
     for (let i of context.items) {
       let item = i.data;
@@ -3091,6 +4304,8 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
         protections.push(i);
       } else if (i.type === "Attaque spéciale") {
         melee.push(i);
+      } else if (i.type === "Pouvoir") {
+        pouvoir.push(i);
       }
     }
 
@@ -3102,9 +4317,163 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
     context.actor.lancer = lancer;
     context.actor.melee = melee;
     context.actor.protections = protections;
+    context.actor.pouvoir = pouvoir;
   }
 
   /* -------------------------------------------- */
+
+  _showPouvoirDetails(pouvoirType) {
+    const myDialogOptions = {
+      resizable: true,
+      initial_tab: "tab1",
+      width: 690,
+      height: 910,
+      top: 10,
+      left: 10,
+      classes: ["window-dialog"],
+    };
+
+    let numItem = 0;
+    let titre;
+    let grade = 0;
+    let itemsPouvoir = this.actor.items.filter((i) => i.type === "Pouvoir");
+
+    const getPouvoirData = (pouvoir) => {
+      return {
+        numItem: this.actor.system.pouvoirs[pouvoir].num_item,
+        grade: this.actor.system.pouvoirs[pouvoir].grade,
+        titre: this.actor.system.pouvoirs[pouvoir].label,
+      };
+    };
+
+    // Pour PNJ, les valeurs sont directement "pouvoir_psi_1" ou "pouvoir_psi_2"
+    const mappedPouvoirType =
+      pouvoirType === "pouvoir_psi"
+        ? "pouvoir_psi_1"
+        : pouvoirType === "pouvoir_psi2"
+          ? "pouvoir_psi_2"
+          : pouvoirType;
+
+    ({ numItem, grade, titre } = getPouvoirData(mappedPouvoirType));
+
+    if (!itemsPouvoir[numItem]) {
+      ui.notifications.error(`Pouvoir non trouvé dans l'inventaire`);
+      return;
+    }
+
+    let grade_classes = Array(12).fill("spd-grade-card inactive");
+    for (let i = 0; i < grade; i++) {
+      grade_classes[i] = "spd-grade-card active";
+    }
+    if (grade > 0 && grade <= 12) {
+      grade_classes[grade - 1] = "spd-grade-card active current";
+    }
+
+    const getDescription = (pouvoir) => {
+      const sys = itemsPouvoir[numItem].system[pouvoir];
+      const gradeKeys = [
+        "grade1",
+        "grade2",
+        "grade3",
+        "grade4",
+        "grade5",
+        "grade6",
+        "grade7",
+        "grade8",
+        "grade9",
+        "grade10",
+        "grade11",
+        "grade12",
+      ];
+      const cardsHtml = gradeKeys
+        .map(
+          (key, i) =>
+            `<div class="${grade_classes[i]}">` +
+            `<span class="spd-grade-badge">Grade ${i + 1}</span>` +
+            `<div class="spd-grade-text">${sys[key]}</div>` +
+            `</div>`,
+        )
+        .join("");
+      return (
+        `<div class="spd-description">${sys.description}</div>` +
+        `<div class="spd-grades-grid">${cardsHtml}</div>`
+      );
+    };
+
+    let description = `<div class="spd-general-content">${itemsPouvoir[numItem].system.description}</div>`;
+    let description1 = getDescription("pouvoir1");
+    let description2 = getDescription("pouvoir2");
+    let description3 = getDescription("pouvoir3");
+    let description4 = getDescription("pouvoir4");
+    let description_aide = `<div class="spd-aide-content">${itemsPouvoir[numItem].system.aide.description}</div>`;
+    let numTab = itemsPouvoir[numItem].system.nb_onglets;
+    let icon = itemsPouvoir[numItem].system.icon;
+    let itemImg = itemsPouvoir[numItem].img;
+    let icon1 = itemsPouvoir[numItem].system.pouvoir1.icon;
+    let icon2 = itemsPouvoir[numItem].system.pouvoir2.icon;
+    let icon3 = itemsPouvoir[numItem].system.pouvoir3.icon;
+    let icon4 = itemsPouvoir[numItem].system.pouvoir4.icon;
+    let icon_aide = itemsPouvoir[numItem].system.aide.icon;
+    let tab_gen = itemsPouvoir[numItem].system.label;
+    let tab1 = itemsPouvoir[numItem].system.pouvoir1.label;
+    let tab2 = itemsPouvoir[numItem].system.pouvoir2.label;
+    let tab3 = itemsPouvoir[numItem].system.pouvoir3.label;
+    let tab4 = itemsPouvoir[numItem].system.pouvoir4.label;
+    let tab_aide = itemsPouvoir[numItem].system.aide.label;
+    let aide = itemsPouvoir[numItem].system.aide_active;
+
+    let tabs = [];
+    tabs.push({ title: tab_gen, content: description, icon: icon });
+    if (numTab >= 1)
+      tabs.push({ title: tab1, content: description1, icon: icon1 });
+    if (numTab >= 2)
+      tabs.push({ title: tab2, content: description2, icon: icon2 });
+    if (numTab >= 3)
+      tabs.push({ title: tab3, content: description3, icon: icon3 });
+    if (numTab >= 4)
+      tabs.push({ title: tab4, content: description4, icon: icon4 });
+    if (aide)
+      tabs.push({
+        title: tab_aide,
+        content: description_aide,
+        icon: icon_aide,
+      });
+
+    const _gradeStars = (g) =>
+      `<span style="color:inherit;font-size:13px;letter-spacing:2px;">${"★".repeat(Math.min(g, 12))}${"\u2606".repeat(Math.max(0, 12 - g))}</span>`;
+
+    const pouvoirIconClass = "fas fa-brain";
+    const pouvoirTypeLabel =
+      mappedPouvoirType === "pouvoir_psi_2" ? "Pouvoir Psi 2" : "Pouvoir Psi 1";
+
+    const headerHtml =
+      `<div style="background:linear-gradient(135deg,rgba(6,28,14,0.98) 0%,rgba(16,58,30,0.95) 100%);border-radius:0;padding:14px 18px 12px;margin-bottom:0;display:flex;align-items:center;gap:16px;border-left:4px solid rgba(130,224,170,0.85);border-bottom:1px solid rgba(130,224,170,0.25);">` +
+      `<div class="spd-orb-wrap"><span class="spd-orb"><img class="spd-portrait" src="${itemImg}" alt="${titre}" /><div class="spd-orb-ring"></div><div class="spd-orb-glow"></div></span></div>` +
+      `<div style="flex:1;">` +
+      `<div style="font-size:15px;font-weight:bold;letter-spacing:0.5px;color:#e0ffe8;margin-bottom:5px;">${titre}</div>` +
+      `<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">` +
+      `<span style="background:rgba(130,224,170,0.20);color:rgba(150,230,185,1);font-size:10.5px;padding:2px 10px;border-radius:10px;border:1px solid rgba(130,224,170,0.38);font-weight:bold;"><i class="fas fa-layer-group" style="margin-right:4px;font-size:9px;"></i>Grade&nbsp;<strong>${grade}</strong></span>` +
+      `<span style="color:rgba(130,224,170,0.85);">${_gradeStars(grade)}</span>` +
+      `<span style="background:rgba(14,55,28,0.65);color:rgba(150,230,185,0.90);font-size:10px;padding:2px 9px;border-radius:10px;border:1px solid rgba(82,180,120,0.35);"><i class="${pouvoirIconClass}" style="margin-right:3px;font-size:9px;"></i>${pouvoirTypeLabel}</span>` +
+      `</div></div></div>`;
+
+    const tab = new TabbedDialog(
+      {
+        title: titre,
+        header: headerHtml,
+        footer: "",
+        tabs: tabs,
+        buttons: {},
+        default: "two",
+        render: (html) =>
+          console.log("Register interactivity in the rendered dialog"),
+        close: (html) =>
+          console.log("This always is logged no matter which option is chosen"),
+      },
+      myDialogOptions,
+    );
+    tab.render(true);
+  }
 
   /**
    * Listen for click events on an attribute control to modify the composition of attributes in the sheet
@@ -3122,6 +4491,28 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
   /* -------------------------------------------- */
 
   /** @override */
+  async _onDropItemCreate(itemData) {
+    // Foundry v12 peut passer un tableau ou un objet unique
+    const items = Array.isArray(itemData) ? itemData : [itemData];
+    const pouvoirItems = items.filter((i) => i.type === "Pouvoir");
+    if (pouvoirItems.length > 0) {
+      const currentCount = this.actor.items.filter(
+        (i) => i.type === "Pouvoir",
+      ).length;
+      if (currentCount + pouvoirItems.length > 2) {
+        ui.notifications.warn(
+          "Vous ne pouvez avoir que 2 pouvoirs résonants. Supprimez-en un d'abord.",
+        );
+        return false;
+      }
+      pouvoirItems.forEach((item) => {
+        item.system = item.system || {};
+        item.system.equipe = true;
+      });
+    }
+    return super._onDropItemCreate(itemData);
+  }
+
   async _onItemCreate(event) {
     event.preventDefault();
     const header = event.currentTarget;
@@ -3207,7 +4598,7 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
           "<div class='card-header'><span>Ardence <i class='fas fa-angle-double-right'></i> " +
           comp +
           " ?</span></div>" +
-          "<br><span class='bouton_texte'>combien de rangs voulez-vous ajouter au TALENT " +
+          "<br><center><span class='bouton_texte'>Combien de rangs voulez-vous ajouter au TALENT " +
           nomComp.toUpperCase() +
           " ?</span><br><br>",
         buttons: btns_1,
@@ -3290,7 +4681,7 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
           "<div class='card-header'><span>Ardence <i class='fas fa-angle-double-right'></i> " +
           this.actor.system.talents[comp].domaine +
           " ?</span></div>" +
-          "<br><span class='bouton_texte'>combien de rangs voulez-vous ajouter au DOMAINE " +
+          "<br><center><span class='bouton_texte'>Combien de rangs voulez-vous ajouter au DOMAINE " +
           nomDomaine.toUpperCase() +
           " ?</span><br><br>",
         buttons: btns_2,
@@ -3348,7 +4739,7 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
         title: nomComp.toUpperCase(),
         content:
           "<div class='card-header'><span>Ardence <i class='fas fa-angle-double-right'></i> Pouvoir PSI ?</span></div>" +
-          "<br><span class='bouton_texte'>combien de rangs voulez-vous ajouter au Pouvoir PSI ?</span><br><br>",
+          "<br><center><span class='bouton_texte'>Combien de rangs voulez-vous ajouter au Pouvoir PSI ?</span><br><br>",
         buttons: btns_3,
         close: function () {
           rgardencetotal = rgardencetotal - ardence_trait;
@@ -3376,7 +4767,7 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
         title: nomComp.toUpperCase(),
         content:
           "<div class='card-header'><span>Ardence <i class='fas fa-angle-double-right'></i> RÉSONNANCE ?</span></div>" +
-          "<br><span class='bouton_texte'>combien de rangs voulez-vous ajouter au TRAIT RÉSONNANCE ?</span><br><br>",
+          "<br><center><span class='bouton_texte'>Combien de rangs voulez-vous ajouter au TRAIT RÉSONNANCE ?</span><br><br>",
         buttons: btns_2,
         close: function () {
           rgardencetotal = rgardencetotal - ardence_domaine;
@@ -3439,7 +4830,7 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
           "<div class='card-header'><span>Ardence <i class='fas fa-angle-double-right'></i> " +
           trait +
           " ?</span></div>" +
-          "<br><span class='bouton_texte'>combien de rangs voulez-vous ajouter au TRAIT " +
+          "<br><center><span class='bouton_texte'>Combien de rangs voulez-vous ajouter au TRAIT " +
           trait.toUpperCase() +
           " ?</span><br><br>",
         buttons: btns_3,
@@ -3583,6 +4974,7 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
   ) {
     let comp = ev.currentTarget.getAttribute("value");
     let nomComp = this.actor.system.talents[comp].label;
+    const retraitAuto = game.settings.get("mega", "retraitAuto");
     let mod = this.actor.system.talents[comp].value + bonus;
     let rollFormula = "";
     let result_diff = "";
@@ -3737,8 +5129,9 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
         this.actor.system.caracs.resonnance.value +
         ardence_domaine +
         talent_maudit;
+      const _numPouv = this._numPouv || 1;
       de_domaine = parseFloat(
-        this.actor.system.pouvoirs.rg_pouvoir_psi_1.value,
+        this.actor.system.pouvoirs["pouvoir_psi_" + _numPouv].rg,
       );
       de_domaine += ardence_trait;
       // faire test si de_talent ===0!
@@ -3784,6 +5177,11 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
       }
     }
     if (rollFormula !== "") {
+      // Supprimer les termes 1d0 de la formule (valeur à 0)
+      rollFormula = rollFormula
+        .replace(/1d0\s*\+\s*/g, "")
+        .replace(/\s*\+\s*1d0\b/g, "")
+        .trim();
       r = new Roll(rollFormula);
       r.evaluate().then(() => {
         let type_jet = this.actor.system.talents[comp].label;
@@ -3812,23 +5210,23 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
           if (final >= 0) {
             final = Math.floor(final / 3);
             result_diff =
-              '<p style="background-color:#A3B6BB; color:white; font-size: 22px; text-align:center; text-shadow: 1px 1px 2px black;">DIFF ' +
+              '<div class="mega-roll-diff"><i class="fas fa-bullseye"></i> DIFF ' +
               diff +
-              '</p></div></span><div><span><b><p style="background-color:green; color:white; text-align:center; text-shadow: 1px 1px 2px black; font-size: 16px;";>Reussite - Marge de reussite : ' +
+              '</div><div class="mega-roll-success"><i class="fas fa-check-circle"></i> Réussite <span class="mega-roll-margin">Marge : ' +
               final +
-              "</p></b></div></span>";
+              "</span></div>";
           } else {
             final = Math.ceil(final / 3);
             result_diff =
-              '<p style="background-color:#A3B6BB; color:white; font-size: 22px; text-align:center; text-shadow: 1px 1px 2px black;">DIFF ' +
+              '<div class="mega-roll-diff"><i class="fas fa-bullseye"></i> DIFF ' +
               diff +
-              '</p></div></span><div><span><b><p style="background-color:red; color:white; text-align:center; text-shadow: 1px 1px 2px black; font-size: 16px;";>Echec4 - Marge d\'echec : ' +
+              '</div><div class="mega-roll-failure"><i class="fas fa-times-circle"></i> Échec <span class="mega-roll-margin">Marge : ' +
               final +
-              "</p></b></div></span>";
+              "</span></div>";
           }
         } else {
           result_diff =
-            '<p style="background-color:#A3B6BB; color:white; font-size: 22px; text-align:center; text-shadow: 1px 1px 2px black;">DIFF NC</p></div></span>';
+            '<div class="mega-roll-diff mega-roll-diff-nc"><i class="fas fa-question-circle"></i> DIFF NC</div>';
         }
         // let formule=r.formula + " + " + bonuspool;
         // game.dice3d.showForRoll(r, game.user, true, '' ).then(displayed => {
@@ -3865,10 +5263,10 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
     }
   }
 
-  testmainsnues(comp, diff, ptardence, bonuspool) {
+  testmainsnues(comp, diff, ptardence, bonuspool, bonus = 0) {
     const retraitAuto = game.settings.get("mega", "retraitAuto");
     let nomComp = this.actor.system.talents_combat[comp].label;
-    let mod = this.actor.system.talents_combat[comp].score;
+    let mod = this.actor.system.talents_combat[comp].score + bonus;
     let objet = this.actor.system.talents_combat[comp].label;
     let currentTarget = null;
     let r = "";
@@ -3897,7 +5295,7 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
     }
     let arme = this.actor.items.filter((i) => i.name === objet);
     if (Array.from(game.user.targets).length != 0) {
-      currentTarget = Array.from(game.user.targets)[0].actor;
+      currentTarget = Array.from(game.user.targets)[0].actor ?? null;
     }
 
     let combat = 0;
@@ -3915,7 +5313,9 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
     let formule = "";
     if (comp == "charge") {
       if (mod !== 0) {
-        if (bonuspool !== 0) {
+        if (this.actor.system.reduit == 1 || this.actor.system.reduit == 2) {
+          formule = bonuspool !== 0 ? "1d" + mod + "+" + bonuspool : "1d" + mod;
+        } else if (bonuspool !== 0) {
           formule =
             "1d" +
             mod +
@@ -3949,7 +5349,9 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
         }
       }
     } else if (mod !== 0) {
-      if (this.actor.system.talents_combat[comp].bonus === "adr") {
+      if (this.actor.system.reduit == 1 || this.actor.system.reduit == 2) {
+        formule = bonuspool !== 0 ? "1d" + mod + "+" + bonuspool : "1d" + mod;
+      } else if (this.actor.system.talents_combat[comp].bonus === "adr") {
         if (bonuspool !== 0) {
           formule =
             "1d" +
@@ -3980,9 +5382,17 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
             this.actor.system.caracs.sens.value +
             "+" +
             bonuspool;
+        } else {
+          formule =
+            "1d" +
+            mod +
+            "+ 1d" +
+            combat +
+            "+ 1d" +
+            this.actor.system.caracs.sens.value;
         }
       }
-    } else if (mod === "0") {
+    } else if (mod === 0 || mod === "0") {
       if (this.actor.system.talents_combat[comp].bonus === "adr") {
         if (bonuspool !== 0) {
           formule =
@@ -4011,7 +5421,16 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
         }
       }
     }
-    formule = formule.replace(/\s*\+\s*1d0/g, "");
+    formule = formule
+      .replace(/1d0\s*\+\s*/g, "")
+      .replace(/\s*\+\s*1d0\b/g, "")
+      .trim();
+    if (!formule || formule.trim() === "") {
+      ui.notifications.error(
+        "Formule de jet invalide (valeur manquante sur le talent ou le domaine Combat).",
+      );
+      return;
+    }
     r = new Roll(formule);
     let type_jet = this.actor.system.talents_combat[comp].label;
     console.log(r.formula);
@@ -4131,19 +5550,19 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
           if (result_final >= 0) {
             marge = Math.floor(result_final / 3);
             result_diff =
-              '<p style="background-color:#A3B6BB; color:white; font-size: 22px; text-align:center; text-shadow: 1px 1px 2px black;">DIFF ' +
+              '<div class="mega-roll-diff"><i class="fas fa-bullseye"></i> DIFF ' +
               def_temp +
-              '</p></div></span><div><span><b><p style="background-color:green; color:white; text-align:center; text-shadow: 1px 1px 2px black; font-size: 16px;";>Reussite - Marge de reussite : ' +
+              '</div><div class="mega-roll-success"><i class="fas fa-check-circle"></i> Réussite <span class="mega-roll-margin">Marge : ' +
               marge +
-              "</p></b></div></span>";
+              "</span></div>";
           } else {
             marge = Math.ceil(result_final / 3);
             result_diff =
-              '<div><span><b><p style="background-color:#A3B6BB; color:white; font-size: 22px; text-align:center; text-shadow: 1px 1px 2px black;">DIFF ' +
+              '<div class="mega-roll-diff"><i class="fas fa-bullseye"></i> DIFF ' +
               def_temp +
-              '</p></div></span><div><span><b><p style="background-color:red; color:white; text-align:center; text-shadow: 1px 1px 2px black; font-size: 16px;";>Echec - Marge d\'echec : ' +
+              '</div><div class="mega-roll-failure"><i class="fas fa-times-circle"></i> Échec <span class="mega-roll-margin">Marge : ' +
               marge +
-              "</p></b></div></span>";
+              "</span></div>";
           }
           if (marge === 0 && result_final >= 0) {
             melee_perdue = this.actor.system.talents_combat[comp].av0;
@@ -4179,103 +5598,103 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
           switch (effet_coup1) {
             case "H":
               effet_coup1 =
-                '<span><div class="chat_effet_immediat">Immédiat : HANDICAPER</div></Span>';
+                '<div class="chat_effet_immediat"><i class="fas fa-bolt"></i> Immédiat : HANDICAPER</div>';
               break;
             case "A":
               effet_coup1 =
-                '<span><div class="chat_effet_immediat">Immédiat : ASSOMMER</div></Span>';
+                '<div class="chat_effet_immediat"><i class="fas fa-bolt"></i> Immédiat : ASSOMMER</div>';
               break;
             case "S":
               effet_coup1 =
-                '<span><div class="chat_effet_immediat">Immédiat : SONNER</div></Span>';
+                '<div class="chat_effet_immediat"><i class="fas fa-bolt"></i> Immédiat : SONNER</div>';
               break;
             case "R":
               effet_coup1 =
-                '<span><div class="chat_effet_immediat">Immédiat : RENVERSER</div></Span>';
+                '<div class="chat_effet_immediat"><i class="fas fa-bolt"></i> Immédiat : RENVERSER</div>';
               break;
             case "I":
               effet_coup1 =
-                '<div class="chat_effet_immediat">Immédiate : IMMOBILISER</div>';
+                '<div class="chat_effet_immediat"><i class="fas fa-bolt"></i> Immédiat : IMMOBILISER</div>';
               break;
             case "P":
               effet_coup1 =
-                '<span><div class="chat_effet_action">Prochaine action : POSITIONNEMENT</div></Span>';
+                '<div class="chat_effet_action"><i class="fas fa-running"></i> Prochaine action : POSITIONNEMENT</div>';
               break;
             case "T":
               effet_coup1 =
-                '<span><div class="chat_effet_att">Prochaine attaque : TENIR A DISTANCE</div></Span>';
+                '<div class="chat_effet_att"><i class="fas fa-bullseye"></i> Prochaine attaque : TENIR A DISTANCE</div>';
               break;
             case "D":
               effet_coup1 =
-                '<span><div class="chat_effet_att">Prochaine défense : DÉFAUT DE LA CUIRASSE</div></Span>';
+                '<div class="chat_effet_def"><i class="fas fa-shield-alt"></i> Prochaine défense : DÉFAUT DE LA CUIRASSE</div>';
               break;
           }
           switch (effet_coup2) {
             case "H":
               effet_coup1 =
-                '<span><div class="chat_effet_immediat">Immédiat : HANDICAPER</div></Span>';
+                '<div class="chat_effet_immediat"><i class="fas fa-bolt"></i> Immédiat : HANDICAPER</div>';
               break;
             case "A":
               effet_coup1 =
-                '<span><div class="chat_effet_immediat">Immédiat : ASSOMMER</div></Span>';
+                '<div class="chat_effet_immediat"><i class="fas fa-bolt"></i> Immédiat : ASSOMMER</div>';
               break;
             case "S":
               effet_coup1 =
-                '<span><div class="chat_effet_immediat">Immédiat : SONNER</div></Span>';
+                '<div class="chat_effet_immediat"><i class="fas fa-bolt"></i> Immédiat : SONNER</div>';
               break;
             case "R":
               effet_coup1 =
-                '<span><div class="chat_effet_immediat">Immédiat : RENVERSER</div></Span>';
+                '<div class="chat_effet_immediat"><i class="fas fa-bolt"></i> Immédiat : RENVERSER</div>';
               break;
             case "I":
               effet_coup1 =
-                '<div class="chat_effet_immediat">Immédiate : IMMOBILISER</div>';
+                '<div class="chat_effet_immediat"><i class="fas fa-bolt"></i> Immédiat : IMMOBILISER</div>';
               break;
             case "P":
               effet_coup1 =
-                '<span><div class="chat_effet_action">Prochaine action : POSITIONNEMENT</div></Span>';
+                '<div class="chat_effet_action"><i class="fas fa-running"></i> Prochaine action : POSITIONNEMENT</div>';
               break;
             case "T":
               effet_coup1 =
-                '<span><div class="chat_effet_att">Prochaine attaque : TENIR A DISTANCE</div></Span>';
+                '<div class="chat_effet_att"><i class="fas fa-bullseye"></i> Prochaine attaque : TENIR A DISTANCE</div>';
               break;
             case "D":
               effet_coup1 =
-                '<span><div class="chat_effet_att">Prochaine défense : DÉFAUT DE LA CUIRASSE</div></Span>';
+                '<div class="chat_effet_def"><i class="fas fa-shield-alt"></i> Prochaine défense : DÉFAUT DE LA CUIRASSE</div>';
               break;
           }
           switch (effet_coup3) {
             case "H":
               effet_coup1 =
-                '<span><div class="chat_effet_immediat">Immédiat : HANDICAPER</div></Span>';
+                '<div class="chat_effet_immediat"><i class="fas fa-bolt"></i> Immédiat : HANDICAPER</div>';
               break;
             case "A":
               effet_coup1 =
-                '<span><div class="chat_effet_immediat">Immédiat : ASSOMMER</div></Span>';
+                '<div class="chat_effet_immediat"><i class="fas fa-bolt"></i> Immédiat : ASSOMMER</div>';
               break;
             case "S":
               effet_coup1 =
-                '<span><div class="chat_effet_immediat">Immédiat : SONNER</div></Span>';
+                '<div class="chat_effet_immediat"><i class="fas fa-bolt"></i> Immédiat : SONNER</div>';
               break;
             case "R":
               effet_coup1 =
-                '<span><div class="chat_effet_immediat">Immédiat : RENVERSER</div></Span>';
+                '<div class="chat_effet_immediat"><i class="fas fa-bolt"></i> Immédiat : RENVERSER</div>';
               break;
             case "I":
               effet_coup1 =
-                '<div class="chat_effet_immediat">Immédiate : IMMOBILISER</div>';
+                '<div class="chat_effet_immediat"><i class="fas fa-bolt"></i> Immédiat : IMMOBILISER</div>';
               break;
             case "P":
               effet_coup1 =
-                '<span><div class="chat_effet_action">Prochaine action : POSITIONNEMENT</div></Span>';
+                '<div class="chat_effet_action"><i class="fas fa-running"></i> Prochaine action : POSITIONNEMENT</div>';
               break;
             case "T":
               effet_coup1 =
-                '<span><div class="chat_effet_att">Prochaine attaque : TENIR A DISTANCE</div></Span>';
+                '<div class="chat_effet_att"><i class="fas fa-bullseye"></i> Prochaine attaque : TENIR A DISTANCE</div>';
               break;
             case "D":
               effet_coup1 =
-                '<span><div class="chat_effet_att">Prochaine défense : DÉFAUT DE LA CUIRASSE</div></Span>';
+                '<div class="chat_effet_def"><i class="fas fa-shield-alt"></i> Prochaine défense : DÉFAUT DE LA CUIRASSE</div>';
               break;
           }
 
@@ -4284,31 +5703,33 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
             if (marge >= 0 && result_final >= 0 && marge == 0) {
               result_diff =
                 result_diff +
-                '<p class="result_diff"> ' +
+                '<div class="mega-roll-damage-melee"><i class="fas fa-shield-alt"></i> ' +
                 currentTarget.name +
-                " perd " +
+                " perd <strong>" +
                 melee_perdue +
-                " points de melee</p>";
+                "</strong>pt de Mêlée</div>";
             }
-            vie_perdue = calcViePerdue(marge, comp, this.actor);
+            const _dmc2p = calcViePerdue(melee_perdue, comp, this.actor);
+            vie_perdue = _dmc2p.vie_perdue;
             result_diff =
               result_diff +
-              '<p class="result_diff"> ' +
+              '<div class="mega-roll-damage-vie"><i class="fas fa-heart"></i> ' +
               currentTarget.name +
-              " perd " +
+              " perd <strong>" +
               vie_perdue +
-              " points de vie</p>";
+              "</strong>pt de Vie</div>";
             if (retraitAuto) {
               game.modules
                 .get("megasocket")
-                .api.documentUpdate(currentTarget, {
+                ?.api?.documentUpdate(currentTarget, {
                   "system.health.value":
                     currentTarget.system.health.value - vie_perdue,
+                  "system.melee_impair": _dmc2p.new_melee_impair,
                 })
-                .then(() => {
+                ?.then(() => {
                   game.modules
                     .get("megasocket")
-                    .api.documentUpdate(currentTarget, {
+                    ?.api?.documentUpdate(currentTarget, {
                       "system.power.value":
                         currentTarget.system.power.value - melee_perdue,
                     });
@@ -4357,9 +5778,9 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
               comp +
               " data-melee=" +
               melee_perdue +
-              "> Conso 0Av <br> -" +
+              "><i class='fas fa-coins'></i> <b>0Av</b><br>-" +
               melee_perdue +
-              "pt de Mêlée " +
+              " pt Mêlée " +
               effet_0av_1 +
               " " +
               effet_0av_2 +
@@ -4379,9 +5800,9 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
               comp +
               " data-melee=" +
               melee_perdue_1av +
-              "> Conso 1Av <br> -" +
+              "><i class='fas fa-coins'></i> <b>1Av</b><br>-" +
               melee_perdue_1av +
-              "pt de Mêlée " +
+              " pt Mêlée " +
               effet_1av_1 +
               " " +
               effet_1av_2 +
@@ -4416,9 +5837,9 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
               comp +
               " data-melee=" +
               melee_perdue +
-              "> Conso 0Av <br> -" +
+              "><i class='fas fa-coins'></i> <b>0Av</b><br>-" +
               melee_perdue +
-              "pt de Mêlée " +
+              " pt Mêlée " +
               effet_0av_1 +
               " " +
               effet_0av_2 +
@@ -4438,9 +5859,9 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
               comp +
               " data-melee=" +
               melee_perdue_1av +
-              "> Conso 1Av <br> -" +
+              "><i class='fas fa-coins'></i> <b>1Av</b><br>-" +
               melee_perdue_1av +
-              "pt de Mêlée " +
+              " pt Mêlée " +
               effet_1av_1 +
               " " +
               effet_1av_2 +
@@ -4460,9 +5881,9 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
               comp +
               " data-melee=" +
               melee_perdue_2av +
-              "> Conso 2Av <br> -" +
+              "><i class='fas fa-coins'></i> <b>2Av</b><br>-" +
               melee_perdue_2av +
-              "pt de Mêlée " +
+              " pt Mêlée " +
               effet_2av_1 +
               " " +
               effet_2av_2 +
@@ -4501,9 +5922,9 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
               comp +
               " data-melee=" +
               melee_perdue +
-              "> Conso 0Av <br> -" +
+              "><i class='fas fa-coins'></i> <b>0Av</b><br>-" +
               melee_perdue +
-              "pt de Mêlée " +
+              " pt Mêlée " +
               effet_0av_1 +
               " " +
               effet_0av_2 +
@@ -4523,9 +5944,9 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
               comp +
               " data-melee=" +
               melee_perdue_1av +
-              "> Conso 1Av <br> -" +
+              "><i class='fas fa-coins'></i> <b>1Av</b><br>-" +
               melee_perdue_1av +
-              "pt de Mêlée " +
+              " pt Mêlée " +
               effet_1av_1 +
               " " +
               effet_1av_2 +
@@ -4545,9 +5966,9 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
               comp +
               " data-melee=" +
               melee_perdue_2av +
-              "> Conso 2Av <br> -" +
+              "><i class='fas fa-coins'></i> <b>2Av</b><br>-" +
               melee_perdue_2av +
-              "pt de Mêlée " +
+              " pt Mêlée " +
               effet_2av_1 +
               " " +
               effet_2av_2 +
@@ -4567,9 +5988,9 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
               comp +
               " data-melee=" +
               melee_perdue_3av +
-              "> Conso 3Av <br> -" +
+              "><i class='fas fa-coins'></i> <b>3Av</b><br>-" +
               melee_perdue_3av +
-              "pt de Mêlée " +
+              " pt Mêlée " +
               effet_3av_1 +
               " " +
               effet_3av_2 +
@@ -4587,11 +6008,11 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
               "<div class='card-header'><span> " +
               type_jet +
               "</span></div>" +
-              '<div><span><b><p style="font-size: 18px; text-align:center;";>' +
+              '<div class="mega-roll-attacker"><i class="fas fa-crosshairs"></i> ' +
               canvas.tokens.controlled[0].name +
               " attaque " +
               currentTarget.name +
-              "</b></p></span></div>" +
+              "</div>" +
               result_diff +
               mention +
               assomme,
@@ -4603,9 +6024,9 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
     });
   }
 
-  testTir(Nom_acteur, comp, diff, ptardence, bonuspool) {
+  testTir(Nom_acteur, comp, diff, ptardence, bonuspool, bonus = 0) {
     let nomComp = this.actor.system.talents_combat[comp].label;
-    let mod = this.actor.system.talents_combat[comp].score;
+    let mod = this.actor.system.talents_combat[comp].score + bonus;
     let objet = this.actor.system.talents_combat[comp].label;
     let arme = this.actor.items.filter((i) => i.name === objet);
 
@@ -4670,7 +6091,9 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
     console.log("bonuspool : " + bonuspool);
 
     if (mod !== 0) {
-      if (this.actor.system.talents_combat[comp].bonus === "adr") {
+      if (this.actor.system.reduit == 1 || this.actor.system.reduit == 2) {
+        formule = bonuspool !== "" ? "1d" + mod + " +" + bonuspool : "1d" + mod;
+      } else if (this.actor.system.talents_combat[comp].bonus === "adr") {
         if (bonuspool !== "") {
           formule =
             "1d" +
@@ -4742,7 +6165,10 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
       }
     }
     console.log("formule avant : " + formule);
-    formule = formule.replace(/\s*\+\s*1d0/g, "");
+    formule = formule
+      .replace(/1d0\s*\+\s*/g, "")
+      .replace(/\s*\+\s*1d0\b/g, "")
+      .trim();
     console.log("formule après : " + formule);
     r = new Roll(formule);
     let type_jet = this.actor.system.talents_combat[comp].label;
@@ -4832,26 +6258,26 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
             def_temp = diff;
           } else {
             def_temp =
-              currentTarget.system.def.value +
-              currentTarget.system.def_modif.value;
+              (currentTarget?.system?.def?.value ?? 0) +
+              (currentTarget?.system?.def_modif?.value ?? 0);
           }
           result_final = resultat - def_temp;
           if (result_final >= 0) {
             marge = Math.floor(result_final / 3);
             result_diff =
-              '<p style="background-color:#A3B6BB; color:white; font-size: 22px; text-align:center; text-shadow: 1px 1px 2px black;">DIFF ' +
+              '<div class="mega-roll-diff"><i class="fas fa-bullseye"></i> DIFF ' +
               diff +
-              '</p></div></span><div><span><b><p style="background-color:green; color:white; text-align:center; text-shadow: 1px 1px 2px black; font-size: 16px;";>Reussite - Marge de reussite : ' +
+              '</div><div class="mega-roll-success"><i class="fas fa-check-circle"></i> Réussite <span class="mega-roll-margin">Marge : ' +
               marge +
-              "</p></b></div></span>";
+              "</span></div>";
           } else {
             marge = Math.ceil(result_final / 3);
             result_diff =
-              '<div><span><b><p style="background-color:#A3B6BB; color:white; font-size: 22px; text-align:center; text-shadow: 1px 1px 2px black;">DIFF ' +
+              '<div class="mega-roll-diff"><i class="fas fa-bullseye"></i> DIFF ' +
               diff +
-              '</p></div></span><div><span><b><p style="background-color:red; color:white; text-align:center; text-shadow: 1px 1px 2px black; font-size: 16px;";>Echec - Marge d\'echec : ' +
+              '</div><div class="mega-roll-failure"><i class="fas fa-times-circle"></i> Échec <span class="mega-roll-margin">Marge : ' +
               marge +
-              "</p></b></div></span>";
+              "</span></div>";
           }
 
           /**********Points de mêlées perdus + effets ************/
@@ -4893,117 +6319,122 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
           if (melee_perdue < 0) {
             melee_perdue = 0;
           }
-          if (marge >= 0 && result_final >= 0 && (marge == 0 || marge > 3)) {
+          if (
+            letale &&
+            marge >= 0 &&
+            result_final >= 0 &&
+            (marge == 0 || marge > 3)
+          ) {
             result_diff =
               result_diff +
-              '<p class="result_diff"> ' +
-              currentTarget.name +
-              " PERD " +
+              '<div class="mega-roll-damage-melee"><i class="fas fa-shield-alt"></i> ' +
+              (currentTarget?.name ?? "la cible") +
+              " perd <strong>" +
               melee_perdue +
-              " points de melee</p>";
+              "</strong>pt de Mêlée</div>";
           }
 
           /**********Effets optionnels ************/
           switch (effet_coup1) {
             case "H":
               effet_coup1 =
-                '<span><div class="chat_effet_immediat">Immédiat : HANDICAPER</div></Span>';
+                '<div class="chat_effet_immediat"><i class="fas fa-bolt"></i> Immédiat : HANDICAPER</div>';
               break;
             case "A":
               effet_coup1 =
-                '<span><div class="chat_effet_immediat">Immédiat : ASSOMMER</div></Span>';
+                '<div class="chat_effet_immediat"><i class="fas fa-bolt"></i> Immédiat : ASSOMMER</div>';
               break;
             case "S":
               effet_coup1 =
-                '<span><div class="chat_effet_immediat">Immédiat : SONNER</div></Span>';
+                '<div class="chat_effet_immediat"><i class="fas fa-bolt"></i> Immédiat : SONNER</div>';
               break;
             case "R":
               effet_coup1 =
-                '<span><div class="chat_effet_immediat">Immédiat : RENVERSER</div></Span>';
+                '<div class="chat_effet_immediat"><i class="fas fa-bolt"></i> Immédiat : RENVERSER</div>';
               break;
             case "I":
               effet_coup1 =
-                '<div class="chat_effet_immediat">Immédiate : IMMOBILISER</div>';
+                '<div class="chat_effet_immediat"><i class="fas fa-bolt"></i> Immédiat : IMMOBILISER</div>';
               break;
             case "P":
               effet_coup1 =
-                '<span><div class="chat_effet_action">Prochaine action : POSITIONNEMENT</div></Span>';
+                '<div class="chat_effet_action"><i class="fas fa-running"></i> Prochaine action : POSITIONNEMENT</div>';
               break;
             case "T":
               effet_coup1 =
-                '<span><div class="chat_effet_att">Prochaine attaque : TENIR A DISTANCE</div></Span>';
+                '<div class="chat_effet_att"><i class="fas fa-bullseye"></i> Prochaine attaque : TENIR A DISTANCE</div>';
               break;
             case "D":
               effet_coup1 =
-                '<span><div class="chat_effet_att">Prochaine défense : DÉFAUT DE LA CUIRASSE</div></Span>';
+                '<div class="chat_effet_def"><i class="fas fa-shield-alt"></i> Prochaine défense : DÉFAUT DE LA CUIRASSE</div>';
               break;
           }
           switch (effet_coup2) {
             case "H":
               effet_coup1 =
-                '<span><div class="chat_effet_immediat">Immédiat : HANDICAPER</div></Span>';
+                '<div class="chat_effet_immediat"><i class="fas fa-bolt"></i> Immédiat : HANDICAPER</div>';
               break;
             case "A":
               effet_coup1 =
-                '<span><div class="chat_effet_immediat">Immédiat : ASSOMMER</div></Span>';
+                '<div class="chat_effet_immediat"><i class="fas fa-bolt"></i> Immédiat : ASSOMMER</div>';
               break;
             case "S":
               effet_coup1 =
-                '<span><div class="chat_effet_immediat">Immédiat : SONNER</div></Span>';
+                '<div class="chat_effet_immediat"><i class="fas fa-bolt"></i> Immédiat : SONNER</div>';
               break;
             case "R":
               effet_coup1 =
-                '<span><div class="chat_effet_immediat">Immédiat : RENVERSER</div></Span>';
+                '<div class="chat_effet_immediat"><i class="fas fa-bolt"></i> Immédiat : RENVERSER</div>';
               break;
             case "I":
               effet_coup1 =
-                '<div class="chat_effet_immediat">Immédiate : IMMOBILISER</div>';
+                '<div class="chat_effet_immediat"><i class="fas fa-bolt"></i> Immédiat : IMMOBILISER</div>';
               break;
             case "P":
               effet_coup1 =
-                '<span><div class="chat_effet_action">Prochaine action : POSITIONNEMENT</div></Span>';
+                '<div class="chat_effet_action"><i class="fas fa-running"></i> Prochaine action : POSITIONNEMENT</div>';
               break;
             case "T":
               effet_coup1 =
-                '<span><div class="chat_effet_att">Prochaine attaque : TENIR A DISTANCE</div></Span>';
+                '<div class="chat_effet_att"><i class="fas fa-bullseye"></i> Prochaine attaque : TENIR A DISTANCE</div>';
               break;
             case "D":
               effet_coup1 =
-                '<span><div class="chat_effet_att">Prochaine défense : DÉFAUT DE LA CUIRASSE</div></Span>';
+                '<div class="chat_effet_def"><i class="fas fa-shield-alt"></i> Prochaine défense : DÉFAUT DE LA CUIRASSE</div>';
               break;
           }
           switch (effet_coup3) {
             case "H":
               effet_coup1 =
-                '<span><div class="chat_effet_immediat">Immédiat : HANDICAPER</div></Span>';
+                '<div class="chat_effet_immediat"><i class="fas fa-bolt"></i> Immédiat : HANDICAPER</div>';
               break;
             case "A":
               effet_coup1 =
-                '<span><div class="chat_effet_immediat">Immédiat : ASSOMMER</div></Span>';
+                '<div class="chat_effet_immediat"><i class="fas fa-bolt"></i> Immédiat : ASSOMMER</div>';
               break;
             case "S":
               effet_coup1 =
-                '<span><div class="chat_effet_immediat">Immédiat : SONNER</div></Span>';
+                '<div class="chat_effet_immediat"><i class="fas fa-bolt"></i> Immédiat : SONNER</div>';
               break;
             case "R":
               effet_coup1 =
-                '<span><div class="chat_effet_immediat">Immédiat : RENVERSER</div></Span>';
+                '<div class="chat_effet_immediat"><i class="fas fa-bolt"></i> Immédiat : RENVERSER</div>';
               break;
             case "I":
               effet_coup1 =
-                '<div class="chat_effet_immediat">Immédiate : IMMOBILISER</div>';
+                '<div class="chat_effet_immediat"><i class="fas fa-bolt"></i> Immédiat : IMMOBILISER</div>';
               break;
             case "P":
               effet_coup1 =
-                '<span><div class="chat_effet_action">Prochaine action : POSITIONNEMENT</div></Span>';
+                '<div class="chat_effet_action"><i class="fas fa-running"></i> Prochaine action : POSITIONNEMENT</div>';
               break;
             case "T":
               effet_coup1 =
-                '<span><div class="chat_effet_att">Prochaine attaque : TENIR A DISTANCE</div></Span>';
+                '<div class="chat_effet_att"><i class="fas fa-bullseye"></i> Prochaine attaque : TENIR A DISTANCE</div>';
               break;
             case "D":
               effet_coup1 =
-                '<span><div class="chat_effet_att">Prochaine défense : DÉFAUT DE LA CUIRASSE</div></Span>';
+                '<div class="chat_effet_def"><i class="fas fa-shield-alt"></i> Prochaine défense : DÉFAUT DE LA CUIRASSE</div>';
               break;
           }
 
@@ -5016,28 +6447,38 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
             }
             if ((marge == 0 || marge > 3) && result_final >= 0) {
               if (melee_perdue !== 0) {
-                vie_perdue = calcViePerdue(melee_perdue, comp, this.actor);
+                const _dmc3p = calcViePerdue(melee_perdue, comp, this.actor);
+                vie_perdue = _dmc3p.vie_perdue;
               } else {
                 vie_perdue = 0;
               }
               result_diff =
                 result_diff +
-                '<p style="background-color:#A3B6BB; color:white; text-align:center; text-shadow: 1px 1px 2px black; font-size: 16px;";><i class="far fa-heart"></i> ' +
-                currentTarget.name +
-                " perd " +
+                '<div class="mega-roll-damage-vie"><i class="fas fa-heart"></i> ' +
+                (currentTarget?.name ?? "la cible") +
+                " perd <strong>" +
                 vie_perdue +
-                " points de vie</p>";
-              if (retraitAuto) {
+                "</strong> pt de Vie</div>";
+              if (retraitAuto && currentTarget) {
+                const _dmc3pCalc = calcViePerdue(
+                  melee_perdue,
+                  comp,
+                  this.actor,
+                );
                 game.modules
                   .get("megasocket")
-                  .api.documentUpdate(currentTarget, {
+                  ?.api?.documentUpdate(currentTarget, {
                     "system.health.value":
                       currentTarget.system.health.value - vie_perdue,
+                    "system.melee_impair":
+                      melee_perdue !== 0
+                        ? _dmc3pCalc.new_melee_impair
+                        : (currentTarget.system.melee_impair ?? 0),
                   })
-                  .then(() => {
+                  ?.then(() => {
                     game.modules
                       .get("megasocket")
-                      .api.documentUpdate(currentTarget, {
+                      ?.api?.documentUpdate(currentTarget, {
                         "system.power.value":
                           currentTarget.system.power.value - melee_perdue,
                       });
@@ -5091,9 +6532,9 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
                 comp +
                 " data-melee=" +
                 melee_perdue +
-                "> Conso 0Av <br> -" +
+                "><i class='fas fa-coins'></i> <b>0Av</b><br>-" +
                 melee_perdue +
-                "pt de Mêlée " +
+                " pt Mêlée " +
                 effet_0av_1 +
                 " " +
                 effet_0av_2 +
@@ -5113,9 +6554,9 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
                 comp +
                 " data-melee=" +
                 melee_perdue_1av +
-                "> Conso 1Av <br> -" +
+                "><i class='fas fa-coins'></i> <b>1Av</b><br>-" +
                 melee_perdue_1av +
-                "pt de Mêlée " +
+                " pt Mêlée " +
                 effet_1av_1 +
                 " " +
                 effet_1av_2 +
@@ -5156,9 +6597,9 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
                 comp +
                 " data-melee=" +
                 melee_perdue +
-                "> Conso 0Av <br> -" +
+                "><i class='fas fa-coins'></i> <b>0Av</b><br>-" +
                 melee_perdue +
-                "pt de Mêlée " +
+                " pt Mêlée " +
                 effet_0av_1 +
                 " " +
                 effet_0av_2 +
@@ -5178,9 +6619,9 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
                 comp +
                 " data-melee=" +
                 melee_perdue_1av +
-                "> Conso 1Av <br> -" +
+                "><i class='fas fa-coins'></i> <b>1Av</b><br>-" +
                 melee_perdue_1av +
-                "pt de Mêlée " +
+                " pt Mêlée " +
                 effet_1av_1 +
                 " " +
                 effet_1av_2 +
@@ -5200,9 +6641,9 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
                 comp +
                 " data-melee=" +
                 melee_perdue_2av +
-                "> Conso 2Av <br> -" +
+                "><i class='fas fa-coins'></i> <b>2Av</b><br>-" +
                 melee_perdue_2av +
-                "pt de Mêlée " +
+                " pt Mêlée " +
                 effet_2av_1 +
                 " " +
                 effet_2av_2 +
@@ -5250,9 +6691,9 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
                 comp +
                 " data-melee=" +
                 melee_perdue +
-                "> Conso 0Av <br> -" +
+                "><i class='fas fa-coins'></i> <b>0Av</b><br>-" +
                 melee_perdue +
-                "pt de Mêlée " +
+                " pt Mêlée " +
                 effet_0av_1 +
                 " " +
                 effet_0av_2 +
@@ -5272,9 +6713,9 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
                 comp +
                 " data-melee=" +
                 melee_perdue_1av +
-                "> Conso 1Av <br> -" +
+                "><i class='fas fa-coins'></i> <b>1Av</b><br>-" +
                 melee_perdue_1av +
-                "pt de Mêlée " +
+                " pt Mêlée " +
                 effet_1av_1 +
                 " " +
                 effet_1av_2 +
@@ -5294,9 +6735,9 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
                 comp +
                 " data-melee=" +
                 melee_perdue_2av +
-                "> Conso 2Av <br> -" +
+                "><i class='fas fa-coins'></i> <b>2Av</b><br>-" +
                 melee_perdue_2av +
-                "pt de Mêlée " +
+                " pt Mêlée " +
                 effet_2av_1 +
                 " " +
                 effet_2av_2 +
@@ -5316,9 +6757,9 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
                 comp +
                 " data-melee=" +
                 melee_perdue_3av +
-                "> Conso 3Av <br> -" +
+                "><i class='fas fa-coins'></i> <b>3Av</b><br>-" +
                 melee_perdue_3av +
-                "pt de Mêlée " +
+                " pt Mêlée " +
                 effet_3av_1 +
                 " " +
                 effet_3av_2 +
@@ -5334,11 +6775,11 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
                 "<div class='card-header'><span> " +
                 type_jet +
                 "</span></div>" +
-                '<div><span><b><p style="font-size: 18px; text-align:center;;";>' +
+                '<div class="mega-roll-attacker"><i class="fas fa-crosshairs"></i> ' +
                 Nom_acteur +
                 " attaque " +
                 currentTarget.name +
-                "</b></p></span></div>" +
+                "</div>" +
                 result_diff +
                 mention +
                 assomme,
@@ -5352,15 +6793,15 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
                   "<div class='card-header'><span>" +
                   type_jet +
                   "</span></div><br>" +
-                  '<div><span><b><p style="font-size: 18px; text-align:center;";>' +
+                  '<div class="mega-roll-attacker"><i class="fas fa-crosshairs"></i> ' +
                   Nom_acteur +
                   " attaque " +
                   game.user.targets.values().next().value.name +
-                  "</b></p></span></div>" +
+                  "</div>" +
                   result_diff +
-                  '<table border="1"><colgroup><col></colgroup><tbody><tr><td style="text-align: center;"><strong>' +
+                  '<div class="result_diff">' +
                   noLetaleMsg +
-                  "</strong></td></tr></tbody></table>",
+                  "</div>",
                 speaker: ChatMessage.getSpeaker({
                   actor: this.actor,
                 }),
@@ -5448,7 +6889,7 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
           "<div class='card-header'><span>Ardence <i class='fas fa-angle-double-right'></i> " +
           comp +
           " ?</span></div>" +
-          "<br><span class='bouton_texte'>combien de rangs voulez-vous ajouter au TRAIT " +
+          "<br><center><span class='bouton_texte'>Combien de rangs voulez-vous ajouter au TRAIT " +
           comp.toUpperCase() +
           " ?</span><br><br>",
         buttons: btns_1,
@@ -5508,7 +6949,7 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
           "<div class='card-header'><span>Ardence <i class='fas fa-angle-double-right'></i> " +
           this.actor.system.caracs[carac].label +
           "</span></div>" +
-          "<br><span class='bouton_texte'>combien de rangs voulez-vous ajouter au TRAIT " +
+          "<br><center><span class='bouton_texte'>Combien de rangs voulez-vous ajouter au TRAIT " +
           this.actor.system.caracs[carac].label.toUpperCase() +
           " ?</span><br><br>",
         buttons: btns_2,
@@ -5571,20 +7012,28 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
               type_test = "domaines";
             }
             if (type_test === "traits") {
-              de_domaine =
-                parseFloat(act.system.caracs[comp].value) +
-                parseFloat(ardence_domaine);
+              de_domaine = Math.max(
+                1,
+                (parseFloat(act.system.caracs[comp]?.value) || 0) +
+                  (parseFloat(ardence_domaine) || 0),
+              );
             } else {
-              de_domaine =
-                parseFloat(act.system.domaines[comp].value) +
-                parseFloat(ardence_domaine);
+              de_domaine = Math.max(
+                1,
+                (parseFloat(act.system.domaines[comp]?.value) || 0) +
+                  (parseFloat(ardence_domaine) || 0),
+              );
             }
-            let de_trait1 =
-              parseFloat(act.system.caracs[carac].value) +
-              parseFloat(ardence_trait1);
-            let de_trait2 =
-              parseFloat(act.system.domaines[carac2].value) +
-              parseFloat(ardence_trait2);
+            let de_trait1 = Math.max(
+              1,
+              (parseFloat(act.system.caracs[carac]?.value) || 0) +
+                (parseFloat(ardence_trait1) || 0),
+            );
+            let de_trait2 = Math.max(
+              1,
+              (parseFloat(act.system.domaines[carac2]?.value) || 0) +
+                (parseFloat(ardence_trait2) || 0),
+            );
             let mod =
               "1d" + de_domaine + " + 1d" + de_trait1 + " + 1d" + de_trait2;
             if (bonuspool !== 0) {
@@ -5608,46 +7057,46 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
             if (type_test_1 !== "duel") {
               rollFormula = mod;
               r = new Roll(rollFormula);
-              r.roll(1);
-              let formule = r.formula;
-              let resultat = r.total;
-              let result_diff = "";
-              let final = resultat - diff;
-              if (diff !== 0) {
-                if (final >= 0) {
-                  final = Math.floor(final / 3);
-                  result_diff =
-                    '<p style="background-color:#A3B6BB; color:white; font-size: 22px; text-align:center; text-shadow: 1px 1px 2px black;">DIFF ' +
-                    diff +
-                    '</p></div></span><div><span><b><p style="background-color:green; color:white; text-align:center; text-shadow: 1px 1px 2px black; font-size: 16px;";>Reussite - Marge de reussite : ' +
-                    marge +
-                    "</p></b></div></span>";
-                } else {
-                  marge = Math.ceil(result_final / 3);
-                  result_diff =
-                    '<p style="background-color:#A3B6BB; color:white; font-size: 22px; text-align:center; text-shadow: 1px 1px 2px black;">DIFF ' +
-                    diff +
-                    '</p></div></span><div><span><b><p style="background-color:red; color:white; text-align:center; text-shadow: 1px 1px 2px black; font-size: 16px;";>Echec - Marge d\'echec : ' +
-                    marge +
-                    "</p></b></div></span>";
+              r.evaluate().then(() => {
+                let resultat = r.total;
+                let result_diff = "";
+                let final = resultat - diff;
+                if (diff !== 0) {
+                  if (final >= 0) {
+                    final = Math.floor(final / 3);
+                    result_diff =
+                      '<div class="mega-roll-diff"><i class="fas fa-bullseye"></i> DIFF ' +
+                      diff +
+                      '</div><div class="mega-roll-success"><i class="fas fa-check-circle"></i> Réussite <span class="mega-roll-margin">Marge : ' +
+                      final +
+                      "</span></div>";
+                  } else {
+                    marge = Math.ceil(final / 3);
+                    result_diff =
+                      '<div class="mega-roll-diff"><i class="fas fa-bullseye"></i> DIFF ' +
+                      diff +
+                      '</div><div class="mega-roll-failure"><i class="fas fa-times-circle"></i> Échec <span class="mega-roll-margin">Marge : ' +
+                      marge +
+                      "</span></div>";
+                  }
                 }
-              }
-              r.toMessage({
-                flavor:
-                  "<div class='card-header'><span>" +
-                  comp +
-                  "</span></div>" +
-                  "<div><span>yoyo" +
-                  result_diff +
-                  "</span></div>",
-                speaker: ChatMessage.getSpeaker({ actor: this.actor }),
+                r.toMessage({
+                  flavor:
+                    "<div class='card-header'><span>" +
+                    comp +
+                    "</span></div>" +
+                    "<div><span>" +
+                    result_diff +
+                    "</span></div>",
+                  speaker: ChatMessage.getSpeaker({ actor: this.actor }),
+                });
               });
             } else {
-              r1 = new Roll("1d" + de_domaine);
+              r1 = new Roll("1d" + Math.max(1, de_domaine || 1));
               r1.evaluate().then(() => {
                 game.dice3d?.showForRoll(r1);
                 let resultat1 = r1.total;
-                r2 = new Roll("1d" + de_trait1);
+                r2 = new Roll("1d" + Math.max(1, de_trait1 || 1));
                 r2.evaluate().then(() => {
                   game.dice3d?.showForRoll(r2);
                   let resultat2 = r2.total;
@@ -5672,19 +7121,19 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
                       comp +
                       " vs " +
                       carac +
-                      '</span></div><p style="background-color:#A3B6BB; color:white; font-size: 18px; text-align:center; text-shadow: 1px 1px 2px black;">' +
+                      '</span></div><div class="mega-roll-diff"><i class="fas fa-dice-d6"></i> ' +
                       comp +
                       " : " +
                       resultat1 +
-                      '</p><p style="background-color:#A3B6BB; color:white; font-size: 18px; text-align:center; text-shadow: 1px 1px 2px black;">' +
+                      " &nbsp;|&nbsp; " +
                       carac +
                       " : " +
                       resultat2 +
-                      '</p></div></span></span><div><span><b><p style="background-color:green; color:white; text-align:center; text-shadow: 1px 1px 2px black; font-size: 22px;";>' +
+                      '</div><div class="mega-roll-success"><i class="fas fa-check-circle"></i> ' +
                       comp +
-                      '</p></b></div></span><p style="background-color:green; color:white; text-align:center; text-shadow: 1px 1px 2px black; font-size: 16px;";>Marge : ' +
+                      " l'emporte <span class='mega-roll-margin'>Marge : " +
                       marge +
-                      "</p></b></div></span>";
+                      "</span></div>";
                   } else {
                     marge = Math.floor((resultat2 - resultat1) / 3);
                     result_diff =
@@ -5692,19 +7141,19 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
                       comp +
                       " vs " +
                       carac +
-                      '</span></div><p style="background-color:#A3B6BB; color:white; font-size: 18px; text-align:center; text-shadow: 1px 1px 2px black;">' +
+                      '</span></div><div class="mega-roll-diff"><i class="fas fa-dice-d6"></i> ' +
                       comp +
                       " : " +
                       resultat1 +
-                      '</p><p style="background-color:#A3B6BB; color:white; font-size: 18px; text-align:center; text-shadow: 1px 1px 2px black;">' +
+                      " &nbsp;|&nbsp; " +
                       carac +
                       " : " +
                       resultat2 +
-                      '</p></div></span></span><div><span><b><p style="background-color:green; color:white; text-align:center; text-shadow: 1px 1px 2px black; font-size: 22px;";>' +
+                      '</div><div class="mega-roll-failure"><i class="fas fa-times-circle"></i> ' +
                       carac +
-                      '</p></b></div></span><p style="background-color:green; color:white; text-align:center; text-shadow: 1px 1px 2px black; font-size: 16px;";>Marge : ' +
+                      " l'emporte <span class='mega-roll-margin'>Marge : " +
                       marge +
-                      "</p></b></div></span>";
+                      "</span></div>";
                   }
 
                   var chatData = {
@@ -5732,19 +7181,17 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
         title: traitName.toUpperCase(),
         content:
           "<div class='card-header'><span>Ardence <i class='fas fa-angle-double-right'></i> " +
-          this.actor.system.domaines[carac2].label +
+          label_carac2 +
           "</span></div>" +
-          "<br><span class='bouton_texte'>combien de rangs voulez-vous ajouter au DOMAINE " +
+          "<br><center><span class='bouton_texte'>Combien de rangs voulez-vous ajouter au DOMAINE " +
           label_carac2.toUpperCase() +
           " ?</span><br><br>",
         buttons: btns_3,
-        close: function () {
+        close: () => {
           rgardencetotal = rgardencetotal - ardence_trait2;
           ptardence = rgardencetotal / 2;
-        },
-        close: () =>
           this.testTrait2(
-            type_test,
+            type_test_1,
             ev,
             carac,
             carac2,
@@ -5754,7 +7201,8 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
             ardence_domaine,
             ardence_trait1,
             ardence_trait2,
-          ),
+          );
+        },
       },
       myDialogOptions_ardence,
     );
@@ -5787,8 +7235,11 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
         parseFloat(this.actor.system.caracs[carac].value) +
         parseFloat(ardence_trait1);
       let de_trait2 =
-        parseFloat(this.actor.system.domaines[carac2].value) +
-        parseFloat(ardence_trait2);
+        parseFloat(
+          type_test_1 === "trois"
+            ? this.actor.system.domaines[carac2].value
+            : this.actor.system.caracs[carac2].value,
+        ) + parseFloat(ardence_trait2);
       let mod =
         "1d" +
         de_domaine +
@@ -5824,27 +7275,29 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
             if (final >= 0) {
               final = Math.floor(final / 3);
               result_diff =
-                '<p style="background-color:#A3B6BB; color:white; font-size: 22px; text-align:center; text-shadow: 1px 1px 2px black;">DIFF ' +
+                '<div class="mega-roll-diff"><i class="fas fa-bullseye"></i> DIFF ' +
                 diff +
-                '</p></div></span><div><span><b><p style="background-color:green; color:white; text-align:center; text-shadow: 1px 1px 2px black; font-size: 16px;";>Reussite - Marge de reussite : ' +
-                marge +
-                "</p></b></div></span>";
+                '</div><div class="mega-roll-success"><i class="fas fa-check-circle"></i> Réussite <span class="mega-roll-margin">Marge : ' +
+                final +
+                "</span></div>";
             } else {
-              marge = Math.ceil(result_final / 3);
+              final = Math.ceil(final / 3);
               result_diff =
-                '<p style="background-color:#A3B6BB; color:white; font-size: 22px; text-align:center; text-shadow: 1px 1px 2px black;">DIFF ' +
+                '<div class="mega-roll-diff"><i class="fas fa-bullseye"></i> DIFF ' +
                 diff +
-                '</p></div></span><div><span><b><p style="background-color:red; color:white; text-align:center; text-shadow: 1px 1px 2px black; font-size: 16px;";>Echec - Marge d\'echec : ' +
-                marge +
-                "</p></b></div></span>";
+                '</div><div class="mega-roll-failure"><i class="fas fa-times-circle"></i> Échec <span class="mega-roll-margin">Marge : ' +
+                final +
+                "</span></div>";
             }
           }
+          comp = comp.charAt(0).toUpperCase() + comp.substring(1).toLowerCase();
+          console.log("comp : " + comp);
           r.toMessage({
             flavor:
               "<div class='card-header'><span>" +
               comp +
               "</span></div>" +
-              "<div><span>yoyo" +
+              "<div><span>" +
               result_diff +
               "</span></div>",
             speaker: ChatMessage.getSpeaker({ actor: this.actor }),
@@ -5878,19 +7331,19 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
                 comp +
                 " vs " +
                 carac +
-                '</span></div><p style="background-color:#A3B6BB; color:white; font-size: 18px; text-align:center; text-shadow: 1px 1px 2px black;">' +
+                '</span></div><div class="mega-roll-diff"><i class="fas fa-dice-d6"></i> ' +
                 comp +
                 " : " +
                 resultat1 +
-                '</p><p style="background-color:#A3B6BB; color:white; font-size: 18px; text-align:center; text-shadow: 1px 1px 2px black;">' +
+                " &nbsp;|&nbsp; " +
                 carac +
                 " : " +
                 resultat2 +
-                '</p></div></span></span><div><span><b><p style="background-color:green; color:white; text-align:center; text-shadow: 1px 1px 2px black; font-size: 22px;";>' +
+                '</div><div class="mega-roll-success"><i class="fas fa-check-circle"></i> ' +
                 comp +
-                '</p></b></div></span><p style="background-color:green; color:white; text-align:center; text-shadow: 1px 1px 2px black; font-size: 16px;";>Marge : ' +
+                " l'emporte <span class='mega-roll-margin'>Marge : " +
                 marge +
-                "</p></b></div></span>";
+                "</span></div>";
             } else {
               marge = Math.floor((resultat2 - resultat1) / 3);
               result_diff =
@@ -5898,19 +7351,19 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
                 comp +
                 " vs " +
                 carac +
-                '</span></div><p style="background-color:#A3B6BB; color:white; font-size: 18px; text-align:center; text-shadow: 1px 1px 2px black;">' +
+                '</span></div><div class="mega-roll-diff"><i class="fas fa-dice-d6"></i> ' +
                 comp +
                 " : " +
                 resultat1 +
-                '</p><p style="background-color:#A3B6BB; color:white; font-size: 18px; text-align:center; text-shadow: 1px 1px 2px black;">' +
+                " &nbsp;|&nbsp; " +
                 carac +
                 " : " +
                 resultat2 +
-                '</p></div></span></span><div><span><b><p style="background-color:green; color:white; text-align:center; text-shadow: 1px 1px 2px black; font-size: 22px;";>' +
+                '</div><div class="mega-roll-failure"><i class="fas fa-times-circle"></i> ' +
                 carac +
-                '</p></b></div></span><p style="background-color:green; color:white; text-align:center; text-shadow: 1px 1px 2px black; font-size: 16px;";>Marge : ' +
+                " l'emporte <span class='mega-roll-margin'>Marge : " +
                 marge +
-                "</p></b></div></span>";
+                "</span></div>";
             }
 
             var chatData = {
@@ -5986,19 +7439,19 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
         if (final >= 0) {
           final = Math.floor(final / 3);
           result_diff =
-            '<p style="background-color:#A3B6BB; color:white; font-size: 22px; text-align:center; text-shadow: 1px 1px 2px black;">DIFF ' +
+            '<div class="mega-roll-diff"><i class="fas fa-bullseye"></i> DIFF ' +
             diff +
-            '</p></div></span><div><span><b><p style="background-color:green; color:white; text-align:center; text-shadow: 1px 1px 2px black; font-size: 16px;";>Reussite - Marge de reussite : ' +
-            marge +
-            "</p></b></div></span>";
+            '</div><div class="mega-roll-success"><i class="fas fa-check-circle"></i> Réussite <span class="mega-roll-margin">Marge : ' +
+            final +
+            "</span></div>";
         } else {
           marge = Math.ceil(final / 3);
           result_diff =
-            '<p style="background-color:#A3B6BB; color:white; font-size: 22px; text-align:center; text-shadow: 1px 1px 2px black;">DIFF ' +
+            '<div class="mega-roll-diff"><i class="fas fa-bullseye"></i> DIFF ' +
             diff +
-            '</p></div></span><div><span><b><p style="background-color:red; color:white; text-align:center; text-shadow: 1px 1px 2px black; font-size: 16px;";>Echec - Marge d\'echec : ' +
+            '</div><div class="mega-roll-failure"><i class="fas fa-times-circle"></i> Échec <span class="mega-roll-margin">Marge : ' +
             marge +
-            "</p></b></div></span>";
+            "</span></div>";
         }
       }
       r.toMessage({
@@ -6049,6 +7502,9 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
 
     // Use the parent class tab switching functionality
     this._tabs[0].activate(tab);
+
+    // Auto-resize when entering/leaving combat tab
+    this._handleCombatTabResize(tab);
   }
 
   /**
@@ -6057,11 +7513,212 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
    * @private
    */
   _initializeActiveSideTab(html) {
+    // Stoppe toute animation et tout observateur en cours
+    if (this._heightAnimFrame) {
+      cancelAnimationFrame(this._heightAnimFrame);
+      this._heightAnimFrame = null;
+    }
+    this._stopTabResizeObserver();
+
     const activeTab = this._tabs[0].active;
     const activeButton = html.find(`[data-tab="${activeTab}"]`);
     if (activeButton.length) {
       activeButton.addClass("active");
     }
+
+    // Si la fiche s'ouvre directement sur un onglet à ajustement auto
+    if (
+      activeTab === "combat" ||
+      activeTab === "items" ||
+      activeTab === "description" ||
+      activeTab === "attributes"
+    ) {
+      // Conserver la hauteur de référence à travers les re-renders successifs
+      if (!this._preExpansionHeight) {
+        this._preExpansionHeight = this.position.height;
+      }
+      const startObserving = () => {
+        const scrollEl = this._getTabScrollContainer();
+        if (!scrollEl) return;
+        this._startTabResizeObserver(scrollEl);
+      };
+      if (activeTab === "items") {
+        setTimeout(startObserving, 200);
+      } else {
+        requestAnimationFrame(startObserving);
+      }
+    } else {
+      // Sur un onglet non-auto, réinitialiser la référence
+      this._preExpansionHeight = null;
+    }
+  }
+
+  /**
+   * Gère l'expansion automatique de la fiche sur l'onglet combat.
+   * @param {string} tab  - identifiant de l'onglet activé
+   * @private
+   */
+  _handleCombatTabResize(tab) {
+    if (
+      tab === "combat" ||
+      tab === "items" ||
+      tab === "description" ||
+      tab === "attributes"
+    ) {
+      if (!this._preExpansionHeight) {
+        this._preExpansionHeight = this.position.height;
+      }
+      this._stopTabResizeObserver();
+      const startObserving = () => {
+        const scrollEl = this._getTabScrollContainer();
+        if (!scrollEl) return;
+        this._startTabResizeObserver(scrollEl);
+      };
+      if (tab === "items") {
+        setTimeout(startObserving, 200);
+      } else {
+        requestAnimationFrame(startObserving);
+      }
+    } else {
+      this._stopTabResizeObserver();
+      if (
+        this._preExpansionHeight &&
+        this._preExpansionHeight !== this.position.height
+      ) {
+        const targetH = this._preExpansionHeight;
+        this._preExpansionHeight = null;
+        this._animateSheetHeight(this.position.height, targetH);
+      } else {
+        this._preExpansionHeight = null;
+      }
+    }
+  }
+
+  /**
+   * Démarre un ResizeObserver sur `scrollEl` qui ajuste la hauteur de fenêtre
+   * en temps réel dès que le contenu change de taille.
+   * @param {HTMLElement} scrollEl
+   * @private
+   */
+  _startTabResizeObserver(scrollEl) {
+    this._stopTabResizeObserver();
+    // Ajustement immédiat dès le démarrage
+    const adjust = () => {
+      const targetH = this._getContentTargetHeight();
+      if (targetH === null || Math.abs(targetH - this.position.height) <= 4)
+        return;
+      this._animateSheetHeight(this.position.height, targetH);
+    };
+    adjust();
+    this._tabResizeObserver = new ResizeObserver(() => {
+      // Débouncer : on attend la fin du redimensionnement pour ne pas
+      // animer à chaque pixel de changement
+      if (this._tabResizeDebounce) clearTimeout(this._tabResizeDebounce);
+      this._tabResizeDebounce = setTimeout(() => {
+        this._tabResizeDebounce = null;
+        const targetH = this._getContentTargetHeight();
+        if (targetH === null || Math.abs(targetH - this.position.height) <= 4)
+          return;
+        // _animateSheetHeight annule toujours l'animation en cours avant d'en démarrer une nouvelle
+        this._animateSheetHeight(this.position.height, targetH);
+      }, 80);
+    });
+    // Observer l'élément scrollable lui-même
+    this._tabResizeObserver.observe(scrollEl);
+    // Observer aussi les enfants directs pour capturer ajouts/suppressions
+    for (const child of scrollEl.children) {
+      this._tabResizeObserver.observe(child);
+    }
+  }
+
+  /**
+   * Calcule la hauteur de fenêtre exacte pour afficher tout le contenu
+   * de l'onglet actif sans ascenseur, quelle que soit la contrainte CSS.
+   * - Pour .inv-bandeau (height:100%) : libère temporairement la contrainte
+   *   pour mesurer la hauteur naturelle du contenu.
+   * - Pour les autres onglets (.tab.active sans height fixe) : scrollHeight direct.
+   * @returns {number|null}
+   * @private
+   */
+  _getContentTargetHeight() {
+    const tabEl = this.element.find(".tab.active")[0];
+    if (!tabEl) return null;
+    const invEl = tabEl.querySelector(".inv-bandeau, .item-bandeau");
+    if (invEl) {
+      // .inv-bandeau a height:100% → son scrollHeight égale toujours clientHeight
+      // quand le contenu est plus petit. On libère une frame pour obtenir
+      // la vraie hauteur du contenu.
+      const prev = invEl.style.height;
+      invEl.style.height = "auto";
+      const h = invEl.scrollHeight + 172;
+      invEl.style.height = prev;
+      return h;
+    }
+    // Pour les autres onglets (combat) : .tab.active n'a pas de height CSS,
+    // son scrollHeight reflète exactement la hauteur naturelle du contenu.
+    return tabEl.scrollHeight + 172;
+  }
+
+  /**
+   * Arrête et nettoie le ResizeObserver d'ajustement d'onglet.
+   * @private
+   */
+  _stopTabResizeObserver() {
+    if (this._tabResizeDebounce) {
+      clearTimeout(this._tabResizeDebounce);
+      this._tabResizeDebounce = null;
+    }
+    if (this._tabResizeObserver) {
+      this._tabResizeObserver.disconnect();
+      this._tabResizeObserver = null;
+    }
+  }
+
+  /**
+   * Retourne l'élément scrollable de l'onglet actif :
+   * - .inv-bandeau / .item-bandeau si l'onglet gère son propre scroll (ex: items)
+   * - sinon .sheet-body
+   * @returns {HTMLElement|null}
+   * @private
+   */
+  _getTabScrollContainer() {
+    const descInner = this.element.find(
+      ".tab.active .desc-bandeau, .tab.active .biography-tab-frame",
+    )[0];
+    if (descInner) return descInner;
+    const attrInner = this.element.find(".tab.active .bandeau_attributs")[0];
+    if (attrInner) return attrInner;
+    const inner = this.element.find(
+      ".tab.active .inv-bandeau, .tab.active .item-bandeau",
+    )[0];
+    if (inner) return inner;
+    return this.element.find(".sheet-body")[0] || null;
+  }
+
+  /**
+   * Anime la hauteur de la fenêtre de `fromH` à `toH` pixels (ease-in-out, 300 ms).
+   * @param {number} fromH
+   * @param {number} toH
+   * @private
+   */
+  _animateSheetHeight(fromH, toH) {
+    if (this._heightAnimFrame) {
+      cancelAnimationFrame(this._heightAnimFrame);
+      this._heightAnimFrame = null;
+    }
+    const DURATION = 300;
+    const start = performance.now();
+    const animate = (now) => {
+      const t = Math.min((now - start) / DURATION, 1);
+      const ease = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+      this.setPosition({ height: Math.round(fromH + (toH - fromH) * ease) });
+      if (t < 1) {
+        this._heightAnimFrame = requestAnimationFrame(animate);
+      } else {
+        this._heightAnimFrame = null;
+      }
+    };
+    this._heightAnimFrame = requestAnimationFrame(animate);
   }
 }
 
@@ -6086,19 +7743,16 @@ function calcMeleePerdue(marge, comp, act) {
 }
 
 function calcViePerdue(melee_perdue, comp, act) {
-  const retraitAuto = game.settings.get("mega", "retraitAuto");
-  let currentTarget = Array.from(game.user.targets)[0].actor;
-  let vie_perdue = Math.floor(melee_perdue / 2); //si melee est impaire, vie_perdue est la partie entière de la division par 2
-  if (retraitAuto) {
-    safeDocumentUpdate(currentTarget, {
-      "system.health.value": currentTarget.system.health.value - vie_perdue,
-    })?.then(() => {
-      safeDocumentUpdate(currentTarget, {
-        "system.power.value": currentTarget.system.power.value - melee_perdue,
-      });
-    });
-  }
-  return vie_perdue;
+  // Calcul pur – la mise à jour est faite par le code appelant
+  let currentTarget = Array.from(game.user.targets)[0]?.actor;
+  if (!currentTarget) return { vie_perdue: 0, new_melee_impair: 0 };
+  const melee_impair = Number(currentTarget.system.melee_impair ?? 0);
+  if (melee_perdue === 0)
+    return { vie_perdue: 0, new_melee_impair: melee_impair };
+  const total = melee_perdue + melee_impair;
+  const vie_perdue = Math.floor(total / 2); // 2 pts mêlée cumulés = 1 pt vie
+  const new_melee_impair = total % 2; // reste 0 ou 1 pour le prochain coup
+  return { vie_perdue, new_melee_impair };
 }
 
 function calc_coup1(marge, comp, act) {

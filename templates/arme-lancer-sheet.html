@@ -1,61 +1,47 @@
-<form class="{{cssClass}}" autocomplete="off">
-	<header class="sheet-header-item">
-		<span class="item-view" value="{{item.img}}"><img class="profile-img" src="{{item.img}}" data-edit="img"
-				title="{{item.name}}" /></span>
-		<div class="header-fields-item">
-			<div class="weapon-header-modern">
-				<div class="weapon-name-container">
-					<h1 class="weapon-name"><input name="name" type="text" value="{{item.name}}"
-							placeholder="Nom de l'arme" /></h1>
-					<div class="weapon-type">Arme de Lancer</div>
+﻿<form class="{{cssClass}} arme-lancer-sheet-modern" autocomplete="off">
+	<header class="alc-header">
+		<div class="alc-orb-wrap">
+			<span class="alc-orb item-view" value="{{item.img}}">
+				<img class="alc-portrait" src="{{item.img}}" data-edit="img" title="{{item.name}}" />
+				<div class="alc-orb-ring"></div>
+				<div class="alc-orb-glow"></div>
+			</span>
+		</div>
+
+		<div class="alc-header-body">
+			<div class="alc-name-row">
+				<h1 class="alc-name-wrap">
+					<input name="name" type="text" value="{{item.name}}" placeholder="Nom de l'arme" />
+				</h1>
+				<span class="alc-type-badge"><i class="fas fa-wind" style="margin-right:4px;"></i>Arme de Lancer</span>
+			</div>
+
+			<div class="alc-stats-row">
+				<div class="alc-chip">
+					<span class="alc-chip-label"><i class="fas fa-weight-hanging"></i> Poids</span>
+					<input type="text" class="alc-chip-input" name="system.weight" value="{{system.weight}}"
+						data-dtype="Number" />
+					<select class="alc-chip-select" name="system.weightUnit">
+						<option value="kg" {{#if (eq system.weightUnit "kg" )}}selected{{/if}}>kg</option>
+						<option value="g" {{#if (eq system.weightUnit "g" )}}selected{{/if}}>g</option>
+					</select>
 				</div>
-
-				<div class="weapon-stats-grid">
-					<div class="stat-item">
-						<div class="stat-label">Qté</div>
-						<div class="stat-value">
-							<input type="text" class="stat-input" name="system.quantity" value="{{system.quantity}}"
-								data-dtype="Number" />
-						</div>
-					</div>
-
-					<div class="stat-item">
-						<div class="stat-label">Poids</div>
-						<div class="stat-value">
-							<input type="text" class="stat-input" name="system.weight" value="{{system.weight}}"
-								data-dtype="Number" />
-							<select class="stat-unit-select" name="system.weightUnit">
-								<option value="kg" {{#if (eq system.weightUnit "kg" )}}selected{{/if}}>kg</option>
-								<option value="g" {{#if (eq system.weightUnit "g" )}}selected{{/if}}>g</option>
-							</select>
-						</div>
-					</div>
-
-					<div class="stat-item">
-						<div class="stat-label">Prix</div>
-						<div class="stat-value">
-							<input type="text" class="stat-input" name="system.prize" value="{{system.prize}}" />
-							<select class="stat-unit-select" name="system.prizeUnit">
-								<option value="Σ" {{#if (eq system.prizeUnit "Σ" )}}selected{{/if}}>Σ</option>
-								<option value="Ω" {{#if (eq system.prizeUnit "Ω" )}}selected{{/if}}>Ω</option>
-							</select>
-						</div>
-					</div>
-
-					<div class="stat-item">
-						<div class="stat-label">DEF</div>
-						<div class="stat-value">
-							<input type="text" class="stat-input" name="system.def" {{#unless GM}}disabled="disabled"
-								{{/unless}} value="{{system.def}}" data-dtype="Number" />
-						</div>
-					</div>
-
-					<div class="stat-item">
-						<div class="stat-label">NT</div>
-						<div class="stat-value">
-							<input type="text" class="stat-input" name="system.nt" value="{{system.nt}}" />
-						</div>
-					</div>
+				<div class="alc-chip">
+					<span class="alc-chip-label"><i class="fas fa-coins"></i> Prix</span>
+					<input type="text" class="alc-chip-input" name="system.prize" value="{{system.prize}}" />
+					<select class="alc-chip-select" name="system.prizeUnit">
+						<option value="Σ" {{#if (eq system.prizeUnit "Σ" )}}selected{{/if}}>Σ</option>
+						<option value="Ω" {{#if (eq system.prizeUnit "Ω" )}}selected{{/if}}>Ω</option>
+					</select>
+				</div>
+				<div class="alc-chip">
+					<span class="alc-chip-label"><i class="fas fa-shield-alt"></i> DEF</span>
+					<input type="text" class="alc-chip-input" name="system.def" {{#unless GM}}disabled="disabled"
+						{{/unless}} value="{{system.def}}" data-dtype="Number" />
+				</div>
+				<div class="alc-chip">
+					<span class="alc-chip-label"><i class="fas fa-microchip"></i> NT</span>
+					<input type="text" class="alc-chip-input" name="system.nt" value="{{system.nt}}" />
 				</div>
 			</div>
 		</div>
@@ -64,104 +50,121 @@
 	<section class="sheet-body" style="margin:10px; padding: 0 5px;">
 		<!-- ONGLET DESCRIPTION -->
 		<div class="tab active" data-group="primary" data-tab="description">
-			<h3>📝 Description</h3>
-			{{editor enrichedBiography target="system.description" button=true editable=editable}}
-		</div>
-
-		{{!-- Caractéristiques Tab --}}
-		<div class="tab" data-group="primary" data-tab="characteristics">
-			<h3>⭐ Caractéristiques</h3>
-
-			<div class="weapon-feature-card collapsed" onclick="this.classList.toggle('collapsed')">
-				<h4 class="feature-title collapsible-header">
-					<i class="fas fa-crosshairs"></i> Type de dégâts
-					<i class="fas fa-chevron-down collapse-icon"></i>
-				</h4>
-				<div class="card-content" onclick="event.stopPropagation();">
-					<div class="damage-types-grid" onclick="event.stopPropagation();">
-						<div class="damage-type-item{{#if system.type_degats.balles.etat}} active{{/if}}"
-							data-type="balles">
-							<span class="type_degat" value="balles">
-								<img title="Balles" src="systems/mega/images/silver-bullet.svg" {{#if
-									system.type_degats.balles.etat}}class="icon_typedegats_active"
-									{{else}}class="icon_typedegats" {{/if}} {{#unless
-									GM}}style="pointer-events: none; opacity: 0.5;" {{/unless}}>
-							</span>
-							<span class="damage-type-label">Balles</span>
-						</div>
-						<div class="damage-type-item{{#if system.type_degats.choc.etat}} active{{/if}}"
-							data-type="choc">
-							<span class="type_degat" value="choc">
-								<img title="Choc" src="systems/mega/images/flint-spark.svg" {{#if
-									system.type_degats.choc.etat}}class="icon_typedegats_active"
-									{{else}}class="icon_typedegats" {{/if}} {{#unless
-									GM}}style="pointer-events: none; opacity: 0.5;" {{/unless}}>
-							</span>
-							<span class="damage-type-label">Choc</span>
-						</div>
-						<div class="damage-type-item{{#if system.type_degats.lame.etat}} active{{/if}}"
-							data-type="lame">
-							<span class="type_degat" value="lame">
-								<img title="Lame" src="systems/mega/images/blade-fall.svg" {{#if
-									system.type_degats.lame.etat}}class="icon_typedegats_active"
-									{{else}}class="icon_typedegats" {{/if}} {{#unless
-									GM}}style="pointer-events: none; opacity: 0.5;" {{/unless}}>
-							</span>
-							<span class="damage-type-label">Lame</span>
-						</div>
-						<div class="damage-type-item{{#if system.type_degats.rayon.etat}} active{{/if}}"
-							data-type="rayon">
-							<span class="type_degat" value="rayon">
-								<img title="Rayon" src="systems/mega/images/ringed-beam.svg" {{#if
-									system.type_degats.rayon.etat}}class="icon_typedegats_active"
-									{{else}}class="icon_typedegats" {{/if}} {{#unless
-									GM}}style="pointer-events: none; opacity: 0.5;" {{/unless}}>
-							</span>
-							<span class="damage-type-label">Rayon</span>
-						</div>
-						<div class="damage-type-item{{#if system.type_degats.feu.etat}} active{{/if}}" data-type="feu">
-							<span class="type_degat" value="feu">
-								<img title="Feu" src="systems/mega/images/fire.svg" {{#if
-									system.type_degats.feu.etat}}class="icon_typedegats_active"
-									{{else}}class="icon_typedegats" {{/if}} {{#unless
-									GM}}style="pointer-events: none; opacity: 0.5;" {{/unless}}>
-							</span>
-							<span class="damage-type-label">Feu</span>
-						</div>
-						<div class="damage-type-item{{#if system.type_degats.froid.etat}} active{{/if}}"
-							data-type="froid">
-							<span class="type_degat" value="froid">
-								<img title="Froid" src="systems/mega/images/frozen-orb.svg" {{#if
-									system.type_degats.froid.etat}}class="icon_typedegats_active"
-									{{else}}class="icon_typedegats" {{/if}} {{#unless
-									GM}}style="pointer-events: none; opacity: 0.5;" {{/unless}}>
-							</span>
-							<span class="damage-type-label">Froid</span>
-						</div>
-						<div class="damage-type-item{{#if system.type_degats.acide.etat}} active{{/if}}"
-							data-type="acide">
-							<span class="type_degat" value="acide">
-								<img title="Acide" src="systems/mega/images/chemical-drop.svg" {{#if
-									system.type_degats.acide.etat}}class="icon_typedegats_active"
-									{{else}}class="icon_typedegats" {{/if}} {{#unless
-									GM}}style="pointer-events: none; opacity: 0.5;" {{/unless}}>
-							</span>
-							<span class="damage-type-label">Acide</span>
+			<div class="item-bandeau">
+				<div class="desc-panel-outer desc-panel-outer--stretch">
+					<div class="desc-panel-label desc-panel-label--armement">DESCRIPTION</div>
+					<div class="desc-panel">
+						<div class="desc-panel-body">
+							{{editor enrichedBiography target="system.description" button=true editable=editable}}
 						</div>
 					</div>
 				</div>
 			</div>
+		</div>
 
-			<div class="weapon-feature-card collapsed" onclick="this.classList.toggle('collapsed')">
-				<h4 class="feature-title collapsible-header">
-					<i class="fas fa-tools"></i> Équipement / Personnalisation
-					<i class="fas fa-chevron-down collapse-icon"></i>
-				</h4>
-				<div class="card-content" onclick="event.stopPropagation();">
-					<div class="equipment-field" onclick="event.stopPropagation();">
-						<textarea {{#unless GM}}disabled{{/unless}} rows="6" class="modern-textarea"
-							name="system.type.value" data-dtype="String"
-							placeholder="Décrivez les équipements et personnalisations de cette arme...">{{system.type.value}}</textarea>
+		{{!-- Caractéristiques Tab --}}
+		<div class="tab" data-group="primary" data-tab="characteristics">
+			<div class="item-bandeau">
+				<div class="desc-panel-outer">
+					<div class="desc-panel-label desc-panel-label--armement">CARACTÉRISTIQUES</div>
+					<div class="desc-panel">
+						<div class="desc-panel-body">
+
+							<div class="weapon-feature-card">
+								<h4 class="feature-title collapsible-header">
+									<i class="fas fa-crosshairs"></i> Type de dégâts
+									<i class="fas fa-chevron-down collapse-icon"></i>
+								</h4>
+								<div class="card-content">
+									<div class="damage-types-grid">
+										<div class="damage-type-item{{#if system.type_degats.balles.etat}} active{{/if}}"
+											data-type="balles">
+											<span class="type_degat" value="balles">
+												<img title="Balles" src="systems/mega/images/silver-bullet.svg" {{#if
+													system.type_degats.balles.etat}}class="icon_typedegats_active"
+													{{else}}class="icon_typedegats" {{/if}} {{#unless
+													GM}}style="pointer-events: none; opacity: 0.5;" {{/unless}}>
+											</span>
+											<span class="damage-type-label">Balles</span>
+										</div>
+										<div class="damage-type-item{{#if system.type_degats.choc.etat}} active{{/if}}"
+											data-type="choc">
+											<span class="type_degat" value="choc">
+												<img title="Choc" src="systems/mega/images/flint-spark.svg" {{#if
+													system.type_degats.choc.etat}}class="icon_typedegats_active"
+													{{else}}class="icon_typedegats" {{/if}} {{#unless
+													GM}}style="pointer-events: none; opacity: 0.5;" {{/unless}}>
+											</span>
+											<span class="damage-type-label">Choc</span>
+										</div>
+										<div class="damage-type-item{{#if system.type_degats.lame.etat}} active{{/if}}"
+											data-type="lame">
+											<span class="type_degat" value="lame">
+												<img title="Lame" src="systems/mega/images/blade-fall.svg" {{#if
+													system.type_degats.lame.etat}}class="icon_typedegats_active"
+													{{else}}class="icon_typedegats" {{/if}} {{#unless
+													GM}}style="pointer-events: none; opacity: 0.5;" {{/unless}}>
+											</span>
+											<span class="damage-type-label">Lame</span>
+										</div>
+										<div class="damage-type-item{{#if system.type_degats.rayon.etat}} active{{/if}}"
+											data-type="rayon">
+											<span class="type_degat" value="rayon">
+												<img title="Rayon" src="systems/mega/images/ringed-beam.svg" {{#if
+													system.type_degats.rayon.etat}}class="icon_typedegats_active"
+													{{else}}class="icon_typedegats" {{/if}} {{#unless
+													GM}}style="pointer-events: none; opacity: 0.5;" {{/unless}}>
+											</span>
+											<span class="damage-type-label">Rayon</span>
+										</div>
+										<div class="damage-type-item{{#if system.type_degats.feu.etat}} active{{/if}}"
+											data-type="feu">
+											<span class="type_degat" value="feu">
+												<img title="Feu" src="systems/mega/images/fire.svg" {{#if
+													system.type_degats.feu.etat}}class="icon_typedegats_active"
+													{{else}}class="icon_typedegats" {{/if}} {{#unless
+													GM}}style="pointer-events: none; opacity: 0.5;" {{/unless}}>
+											</span>
+											<span class="damage-type-label">Feu</span>
+										</div>
+										<div class="damage-type-item{{#if system.type_degats.froid.etat}} active{{/if}}"
+											data-type="froid">
+											<span class="type_degat" value="froid">
+												<img title="Froid" src="systems/mega/images/frozen-orb.svg" {{#if
+													system.type_degats.froid.etat}}class="icon_typedegats_active"
+													{{else}}class="icon_typedegats" {{/if}} {{#unless
+													GM}}style="pointer-events: none; opacity: 0.5;" {{/unless}}>
+											</span>
+											<span class="damage-type-label">Froid</span>
+										</div>
+										<div class="damage-type-item{{#if system.type_degats.acide.etat}} active{{/if}}"
+											data-type="acide">
+											<span class="type_degat" value="acide">
+												<img title="Acide" src="systems/mega/images/chemical-drop.svg" {{#if
+													system.type_degats.acide.etat}}class="icon_typedegats_active"
+													{{else}}class="icon_typedegats" {{/if}} {{#unless
+													GM}}style="pointer-events: none; opacity: 0.5;" {{/unless}}>
+											</span>
+											<span class="damage-type-label">Acide</span>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<div class="weapon-feature-card collapsed">
+								<h4 class="feature-title collapsible-header">
+									<i class="fas fa-tools"></i> Équipement / Personnalisation
+									<i class="fas fa-chevron-down collapse-icon"></i>
+								</h4>
+								<div class="card-content">
+									<div class="equipment-field">
+										<textarea {{#unless GM}}disabled{{/unless}} rows="6" class="modern-textarea"
+											name="system.type.value" data-dtype="String"
+											placeholder="Décrivez les équipements et personnalisations de cette arme...">{{system.type.value}}</textarea>
+									</div>
+								</div>
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -169,184 +172,200 @@
 
 		{{!-- Avantages Tab --}}
 		<div class="tab" data-group="primary" data-tab="settings">
-			<h3>⚙️ Paramétrages</h3>
-			<div
-				style="background: rgba(0,100,200,0.2); border: 1px solid rgba(0,150,255,0.5); border-radius: 5px; padding: 10px; margin: 10px 0; color: rgba(255,255,255,0.8); font-size: 12px;">
-				<i class="fas fa-info-circle"></i> <strong>Info :</strong> Cliquez sur les en-têtes des sections pour
-				les déplier/replier
-			</div>
+			<div class="item-bandeau">
+				<div class="desc-panel-outer">
+					<div class="desc-panel-label desc-panel-label--armement">PARAMÉTRAGES</div>
+					<div class="desc-panel">
+						<div class="desc-panel-body">
 
-			<div class="weapon-feature-card collapsed" onclick="this.classList.toggle('collapsed')">
-				{{#if GM}}
-				<h4 class="feature-title collapsible-header">
-					<i class="fas fa-heart-broken"></i> Mode de combat
-					<i class="fas fa-chevron-down collapse-icon"></i>
-				</h4>
-				<div class="card-content" onclick="event.stopPropagation();">
-					<div class="combat-mode-section" onclick="event.stopPropagation();">
-						<div class="combat-mode-toggle">
-							<span class="letale combat-mode-icon">
-								<img src="systems/mega/images/heart-minus.svg" {{#if system.letale.value}}
-									title="Pas de retraits de points" class="icon_letale_active" {{else}}
-									title="Retraits de points" class="icon_letale" {{/if}}>
-							</span>
-							<div class="combat-mode-text">
-								<strong>{{#if system.letale.value}}Mode retrait de points{{else}}Mode
-									message{{/if}}</strong>
+							<div class="weapon-feature-card">
+								{{#if GM}}
+								<h4 class="feature-title collapsible-header">
+									<i class="fas fa-heart-broken"></i> Mode de combat
+									<i class="fas fa-chevron-down collapse-icon"></i>
+								</h4>
+								<div class="card-content">
+									<div class="combat-mode-section">
+										<div class="combat-mode-toggle">
+											<span class="letale combat-mode-icon">
+												<img src="systems/mega/images/heart-minus.svg" {{#if
+													system.letale.value}} title="Pas de retraits de points"
+													class="icon_letale_active" {{else}} title="Retraits de points"
+													class="icon_letale" {{/if}}>
+											</span>
+											<div class="combat-mode-text">
+												<strong>{{#if system.letale.value}}Mode retrait de points{{else}}Mode
+													message{{/if}}</strong>
+											</div>
+										</div>
+										<div class="combat-mode-input {{#if system.letale.value}}hidden{{/if}}">
+											<label for="letale-label">Message personnalisé :</label>
+											<textarea id="letale-label" class="modern-textarea"
+												name="system.letale.label" data-dtype="String" rows="3"
+												placeholder="Message affiché lors des dégâts">{{system.letale.label}}</textarea>
+										</div>
+									</div>
+								</div>
+								{{else}}
+								<h4 class="feature-title collapsible-header">
+									<i class="fas fa-eye-slash"></i> Mode de combat (MJuniquement)
+									<i class="fas fa-chevron-down collapse-icon"></i>
+								</h4>
+								<div class="card-content">
+									<p
+										style="color: rgba(255,255,255,0.6); font-style: italic; text-align: center; padding: 20px;">
+										Cette section n'est accessible qu'aux Maîtres de Jeu.</p>
+								</div>
+								{{/if}}
 							</div>
-						</div>
-						<div class="combat-mode-input {{#if system.letale.value}}hidden{{/if}}">
-							<label for="letale-label">Message personnalisé :</label>
-							<textarea id="letale-label" class="modern-textarea" name="system.letale.label"
-								data-dtype="String" rows="3"
-								placeholder="Message affiché lors des dégâts">{{system.letale.label}}</textarea>
-						</div>
-					</div>
-				</div>
-				{{else}}
-				<h4 class="feature-title collapsible-header">
-					<i class="fas fa-eye-slash"></i> Mode de combat (GM uniquement)
-					<i class="fas fa-chevron-down collapse-icon"></i>
-				</h4>
-				<div class="card-content" onclick="event.stopPropagation();">
-					<p style="color: rgba(255,255,255,0.6); font-style: italic; text-align: center; padding: 20px;">
-						Cette section n'est accessible qu'aux Game Masters.</p>
-				</div>
-				{{/if}}
-			</div>
 
-			<div class="weapon-feature-card advantages-card collapsed" onclick="this.classList.toggle('collapsed')">
-				<h4 class="feature-title collapsible-header">
-					<i class="fas fa-plus-circle"></i> Avantages & Effets optionnels <span class="info_effets_speciaux"
-						value="">
-						<sup><img class="icon_info" src="systems/mega/images/info.svg"></sup>
-					</span>
-					<i class="fas fa-chevron-down collapse-icon"></i>
-				</h4>
-				<div class="card-content" onclick="event.stopPropagation();">
-					<div class="advantages-grid" onclick="event.stopPropagation();">
-						<div class="advantage-column">
-							<div class="advantage-header">Av0</div>
-							<div class="advantage-field">
-								<label>Points de Mêlée</label>
-								<input {{#unless GM}}readonly="readonly" {{/unless}}
-									class="modern-input advantage-input" type="text" name="system.av0"
-									value="{{system.av0}}" data-dtype="Number" />
-							</div>
-							<div class="advantage-field">
-								<label>1er Effet</label>
-								<input {{#unless GM}}readonly="readonly" {{/unless}} class="modern-input effect-input"
-									type="text" name="system.effet_ac_0_1" value="{{system.effet_ac_0_1}}" />
-							</div>
-							<div class="advantage-field">
-								<label>2ème Effet</label>
-								<input {{#unless GM}}readonly="readonly" {{/unless}} class="modern-input effect-input"
-									type="text" name="system.effet_ac_0_2" value="{{system.effet_ac_0_2}}" />
-							</div>
-							<div class="advantage-field">
-								<label>3ème Effet</label>
-								<input {{#unless GM}}readonly="readonly" {{/unless}} class="modern-input effect-input"
-									type="text" name="system.effet_ac_0_3" value="{{system.effet_ac_0_3}}" />
-							</div>
-						</div>
-						<div class="advantage-column">
-							<div class="advantage-header">Av1</div>
-							<div class="advantage-field">
-								<label>Points de Mêlée</label>
-								<input {{#unless GM}}readonly="readonly" {{/unless}}
-									class="modern-input advantage-input" type="text" name="system.av1"
-									value="{{system.av1}}" data-dtype="Number" />
-							</div>
-							<div class="advantage-field">
-								<label>1er Effet</label>
-								<input {{#unless GM}}readonly="readonly" {{/unless}} class="modern-input effect-input"
-									type="text" name="system.effet_ac_1_1" value="{{system.effet_ac_1_1}}" />
-							</div>
-							<div class="advantage-field">
-								<label>2ème Effet</label>
-								<input {{#unless GM}}readonly="readonly" {{/unless}} class="modern-input effect-input"
-									type="text" name="system.effet_ac_1_2" value="{{system.effet_ac_1_2}}" />
-							</div>
-							<div class="advantage-field">
-								<label>3ème Effet</label>
-								<input {{#unless GM}}readonly="readonly" {{/unless}} class="modern-input effect-input"
-									type="text" name="system.effet_ac_1_3" value="{{system.effet_ac_1_3}}" />
-							</div>
-						</div>
-						<div class="advantage-column">
-							<div class="advantage-header">Av2</div>
-							<div class="advantage-field">
-								<label>Points de Mêlée</label>
-								<input {{#unless GM}}readonly="readonly" {{/unless}}
-									class="modern-input advantage-input" type="text" name="system.av2"
-									value="{{system.av2}}" data-dtype="Number" />
-							</div>
-							<div class="advantage-field">
-								<label>1er Effet</label>
-								<input {{#unless GM}}readonly="readonly" {{/unless}} class="modern-input effect-input"
-									type="text" name="system.effet_ac_2_1" value="{{system.effet_ac_2_1}}" />
-							</div>
-							<div class="advantage-field">
-								<label>2ème Effet</label>
-								<input {{#unless GM}}readonly="readonly" {{/unless}} class="modern-input effect-input"
-									type="text" name="system.effet_ac_2_2" value="{{system.effet_ac_2_2}}" />
-							</div>
-							<div class="advantage-field">
-								<label>3ème Effet</label>
-								<input {{#unless GM}}readonly="readonly" {{/unless}} class="modern-input effect-input"
-									type="text" name="system.effet_ac_2_3" value="{{system.effet_ac_2_3}}" />
-							</div>
-						</div>
-						<div class="advantage-column">
-							<div class="advantage-header">Av3</div>
-							<div class="advantage-field">
-								<label>Points de Mêlée</label>
-								<input {{#unless GM}}readonly="readonly" {{/unless}}
-									class="modern-input advantage-input" type="text" name="system.av3"
-									value="{{system.av3}}" data-dtype="Number" />
-							</div>
-							<div class="advantage-field">
-								<label>1er Effet</label>
-								<input {{#unless GM}}readonly="readonly" {{/unless}} class="modern-input effect-input"
-									type="text" name="system.effet_ac_3_1" value="{{system.effet_ac_3_1}}" />
-							</div>
-							<div class="advantage-field">
-								<label>2ème Effet</label>
-								<input {{#unless GM}}readonly="readonly" {{/unless}} class="modern-input effect-input"
-									type="text" name="system.effet_ac_3_2" value="{{system.effet_ac_3_2}}" />
-							</div>
-							<div class="advantage-field">
-								<label>3ème Effet</label>
-								<input {{#unless GM}}readonly="readonly" {{/unless}} class="modern-input effect-input"
-									type="text" name="system.effet_ac_3_3" value="{{system.effet_ac_3_3}}" />
-							</div>
-						</div>
-						<div class="advantage-column">
-							<div class="advantage-header">Av4</div>
-							<div class="advantage-field">
-								<label>Points de Mêlée</label>
-								<input {{#unless GM}}readonly="readonly" {{/unless}}
-									class="modern-input advantage-input" type="text" name="system.av4"
-									value="{{system.av4}}" data-dtype="Number" />
-							</div>
-							<div class="advantage-field">
-								<label>1er Effet</label>
-								<input {{#unless GM}}readonly="readonly" {{/unless}} class="modern-input effect-input"
-									type="text" name="system.effet_ac_4_1" value="{{system.effet_ac_4_1}}" />
-							</div>
-							<div class="advantage-field">
-								<label>2ème Effet</label>
-								<input {{#unless GM}}readonly="readonly" {{/unless}} class="modern-input effect-input"
-									type="text" name="system.effet_ac_4_2" value="{{system.effet_ac_4_2}}" />
-							</div>
-							<div class="advantage-field">
-								<label>3ème Effet</label>
-								<input {{#unless GM}}readonly="readonly" {{/unless}} class="modern-input effect-input"
-									type="text" name="system.effet_ac_4_3" value="{{system.effet_ac_4_3}}" />
-							</div>
-						</div>
+							<div class="weapon-feature-card advantages-card collapsed">
+								<h4 class="feature-title collapsible-header">
+									<i class="fas fa-plus-circle"></i> Avantages & Effets optionnels <span
+										class="info_effets_speciaux" value="">
+										<sup><img class="icon_info" src="systems/mega/images/info.svg"></sup>
+									</span>
+									<i class="fas fa-chevron-down collapse-icon"></i>
+								</h4>
+								<div class="card-content">
+									<div class="advantages-grid">
+										<div class="advantage-column">
+											<div class="advantage-header">Av0</div>
+											<div class="advantage-field">
+												<label>Points de Mêlée</label>
+												<input {{#unless GM}}readonly="readonly" {{/unless}}
+													class="modern-input advantage-input" type="text" name="system.av0"
+													value="{{system.av0}}" data-dtype="Number" />
+											</div>
+											<div class="advantage-field">
+												<label>1er Effet</label>
+												<input {{#unless GM}}readonly="readonly" {{/unless}}
+													class="modern-input effect-input" type="text"
+													name="system.effet_ac_0_1" value="{{system.effet_ac_0_1}}" />
+											</div>
+											<div class="advantage-field">
+												<label>2ème Effet</label>
+												<input {{#unless GM}}readonly="readonly" {{/unless}}
+													class="modern-input effect-input" type="text"
+													name="system.effet_ac_0_2" value="{{system.effet_ac_0_2}}" />
+											</div>
+											<div class="advantage-field">
+												<label>3ème Effet</label>
+												<input {{#unless GM}}readonly="readonly" {{/unless}}
+													class="modern-input effect-input" type="text"
+													name="system.effet_ac_0_3" value="{{system.effet_ac_0_3}}" />
+											</div>
+										</div>
+										<div class="advantage-column">
+											<div class="advantage-header">Av1</div>
+											<div class="advantage-field">
+												<label>Points de Mêlée</label>
+												<input {{#unless GM}}readonly="readonly" {{/unless}}
+													class="modern-input advantage-input" type="text" name="system.av1"
+													value="{{system.av1}}" data-dtype="Number" />
+											</div>
+											<div class="advantage-field">
+												<label>1er Effet</label>
+												<input {{#unless GM}}readonly="readonly" {{/unless}}
+													class="modern-input effect-input" type="text"
+													name="system.effet_ac_1_1" value="{{system.effet_ac_1_1}}" />
+											</div>
+											<div class="advantage-field">
+												<label>2ème Effet</label>
+												<input {{#unless GM}}readonly="readonly" {{/unless}}
+													class="modern-input effect-input" type="text"
+													name="system.effet_ac_1_2" value="{{system.effet_ac_1_2}}" />
+											</div>
+											<div class="advantage-field">
+												<label>3ème Effet</label>
+												<input {{#unless GM}}readonly="readonly" {{/unless}}
+													class="modern-input effect-input" type="text"
+													name="system.effet_ac_1_3" value="{{system.effet_ac_1_3}}" />
+											</div>
+										</div>
+										<div class="advantage-column">
+											<div class="advantage-header">Av2</div>
+											<div class="advantage-field">
+												<label>Points de Mêlée</label>
+												<input {{#unless GM}}readonly="readonly" {{/unless}}
+													class="modern-input advantage-input" type="text" name="system.av2"
+													value="{{system.av2}}" data-dtype="Number" />
+											</div>
+											<div class="advantage-field">
+												<label>1er Effet</label>
+												<input {{#unless GM}}readonly="readonly" {{/unless}}
+													class="modern-input effect-input" type="text"
+													name="system.effet_ac_2_1" value="{{system.effet_ac_2_1}}" />
+											</div>
+											<div class="advantage-field">
+												<label>2ème Effet</label>
+												<input {{#unless GM}}readonly="readonly" {{/unless}}
+													class="modern-input effect-input" type="text"
+													name="system.effet_ac_2_2" value="{{system.effet_ac_2_2}}" />
+											</div>
+											<div class="advantage-field">
+												<label>3ème Effet</label>
+												<input {{#unless GM}}readonly="readonly" {{/unless}}
+													class="modern-input effect-input" type="text"
+													name="system.effet_ac_2_3" value="{{system.effet_ac_2_3}}" />
+											</div>
+										</div>
+										<div class="advantage-column">
+											<div class="advantage-header">Av3</div>
+											<div class="advantage-field">
+												<label>Points de Mêlée</label>
+												<input {{#unless GM}}readonly="readonly" {{/unless}}
+													class="modern-input advantage-input" type="text" name="system.av3"
+													value="{{system.av3}}" data-dtype="Number" />
+											</div>
+											<div class="advantage-field">
+												<label>1er Effet</label>
+												<input {{#unless GM}}readonly="readonly" {{/unless}}
+													class="modern-input effect-input" type="text"
+													name="system.effet_ac_3_1" value="{{system.effet_ac_3_1}}" />
+											</div>
+											<div class="advantage-field">
+												<label>2ème Effet</label>
+												<input {{#unless GM}}readonly="readonly" {{/unless}}
+													class="modern-input effect-input" type="text"
+													name="system.effet_ac_3_2" value="{{system.effet_ac_3_2}}" />
+											</div>
+											<div class="advantage-field">
+												<label>3ème Effet</label>
+												<input {{#unless GM}}readonly="readonly" {{/unless}}
+													class="modern-input effect-input" type="text"
+													name="system.effet_ac_3_3" value="{{system.effet_ac_3_3}}" />
+											</div>
+										</div>
+										<div class="advantage-column">
+											<div class="advantage-header">Av4</div>
+											<div class="advantage-field">
+												<label>Points de Mêlée</label>
+												<input {{#unless GM}}readonly="readonly" {{/unless}}
+													class="modern-input advantage-input" type="text" name="system.av4"
+													value="{{system.av4}}" data-dtype="Number" />
+											</div>
+											<div class="advantage-field">
+												<label>1er Effet</label>
+												<input {{#unless GM}}readonly="readonly" {{/unless}}
+													class="modern-input effect-input" type="text"
+													name="system.effet_ac_4_1" value="{{system.effet_ac_4_1}}" />
+											</div>
+											<div class="advantage-field">
+												<label>2ème Effet</label>
+												<input {{#unless GM}}readonly="readonly" {{/unless}}
+													class="modern-input effect-input" type="text"
+													name="system.effet_ac_4_2" value="{{system.effet_ac_4_2}}" />
+											</div>
+											<div class="advantage-field">
+												<label>3ème Effet</label>
+												<input {{#unless GM}}readonly="readonly" {{/unless}}
+													class="modern-input effect-input" type="text"
+													name="system.effet_ac_4_3" value="{{system.effet_ac_4_3}}" />
+											</div>
+										</div>
 
-						<!-- <div class="effects-help">
+										<!-- <div class="effects-help">
 							<div class="effects-legend">
 								<i class="fas fa-info-circle"></i>
 								<strong>Codes d'effets spéciaux :</strong> 
@@ -357,98 +376,128 @@
 								</span>
 							</div>
 						</div> -->
+									</div>
+								</div>
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>
 		</div>
 
 		<!-- ONGLET MÉDIAS -->
+
 		<div class="tab" data-group="primary" data-tab="effects">
-			<h3>🪄 Médias</h3>
-			<div
-				style="background: rgba(0,100,200,0.2); border: 1px solid rgba(0,150,255,0.5); border-radius: 5px; padding: 10px; margin: 10px 0; color: rgba(255,255,255,0.8); font-size: 12px;">
-				<i class="fas fa-info-circle"></i> <strong>Info :</strong> Cliquez sur les en-têtes des sections pour
-				les déplier/replier
-			</div>
+			<div class="item-bandeau">
+				<div class="desc-panel-outer">
+					<div class="desc-panel-label desc-panel-label--armement">MÉDIAS</div>
+					<div class="desc-panel">
+						<div class="desc-panel-body">
 
-			<div class="weapon-feature-card collapsed" onclick="this.classList.toggle('collapsed')">
-				<h4 class="feature-title collapsible-header">
-					<i class="fas fa-video"></i> Effets visuels
-					<i class="fas fa-chevron-down collapse-icon"></i>
-				</h4>
-				<div class="card-content" onclick="event.stopPropagation();">
-					{{#if GM}}
-					<div class="media-fields-grid">
-						<div class="media-field">
-							<label for="video-path">
-								<i class="fas fa-film"></i> Chemin de la vidéo
-							</label>
-							<div class="sound-input-group">
-								<input type="text" id="video-path" class="modern-input" name="system.effet_arme.value"
-									value="{{system.effet_arme.value}}"
-									placeholder="modules/mon-module/videos/effet.webm" />
-								<button type="button" class="preview-video-btn" title="Visualiser la vidéo">
-									<span class="voir_video" data-type="verouillage"
-										value="{{system.effet_arme.value}}">
-										<i class="fas fa-play"></i>
-									</span>
-								</button>
+							<div class="weapon-feature-card">
+								<h4 class="feature-title collapsible-header">
+									<i class="fas fa-video"></i> Effets visuels
+									<i class="fas fa-chevron-down collapse-icon"></i>
+								</h4>
+								<div class="card-content">
+									{{#if GM}}
+									<div class="media-fields-grid">
+										<div class="media-field">
+											<label for="video-path">
+												<i class="fas fa-film"></i> Chemin de la vidéo
+											</label>
+											<div class="input-browse-row">
+												<input type="text" id="video-path" class="modern-input"
+													name="system.effet_arme.value" value="{{system.effet_arme.value}}"
+													placeholder="modules/mon-module/videos/effet.webm" />
+												<button type="button" class="browse-video-btn"
+													title="Parcourir les fichiers">
+													<i class="fas fa-folder-open"></i>
+												</button>
+												<button type="button" class="preview-video-btn"
+													title="Visualiser la vidéo">
+													<span class="voir_video" data-type="verouillage"
+														value="{{system.effet_arme.value}}">
+														<i class="fas fa-play"></i>
+													</span>
+												</button>
+											</div>
+										</div>
+
+										<div class="media-fields-row">
+											<div class="media-field half-width">
+												<label for="offset-x">
+													<i class="fas fa-arrows-alt-h"></i> Décalage X
+												</label>
+												<input type="text" id="offset-x" class="modern-input numeric-input"
+													name="system.effet_offX.value" value="{{system.effet_offX.value}}"
+													placeholder="0" />
+											</div>
+
+											<div class="media-field half-width">
+												<label for="offset-y">
+													<i class="fas fa-arrows-alt-v"></i> Décalage Y
+												</label>
+												<input type="text" id="offset-y" class="modern-input numeric-input"
+													name="system.effet_offY.value" value="{{system.effet_offY.value}}"
+													placeholder="0" />
+											</div>
+
+											<div class="media-field offset-btn-cell">
+												<label>&nbsp;</label>
+												<button type="button" class="pick-offset-btn"
+													title="Sélectionner le point d'origine de l'animation sur la carte (token doit être sélectionné)">
+													<i class="fas fa-crosshairs"></i> Choisir sur la scène
+												</button>
+											</div>
+										</div>
+									</div>
+									{{else}}
+									<p
+										style="color: rgba(255,255,255,0.6); font-style: italic; text-align: center; padding: 20px;">
+										Cette section n'est accessible qu'aux Game Masters.</p>
+									{{/if}}
+								</div>
 							</div>
-						</div>
 
-						<div class="media-fields-row">
-							<div class="media-field half-width">
-								<label for="offset-x">
-									<i class="fas fa-arrows-alt-h"></i> Décalage X
-								</label>
-								<input type="text" id="offset-x" class="modern-input numeric-input"
-									name="system.effet_offX.value" value="{{system.effet_offX.value}}"
-									placeholder="0" />
-							</div>
-
-							<div class="media-field half-width">
-								<label for="offset-y">
-									<i class="fas fa-arrows-alt-v"></i> Décalage Y
-								</label>
-								<input type="text" id="offset-y" class="modern-input numeric-input"
-									name="system.effet_offY.value" value="{{system.effet_offY.value}}"
-									placeholder="0" />
+							<div class="weapon-feature-card collapsed">
+								<h4 class="feature-title collapsible-header">
+									<i class="fas fa-volume-up"></i> Effets sonores
+									<i class="fas fa-chevron-down collapse-icon"></i>
+								</h4>
+								<div class="card-content">
+									{{#if GM}}
+									<div class="sound-field-container">
+										<div class="sound-input-group">
+											<label for="sound-path">
+												<i class="fas fa-music"></i> Chemin de l'effet sonore
+											</label>
+											<div class="input-browse-row">
+												<input type="text" id="sound-path" class="modern-input sound-input"
+													name="system.sound.value" value="{{system.sound.value}}"
+													placeholder="modules/mon-module/sounds/effet.mp3" />
+												<button type="button" class="browse-sound-btn"
+													title="Parcourir les fichiers">
+													<i class="fas fa-folder-open"></i>
+												</button>
+												<button type="button" class="play-sound-btn" title="Écouter le son">
+													<span class="lire_son" data-type="verouillage"
+														value="{{system.sound.value}}">
+														<i class="fas fa-play"></i>
+													</span>
+												</button>
+											</div>
+										</div>
+									</div>
+									{{else}}
+									<p
+										style="color: rgba(255,255,255,0.6); font-style: italic; text-align: center; padding: 20px;">
+										Cette section n'est accessible qu'aux Game Masters.</p>
+									{{/if}}
+								</div>
 							</div>
 						</div>
 					</div>
-					{{else}}
-					<p style="color: rgba(255,255,255,0.6); font-style: italic; text-align: center; padding: 20px;">
-						Cette section n'est accessible qu'aux Game Masters.</p>
-					{{/if}}
-				</div>
-			</div>
-
-			<div class="weapon-feature-card collapsed" onclick="this.classList.toggle('collapsed')">
-				<h4 class="feature-title collapsible-header">
-					<i class="fas fa-volume-up"></i> Effets sonores
-					<i class="fas fa-chevron-down collapse-icon"></i>
-				</h4>
-				<div class="card-content" onclick="event.stopPropagation();">
-					{{#if GM}}
-					<div class="sound-field-container">
-						<div class="sound-input-group">
-							<label for="sound-path">
-								<i class="fas fa-music"></i> Chemin de l'effet sonore
-							</label>
-							<input type="text" id="sound-path" class="modern-input sound-input"
-								name="system.sound.value" value="{{system.sound.value}}"
-								placeholder="modules/mon-module/sounds/effet.mp3" />
-							<button type="button" class="play-sound-btn" title="Écouter le son">
-								<span class="lire_son" data-type="verouillage" value="{{system.sound.value}}">
-									<i class="fas fa-play"></i>
-								</span>
-							</button>
-						</div>
-					</div>
-					{{else}}
-					<p style="color: rgba(255,255,255,0.6); font-style: italic; text-align: center; padding: 20px;">
-						Cette section n'est accessible qu'aux Game Masters.</p>
-					{{/if}}
 				</div>
 			</div>
 		</div>

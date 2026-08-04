@@ -2,11 +2,28 @@
   "Actor": {
     "types": ["PJ", "PNJ"],
     "PJ": {
-      "biography": "<table style=\"border-style: none; margin-left: auto; margin-right: auto; background-color: rgba(0, 0, 0, 0); width: 99.2806%;\" border=\"0\"><caption>&nbsp;</caption><tbody><tr style=\"height: 10px;\"><td style=\"width: 26.3956%; vertical-align: top;\"><img style=\"border: none;\" src=\"systems/mega/images/silouhetteDesc.png\" alt=\"\" width=\"215\" height=\"403\"></td><td style=\"vertical-align: top; height: 10px; width: 72.8534%;\"><h1><strong>Nom/Surnom</strong></h1><h4>Age :&nbsp;<br>Origine :&nbsp;<br>Langue(s) parl&eacute;e(s) :</h4><h4>Br&egrave;ve description du personnage</h4><h2>Motivations</h2><h4 style=\"color: #191813; font-family: CaviarDreams, sans-serif; box-sizing: border-box;\">Motivation(s) du personnage</h4><h2>Pulsions/Addictions</h2><h4>Pulsion(s)/Addiction(s) du personnage</h4><h2>Hantise</h2><p>&nbsp;Hantise(s) du personnage</p><h2>Jokers &amp; Trucs</h2><h4>Joker(s)/Truc(s) du personnage</h4><p>&nbsp;</p></td></tr></tbody></table>",
+      "biography": "  ",
       "desc_pouvoirs": "<h1>T&Eacute;L&Eacute;PATHIE</h1>\n<p>&nbsp;</p>\n<h2>Communication t&eacute;l&eacute;pathique</h2>\n<h3>Grade 1.&nbsp;</h3>\n<p>&nbsp;</p>\n<h2>Percevoir des pr&eacute;sences, des sentiments, des pens&eacute;es, anticiper une conduite</h2>\n<h3>Grade 1.&nbsp;</h3>\n<p>&nbsp;</p>",
       "couverture": "",
+      "sexe": "",
+      "pseudo": "",
+      "identite_provisoire": "",
+      "attitude": "",
+      "vecu": "",
+      "age": "",
+      "poids": "",
+      "taille": "",
+      "origine": "",
+      "langues": "",
+      "motivation": "",
+      "objectifs": "",
+      "pulsions": "",
+      "hantise": "",
+      "hobbys": "",
+      "jokers": "",
       "verouille": 0,
       "combat_large": false,
+      "prot_def_masquee": true,
       "type_acteur": "MEGA",
       "health": {
         "value": 0,
@@ -165,6 +182,7 @@
       "masquer_ardence": false,
       "masquer_resonnance": false,
       "masquer_melee": false,
+      "melee_impair": 0,
       "masquer_avantage_charge": false,
       "masquer_effet_charge": false,
       "masquer_avantage_bagarre": false,
@@ -246,6 +264,8 @@
       "protections": {
         "p1": {
           "label": "",
+          "itemId": "",
+          "def": 0,
           "def_chocs": 0,
           "def_lame": 0,
           "def_balle": 0,
@@ -258,6 +278,8 @@
         },
         "p2": {
           "label": "",
+          "itemId": "",
+          "def": 0,
           "def_chocs": 0,
           "def_lame": 0,
           "def_balle": 0,
@@ -270,6 +292,8 @@
         },
         "p3": {
           "label": "",
+          "itemId": "",
+          "def": 0,
           "def_chocs": 0,
           "def_lame": 0,
           "def_balle": 0,
@@ -1553,6 +1577,10 @@
       "biography": "",
       "pnj_infos_mj": "",
       "reduit": 1,
+      "def_manuel": false,
+      "initiative_manuel": false,
+      "esquive_manuel": false,
+      "prot_def_masquee": true,
       "resistance_transfert": 24,
       "desc_pouvoirs": "<h1>T&Eacute;L&Eacute;PATHIE</h1>\n<p>&nbsp;</p>\n<h2>Communication t&eacute;l&eacute;pathique</h2>\n<h3>Grade 1.&nbsp;</h3>\n<p>&nbsp;</p>\n<h2>Percevoir des pr&eacute;sences, des sentiments, des pens&eacute;es, anticiper une conduite</h2>\n<h3>Grade 1.&nbsp;</h3>\n<p>&nbsp;</p>",
       "health": {
@@ -1565,6 +1593,7 @@
         "min": 0,
         "max": 0
       },
+      "melee_impair": 0,
       "def": {
         "value": 6,
         "min": 0,
@@ -1666,6 +1695,8 @@
       "protections": {
         "p1": {
           "label": "",
+          "itemId": "",
+          "def": 0,
           "def_chocs": 0,
           "def_lame": 0,
           "def_balle": 0,
@@ -1678,6 +1709,8 @@
         },
         "p2": {
           "label": "",
+          "itemId": "",
+          "def": 0,
           "def_chocs": 0,
           "def_lame": 0,
           "def_balle": 0,
@@ -1690,6 +1723,8 @@
         },
         "p3": {
           "label": "",
+          "itemId": "",
+          "def": 0,
           "def_chocs": 0,
           "def_lame": 0,
           "def_balle": 0,
@@ -1957,7 +1992,19 @@
         }
       },
       "pouvoirs": {
-        "pouvoir_psi_1": "",
+        "pouvoirs_actifs": false,
+        "pouvoir_psi_1": {
+          "label": "",
+          "grade": 1,
+          "rg": 4,
+          "num_item": -1
+        },
+        "pouvoir_psi_2": {
+          "label": "",
+          "grade": 1,
+          "rg": 4,
+          "num_item": -1
+        },
         "grade_pouvoir_psi_1": {
           "value": 1,
           "min": 0,
@@ -3032,6 +3079,7 @@
       "icon": "",
       "description_grades": "",
       "aide_active": true,
+      "equipe": false,
       "pouvoir1": {
         "icon": "",
         "label": "",
@@ -3261,6 +3309,7 @@
       "masquer_effets_armes": false,
       "masquer_famille": false,
       "masquer_degats": false,
+      "equipe": false,
       "attributes": {}
     },
     "Arme de lancer": {
@@ -3371,6 +3420,7 @@
       "masquer_effets_armes": false,
       "masquer_famille": false,
       "masquer_degats": false,
+      "equipe": false,
       "attributes": {}
     },
     "Attaque spéciale": {
@@ -3472,6 +3522,7 @@
       "masquer_famille": false,
       "masquer_degats": false,
       "weight": 0,
+      "equipe": false,
       "attributes": {}
     },
     "Arme courte": {
@@ -3591,6 +3642,7 @@
       "masquer_degats": false,
       "masquer_letale": false,
       "weight": 0,
+      "equipe": false,
       "attributes": {}
     },
     "Arme longue": {
@@ -3718,13 +3770,16 @@
       "masquer_effets_armes": false,
       "masquer_famille": false,
       "masquer_degats": false,
+      "equipe": false,
       "attributes": {}
     },
     "Protection": {
       "description": "",
       "effet": "bevel",
+      "def": 0,
       "quantity": 1,
       "weight": 0,
+      "equipe": false,
       "attributes": {},
       "masquer_effets": false,
       "masquer_bonusdef": false,

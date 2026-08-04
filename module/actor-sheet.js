@@ -8,6 +8,8 @@ import {
   getMegaAPI,
   requireFXMaster,
   checkEffectsState,
+  flashMagicHalo,
+  startButtonParticles,
 } from "./mega-utils.js";
 
 class TabbedDialog extends Dialog {
@@ -58,7 +60,7 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
       classes: ["mega", "sheet", "actor"],
       template: "systems/mega/templates/actor-sheet.html",
       width: courtMetrage ? 928 : 940,
-      height: courtMetrage ? 517 : 711,
+      height: courtMetrage ? 517 : 700,
       tabs: [
         {
           navSelector: ".side-tabs",
@@ -79,6 +81,47 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
     const actorData = context.data;
     context.system = actorData.system;
     context.flags = actorData.flags;
+
+    // Résolution des images d'items pour les badges combat (img absent du schéma template.json)
+    for (const [slotKey, itemType, idx] of [
+      ["mainsnues1", "Attaque sp\u00e9ciale", 0],
+      ["mainsnues2", "Attaque sp\u00e9ciale", 1],
+      ["mainsnues3", "Attaque sp\u00e9ciale", 2],
+      ["armescourtes_1", "Arme courte", 0],
+      ["armescourtes_2", "Arme courte", 1],
+      ["armeslongues_1", "Arme longue", 0],
+      ["armeslongues_2", "Arme longue", 1],
+      ["lancer_1", "Arme de lancer", 0],
+      ["lancer_2", "Arme de lancer", 1],
+      ["tir_1", "Arme de tir", 0],
+      ["tir_2", "Arme de tir", 1],
+    ]) {
+      const slot = context.system.talents_combat?.[slotKey];
+      if (!slot) continue;
+      const equipped = this.actor.items.filter(
+        (i) => i.type === itemType && i.system.equipe === true,
+      );
+      const item = equipped[idx];
+      const rawImg = item && slot.label === item.name ? item.img || "" : "";
+      slot.img =
+        rawImg && !rawImg.startsWith("/") && !rawImg.startsWith("http")
+          ? "/" + rawImg
+          : rawImg;
+    }
+    // Résolution des images pour les protections
+    const equippedProt = this.actor.items.filter(
+      (i) => i.type === "Protection" && i.system.equipe === true,
+    );
+    ["p1", "p2", "p3"].forEach((k, idx) => {
+      const slot = context.system.protections?.[k];
+      if (!slot) return;
+      const item = equippedProt[idx];
+      const rawImg = item && slot.label === item.name ? item.img || "" : "";
+      slot.img =
+        rawImg && !rawImg.startsWith("/") && !rawImg.startsWith("http")
+          ? "/" + rawImg
+          : rawImg;
+    });
     context.GM = game.user.isGM;
     // Prepare items.
     this._prepareItems(context);
@@ -88,7 +131,98 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
         this.object.system.biography,
         { async: true },
       );
+
+    // Calcul du tableau de défense par localisation
+    context.defenseParLocalisation = this._computeDefenseByLocalisation();
+
+    // Somme des DEF de base des protections équipées
+    context.def_prot_total = this.actor.items
+      .filter((i) => i.type === "Protection" && i.system.equipe === true)
+      .reduce((sum, i) => sum + (Number(i.system.def) || 0), 0);
+
+    // Badges DEF réelle (même style que la fenêtre de localisation)
+    {
+      const _tc = {
+        choc: "#e67e22",
+        lame: "#b0bec5",
+        balle: "#2980b9",
+        feu: "#e74c3c",
+        froid: "#5dade2",
+        acide: "#2ecc71",
+        rayon: "#9b59b6",
+      };
+      const _bd =
+        (Number(context.system.def?.value) || 0) +
+        (Number(context.system.def_modif?.value) || 0) +
+        (Number(context.system.bonus_armes_def) || 0);
+      for (const [key, color] of Object.entries(_tc)) {
+        const val = Number(context.system[`protect_${key}`]?.value) || 0;
+        const bonus = val - _bd;
+        context[`protect_${key}_badge`] =
+          bonus > 0
+            ? `<span style="display:inline-block;background:linear-gradient(135deg,${color}dd,${color}88);color:#fff;border-radius:5px;padding:2px 8px;font-weight:bold;font-size:0.92em;box-shadow:0 1px 4px rgba(0,0,0,0.45);min-width:28px;text-align:center;">${val}<sup style="font-size:0.65em;margin-left:1px;opacity:0.85;">+${bonus}</sup></span>`
+            : `<span style="display:inline-block;background:linear-gradient(135deg,${color}dd,${color}88);color:#fff;border-radius:5px;padding:2px 8px;font-weight:bold;font-size:0.92em;box-shadow:0 1px 4px rgba(0,0,0,0.45);min-width:28px;text-align:center;">${val}<sup style="font-size:0.65em;margin-left:1px;opacity:0.5;">0</sup></span>`;
+      }
+    }
+
+    // Ajustement largeur si badge Bonus Armes visible
+    {
+      const courtMetrage = game.settings.get("mega", "courtMetrage");
+      const bonusArmes = Number(context.system.bonus_armes_def) || 0;
+      const baseWidth = courtMetrage ? 928 : 940;
+      this.position.width = bonusArmes > 0 ? baseWidth + 120 : baseWidth;
+    }
+
     return context;
+  }
+
+  /**
+   * Calcule la somme des bonus de défense par localisation et par type d'attaque,
+   * en tenant compte uniquement des protections équipées qui couvrent la zone.
+   */
+  _computeDefenseByLocalisation() {
+    const zones = [
+      { key: "tete", label: "Tête" },
+      { key: "poitrine", label: "Poitrine" },
+      { key: "ventre", label: "Ventre" },
+      { key: "bras_g", label: "Bras gauche" },
+      { key: "bras_d", label: "Bras droit" },
+      { key: "main_g", label: "Main gauche" },
+      { key: "main_d", label: "Main droite" },
+      { key: "jambe_g", label: "Jambe gauche" },
+      { key: "jambe_d", label: "Jambe droite" },
+      { key: "pied_g", label: "Pied gauche" },
+      { key: "pied_d", label: "Pied droit" },
+    ];
+    const types = ["choc", "lame", "balle", "feu", "froid", "acide", "rayon"];
+
+    const equippedProtections = this.actor.items.filter(
+      (i) => i.type === "Protection" && i.system.equipe === true,
+    );
+
+    // DEF de base = DEF calculée + modificateur manuel + bonus armes actives
+    const sys = this.actor.system;
+    const baseDef =
+      (Number(sys.def?.value) || 0) +
+      (Number(sys.def_modif?.value) || 0) +
+      (Number(sys.bonus_armes_def) || 0);
+
+    return zones.map((zone) => {
+      const row = { label: zone.label };
+      for (const type of types) {
+        // On part de la DEF de base pour chaque cellule
+        let total = baseDef;
+        for (const prot of equippedProtections) {
+          const c = prot.system.caracs;
+          // La zone est-elle couverte par cette protection ? (1 = oui, coercition pour str/number)
+          if (Number(c[`def_${zone.key}`]) === 1) {
+            total += Number(c[`def_${type}`]) || 0;
+          }
+        }
+        row[type] = total;
+      }
+      return row;
+    });
   }
 
   /* -------------------------------------------- */
@@ -97,73 +231,270 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
   activateListeners(html) {
     super.activateListeners(html);
 
+    html.find(".melee-impair-indicator").on("click", (ev) => {
+      if (this.actor.system.verouille) return;
+      this.actor.update({ "system.melee_impair": 0 });
+    });
+
+    // Navigation entre onglets à la molette de la souris
+    html[0].addEventListener(
+      "wheel",
+      (event) => {
+        const tabItems = html.find(".side-tabs .side-tab-item");
+        if (!tabItems.length) return;
+        const tabs = tabItems.map((_, el) => el.dataset.tab).get();
+        const activeTab = this._tabs[0].active;
+        const currentIndex = tabs.indexOf(activeTab);
+        if (currentIndex === -1) return;
+        // Molette vers le haut (deltaY < 0) → onglet précédent, vers le bas → onglet suivant
+        const direction = event.deltaY < 0 ? -1 : 1;
+        const newIndex = (currentIndex + direction + tabs.length) % tabs.length;
+        const newTab = tabs[newIndex];
+        // Mettre à jour la classe active sur les boutons
+        tabItems.removeClass("active");
+        tabItems.filter(`[data-tab="${newTab}"]`).addClass("active");
+        this._tabs[0].activate(newTab);
+        // Déclencher l'ajustement de hauteur pour le nouvel onglet
+        this._handleCombatTabResize(newTab);
+      },
+      { passive: true },
+    );
+
+    // Forcer la couleur blanche sur les valeurs de domaines
+    html.find("input.tnt-di").each(function () {
+      this.style.setProperty("color", "#ffffff", "important");
+      this.style.setProperty("-webkit-text-fill-color", "#ffffff", "important");
+      this.style.setProperty("opacity", "1", "important");
+    });
+
+    // Gestion des blocs collapsibles avec persistence localStorage
+    const _collapseKey = `mega-collapse-${this.actor.id}`;
+    const _collapseStates = JSON.parse(
+      localStorage.getItem(_collapseKey) || "{}",
+    );
+    html.find(".weapon-feature-card").each(function (index) {
+      const key = `card-${index}`;
+      const $card = $(this);
+      const $content = $card.find(".card-content");
+      $content.css("transition", "none");
+      if (key in _collapseStates) {
+        if (_collapseStates[key]) {
+          $card.addClass("collapsed");
+        } else {
+          $card.removeClass("collapsed");
+        }
+      }
+      requestAnimationFrame(() =>
+        requestAnimationFrame(() => $content.css("transition", "")),
+      );
+    });
+    html.find(".collapsible-header").on("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      const card = $(this).closest(".weapon-feature-card");
+      card.toggleClass("collapsed");
+      const states = {};
+      html.find(".weapon-feature-card").each(function (idx) {
+        states[`card-${idx}`] = $(this).hasClass("collapsed");
+      });
+      localStorage.setItem(_collapseKey, JSON.stringify(states));
+    });
+
     // Gestionnaire pour les boutons latéraux
     html.find(".side-tab-item").click(this._onSideTabClick.bind(this));
 
     // Initialiser l'onglet actif au chargement
     this._initializeActiveSideTab(html);
 
+    // Mise à jour visuelle de l'étoile de résonance
+    this._updateSphereStarClasses(html);
+
+    // === SPÉ : affichage progressif ===
+    const $speOuter = html.find(".spe-outer");
+    if ($speOuter.length) {
+      const $rows = $speOuter.find(".spe-row");
+      const isEditable = this.options.editable && !this.actor.system.verouille;
+      let lastFilledIdx = -1;
+      $rows.each(function (i) {
+        const val = ($(this).attr("data-spe-val") || "").trim();
+        if (val !== "") lastFilledIdx = i;
+      });
+      const firstEmptyVisible = isEditable
+        ? Math.min(lastFilledIdx + 1, $rows.length - 1)
+        : lastFilledIdx;
+      $rows.each(function (i) {
+        $(this).find(".spe-add-btn").hide();
+        if (i <= firstEmptyVisible) {
+          $(this).show();
+        } else {
+          $(this).hide();
+        }
+      });
+      if (isEditable && firstEmptyVisible < $rows.length - 1) {
+        $rows.eq(firstEmptyVisible).find(".spe-add-btn").show();
+      }
+      $speOuter.on("click", ".spe-add-btn", function () {
+        const $row = $(this).closest(".spe-row");
+        const $allRows = $speOuter.find(".spe-row");
+        const idx = $allRows.index($row);
+        const $nextRow = $allRows.eq(idx + 1);
+        if ($nextRow.length) {
+          $row.find(".spe-add-btn").hide();
+          $nextRow.show();
+          if ($allRows.eq(idx + 2).length) {
+            $nextRow.find(".spe-add-btn").show();
+          }
+        }
+      });
+    }
+
     //active ou désactive les effets spéciaux
     const effets_speciaux = game.settings.get("mega", "effets_speciaux");
     const retraitAuto = game.settings.get("mega", "retraitAuto");
+    // Toggle panneau Cumul & Défis - popover droite (persisté par acteur)
+    const _cumulKey = `mega-cumul-${this.actor.id}`;
+    const $cumulBody = html.find(".cumul-body");
+    const $cumulArrow = html.find(".cumul-arrow");
+    if (localStorage.getItem(_cumulKey) === "open") {
+      $cumulBody.show();
+      $cumulArrow.addClass("rotated");
+    }
+    html.find(".cumul-toggle").on("click", (ev) => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      if ($cumulBody.is(":visible")) {
+        $cumulBody.hide();
+        $cumulArrow.removeClass("rotated");
+        localStorage.setItem(_cumulKey, "closed");
+      } else {
+        $cumulBody.show();
+        $cumulArrow.addClass("rotated");
+        localStorage.setItem(_cumulKey, "open");
+      }
+    });
+
     // Everything below here is only needed if the sheet is editable
     if (!this.options.editable) return;
 
+    // Boutons +/- pour ajuster le max d'ardence et résonnance
+    html.find(".pts-adj-btn").on("click", (ev) => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      const field = ev.currentTarget.dataset.field;
+      const isInc = ev.currentTarget.classList.contains("pts-adj-inc");
+      const current = foundry.utils.getProperty(this.actor, field) ?? 0;
+      if (!isInc) {
+        // Le − ne supprime que les cercles vides : le dernier cercle doit être vide
+        const valueField = field.replace(/\.max$/, ".value");
+        const value = foundry.utils.getProperty(this.actor, valueField) ?? 0;
+        if (value >= current) return; // tous les cercles sont pleins, on bloque
+      }
+      const newVal = Math.max(0, current + (isInc ? 1 : -1));
+      this.actor.update({ [field]: newVal });
+    });
+
+    // Clic sur un cercle (dot) d'ardence ou de résonnance
+    html.find(".tpc-dots").on("click", ".tpc-dot", (ev) => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      const $dot = $(ev.currentTarget);
+      const $dots = $dot.closest(".tpc-dots");
+      const field = $dots.data("field");
+      const idx = parseInt($dot.data("dot-index"), 10);
+      const current = foundry.utils.getProperty(this.actor, field) ?? 0;
+      let newVal;
+      if (idx <= current && idx === current) {
+        // Dernier plein → vider
+        newVal = current - 1;
+      } else if (idx === current + 1) {
+        // Premier vide → remplir
+        newVal = current + 1;
+      } else {
+        return; // clic sur un cercle non actionnable
+      }
+      this.actor.update({ [field]: Math.max(0, newVal) });
+    });
+
+    // Clic sur l'étoile de résonance sphérique
+    html.find(".sphere-pt").on("click", (ev) => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      if (this.actor.system.verouille) return;
+      const sphereName = ev.currentTarget.dataset.sphere;
+      const s1 = this.actor.system.sphere?.value || "";
+      const s2 = this.actor.system.sphere2?.value || "";
+      if (sphereName === s1) {
+        // Désélectionner sphère 1 : remonter s2 en s1
+        this.actor.update({
+          "system.sphere.value": s2,
+          "system.sphere2.value": "",
+          "system.sphere2.present": false,
+        });
+      } else if (sphereName === s2) {
+        // Désélectionner sphère 2
+        this.actor.update({
+          "system.sphere2.value": "",
+          "system.sphere2.present": false,
+        });
+      } else if (!s1) {
+        this.actor.update({ "system.sphere.value": sphereName });
+      } else {
+        // Sphère 1 déjà prise → assigner ou remplacer sphère 2
+        this.actor.update({
+          "system.sphere2.value": sphereName,
+          "system.sphere2.present": true,
+        });
+      }
+    });
+
     // Edition de l'inventaire
-    html.find(".item-edit").click((ev) => {
+    html.find(".item-edit").on("contextmenu", (ev) => {
       const itemId = ev.currentTarget.getAttribute("id");
       const item = this.actor.items.get(itemId);
       if (item) {
+        if (item.type === "Pouvoir" && !game.user.isGM) {
+          ui.notifications.warn(
+            "Vous ne pouvez pas ouvrir cet item. Pour obtenir de l'information, cliquez droit sur le pouvoir dans l'onglet ATTRIBUTS",
+          );
+          return;
+        }
         item.sheet.render(true);
       }
     });
 
-    html.find(".item-edit").on("contextmenu", (ev) => {
-      const itemId = ev.currentTarget.getAttribute("id");
+    // Clic droit sur une protection dans l'onglet combat → ouvre la fiche
+    html.find(".protection-combat-row").on("contextmenu", (ev) => {
+      ev.preventDefault();
+      const itemId = ev.currentTarget.getAttribute("data-item-id");
       const item = this.actor.items.get(itemId);
-      let supItem = 0;
-      let dialog_item_delete = new Dialog({
-        title: "SUPPRESSION",
-        content:
-          "<div class='card-header'><span><img src='systems/mega/images/gears.gif' width=30px; height=30px; style='border:none'>SUPPRESSION D'UN ITEM</span></div>&nbsp",
-        buttons: {
-          non: {
-            label: "NON",
-            callback: () => (supItem = 0),
-          },
-          oui: {
-            label: "OUI",
-            callback: () => {
-              item.delete();
-              ui.notifications.info("L'item a été supprimé");
-            },
-          },
-        },
-        default: "non",
-        close: function () {},
-      });
-      dialog_item_delete.render(true);
+      if (item) item.sheet.render(true);
     });
 
     // Supression de l'inventaire
     html.find(".item-delete").click((ev) => {
-      const li = $(ev.currentTarget).parents(".item");
+      const card = $(ev.currentTarget).closest(".inventory-item-card");
       let supItem = 0;
       let dialog_item_delete = new Dialog({
-        title: "SUPPRESSION",
+        title: "Suppression d'un item",
         content:
-          "<div class='card-header'><span><img src='systems/mega/images/gears.gif' width=30px; height=30px; style='border:none'>SUPPRESSION D'UN ITEM</span></div>&nbsp",
+          "<div class='card-header'><span><i class='fas fa-trash'></i> SUPPRESSION</span></div>" +
+          "<div style='padding:12px 8px;text-align:center'><i class='fas fa-trash' style='font-size:2em;color:#e74c3c;display:block;margin-bottom:8px'></i><span class='bouton_texte'>Êtes-vous sûr ?</span></div>",
         buttons: {
           non: {
-            label: "NON",
+            label: "<i class='fas fa-times'></i> NON",
             callback: () => (supItem = 0),
           },
           oui: {
-            label: "OUI",
+            label: "<i class='fas fa-check'></i> OUI",
             callback: () => {
-              const item = this.actor.items.get(li.data("itemId"));
+              const itemId = card.find("img.item-edit").attr("id");
+              const item = this.actor.items.get(itemId);
+              if (!item) {
+                ui.notifications.error("Item introuvable");
+                return;
+              }
               item.delete();
-              li.slideUp(200, () => this.render(false));
+              card.slideUp(200, () => this.render(false));
               // eslint-disable-next-line no-undef
               ui.notifications.warn("L'item a été supprimé");
             },
@@ -173,6 +504,41 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
         close: function () {},
       });
       dialog_item_delete.render(true);
+    });
+
+    // Toggle équipement d'une arme dans l'onglet combat
+    html.find(".item-equipe-toggle").click(async (ev) => {
+      ev.stopPropagation();
+      ev.preventDefault();
+      const itemId = ev.currentTarget.getAttribute("data-item-id");
+      const item = this.actor.items.get(itemId);
+      if (!item) return;
+
+      const currentEquipe = item.system.equipe || false;
+      const itemType = item.type;
+      // Limite : 3 armes max pour "Attaque spéciale" (mêlée), 2 pour tous les autres types
+      const maxEquipe =
+        itemType === "Attaque spéciale" || itemType === "Protection" ? 3 : 2;
+
+      if (currentEquipe) {
+        // Désactiver : retirer de l'onglet combat
+        await item.update({ "system.equipe": false });
+      } else {
+        // Activer : vérifier la limite
+        const currentCount = this.actor.items.filter(
+          (i) => i.type === itemType && i.system.equipe === true,
+        ).length;
+
+        if (currentCount >= maxEquipe) {
+          const msg =
+            itemType === "Attaque spéciale"
+              ? `Vous ne pouvez activer que ${maxEquipe} attaques spéciales simultanément dans l'onglet combat. Désactivez-en une d'abord.`
+              : `Vous ne pouvez activer que ${maxEquipe} armes de ce type simultanément dans l'onglet combat. Désactivez-en une d'abord.`;
+          ui.notifications.warn(msg);
+          return;
+        }
+        await item.update({ "system.equipe": true });
+      }
     });
 
     // Visualisation d'un item
@@ -362,6 +728,19 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
       } else this.actor.update({ "system.combat_large": false });
     });
 
+    html.find(".toggle_prot_rows").click((ev) => {
+      this.actor.update({
+        "system.prot_def_masquee": !this.actor.system.prot_def_masquee,
+      });
+    });
+
+    // Tableau de défense par localisation
+    html.find(".btn-defense-localisation").click((ev) => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      this._onShowDefenseLocalisation();
+    });
+
     //Masque ou développe les cartouches dans l'onglet MJ
     html.find(".masquer").click((ev) => {
       let table_name = ev.currentTarget.getAttribute("value");
@@ -468,213 +847,141 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
       }
     });
 
-    html.find(".info_pouvoir").click((ev) => {
-      const myDialogOptions = {
-        resizable: true,
-        initial_tab: "tab1",
-        width: 690,
-        height: 910,
-        top: 10,
-        left: 10,
-      };
-
-      let type_pouvoir = ev.currentTarget.getAttribute("value");
-
-      let numItem = 0;
-      let titre;
-      let grade = 0;
-      let itemsPouvoir = this.actor.items.filter((i) => i.type === "Pouvoir");
-
-      const getPouvoirData = (pouvoir) => {
-        return {
-          numItem: this.actor.system.pouvoirs[pouvoir].num_item,
-          grade: this.actor.system.pouvoirs[pouvoir].grade,
-          titre: this.actor.system.pouvoirs[pouvoir].label,
-        };
-      };
-
-      switch (type_pouvoir) {
-        case "info_pouvoir_psi_1":
-          ({ numItem, grade, titre } = getPouvoirData("pouvoir_psi_1"));
-          break;
-        case "info_pouvoir_psi_2":
-          ({ numItem, grade, titre } = getPouvoirData("pouvoir_psi_2"));
-          break;
-        case "info_pouvoir_transit":
-          ({ numItem, grade, titre } = getPouvoirData("pouvoir_transit"));
-          break;
-        case "info_pouvoir_transfert":
-          ({ numItem, grade, titre } = getPouvoirData("pouvoir_transfert"));
-          break;
-      }
-
-      let bkground_style =
-        'style="background-color:rgba(12, 166, 71, 0.6); border:solid 1px; vertical-align: top;padding: 5px;border-radius: 5px;box-shadow: -1px 2px 5px 1px rgba(0, 0, 0, 0.7);"';
-      let backgrounds = Array(12).fill(
-        'style="color:grey;border:solid 1px; padding: 5px;vertical-align: top;border-radius: 5px;box-shadow: -1px 2px 5px 1px rgba(0, 0, 0, 0.7);"',
-      );
-
-      for (let i = 0; i < grade; i++) {
-        backgrounds[i] = bkground_style;
-      }
-
-      const getDescription = (pouvoir, index) => {
-        return (
-          "<h4>" +
-          itemsPouvoir[numItem].system[pouvoir].description +
-          '<table style="background: transparent;border:none; border-collapse: separate;border-spacing: 15px; "><tr><td ' +
-          backgrounds[0] +
-          'width="50%"><b>Grade 1.</b>&nbsp;</strong></h4><h4>' +
-          itemsPouvoir[numItem].system[pouvoir].grade1 +
-          "</td><td " +
-          backgrounds[1] +
-          'width="50%"><h4><strong>Grade 2.</strong></h4><h4>' +
-          itemsPouvoir[numItem].system[pouvoir].grade2 +
-          "</h4></tr><tr><td " +
-          backgrounds[2] +
-          'width="50%">' +
-          "<h4><strong>Grade 3.</strong></h4><h4>" +
-          itemsPouvoir[numItem].system[pouvoir].grade3 +
-          "</h4>" +
-          "</td><td " +
-          backgrounds[3] +
-          'width="50%"><h4><strong>Grade 4.</strong></h4><h4>' +
-          itemsPouvoir[numItem].system[pouvoir].grade4 +
-          "</h4></tr><tr><td " +
-          backgrounds[4] +
-          'width="50%">' +
-          "<h4><strong>Grade 5.</strong></h4><h4>" +
-          itemsPouvoir[numItem].system[pouvoir].grade5 +
-          "</h4>" +
-          "</td><td " +
-          backgrounds[5] +
-          'width="50%"><h4><strong>Grade 6.</strong></h4><h4>' +
-          itemsPouvoir[numItem].system[pouvoir].grade6 +
-          "</h4></tr><tr><td " +
-          backgrounds[6] +
-          'width="50%">' +
-          "<h4><strong>Grade 7.</strong></h4><h4>" +
-          itemsPouvoir[numItem].system[pouvoir].grade7 +
-          "</h4>" +
-          "</td><td " +
-          backgrounds[7] +
-          'width="50%"><h4><strong>Grade 8.</strong></h4><h4>' +
-          itemsPouvoir[numItem].system[pouvoir].grade8 +
-          "</h4></tr><tr><td " +
-          backgrounds[8] +
-          'width="50%">' +
-          "<h4><strong>Grade 9.</strong></h4><h4>" +
-          itemsPouvoir[numItem].system[pouvoir].grade9 +
-          "</h4>" +
-          "</td><td " +
-          backgrounds[9] +
-          'width="50%"><h4><strong>Grade 10.</strong></h4><h4>' +
-          itemsPouvoir[numItem].system[pouvoir].grade10 +
-          "</h4></tr><tr><td " +
-          backgrounds[10] +
-          'width="50%">' +
-          "<h4><strong>Grade 11.</strong></h4><h4>" +
-          itemsPouvoir[numItem].system[pouvoir].grade11 +
-          "</h4>" +
-          "</td><td " +
-          backgrounds[11] +
-          'width="50%"><h4><strong>Grade 12.</strong></h4><h4>' +
-          itemsPouvoir[numItem].system[pouvoir].grade12 +
-          "</h4></td></tr></table>"
-        );
-      };
-
-      let description = itemsPouvoir[numItem].system.description;
-      let description1 = getDescription("pouvoir1");
-      let description2 = getDescription("pouvoir2");
-      let description3 = getDescription("pouvoir3");
-      let description4 = getDescription("pouvoir4");
-      let description_aide = itemsPouvoir[numItem].system.aide.description;
-      let numTab = itemsPouvoir[numItem].system.nb_onglets;
-      let icon = itemsPouvoir[numItem].system.icon;
-      let icon1 = itemsPouvoir[numItem].system.pouvoir1.icon;
-      let icon2 = itemsPouvoir[numItem].system.pouvoir2.icon;
-      let icon3 = itemsPouvoir[numItem].system.pouvoir3.icon;
-      let icon4 = itemsPouvoir[numItem].system.pouvoir4.icon;
-      let icon_aide = itemsPouvoir[numItem].system.aide.icon;
-      let tab_gen = itemsPouvoir[numItem].system.label;
-      let tab1 = itemsPouvoir[numItem].system.pouvoir1.label;
-      let tab2 = itemsPouvoir[numItem].system.pouvoir2.label;
-      let tab3 = itemsPouvoir[numItem].system.pouvoir3.label;
-      let tab4 = itemsPouvoir[numItem].system.pouvoir4.label;
-      let tab_aide = itemsPouvoir[numItem].system.aide.label;
-      let aide = itemsPouvoir[numItem].system.aide_active;
-
-      let tabs = [];
-      tabs.push({ title: tab_gen, content: description, icon: icon });
-      if (numTab >= 1) {
-        tabs.push({ title: tab1, content: description1, icon: icon1 });
-      }
-      if (numTab >= 2) {
-        tabs.push({ title: tab2, content: description2, icon: icon2 });
-      }
-      if (numTab >= 3) {
-        tabs.push({ title: tab3, content: description3, icon: icon3 });
-      }
-      if (numTab >= 4) {
-        tabs.push({ title: tab4, content: description4, icon: icon4 });
-      }
-      if (aide)
-        tabs.push({
-          title: tab_aide,
-          content: description_aide,
-          icon: icon_aide,
-        });
-
-      // Utilisation de tabs dans la création de la boîte de dialogue
-      let tab = new TabbedDialog(
-        {
-          title: titre,
-          header: "",
-          footer: "",
-          tabs: tabs,
-          buttons: {},
-          default: "two",
-          render: (html) =>
-            console.log("Register interactivity in the rendered dialog"),
-          close: (html) =>
-            console.log(
-              "This always is logged no matter which option is chosen",
-            ),
-        },
-        myDialogOptions,
-      );
-
-      tab.render(true);
-    });
-
     // Fenêtre d'Informations sur les effets de combat
     html.find(".info_effets_speciaux").click((ev) => {
       const myDialogOptions = {
         resizable: true,
         initial_tab: "tab1",
-        width: 690,
-        height: 900,
+        width: 640,
+        height: 831,
         top: 10,
         left: 10,
+        classes: ["window-dialog"],
       };
       let description = "";
       let icon1 = "systems/mega/images/polar-star.svg";
       let pouvoir = ev.currentTarget.getAttribute("value");
+      const _row = (bg, letter, title, subtitle, desc) =>
+        `<div style="display:flex;align-items:flex-start;gap:10px;padding:6px 4px;border-bottom:1px solid rgba(128,128,128,0.12);">` +
+        `<span style="background:${bg};color:#fff;font-weight:bold;font-size:13px;min-width:26px;height:26px;border-radius:13px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;font-family:monospace;">${letter}</span>` +
+        `<div style="flex:1;"><strong>${title}</strong>` +
+        (subtitle
+          ? `<span style="opacity:0.55;font-size:11px;margin-left:6px;">${subtitle}</span>`
+          : "") +
+        (desc
+          ? `<div style="opacity:0.75;font-size:12px;margin-top:2px;">${desc}</div>`
+          : "") +
+        `</div></div>`;
+      const _section = (bg, icon, label, rows) =>
+        `<div style="margin-bottom:12px;">` +
+        `<div style="background:${bg};color:#fff;padding:5px 10px;border-radius:4px;font-weight:bold;font-size:11px;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">` +
+        `<i class="fas fa-${icon}" style="margin-right:5px;"></i>${label}</div>` +
+        rows +
+        `</div>`;
       description =
-        '<table><tbody><tr><td style="background-color:var(--accent-color);"><strong>Imm&eacute;diat</strong>:</td></tr><tr><td><ul><li><strong>H</strong> <img style="vertical-align:middle;border:none;width:18px;height:18px" src="systems/mega/images/fleche_droite.png"><strong> Handicaper</strong></li></ul><p>     La douleur emp&ecirc;che la cible d\'utiliser normalement un membre.</p><ul><li><strong>A</strong> <img style="vertical-align:middle;border:none;width:18px;height:18px" src="systems/mega/images/fleche_droite.png"><strong> Assommer</strong></li></ul><p>     La cible est inconsciente pendant (Av)d4 Round(s)</p><ul><li><strong>S</strong> <img style="vertical-align:middle;border:none;width:18px;height:18px" src="systems/mega/images/fleche_droite.png"><strong> Sonner</strong></li></ul><p>     La cible subit un malus de -4Rg &agrave; ses ATT et -2 &agrave; sa DEF pendant (Av)d4 Round(s)</p><ul><li><strong>R</strong> <img style="vertical-align:middle;border:none;width:18px;height:18px" src="systems/mega/images/fleche_droite.png"><strong> Renverser</strong></li></ul><p>     La cible chute et doit consommer une action pour se relever</p><ul><li><strong>I</strong> <img style="vertical-align:middle;border:none;width:18px;height:18px" src="systems/mega/images/fleche_droite.png"><strong> Immobiliser</strong></li></ul><p>     La cible est immobilis&eacute;e et ne peut plus combattre tant qu\'elle ne s\'est pas lib&eacute;r&eacute;e.<br/>     Tant que la cible est mmobilis&eacute;e, elle et l\'Attaquant ne peuvent pas faire d\'actions autres que : D&eacute;fenses avec Malus, maintenir ou rompre l\'immobilisation ou &eacute;gocier.</p><ul><li><strong>V</strong> <img style="vertical-align:middle;border:none;width:18px;height:18px" src="systems/mega/images/fleche_droite.png"><strong> Vitesse</strong></li></ul></td></tr><tr><td style="background-color:var(--accent-color);"><strong>Prochaine Action</strong>:</td></tr><tr><td><p><strong>P</strong> <img style="vertical-align:middle;border:none;width:18px;height:18px" src="systems/mega/images/fleche_droite.png"><strong> Positionnement </strong>(Roleplay, ou DEF +1 Niv et ATT Adv -2Rg)</p><p>     Le personnage prend une position favorable par rapport &agrave; l\'adversaire et profitera de bonus au prochain Round.</p><p>     DEF +1 et, au choix, +4Rg au choix en ATT pour lui ou -4Rg en ATT pour son adversaire</p></td></tr><tr><td style="background-color:var(--accent-color);"><strong>Prochaine DEF</strong>:</td></tr><tr><td><p><strong>T</strong> <img style="vertical-align:middle;border:none;width:18px;height:18px" src="systems/mega/images/fleche_droite.png"><strong> Tenir &agrave; distance </strong>(Imm&eacute;diat : D&eacute;g&acirc;t 0, Prochaine DEF +1 Niv, Adv : ATT -2Rg)</p><p>     Le personnage fait de grans moulinets avec une arme d\'allonge &eacute;gale ou sup&eacute;rieure &agrave; celle de son adversaire.</p><p>     Il ne fait pas de d&eacute;g&acirc;ts mais ses Av sont convertis ainsi :<br/>     Pour chaque AV : prochaine DEF+1 et -2Rg &agrave; la prochaine ATT pour l\'adversaire.</p><p>     Cet effet permet de dialoguer avec des adversaires sans les blesser et en prenant moins de risques qu\'avec l\'Esquive mais est clairement agressif.</p></td></tr><tr><td style="background-color:var(--accent-color);"><strong>Prochaine ATT</strong>:</td></tr><tr><td><p><strong>D</strong> <img style="vertical-align:middle;border:none;width:18px;height:18px" src="systems/mega/images/fleche_droite.png"><strong> D&eacute;faut de la cuirasse</strong> (+2Av &agrave; la prochaine ATT qui touche sur cet Adv)</p><p>     Le personnage a rep&eacute;r&eacute; une faille dans la protection de l\'adversaire :<br/>     Il a +2Av &agrave; la prochaine attaque qui touche cet adversaire.</p></td></tr></tbody></table>';
+        `<div style="padding:12px 14px;font-size:13px;line-height:1.45;">` +
+        _section(
+          "rgba(200,55,40,0.82)",
+          "bolt",
+          "Imm&eacute;diat",
+          _row(
+            "rgba(200,55,40,0.85)",
+            "H",
+            "Handicaper",
+            "",
+            "La douleur emp&ecirc;che la cible d'utiliser normalement un membre.",
+          ) +
+            _row(
+              "rgba(200,55,40,0.85)",
+              "A",
+              "Assommer",
+              "",
+              "La cible est inconsciente pendant <em>(Av)d4</em> Round(s).",
+            ) +
+            _row(
+              "rgba(200,55,40,0.85)",
+              "S",
+              "Sonner",
+              "",
+              "Malus de <strong>-4Rg</strong> aux ATT et <strong>-2</strong> &agrave; la DEF pendant <em>(Av)d4</em> Round(s).",
+            ) +
+            _row(
+              "rgba(200,55,40,0.85)",
+              "R",
+              "Renverser",
+              "",
+              "La cible chute et doit consommer une action pour se relever.",
+            ) +
+            _row(
+              "rgba(200,55,40,0.85)",
+              "I",
+              "Immobiliser",
+              "",
+              "La cible ne peut plus combattre tant qu'elle ne s'est pas lib&eacute;r&eacute;e. Elle et l'Attaquant ne peuvent que : D&eacute;fenses avec Malus, maintenir/rompre l'immobilisation ou n&eacute;gocier.",
+            ) +
+            _row("rgba(200,55,40,0.85)", "V", "Vitesse", "", ""),
+        ) +
+        _section(
+          "rgba(41,128,185,0.82)",
+          "clock",
+          "Prochaine Action",
+          _row(
+            "rgba(41,128,185,0.85)",
+            "P",
+            "Positionnement",
+            "Roleplay, ou DEF +1 Niv et ATT Adv -2Rg",
+            "Position favorable : DEF +1 et, au choix, +4Rg en ATT (lui) ou -4Rg en ATT (adversaire) au prochain Round.",
+          ),
+        ) +
+        _section(
+          "rgba(39,174,96,0.82)",
+          "shield-alt",
+          "Prochaine DEF",
+          _row(
+            "rgba(39,174,96,0.85)",
+            "T",
+            "Tenir &agrave; distance",
+            "Imm&eacute;diat : D&eacute;g&acirc;t 0, Prochaine DEF +1 Niv, Adv : ATT -2Rg",
+            "Grands moulinets avec une arme d'allonge &eacute;gale ou sup&eacute;rieure. Pas de d&eacute;g&acirc;ts : pour chaque Av → DEF +1 et ATT adv -2Rg. Permet de dialoguer sans blesser.",
+          ),
+        ) +
+        _section(
+          "rgba(130,60,170,0.82)",
+          "crosshairs",
+          "Prochaine ATT",
+          _row(
+            "rgba(130,60,170,0.85)",
+            "D",
+            "D&eacute;faut de la cuirasse",
+            "+2Av &agrave; la prochaine ATT qui touche",
+            "Faille rep&eacute;r&eacute;e dans la protection adverse : +2Av &agrave; la prochaine attaque qui touche cet adversaire.",
+          ),
+        ) +
+        `</div>`;
       let d = new TabbedDialog(
         {
           title: "Informations Effets Spéciaux",
-          header: "",
+          header:
+            `<div style="background:linear-gradient(135deg,rgba(40,40,60,0.92) 0%,rgba(70,30,30,0.88) 100%);border-radius:6px;padding:14px 18px 12px;margin-bottom:6px;display:flex;align-items:center;gap:14px;border-left:4px solid rgba(200,55,40,0.90);">` +
+            `<div style="flex-shrink:0;width:42px;height:42px;background:rgba(200,55,40,0.20);border-radius:50%;border:2px solid rgba(200,55,40,0.60);display:flex;align-items:center;justify-content:center;">` +
+            `<i class="fas fa-khanda" style="font-size:20px;color:rgba(220,100,80,1);"></i></div>` +
+            `<div>` +
+            `<div style="font-size:15px;font-weight:bold;letter-spacing:0.5px;color:#f0ede8;margin-bottom:3px;">Effets Sp&eacute;ciaux de Combat</div>` +
+            `<div style="display:flex;gap:6px;flex-wrap:wrap;">` +
+            `<span style="background:rgba(200,55,40,0.70);color:#fff;font-size:10px;padding:1px 7px;border-radius:10px;font-weight:bold;"><i class="fas fa-bolt" style="margin-right:3px;"></i>Imm&eacute;diat</span>` +
+            `<span style="background:rgba(41,128,185,0.70);color:#fff;font-size:10px;padding:1px 7px;border-radius:10px;font-weight:bold;"><i class="fas fa-clock" style="margin-right:3px;"></i>Prochaine Action</span>` +
+            `<span style="background:rgba(39,174,96,0.70);color:#fff;font-size:10px;padding:1px 7px;border-radius:10px;font-weight:bold;"><i class="fas fa-shield-alt" style="margin-right:3px;"></i>Prochaine DEF</span>` +
+            `<span style="background:rgba(130,60,170,0.70);color:#fff;font-size:10px;padding:1px 7px;border-radius:10px;font-weight:bold;"><i class="fas fa-crosshairs" style="margin-right:3px;"></i>Prochaine ATT</span>` +
+            `</div></div></div>`,
           footer: "",
           tabs: [
             { title: "Effets de combat", content: description, icon: icon1 },
           ],
           buttons: {},
           default: "two",
-          render: (html) =>
-            console.log("Register interactivity in the rendered dialog"),
+          render: (html) => {
+            html.closest(".app").find(".modern-tabs-container").hide();
+          },
           close: (html) =>
             console.log(
               "This always is logged no matter which option is chosen",
@@ -689,26 +996,86 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
       const myDialogOptions = {
         resizable: true,
         initial_tab: "tab1",
-        width: 600,
-        height: 560,
+        width: 580,
+        height: 620,
         top: 10,
         left: 10,
+        classes: ["window-dialog"],
       };
-      let description = "";
       let icon1 = "systems/mega/images/histogram.svg";
-      let pouvoir = ev.currentTarget.getAttribute("value");
-      description =
-        "<table style='background-color:var(--opacity-color);'><tr><thead ></thead></tr><tr><td><ul><li ><strong>X </strong>(renseigner <strong>99 </strong>dans la fiche)&nbsp;= <strong>Talent d&eacute;test&eacute;&nbsp;</strong>: pratique &eacute;vit&eacute;e, quasi phobique.</li><br><li ><strong>-2Rg</strong>&nbsp;= <strong>Talent maudit&nbsp;</strong>: pratique maudite, mauvais feeling, toujours un probl&egrave;me.</li><br><li><strong>d0</strong>&nbsp;= Pratique rare, au minimum, pas d&rsquo;entra&icirc;nement particulier.</li><br><li ><strong>d2</strong>&nbsp;= Pratique vaguement exerc&eacute;e.</li><br><li ><strong>d4</strong> = Pratique correcte, apprise ou travaill&eacute;e.</li><br><li ><strong>d6</strong> = Pratique fr&eacute;quente, travaill&eacute;e et r&eacute;guli&egrave;rement exerc&eacute;e.</li><br><li ><strong>d8 </strong>= Pratique tr&egrave;s exerc&eacute;e, bonne intuition et anticipation des probl&egrave;mes.</li><br><li ><strong>d10</strong> = Pratique essentielle du personnage, r&eacute;fl&eacute;chie, travaill&eacute;e et exerc&eacute;e quotidiennement, m&ecirc;me virtuellement.</li><br><li ><strong>d12 </strong>= Pratique essentielle travaill&eacute;e quotidiennement, intensivement, au d&eacute;triment d&rsquo;autres activit&eacute;s.</li><br><li ><strong>d14 </strong>= Hors-norme.</li><br></ul></td></tr></table>";
-
+      const _trow = (badge, badgeBg, desc) =>
+        `<div style="display:flex;align-items:flex-start;gap:10px;padding:6px 4px;border-bottom:1px solid rgba(128,128,128,0.12);">` +
+        `<span style="background:${badgeBg};color:#fff;font-weight:bold;font-size:12px;min-width:36px;height:26px;border-radius:13px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;font-family:monospace;letter-spacing:-0.5px;">${badge}</span>` +
+        `<div style="flex:1;font-size:12.5px;line-height:1.4;">${desc}</div>` +
+        `</div>`;
+      const description =
+        `<div style="padding:12px 14px;font-size:13px;line-height:1.45;">` +
+        _trow(
+          "✕",
+          "rgba(160,30,30,0.85)",
+          "<strong>Talent d&eacute;test&eacute;</strong> <span style='opacity:0.6;font-size:11px;'>(saisir 99 dans la fiche)</span><br><span style='opacity:0.75;'>Pratique &eacute;vit&eacute;e, quasi phobique.</span>",
+        ) +
+        _trow(
+          "-2Rg",
+          "rgba(200,80,20,0.85)",
+          "<strong>Talent maudit</strong><br><span style='opacity:0.75;'>Pratique maudite, mauvais feeling, toujours un probl&egrave;me.</span>",
+        ) +
+        _trow(
+          "d0",
+          "rgba(100,100,110,0.80)",
+          "Pratique rare, au minimum &mdash; pas d&rsquo;entra&icirc;nement particulier.",
+        ) +
+        _trow(
+          "d2",
+          "rgba(110,100,80,0.82)",
+          "Pratique vaguement exerc&eacute;e.",
+        ) +
+        _trow(
+          "d4",
+          "rgba(160,130,20,0.85)",
+          "Pratique correcte, apprise ou travaill&eacute;e.",
+        ) +
+        _trow(
+          "d6",
+          "rgba(60,150,80,0.85)",
+          "Pratique fr&eacute;quente, travaill&eacute;e et r&eacute;guli&egrave;rement exerc&eacute;e.",
+        ) +
+        _trow(
+          "d8",
+          "rgba(30,140,100,0.85)",
+          "Pratique tr&egrave;s exerc&eacute;e &mdash; bonne intuition et anticipation des probl&egrave;mes.",
+        ) +
+        _trow(
+          "d10",
+          "rgba(30,100,180,0.85)",
+          "Pratique essentielle du personnage, r&eacute;fl&eacute;chie, travaill&eacute;e et exerc&eacute;e quotidiennement, m&ecirc;me virtuellement.",
+        ) +
+        _trow(
+          "d12",
+          "rgba(80,50,170,0.85)",
+          "Pratique essentielle travaill&eacute;e quotidiennement, intensivement, au d&eacute;triment d&rsquo;autres activit&eacute;s.",
+        ) +
+        _trow("d14", "rgba(130,30,140,0.90)", "<strong>Hors-norme.</strong>") +
+        `</div>`;
       let d = new TabbedDialog(
         {
           title: "Informations Domaines et Talents",
-          header: "",
+          header:
+            `<div style="background:linear-gradient(135deg,rgba(30,40,60,0.92) 0%,rgba(30,60,40,0.88) 100%);border-radius:6px;padding:14px 18px 12px;margin-bottom:6px;display:flex;align-items:center;gap:14px;border-left:4px solid rgba(60,150,80,0.90);">` +
+            `<div style="flex-shrink:0;width:42px;height:42px;background:rgba(60,150,80,0.20);border-radius:50%;border:2px solid rgba(60,150,80,0.60);display:flex;align-items:center;justify-content:center;">` +
+            `<i class="fas fa-chart-bar" style="font-size:20px;color:rgba(100,200,130,1);"></i></div>` +
+            `<div>` +
+            `<div style="font-size:15px;font-weight:bold;letter-spacing:0.5px;color:#f0ede8;margin-bottom:3px;">&Eacute;chelle des Domaines &amp; Talents</div>` +
+            `<div style="opacity:0.65;font-size:11.5px;">Du talent d&eacute;test&eacute; au hors-norme &mdash; 10 niveaux de ma&icirc;trise</div>` +
+            `</div></div>`,
           footer: "",
           tabs: [
             { title: "Échelle des Talents", content: description, icon: icon1 },
           ],
           buttons: {},
+          render: (html) => {
+            html.closest(".app").find(".modern-tabs-container").hide();
+          },
         },
         myDialogOptions,
       );
@@ -763,10 +1130,13 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
       tab_1.render(true);
     });
 
-    // Fenêtre Popup au survol des Spes
-    html.find(".tooltip_spe").mouseover((ev) => {
+    // Clic droit sur une SPÉ : afficher la description dans une boîte de dialogue
+    html.find(".tooltip_spe").on("contextmenu", (ev) => {
+      ev.preventDefault();
       let spe = ev.currentTarget.getAttribute("value");
       const spes = spe.split("|");
+      const speLabel = spes[1] || "";
+      if (!speLabel) return;
       let description = "";
       switch (spes[1]) {
         case "Débattre":
@@ -970,64 +1340,64 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
           this.actor.update({ "system.spe6.description": description });
           break;
       }
+
+      // Afficher la description dans une boîte de dialogue
+      new Dialog(
+        {
+          title: speLabel,
+          content: `<div class="defn-popup"><div class="defn-vert-label">Définition</div><div class="defn-body"><p>${description}</p></div></div>`,
+          buttons: {},
+        },
+        {
+          width: 440,
+          classes: ["dialog", "talent-info-dialog"],
+        },
+      ).render(true);
     });
 
-    // Gestion du repositionnement automatique des tooltips des talents
-    html.find(".tooltip .tooltiptext").each(function () {
-      const tooltip = $(this);
-      const parent = tooltip.parent();
+    // Clic droit sur le libellé d'un trait : afficher la description dans une boîte de dialogue
+    html.find(".tpc-name.traits_rollable").on("contextmenu", (ev) => {
+      ev.preventDefault();
+      const span = ev.currentTarget;
+      const comp = span.getAttribute("value");
+      const label =
+        this.actor.system.caracs[comp]?.label || $(span).text().trim();
+      const description = this.actor.system.caracs[comp]?.description || "";
+      if (!description) return;
 
-      parent.hover(
-        function () {
-          // Lors du survol, vérifier si le tooltip dépasse en bas
-          setTimeout(() => {
-            const tooltipRect = tooltip[0].getBoundingClientRect();
-            const viewportHeight = window.innerHeight;
-
-            // Si le tooltip dépasse en bas de la fenêtre
-            if (tooltipRect.bottom > viewportHeight - 10) {
-              tooltip.addClass("tooltip-bottom-overflow");
-              tooltip.css({
-                top: "auto",
-                bottom: "100%",
-                transform: "translateY(-8px)",
-              });
-            }
-          }, 10);
+      new Dialog(
+        {
+          title: label,
+          content: `<div class="defn-popup"><div class="defn-vert-label">Définition</div><div class="defn-body"><p>${description}</p></div></div>`,
+          buttons: {},
         },
-        function () {
-          // Quand on sort du survol, réinitialiser le style
-          tooltip.removeClass("tooltip-bottom-overflow");
-          tooltip.css({
-            top: "",
-            bottom: "",
-            transform: "",
-          });
+        {
+          width: 440,
+          classes: ["dialog", "talent-info-dialog"],
         },
-      );
+      ).render(true);
     });
 
-    // Gestion des protections
-    function toggleProtection(protection) {
-      const selection = this.actor.system.protections[protection].selection;
-      this.actor.system.protections[protection].selection = !selection;
-      this.actor.update({
-        [`system.protections.${protection}.selection`]: !selection,
-      });
-    }
+    // Clic droit sur un talent : afficher la description dans une boîte de dialogue
+    html.find(".talents_rollable").on("contextmenu", (ev) => {
+      ev.preventDefault();
+      const span = ev.currentTarget;
+      const label = $(span).text().trim();
+      const description = $(span).siblings(".tooltiptext").text().trim();
+      if (!description) return;
 
-    // eslint-disable-next-line no-unused-vars
-    html
-      .find(".active_protection_p1")
-      .click((ev) => toggleProtection.call(this, "p1"));
-    // eslint-disable-next-line no-unused-vars
-    html
-      .find(".active_protection_p2")
-      .click((ev) => toggleProtection.call(this, "p2"));
-    // eslint-disable-next-line no-unused-vars
-    html
-      .find(".active_protection_p3")
-      .click((ev) => toggleProtection.call(this, "p3"));
+      new Dialog(
+        {
+          title: label,
+          content: `<div class="defn-popup"><div class="defn-vert-label">Définition</div><div class="defn-body"><p>${description}</p></div></div>`,
+          buttons: {},
+        },
+        {
+          width: 440,
+          classes: ["dialog", "talent-info-dialog"],
+        },
+      ).render(true);
+    });
 
     // Clic sur une arme (hors bagarre et charge)
     html.find(".clic_technique_combat").click((ev) => {
@@ -1035,6 +1405,18 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
         // eslint-disable-next-line no-undef
         ui.notifications.error(
           "Veuillez utiliser la fiche de personnage du token !",
+        );
+        return;
+      }
+      // Vérification que les domaines sont renseignés (valeur minimale de 4)
+      const _domaines_tc = this.actor.system.domaines;
+      const _domainesNonRenseignesTc = Object.values(_domaines_tc).filter(
+        (d) => (d.value ?? 0) < 4,
+      );
+      if (_domainesNonRenseignesTc.length > 0) {
+        const _nomsTc = _domainesNonRenseignesTc.map((d) => d.label).join(", ");
+        ui.notifications.warn(
+          `Veuillez renseigner les talents avant de lancer un jet. Domaine(s) insuffisant(s) : ${_nomsTc}`,
         );
         return;
       }
@@ -1075,39 +1457,41 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
       const myDialogOptions = {
         top: 100,
         left: 100,
-        width: 400,
-        height: 200,
+        width: 420,
+        classes: ["dialog", "talent-info-dialog"],
       };
 
       const myDialogOptions_test = {
         top: 100,
         left: 100,
-        width: 400,
-        height: 200,
+        width: 450,
+        classes: ["dialog", "talent-info-dialog"],
       };
 
       const myDialogOptions_ardence = {
         top: 100,
         left: 100,
-        width: 380,
-        height: 200,
+        width: 400,
+        classes: ["dialog", "talent-info-dialog"],
       };
 
       const myDialogOptions_spes = {
         top: 100,
         left: 100,
-        width: 900,
-        height: 200,
+        width: 960,
+        classes: ["dialog", "talent-info-dialog"],
       };
       const myDialogOptions_diff = {
         top: 100,
         left: 100,
-        width: 1000,
+        width: 1060,
+        classes: ["dialog", "talent-info-dialog"],
       };
       const myDialogOptions_bonus = {
         top: 100,
         left: 100,
-        width: 500,
+        width: 700,
+        classes: ["dialog", "talent-info-dialog"],
       };
       var el = document.querySelector(".letters-left2");
       if (
@@ -1263,6 +1647,7 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
         }
       }
 
+      let _skipSpe = Object.keys(btns).length <= 1;
       if (type_objet === "Arme de tir" && arme[0].system.charge === 0) {
         ui.notifications.error("L'arme n'a pas de charge");
       } else if (
@@ -1281,23 +1666,8 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
 
         /******************************* Dialogue Nombre de points d'Ardence *********************/
 
-        if (this.actor.system.pts_ardence.value >= 1) {
-          btns_ar[1] = { label: 1, callback: () => (ptardence = 1) };
-        }
-        if (this.actor.system.pts_ardence.value >= 2) {
-          btns_ar[1] = { label: 1, callback: () => (ptardence = 1) };
-          btns_ar[2] = { label: 2, callback: () => (ptardence = 2) };
-        }
-        if (this.actor.system.pts_ardence.value >= 3) {
-          btns_ar[1] = { label: 1, callback: () => (ptardence = 1) };
-          btns_ar[2] = { label: 2, callback: () => (ptardence = 2) };
-          btns_ar[3] = { label: 3, callback: () => (ptardence = 3) };
-        }
-        if (this.actor.system.pts_ardence.value >= 4) {
-          btns_ar[1] = { label: 1, callback: () => (ptardence = 1) };
-          btns_ar[2] = { label: 2, callback: () => (ptardence = 2) };
-          btns_ar[3] = { label: 3, callback: () => (ptardence = 3) };
-          btns_ar[4] = { label: 4, callback: () => (ptardence = 4) };
+        for (let i = 1; i <= this.actor.system.pts_ardence.value; i++) {
+          btns_ar[i] = { label: i, callback: () => (ptardence = i) };
         }
 
         if (this.actor.system.talents_combat[comp].bonus !== "adr") {
@@ -1307,15 +1677,15 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
             {
               title: label.toUpperCase(),
               content:
-                "<div class='card-header'><span><img src='systems/mega/images/gears.gif' width=30px; height=30px; style='border:none'>ARDENCE</span></div>&nbsp" +
-                "<br><span class='bouton_texte'>Voulez-vous placer des points d'ardence ?</span><br><br>",
+                "<div class='card-header'><span><i class='fas fa-fire' style='color:#e76f51'></i> ARDENCE</span></div>" +
+                "<div style='padding:12px 8px;text-align:center'><i class='fas fa-fire' style='font-size:2em;color:#e76f51;display:block;margin-bottom:8px'></i><span class='bouton_texte'>Voulez-vous placer des <b>points d'ardence</b> ?</span></div>",
               buttons: {
                 oui: {
-                  label: "NON",
+                  label: `<i class="fas fa-times"></i> NON`,
                   callback: () => (ardence = 0),
                 },
                 non: {
-                  label: "OUI",
+                  label: `<i class="fas fa-fire" style="color:#e76f51"></i> OUI`,
                   callback: () => (ardence = 1),
                 },
               },
@@ -1327,27 +1697,21 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
                       {
                         title: label.toUpperCase(),
                         content:
-                          "<div class='card-header'><span>Vous avez " +
+                          "<div class='card-header'><span><i class='fas fa-fire' style='color:#e76f51'></i> ARDENCE</span></div>" +
+                          "<div style='padding:12px 8px;text-align:center'><span style='font-size:1.8em;font-weight:bold;color:#e76f51'>" +
                           ptArdence +
-                          " pts d'ardence</span></div>" +
-                          "<br><span class='bouton_texte'>Combien souhaitez-vous en placer ?</span><br><br>",
+                          "</span> <span style='opacity:0.7'>pts disponibles</span><br><br><span class='bouton_texte'>Combien souhaitez-vous en placer ?</span></div>",
                         buttons: btns_ar,
                         //close: () => d.render(true)
                         close: function () {
                           if (ptardence !== "") {
-                            if (ptardence === 1) {
-                              ardence_combat = 2;
+                            ardence_combat = ptardence * 2;
+                            if (_skipSpe) {
+                              bonus = 0;
+                              dialog_BONUS.render(true);
+                            } else {
+                              d2.render(true);
                             }
-                            if (ptardence === 2) {
-                              ardence_combat = 4;
-                            }
-                            if (ptardence === 3) {
-                              ardence_combat = 6;
-                            }
-                            if (ptardence === 4) {
-                              ardence_combat = 8;
-                            }
-                            dialog_BONUS.render(true);
                           }
                         },
                       },
@@ -1355,12 +1719,11 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
                     );
                     dialog_ardence.render(true);
                   } else {
-                    // dialog_DIFF.render(true);
-                    if (speCombat > 0) {
-                      d2.render(true);
-                    } else {
-                      //dialog_DIFF.render(true);
+                    if (_skipSpe) {
+                      bonus = 0;
                       dialog_BONUS.render(true);
+                    } else {
+                      d2.render(true);
                     }
                   }
                 }
@@ -1370,6 +1733,7 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
           );
 
           /******************************* Construction de la fenêtre de dialogue DIFF pour un combat de tir ou lancer ************************************/
+
           function generateDiffButtons(min, max) {
             let buttons = {};
             for (let i = min; i <= max; i++) {
@@ -1387,8 +1751,8 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
             {
               title: label.toUpperCase(),
               content:
-                "<div class='card-header'><span><img src='systems/mega/images/gears.gif' width=30px; height=30px; style='border:none'>DIFF</span></div>&nbsp" +
-                '<br><span class="bouton_texte">Sélectionnez la DIFF.</span><br><br>',
+                "<div class='card-header'><span><i class='fas fa-bullseye'></i> DIFFICULTÉ</span></div>" +
+                "<div style='padding:12px 8px;text-align:center'><i class='fas fa-bullseye' style='font-size:2em;color:#aaa;display:block;margin-bottom:8px'></i><span class='bouton_texte'>Sélectionnez la <b>DIFF</b>.</span></div>",
               buttons: buttons,
               default: "10",
               close: () => {
@@ -1411,8 +1775,8 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
             {
               title: label.toUpperCase(),
               content:
-                "<div class='card-header'><span><img src='systems/mega/images/gears.gif' width=30px; height=30px; style='border:none'>SPE associee</span></div>&nbsp" +
-                "<br><span class='bouton_texte'>Voulez-vous utiliser une SPE ?</span><br><br>",
+                "<div class='card-header'><span><i class='fas fa-link'></i> SPÉ ASSOCIÉE</span></div>" +
+                "<div style='padding:12px 8px;text-align:center'><i class='fas fa-link' style='font-size:2em;color:#aaa;display:block;margin-bottom:8px'></i><span class='bouton_texte'>Voulez-vous utiliser une <b>SPÉ</b> ?</span></div>",
               buttons: btns,
               default: "non",
               // close: () => d3.render(true)
@@ -1436,9 +1800,11 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
             let label = "";
             for (let i = min; i <= max; i++) {
               if (i > 0) {
-                label = "+" + i.toString();
+                label = `<span style="color:#4caf50;font-weight:bold">+${i}</span>`;
+              } else if (i < 0) {
+                label = `<span style="color:#f44336;font-weight:bold">${i}</span>`;
               } else {
-                label = i.toString();
+                label = `<b>0</b>`;
               }
               buttons[`b${i}`] = {
                 label: label,
@@ -1455,8 +1821,8 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
             {
               title: label.toUpperCase(),
               content:
-                "<div class='card-header'><span><img src='systems/mega/images/gears.gif' width=30px; height=30px; style='border:none'>BONUS/MALUS</span></div>&nbsp" +
-                "<br><span class='bouton_texte'>Sélectionnez le BONUS/MALUS à ajouter au pool</span><br><br>",
+                "<div class='card-header'><span><i class='fas fa-plus-minus'></i> BONUS / MALUS</span></div>" +
+                "<div style='padding:12px 8px;text-align:center'><span class='bouton_texte'>Sélectionnez le <b>Bonus/Malus</b> à ajouter au pool</span></div>",
               buttons: bonusButtons,
               default: "b0",
               close: () => {
@@ -1474,33 +1840,33 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
             }, 2000);
           } // Si le joeur a des points d'ardence, on lance la fenêtre ardence sinon on envoie direct la DIFF
           else {
-            if (speCombat > 0) {
-              setTimeout(function () {
-                d2.render(true);
-              }, 2000);
-            } else {
-              setTimeout(function () {
+            setTimeout(function () {
+              if (_skipSpe) {
+                bonus = 0;
                 dialog_BONUS.render(true);
-              }, 2000);
-            }
+              } else {
+                d2.render(true);
+              }
+            }, 2000);
           }
         } else {
           /******************************* Combat armes courtes, armes longues *********************/
+
           /******************************* Construction de la fenêtre de dialogue Ardence pour un combat de tir ou lancer ************************************/
           let dialog_ardence_choix = new Dialog(
             {
               title: label.toUpperCase(),
               content:
-                "<div class='card-header'><span><img src='systems/mega/images/gears.gif' width=30px; height=30px; style='border:none'>ARDENCE</span></div>&nbsp" +
-                "<br><span class='bouton_texte'>Voulez-vous placer des points d'ardence ?</span><br><br>",
+                "<div class='card-header'><span><i class='fas fa-fire' style='color:#e76f51'></i> ARDENCE</span></div>" +
+                "<div style='padding:12px 8px;text-align:center'><i class='fas fa-fire' style='font-size:2em;color:#e76f51;display:block;margin-bottom:8px'></i><span class='bouton_texte'>Voulez-vous placer des <b>points d'ardence</b> ?</span></div>",
               buttons: {
                 oui: {
-                  label: "NON",
+                  label: `<i class="fas fa-times"></i> NON`,
 
                   callback: () => (ardence = 0),
                 },
                 non: {
-                  label: "OUI",
+                  label: `<i class="fas fa-fire" style="color:#e76f51"></i> OUI`,
                   callback: () => (ardence = 1),
                 },
               },
@@ -1512,27 +1878,21 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
                       {
                         title: label.toUpperCase(),
                         content:
-                          "<div class='card-header'><span>Vous avez " +
+                          "<div class='card-header'><span><i class='fas fa-fire' style='color:#e76f51'></i> ARDENCE</span></div>" +
+                          "<div style='padding:12px 8px;text-align:center'><span style='font-size:1.8em;font-weight:bold;color:#e76f51'>" +
                           ptArdence +
-                          " pts d'ardence</span></div>" +
-                          "<br><span class='bouton_texte'>Combien souhaitez-vous en placer ?</span><br><br>",
+                          "</span> <span style='opacity:0.7'>pts disponibles</span><br><br><span class='bouton_texte'>Combien souhaitez-vous en placer ?</span></div>",
                         buttons: btns_ar,
                         //close: () => d.render(true)
                         close: function () {
                           if (ptardence !== "") {
-                            if (ptardence === 1) {
-                              ardence_combat = 2;
+                            ardence_combat = ptardence * 2;
+                            if (_skipSpe) {
+                              bonus = 0;
+                              dialog_BONUS.render(true);
+                            } else {
+                              d2.render(true);
                             }
-                            if (ptardence === 2) {
-                              ardence_combat = 4;
-                            }
-                            if (ptardence === 3) {
-                              ardence_combat = 6;
-                            }
-                            if (ptardence === 4) {
-                              ardence_combat = 8;
-                            }
-                            dialog_BONUS.render(true);
                           }
                         },
                       },
@@ -1540,10 +1900,11 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
                     );
                     dialog_ardence.render(true);
                   } else {
-                    if (speCombat > 0) {
-                      d2.render(true);
-                    } else {
+                    if (_skipSpe) {
+                      bonus = 0;
                       dialog_BONUS.render(true);
+                    } else {
+                      d2.render(true);
                     }
                   }
                 }
@@ -1586,10 +1947,10 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
             {
               title: label.toUpperCase(),
               content:
-                "<div class='card-header'><span><img src='systems/mega/images/gears.gif' width=30px; height=30px; style='border:none'>DIFF</span></div>&nbsp" +
-                '<br><span class="bouton_texte">' +
+                "<div class='card-header'><span><i class='fas fa-bullseye'></i> DIFFICULT\u00c9</span></div>" +
+                "<div style='padding:12px 8px;text-align:center'><i class='fas fa-bullseye' style='font-size:2em;color:#aaa;display:block;margin-bottom:8px'></i><span class='bouton_texte'>" +
                 msg +
-                "</span><br><br>",
+                "</span></div>",
               buttons: generateDiffButtons(4, 27),
               close: () => {
                 if (diff !== "") {
@@ -1650,7 +2011,10 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
                     combat,
                     caracValue,
                     bonuspool,
-                  );
+                  )
+                    .replace(/1d0\s*\+\s*/g, "")
+                    .replace(/\s*\+\s*1d0\b/g, "")
+                    .trim();
                   const r = new Roll(rollFormula);
 
                   let type_jet = this.actor.system.talents_combat[comp].label;
@@ -1692,12 +2056,13 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
                         game.modules.get("sequencer")?.active &&
                         effets_speciaux
                       ) {
+                        const tokenCenter = canvas.tokens.controlled[0].center;
                         new Sequence()
                           .effect()
                           .file(effet_arme)
                           .atLocation({
-                            x: canvas.tokens.controlled[0].x + offX,
-                            y: canvas.tokens.controlled[0].y + offY,
+                            x: tokenCenter.x + offX,
+                            y: tokenCenter.y + offY,
                           })
                           .stretchTo(target)
                           .repeats(2, 200, 300)
@@ -1719,29 +2084,15 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
                     /**********************************************************************************************************/
                     function getResultMessage(result_final, def_temp, marge) {
                       const success = result_final >= 0;
-                      const resultType = success ? "Reussite" : "Echec";
-                      const marginType = success
-                        ? "Marge de reussite"
-                        : "Marge d'echec";
                       const marginValue = success
                         ? Math.floor(result_final / 3)
                         : Math.ceil(result_final / 3);
-                      const backgroundColor = success ? "green" : "red";
-
-                      return `
-                  <p style="background-color:#A3B6BB; color:white; font-size: 22px; text-align:center; text-shadow: 1px 1px 2px black;">
-                    DIFF ${def_temp}
-                  </p>
-                  <div>
-                    <span>
-                      <b>
-                        <p style="background-color:${backgroundColor}; color:white; text-align:center; text-shadow: 1px 1px 2px black; font-size: 16px;">
-                          ${resultType} - ${marginType} : ${marginValue}
-                        </p>
-                      </b>
-                    </span>
-                  </div>
-                `;
+                      return (
+                        `<div class="mega-roll-diff"><i class="fas fa-bullseye"></i> DIFF ${def_temp}</div>` +
+                        (success
+                          ? `<div class="mega-roll-success"><i class="fas fa-check-circle"></i> R\u00e9ussite <span class="mega-roll-margin">Marge : ${marginValue}</span></div>`
+                          : `<div class="mega-roll-failure"><i class="fas fa-times-circle"></i> \u00c9chec <span class="mega-roll-margin">Marge : ${marginValue}</span></div>`)
+                      );
                     }
 
                     function getCombatValues(actor, comp, marge) {
@@ -1780,14 +2131,14 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
 
                     function getEffetCoupHtml(effet) {
                       const effets = {
-                        H: '<span><div class="chat_effet_immediat">Immédiat : HANDICAPER></div></Span>',
-                        A: '<span><div class="chat_effet_immediat">Immédiat : ASSOMMER</div></Span>',
-                        S: '<span><div class="chat_effet_immediat">Immédiat : SONNER</div></Span>',
-                        R: '<span><div class="chat_effet_immediat">Immédiat : RENVERSER</div></Span>',
-                        I: '<span><div class="chat_effet_immediat">Immédiat : IMMOBILISER</div></Span>',
-                        P: '<span><div class="chat_effet_action">Prochaine action : POSITIONNEMENT</div></Span>',
-                        T: '<span><divclass="chat_effet_att">Prochaine attaque : TENIR A DISTANCE</div></Span>',
-                        D: '<span><div class="chat_effet_def">Prochaine défense : DÉFAUT DE LA CUIRASSE</div></Span>',
+                        H: '<div class="chat_effet_immediat"><i class="fas fa-bolt"></i> Immédiat : HANDICAPER</div>',
+                        A: '<div class="chat_effet_immediat"><i class="fas fa-bolt"></i> Immédiat : ASSOMMER</div>',
+                        S: '<div class="chat_effet_immediat"><i class="fas fa-bolt"></i> Immédiat : SONNER</div>',
+                        R: '<div class="chat_effet_immediat"><i class="fas fa-bolt"></i> Immédiat : RENVERSER</div>',
+                        I: '<div class="chat_effet_immediat"><i class="fas fa-bolt"></i> Immédiat : IMMOBILISER</div>',
+                        P: '<div class="chat_effet_action"><i class="fas fa-running"></i> Prochaine action : POSITIONNEMENT</div>',
+                        T: '<div class="chat_effet_att"><i class="fas fa-bullseye"></i> Prochaine attaque : TENIR A DISTANCE</div>',
+                        D: '<div class="chat_effet_def"><i class="fas fa-shield-alt"></i> Prochaine défense : DÉFAUT DE LA CUIRASSE</div>',
                       };
                       return effets[effet] || "";
                     }
@@ -1803,25 +2154,31 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
                         result_final >= 0 &&
                         Array.from(game.user.targets).length !== 0
                       ) {
-                        vie_perdue = calcViePerdue(marge, comp, this.actor);
+                        const _dmc1 = calcViePerdue(
+                          melee_perdue,
+                          comp,
+                          this.actor,
+                        );
+                        vie_perdue = _dmc1.vie_perdue;
                         result_diff +=
-                          '<p class="result_diff"> ' +
+                          '<div class="mega-roll-damage-melee"><i class="fas fa-shield-alt"></i> ' +
                           game.user.targets.values().next().value.name +
-                          " perd " +
+                          " perd <strong>" +
                           melee_perdue +
-                          " points de melee</p>";
+                          "</strong>pt de Mêlée</div>";
                         result_diff +=
-                          '<p class="result_diff"> ' +
+                          '<div class="mega-roll-damage-vie"><i class="fas fa-heart"></i> ' +
                           game.user.targets.values().next().value.name +
-                          " perd " +
+                          " perd <strong>" +
                           vie_perdue +
-                          " points de vie</p>";
+                          "</strong>pt de Vie</div>";
                         if (retraitAuto) {
                           const updatePromise = safeDocumentUpdate(
                             currentTarget,
                             {
                               "system.health.value":
                                 currentTarget.system.health.value - vie_perdue,
+                              "system.melee_impair": _dmc1.new_melee_impair,
                             },
                           );
                           if (updatePromise) {
@@ -1881,9 +2238,9 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
                             comp +
                             " data-melee=" +
                             melee_perdue +
-                            "> Conso 0Av <br> -" +
+                            "><i class='fas fa-coins'></i> <b>0Av</b><br>-" +
                             melee_perdue +
-                            "pt de Mêlée " +
+                            " pt Mêlée " +
                             effet_0av_1 +
                             " " +
                             effet_0av_2 +
@@ -1903,9 +2260,9 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
                             comp +
                             " data-melee=" +
                             melee_perdue_1av +
-                            "> Conso 1Av <br> -" +
+                            "><i class='fas fa-coins'></i> <b>1Av</b><br>-" +
                             melee_perdue_1av +
-                            "pt de Mêlée " +
+                            " pt Mêlée " +
                             effet_1av_1 +
                             " " +
                             effet_1av_2 +
@@ -1949,9 +2306,9 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
                             comp +
                             " data-melee=" +
                             melee_perdue +
-                            "> Conso 0Av <br> -" +
+                            "><i class='fas fa-coins'></i> <b>0Av</b><br>-" +
                             melee_perdue +
-                            "pt de Mêlée " +
+                            " pt Mêlée " +
                             effet_0av_1 +
                             " " +
                             effet_0av_2 +
@@ -1971,9 +2328,9 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
                             comp +
                             " data-melee=" +
                             melee_perdue_1av +
-                            "> Conso 1Av <br> -" +
+                            "><i class='fas fa-coins'></i> <b>1Av</b><br>-" +
                             melee_perdue_1av +
-                            "pt de Mêlée " +
+                            " pt Mêlée " +
                             effet_1av_1 +
                             " " +
                             effet_1av_2 +
@@ -1993,9 +2350,9 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
                             comp +
                             " data-melee=" +
                             melee_perdue_2av +
-                            "> Conso 2Av <br> -" +
+                            "><i class='fas fa-coins'></i> <b>2Av</b><br>-" +
                             melee_perdue_2av +
-                            "pt de Mêlée " +
+                            " pt Mêlée " +
                             effet_2av_1 +
                             " " +
                             effet_2av_2 +
@@ -2047,9 +2404,9 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
                             comp +
                             " data-melee=" +
                             melee_perdue +
-                            "> Conso 0Av <br> -" +
+                            "><i class='fas fa-coins'></i> <b>0Av</b><br>-" +
                             melee_perdue +
-                            "pt de Mêlée " +
+                            " pt Mêlée " +
                             effet_0av_1 +
                             " " +
                             effet_0av_2 +
@@ -2069,9 +2426,9 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
                             comp +
                             " data-melee=" +
                             melee_perdue_1av +
-                            "> Conso 1Av <br> -" +
+                            "><i class='fas fa-coins'></i> <b>1Av</b><br>-" +
                             melee_perdue_1av +
-                            "pt de Mêlée " +
+                            " pt Mêlée " +
                             effet_1av_1 +
                             " " +
                             effet_1av_2 +
@@ -2091,9 +2448,9 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
                             comp +
                             " data-melee=" +
                             melee_perdue_2av +
-                            "> Conso 2Av <br> -" +
+                            "><i class='fas fa-coins'></i> <b>2Av</b><br>-" +
                             melee_perdue_2av +
-                            "pt de Mêlée " +
+                            " pt Mêlée " +
                             effet_2av_1 +
                             " " +
                             effet_2av_2 +
@@ -2113,9 +2470,9 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
                             comp +
                             " data-melee=" +
                             melee_perdue_3av +
-                            "> Conso 3Av <br> -" +
+                            "><i class='fas fa-coins'></i> <b>3Av</b><br>-" +
                             melee_perdue_3av +
-                            "pt de Mêlée " +
+                            " pt Mêlée " +
                             effet_3av_1 +
                             " " +
                             effet_3av_2 +
@@ -2137,11 +2494,11 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
                           "<div class='card-header'><span>" +
                           type_jet +
                           "</span></div><br>" +
-                          '<div><span><b><p style="font-size: 18px; text-align:center;";>' +
+                          '<div class="mega-roll-attacker"><i class="fas fa-crosshairs"></i> ' +
                           Nom_acteur +
                           " attaque " +
                           nomCible +
-                          "</b></p></span></div>" +
+                          "</div>" +
                           affichage,
                         speaker: ChatMessage.getSpeaker({ actor: this.actor }),
                       });
@@ -2153,15 +2510,15 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
                             "<div class='card-header'><span>" +
                             type_jet +
                             "</span></div><br>" +
-                            '<div><span><b><p style="font-size: 18px; text-align:center;";>' +
+                            '<div class="mega-roll-attacker"><i class="fas fa-crosshairs"></i> ' +
                             Nom_acteur +
                             " attaque " +
                             game.user.targets.values().next().value.name +
-                            "</b></p></span></div>" +
+                            "</div>" +
                             result_diff +
-                            '<table border="1"><colgroup><col></colgroup><tbody><tr><td style="text-align: center;"><strong>' +
+                            '<div class="result_diff">' +
                             noLetaleMsg +
-                            "</strong></td></tr></tbody></table>",
+                            "</div>",
                           speaker: ChatMessage.getSpeaker({
                             actor: this.actor,
                           }),
@@ -2190,8 +2547,8 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
             {
               title: label.toUpperCase(),
               content:
-                "<div class='card-header'><span><img src='systems/mega/images/gears.gif' width=30px; height=30px; style='border:none'>SPE associee</span></div>&nbsp" +
-                "<br><span class='bouton_texte'>Voulez-vous utiliser une SPE ?</span><br><br>",
+                "<div class='card-header'><span><i class='fas fa-link'></i> SPÉ ASSOCIÉE</span></div>" +
+                "<div style='padding:12px 8px;text-align:center'><i class='fas fa-link' style='font-size:2em;color:#aaa;display:block;margin-bottom:8px'></i><span class='bouton_texte'>Voulez-vous utiliser une <b>SPÉ</b> ?</span></div>",
               buttons: btns,
               default: "non",
               // close: () => d3.render(true)
@@ -2215,9 +2572,11 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
             let label = "";
             for (let i = start; i <= end; i++) {
               if (i > 0) {
-                label = "+" + i.toString();
+                label = `<span style="color:#4caf50;font-weight:bold">+${i}</span>`;
+              } else if (i < 0) {
+                label = `<span style="color:#f44336;font-weight:bold">${i}</span>`;
               } else {
-                label = i.toString();
+                label = `<b>0</b>`;
               }
               buttons[`b${i}`] = {
                 label: label,
@@ -2233,8 +2592,8 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
             {
               title: label.toUpperCase(),
               content:
-                "<div class='card-header'><span><img src='systems/mega/images/gears.gif' width=30px; height=30px; style='border:none'>BONUS/MALUS</span></div>&nbsp" +
-                "<br><span class='bouton_texte'>Sélectionnez le BONUS/MALUS à ajouter au pool</span><br><br>",
+                "<div class='card-header'><span><i class='fas fa-plus-minus'></i> BONUS / MALUS</span></div>" +
+                "<div style='padding:12px 8px;text-align:center'><span class='bouton_texte'>Sélectionnez le <b>Bonus/Malus</b> à ajouter au pool</span></div>",
               buttons: bonusButtons,
               default: "b0",
               close: () => {
@@ -2249,15 +2608,14 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
             }, 2000);
           } //Si le joueur a de l'ardence
           else {
-            if (speCombat > 0) {
-              setTimeout(function () {
-                d2.render(true);
-              }, 2000);
-            } else {
-              setTimeout(function () {
+            setTimeout(function () {
+              if (_skipSpe) {
+                bonus = 0;
                 dialog_BONUS.render(true);
-              }, 2000);
-            }
+              } else {
+                d2.render(true);
+              }
+            }, 2000);
           } //Sinon on lance la fenêtre de DIFF directement
         }
       }
@@ -2271,7 +2629,7 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
         );
         return;
       }
-      let diff = 0;
+      let diff = null;
       let comp = ev.currentTarget.getAttribute("value");
       let ardence = "";
       let bonus = "";
@@ -2288,47 +2646,47 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
       const myDialogOptions = {
         top: 100,
         left: 100,
-        width: 400,
-        height: 200,
+        width: 420,
+        classes: ["dialog", "talent-info-dialog"],
       };
 
       const myDialogOptions_test = {
         top: 100,
         left: 100,
-        width: 400,
-        height: 200,
+        width: 450,
+        classes: ["dialog", "talent-info-dialog"],
       };
 
       const myDialogOptions_ardence = {
         top: 100,
         left: 100,
-        width: 380,
-        height: 200,
+        width: 400,
+        classes: ["dialog", "talent-info-dialog"],
       };
 
       const myDialogOptions_traits = {
         top: 100,
         left: 100,
-        width: 920,
-        height: 200,
+        width: 980,
+        classes: ["dialog", "talent-info-dialog"],
       };
       const myDialogOptions_spes = {
         top: 100,
         left: 100,
-        width: 900,
-        height: 200,
+        width: 960,
+        classes: ["dialog", "talent-info-dialog"],
       };
       const myDialogOptions_diff = {
         top: 100,
         left: 100,
-        width: 1000,
-        // height: 200
+        width: 1060,
+        classes: ["dialog", "talent-info-dialog"],
       };
       const myDialogOptions_bonus = {
         top: 100,
         left: 100,
-        width: 500,
-        // height: 200
+        width: 700,
+        classes: ["dialog", "talent-info-dialog"],
       };
 
       // Sélectionne l'élément HTML où afficher l'image ou le label de l'arme
@@ -2354,23 +2712,12 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
       // Affiche l'image dans l'élément HTML ciblé, avec une taille maximale de 220x220px
       el.innerHTML = `<img src="${imgSrc}" style="border:0;max-width:220px;max-height:220px;vertical-align:middle;">`;
 
-      if (this.actor.system.pts_ardence.value >= 1) {
-        btns_ar[1] = { label: 1, callback: () => (ptardence = 1) };
-      }
-      if (this.actor.system.pts_ardence.value >= 2) {
-        btns_ar[1] = { label: 1, callback: () => (ptardence = 1) };
-        btns_ar[2] = { label: 2, callback: () => (ptardence = 2) };
-      }
-      if (this.actor.system.pts_ardence.value >= 3) {
-        btns_ar[1] = { label: 1, callback: () => (ptardence = 1) };
-        btns_ar[2] = { label: 2, callback: () => (ptardence = 2) };
-        btns_ar[3] = { label: 3, callback: () => (ptardence = 3) };
-      }
-      if (this.actor.system.pts_ardence.value >= 4) {
-        btns_ar[1] = { label: 1, callback: () => (ptardence = 1) };
-        btns_ar[2] = { label: 2, callback: () => (ptardence = 2) };
-        btns_ar[3] = { label: 3, callback: () => (ptardence = 3) };
-        btns_ar[4] = { label: 4, callback: () => (ptardence = 4) };
+      const _fireIconMN = `<i class="fas fa-fire" style="color:#e76f51"></i>`;
+      for (let i = 1; i <= this.actor.system.pts_ardence.value; i++) {
+        btns_ar[i] = {
+          label: `${_fireIconMN.repeat(i)} ${i}`,
+          callback: () => (ptardence = i),
+        };
       }
 
       const spesAssociees = speAssocie(comp);
@@ -2516,6 +2863,8 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
         }
       }
 
+      let _skipSpe = Object.keys(btns).length <= 1;
+
       if (Array.from(game.user.targets).length != 0) {
         currentTarget = Array.from(game.user.targets)[0].actor;
         diff2 = 0;
@@ -2529,8 +2878,8 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
         {
           title: label.toUpperCase(),
           content:
-            "<div class='card-header'><span><img src='systems/mega/images/gears.gif' width=30px; height=30px; style='border:none'>SPE associee</span></div>&nbsp" +
-            "<br><span class='bouton_texte'>Voulez-vous utiliser une SPE ?</span><br><br>",
+            "<div class='card-header'><span><i class='fas fa-link'></i> SP\u00c9 ASSOCI\u00c9E</span></div>" +
+            "<div style='padding:12px 8px;text-align:center'><i class='fas fa-link' style='font-size:2em;color:#aaa;display:block;margin-bottom:8px'></i><span class='bouton_texte'>Voulez-vous utiliser une <b>SP\u00c9</b> ?</span></div>",
           buttons: btns,
           default: "non",
           // close: () => d3.render(true)
@@ -2549,15 +2898,15 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
         {
           title: label.toUpperCase(),
           content:
-            "<div class='card-header'><span><img src='systems/mega/images/gears.gif' width=30px; height=30px; style='border:none'>ARDENCE</span></div>&nbsp" +
-            "<br><span class='bouton_texte'>Voulez-vous placer des points d'ardence ?</span><br><br>",
+            "<div class='card-header'><span><i class='fas fa-fire' style='color:#e76f51'></i> ARDENCE</span></div>" +
+            "<div style='padding:12px 8px;text-align:center'><i class='fas fa-fire' style='font-size:2em;color:#e76f51;display:block;margin-bottom:8px'></i><span class='bouton_texte'>Voulez-vous placer des <b>points d'ardence</b> ?</span></div>",
           buttons: {
             oui: {
-              label: "NON",
+              label: `<i class="fas fa-times"></i> NON`,
               callback: () => (ardence = 0),
             },
             non: {
-              label: "OUI",
+              label: `<i class="fas fa-fire" style="color:#e76f51"></i> OUI`,
               callback: () => (ardence = 1),
             },
           },
@@ -2569,26 +2918,20 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
                   {
                     title: label.toUpperCase(),
                     content:
-                      "<div class='card-header'><span>Vous avez " +
+                      "<div class='card-header'><span><i class='fas fa-fire' style='color:#e76f51'></i> ARDENCE</span></div>" +
+                      "<div style='padding:12px 8px;text-align:center'><span style='font-size:1.8em;font-weight:bold;color:#e76f51'>" +
                       ptArdence +
-                      " pts d'ardence</span></div>" +
-                      "<br><span class='bouton_texte'>Combien souhaitez-vous en placer ?</span><br><br>",
+                      "</span> <span style='opacity:0.7'>pts disponibles</span><br><br><span class='bouton_texte'>Combien souhaitez-vous en placer ?</span></div>",
                     buttons: btns_ar,
                     close: function () {
                       if (ptardence !== "") {
-                        if (ptardence === 1) {
-                          ardence_combat = 2;
+                        ardence_combat = ptardence * 2;
+                        if (_skipSpe) {
+                          bonus = 0;
+                          dialog_BONUS.render(true);
+                        } else {
+                          d2.render(true);
                         }
-                        if (ptardence === 2) {
-                          ardence_combat = 4;
-                        }
-                        if (ptardence === 3) {
-                          ardence_combat = 6;
-                        }
-                        if (ptardence === 4) {
-                          ardence_combat = 8;
-                        }
-                        dialog_DIFF.render(true);
                       }
                     },
                   },
@@ -2596,11 +2939,11 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
                 );
                 dialog_ardence.render(true);
               } else {
-                //dialog_DIFF.render(true);
-                if (speCombat > 0) {
-                  d2.render(true);
-                } else {
+                if (_skipSpe) {
+                  bonus = 0;
                   dialog_BONUS.render(true);
+                } else {
+                  d2.render(true);
                 }
               }
             }
@@ -2631,12 +2974,12 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
         {
           title: label.toUpperCase(),
           content:
-            "<div class='card-header'><span><img src='systems/mega/images/gears.gif' width=30px; height=30px; style='border:none'>DIFF</span></div>&nbsp" +
-            '<br><span class="bouton_texte">Sélectionnez la DIFF ou "DEF" pour que la DIFF soit égale à la DEF de la cible.</span><br><br>',
+            "<div class='card-header'><span><i class='fas fa-bullseye'></i> DIFFICULTÉ</span></div>" +
+            "<div style='padding:12px 8px;text-align:center'><i class='fas fa-bullseye' style='font-size:2em;color:#aaa;display:block;margin-bottom:8px'></i><span class='bouton_texte'>Sélectionnez la DIFF ou \"DEF\" pour que la DIFF soit égale à la DEF de la cible.</span></div>",
           buttons: generateDiffButtons(4, 27),
           default: "DEF",
           close: () => {
-            if (diff2 !== "") {
+            if (diff !== null) {
               this.testmainsnues(comp, diff, ptardence, bonuspool, bonus);
             }
           },
@@ -2650,9 +2993,11 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
         let label = "";
         for (let i = start; i <= end; i++) {
           if (i > 0) {
-            label = "+" + i.toString();
+            label = `<span style="color:#4caf50;font-weight:bold">+${i}</span>`;
+          } else if (i < 0) {
+            label = `<span style="color:#f44336;font-weight:bold">${i}</span>`;
           } else {
-            label = i.toString();
+            label = `<b>0</b>`;
           }
           buttons[`b${i}`] = {
             label: label,
@@ -2668,8 +3013,8 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
         {
           title: label.toUpperCase(),
           content:
-            "<div class='card-header'><span><img src='systems/mega/images/gears.gif' width=30px; height=30px; style='border:none'>BONUS/MALUS</span></div>&nbsp" +
-            "<br><span class='bouton_texte'>Sélectionnez le BONUS/MALUS à ajouter au pool</span><br><br>",
+            "<div class='card-header'><span><i class='fas fa-plus-minus'></i> BONUS / MALUS</span></div>" +
+            "<div style='padding:12px 8px;text-align:center'><span class='bouton_texte'>Sélectionnez le <b>Bonus/Malus</b> à ajouter au pool</span></div>",
           buttons: bonusButtons,
           default: "b0",
           close: () => {
@@ -2686,26 +3031,81 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
           dialog_ardence_choix.render(true);
         }, 2000);
       } else {
-        if (speCombat > 0) {
-          setTimeout(function () {
-            d2.render(true);
-          }, 2000);
-        } else {
-          setTimeout(function () {
+        setTimeout(function () {
+          if (_skipSpe) {
+            bonus = 0;
             dialog_BONUS.render(true);
-          }, 2000);
-        }
-
-        // setTimeout(function () {
-        //d
-        //d2.render(true);
-        // }, 2000);
+          } else {
+            d2.render(true);
+          }
+        }, 2000);
       }
+    });
+
+    // Clic droit sur une arme de technique de combat pour ouvrir sa fiche
+    html.find(".clic_technique_combat").on("contextmenu", (ev) => {
+      ev.preventDefault();
+      let comp = ev.currentTarget.getAttribute("value");
+      let objet = this.actor.system.talents_combat[comp].label;
+      let arme = this.actor.items.filter((i) => i.name === objet);
+
+      if (arme && arme.length > 0) {
+        arme[0].sheet.render(true);
+      } else {
+        ui.notifications.error(`Arme '${objet}' non trouvée dans l'inventaire`);
+      }
+    });
+
+    // Clic droit sur une attaque spéciale (mains nues) pour ouvrir sa fiche
+    html.find(".clic_mainsnues").on("contextmenu", (ev) => {
+      ev.preventDefault();
+      let comp = ev.currentTarget.getAttribute("value");
+      let objet = this.actor.system.talents_combat[comp].label;
+      let arme = this.actor.items.filter((i) => i.name === objet);
+
+      if (arme && arme.length > 0) {
+        arme[0].sheet.render(true);
+      } else if (objet && objet.trim() !== "") {
+        ui.notifications.error(`Arme '${objet}' non trouvée dans l'inventaire`);
+      }
+    });
+
+    // Clic droit sur un pouvoir psi pour afficher les détails
+    html.find(".pouvoir_psi").on("contextmenu", (ev) => {
+      ev.preventDefault();
+      let pouvoirType = ev.currentTarget.getAttribute("value");
+      this._showPouvoirDetails(pouvoirType);
+    });
+
+    // Clic droit sur un pouvoir rollable (transit/transfert) pour afficher les détails
+    html.find(".pouvoir_rollable").on("contextmenu", (ev) => {
+      ev.preventDefault();
+      let dataType = ev.currentTarget.getAttribute("data-type");
+      let pouvoirType =
+        dataType === "Transit" ? "pouvoir_transit" : "pouvoir_transfert";
+      this._showPouvoirDetails(pouvoirType);
     });
 
     /************************************** Tests Initiatives ou Esquive ******************************/
     html.find(".combat_rollable").click((ev) => {
+      // Vérification que les domaines sont renseignés (valeur minimale de 4)
+      const _domaines_cr = this.actor.system.domaines;
+      const _domainesNonRenseignesCr = Object.values(_domaines_cr).filter(
+        (d) => (d.value ?? 0) < 4,
+      );
+      if (_domainesNonRenseignesCr.length > 0) {
+        const _nomsCr = _domainesNonRenseignesCr.map((d) => d.label).join(", ");
+        ui.notifications.warn(
+          `Veuillez renseigner les talents avant de lancer un jet. Domaine(s) insuffisant(s) : ${_nomsCr}`,
+        );
+        return;
+      }
       let comp = ev.currentTarget.getAttribute("value");
+      // Supprimer les termes 1d0 de la formule (valeur à 0)
+      comp = comp
+        .replace(/1d0\s*\+\s*/g, "")
+        .replace(/\s*\+\s*1d0\b/g, "")
+        .trim();
       let nom = ev.currentTarget.getAttribute("label");
       let dataType = ev.currentTarget.getAttribute("data-type");
       let b = this.actor.system.bonus_initiative;
@@ -2713,47 +3113,47 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
       const myDialogOptions = {
         top: 100,
         left: 100,
-        width: 400,
-        height: 160,
+        width: 420,
+        classes: ["dialog", "talent-info-dialog"],
       };
 
       const myDialogOptions_test = {
         top: 100,
         left: 100,
-        width: 400,
-        height: 160,
+        width: 450,
+        classes: ["dialog", "talent-info-dialog"],
       };
 
       const myDialogOptions_ardence = {
         top: 100,
         left: 100,
-        width: 380,
-        height: 160,
+        width: 400,
+        classes: ["dialog", "talent-info-dialog"],
       };
 
       const myDialogOptions_traits = {
         top: 100,
         left: 100,
-        width: 920,
-        height: 160,
+        width: 980,
+        classes: ["dialog", "talent-info-dialog"],
       };
       const myDialogOptions_spes = {
         top: 100,
         left: 100,
-        width: 900,
-        height: 160,
+        width: 960,
+        classes: ["dialog", "talent-info-dialog"],
       };
       const myDialogOptions_diff = {
         top: 100,
         left: 100,
-        width: 1000,
-        // height: 200
+        width: 1060,
+        classes: ["dialog", "talent-info-dialog"],
       };
       const myDialogOptions_bonus = {
         top: 100,
         left: 100,
-        width: 500,
-        // height: 200
+        width: 700,
+        classes: ["dialog", "talent-info-dialog"],
       };
 
       function generateDiffButtons(min, max) {
@@ -2777,7 +3177,9 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
       let d = new Dialog(
         {
           title: "DIFF",
-          content: "<div class='card-header'><span>DIFF</span></div>",
+          content:
+            "<div class='card-header'><span><i class='fas fa-bullseye'></i> DIFFICULTÉ</span></div>" +
+            "<div style='padding:12px 8px;text-align:center'><i class='fas fa-bullseye' style='font-size:2em;color:#aaa;display:block;margin-bottom:8px'></i><span class='bouton_texte'>Sélectionnez la <b>DIFF</b></span></div>",
           buttons: generateDiffButtons(4, 27),
           default: "NC",
           close: function () {
@@ -2789,13 +3191,13 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
               if (diff !== 0) {
                 if (final > 0) {
                   final = Math.floor(final / 3);
-                  result_diff = `<p style="background-color:#A3B6BB; color:white; font-size: 22px; text-align:center; text-shadow: 1px 1px 2px black;"> DIFF ${diff}</p></div></span><div><span><b><p style="background-color:green; color:white; text-align:center; text-shadow: 1px 1px 2px black; font-size: 16px;">Reussite - Marge de reussite : ${final}</p></b></div></span>`;
+                  result_diff = `<div class="mega-roll-diff"><i class="fas fa-bullseye"></i> DIFF ${diff}</div><div class="mega-roll-success"><i class="fas fa-check-circle"></i> Réussite <span class="mega-roll-margin">Marge : ${final}</span></div>`;
                 } else {
                   final = Math.ceil(final / 3);
-                  result_diff = `<div><span><b><p style="background-color:#A3B6BB; color:white; font-size: 22px; text-align:center; text-shadow: 1px 1px 2px black;">DIFF ${diff}</p></div></span><div><span><b><p style="background-color:red; color:white; text-align:center; text-shadow: 1px 1px 2px black; font-size: 16px;">Echec - Marge d'echec : ${final}</p></b></div></span>`;
+                  result_diff = `<div class="mega-roll-diff"><i class="fas fa-bullseye"></i> DIFF ${diff}</div><div class="mega-roll-failure"><i class="fas fa-times-circle"></i> Échec <span class="mega-roll-margin">Marge : ${final}</span></div>`;
                 }
               } else {
-                result_diff = `<div><span><b><p style="background-color:#A3B6BB; color:white; font-size: 22px; text-align:center; text-shadow: 1px 1px 2px black;">DIFF NC</p></div></span><div>`;
+                result_diff = `<div class="mega-roll-diff mega-roll-diff-nc"><i class="fas fa-question-circle"></i> DIFF NC</div>`;
               }
               r.toMessage({
                 flavor: `<div class='card-header'><span>${dataType}</span></div>${result_diff}`,
@@ -2888,6 +3290,7 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
     });
 
     html.find(".pouvoir_rollable").click((ev) => {
+      flashMagicHalo(html);
       let dataType = ev.currentTarget.getAttribute("data-type");
       var el = document.querySelector(".letters-left");
       el.textContent = dataType;
@@ -2911,75 +3314,64 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
       const myDialogOptions = {
         top: 100,
         left: 100,
-        width: 400,
-        height: 210,
+        width: 420,
+        classes: ["dialog", "window-dialog"],
       };
 
       const myDialogOptions_relance = {
         top: 100,
         left: 100,
-        width: 400,
-        height: 240,
+        width: 500,
+        classes: ["dialog", "window-dialog"],
       };
 
       const myDialogOptions_ardence = {
         top: 100,
         left: 100,
-        width: 380,
-        height: 200,
+        width: 400,
+        classes: ["dialog", "window-dialog"],
       };
 
       const myDialogOptions_ajoutArdence = {
         top: 100,
         left: 100,
-        width: 600,
-        height: 200,
+        width: 650,
+        classes: ["dialog", "window-dialog"],
       };
 
       const myDialogOptions_traits = {
         top: 100,
         left: 100,
-        width: 920,
-        height: 200,
+        width: 980,
+        classes: ["dialog", "window-dialog"],
       };
       const myDialogOptions_spes = {
         top: 100,
         left: 100,
-        width: 900,
-        height: 200,
+        width: 960,
+        classes: ["dialog", "window-dialog"],
       };
       const myDialogOptions_diff = {
         top: 100,
         left: 100,
-        width: 1000,
-        // height: 200
+        width: 1060,
+        classes: ["dialog", "window-dialog"],
       };
       const myDialogOptions_bonus = {
         top: 100,
         left: 100,
-        width: 500,
-        // height: 200
+        width: 700,
+        classes: ["dialog", "window-dialog"],
       };
       let nb_ardence = this.actor.system.pts_ardence.value;
-      if (this.actor.system.pts_ardence.value >= 1) {
-        btns_ar[1] = { label: 1, callback: () => (ptardence = 1) };
+      const _fireIcon = `<i class="fas fa-fire" style="color:#e76f51"></i>`;
+      for (let i = 1; i <= this.actor.system.pts_ardence.value; i++) {
+        btns_ar[i] = {
+          label: `${_fireIcon.repeat(i)} ${i}`,
+          callback: () => (ptardence = i),
+        };
       }
-      if (this.actor.system.pts_ardence.value >= 2) {
-        btns_ar[1] = { label: 1, callback: () => (ptardence = 1) };
-        btns_ar[2] = { label: 2, callback: () => (ptardence = 2) };
-      }
-      if (this.actor.system.pts_ardence.value >= 3) {
-        btns_ar[1] = { label: 1, callback: () => (ptardence = 1) };
-        btns_ar[2] = { label: 2, callback: () => (ptardence = 2) };
-        btns_ar[3] = { label: 3, callback: () => (ptardence = 3) };
-      }
-      if (this.actor.system.pts_ardence.value >= 4) {
-        btns_ar[1] = { label: 1, callback: () => (ptardence = 1) };
-        btns_ar[2] = { label: 2, callback: () => (ptardence = 2) };
-        btns_ar[3] = { label: 3, callback: () => (ptardence = 3) };
-        btns_ar[4] = { label: 4, callback: () => (ptardence = 4) };
-      }
-      btns[NoSpe] = { label: "Aucune SPE", callback: () => (bonus = 0) };
+      btns[NoSpe] = { label: "Aucune SPÉ", callback: () => (bonus = 0) };
       let comp = ev.currentTarget.getAttribute("value");
       console.log("dataType : " + dataType);
       const spesAssociees = speAssocie(dataType);
@@ -3117,6 +3509,14 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
         }
       }
 
+      let _skipSpe =
+        this.actor.system.spe1.value === "" &&
+        this.actor.system.spe2.value === "" &&
+        this.actor.system.spe3.value === "" &&
+        this.actor.system.spe4.value === "" &&
+        this.actor.system.spe5.value === "" &&
+        this.actor.system.spe6.value === "";
+
       let resonnance = this.actor.system.caracs.resonnance.value;
       let sens = this.actor.system.caracs.sens.value;
       let caractere = this.actor.system.caracs.caractere.value;
@@ -3134,15 +3534,15 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
         {
           title: dataType,
           content:
-            "<div class='card-header'><span><img src='systems/mega/images/gears.gif' width=30px; height=30px; style='border:none'>ARDENCE</span></div>&nbsp" +
-            "<br><span class='bouton_texte'>Voulez-vous placer des points d'ardence ?</span><br><br>",
+            "<div class='card-header'><span><i class='fas fa-fire' style='color:#e76f51'></i> ARDENCE</span></div>" +
+            "<div style='padding:12px 8px;text-align:center'><i class='fas fa-fire' style='font-size:2em;color:#e76f51;display:block;margin-bottom:8px'></i><span class='bouton_texte'>Voulez-vous placer des <b>points d'ardence</b> ?</span></div>",
           buttons: {
             oui: {
-              label: "NON",
+              label: `<i class="fas fa-times"></i> NON`,
               callback: () => (ardence = 0),
             },
             non: {
-              label: "OUI",
+              label: `<i class="fas fa-fire" style="color:#e76f51"></i> OUI`,
               callback: () => (ardence = 1),
             },
           },
@@ -3154,7 +3554,12 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
                 d_ard2.render(true);
               }
               if (ardence === 0 || arda <= 0) {
-                d2.render(true);
+                if (_skipSpe) {
+                  bonus = 0;
+                  dialogBonus.render(true);
+                } else {
+                  d2.render(true);
+                }
               }
             }
           },
@@ -3166,8 +3571,8 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
         {
           title: dataType,
           content:
-            "<div class='card-header'><span><img src='systems/mega/images/gears.gif' width=30px; height=30px; style='border:none'>SPE associee</span></div>&nbsp" +
-            "<br><span class='bouton_texte'>Voulez-vous utiliser une SPE ?</span><br><br>",
+            "<div class='card-header'><span><i class='fas fa-link'></i> SPÉCIALISATION</span></div>" +
+            "<div style='padding:12px 8px;text-align:center'><i class='fas fa-link' style='font-size:2em;color:#aaa;display:block;margin-bottom:8px'></i><span class='bouton_texte'>Voulez-vous utiliser une <b>SPÉ</b> ?</span></div>",
           buttons: btns,
           default: "non",
           // close: () => d3.render(true)
@@ -3187,9 +3592,11 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
         let label = "";
         for (let i = start; i <= end; i++) {
           if (i > 0) {
-            label = "+" + i.toString();
+            label = `<span style="color:#4caf50;font-weight:bold">+${i}</span>`;
+          } else if (i < 0) {
+            label = `<span style="color:#f44336;font-weight:bold">${i}</span>`;
           } else {
-            label = i.toString();
+            label = `<b>0</b>`;
           }
           buttons[`b${i}`] = {
             label: label,
@@ -3205,8 +3612,8 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
         {
           title: dataType,
           content:
-            "<div class='card-header'><span><img src='systems/mega/images/gears.gif' width=30px; height=30px; style='border:none'>BONUS/MALUS</span></div>&nbsp" +
-            "<br><span class='bouton_texte'>Sélectionnez le BONUS/MALUS à ajouter au pool</span><br><br>",
+            "<div class='card-header'><span><i class='fas fa-plus-minus'></i> BONUS / MALUS</span></div>" +
+            "<div style='padding:12px 8px;text-align:center'><span class='bouton_texte'>Sélectionnez le <b>Bonus/Malus</b> à ajouter au pool</span></div>",
           buttons: bonusButtons,
           default: "b0",
           close: function () {
@@ -3240,8 +3647,8 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
         {
           title: dataType,
           content:
-            "<div class='card-header'><span><img src='systems/mega/images/gears.gif' width=30px; height=30px; style='border:none'>DIFF</span></div>&nbsp" +
-            '<br><span class="bouton_texte">Sélectionnez la DIFF ou "NC" si elle n\'est pas communiquée</span><br><br>',
+            "<div class='card-header'><span><i class='fas fa-bullseye'></i> DIFFICULTÉ</span></div>" +
+            `<div style='padding:12px 8px;text-align:center'><i class='fas fa-bullseye' style='font-size:2em;color:#aaa;display:block;margin-bottom:8px'></i><span class='bouton_texte'>Sélectionnez la <b>DIFF</b> ou <b>NC</b> si elle n'est pas communiquée</span></div>`,
           buttons: generateDiffButtons(4, 27),
           default: "NC",
           // close: () => this.testComp(ev, carac, bonus, bonuspool, pouvoir,diff,ptardence)
@@ -3280,23 +3687,23 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
                       if (final >= 0) {
                         final = Math.floor(final / 3);
                         result_diff =
-                          '<p style="background-color:#A3B6BB; color:white; font-size: 22px; text-align:center; text-shadow: 1px 1px 2px black;">DIFF ' +
+                          '<div class="mega-roll-diff"><i class="fas fa-bullseye"></i> DIFF ' +
                           diff +
-                          '</p></div></span><div><span><b><p style="background-color:green; color:white; text-align:center; text-shadow: 1px 1px 2px black; font-size: 16px;";>Reussite - Marge de reussite : ' +
+                          '</div><div class="mega-roll-success"><i class="fas fa-check-circle"></i> Réussite <span class="mega-roll-margin">Marge : ' +
                           final +
-                          "</p></b></div></span>";
+                          "</span></div>";
                       } else {
                         final = Math.ceil(final / 3);
                         result_diff =
-                          '<p style="background-color:#A3B6BB; color:white; font-size: 22px; text-align:center; text-shadow: 1px 1px 2px black;">DIFF ' +
+                          '<div class="mega-roll-diff"><i class="fas fa-bullseye"></i> DIFF ' +
                           diff +
-                          '</p></div></span><div><span><b><p style="background-color:red; color:white; text-align:center; text-shadow: 1px 1px 2px black; font-size: 16px;";>Echec - Marge d\'echec : ' +
+                          '</div><div class="mega-roll-failure"><i class="fas fa-times-circle"></i> Échec <span class="mega-roll-margin">Marge : ' +
                           final +
-                          "</p></b></div></span>";
+                          "</span></div>";
                       }
                     } else {
                       result_diff =
-                        '<p style="background-color:#A3B6BB; color:white; font-size: 22px; text-align:center; text-shadow: 1px 1px 2px black;">DIFF NC</p></div></span>';
+                        '<div class="mega-roll-diff mega-roll-diff-nc"><i class="fas fa-question-circle"></i> DIFF NC</div>';
                     }
                     r.toMessage({
                       flavor:
@@ -3315,7 +3722,8 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
                     animPouvoir();
                   }
                   rgtotal = Number(score_transfert) + Number(bonus);
-                  let pool = "1d" + rgtotal + "+1d" + resonnance + "+1d" + sens;
+                  let pool =
+                    "1d" + rgtotal + "+1d" + resonnance + "+1d" + caractere;
                   if (bonuspool !== 0) {
                     pool += "+" + bonuspool;
                   }
@@ -3328,23 +3736,23 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
                       if (final >= 0) {
                         final = Math.floor(final / 3);
                         result_diff =
-                          '<p style="background-color:#A3B6BB; color:white; font-size: 22px; text-align:center; text-shadow: 1px 1px 2px black;">DIFF ' +
+                          '<div class="mega-roll-diff"><i class="fas fa-bullseye"></i> DIFF ' +
                           diff +
-                          '</p></div></span><div><span><b><p style="background-color:green; color:white; text-align:center; text-shadow: 1px 1px 2px black; font-size: 16px;";>Reussite - Marge de reussite : ' +
+                          '</div><div class="mega-roll-success"><i class="fas fa-check-circle"></i> Réussite <span class="mega-roll-margin">Marge : ' +
                           final +
-                          "</p></b></div></span>";
+                          "</span></div>";
                       } else {
                         final = Math.ceil(final / 3);
                         result_diff =
-                          '<p style="background-color:#A3B6BB; color:white; font-size: 22px; text-align:center; text-shadow: 1px 1px 2px black;">DIFF ' +
+                          '<div class="mega-roll-diff"><i class="fas fa-bullseye"></i> DIFF ' +
                           diff +
-                          '</p></div></span><div><span><b><p style="background-color:red; color:white; text-align:center; text-shadow: 1px 1px 2px black; font-size: 16px;";>Echec - Marge d\'echec : ' +
+                          '</div><div class="mega-roll-failure"><i class="fas fa-times-circle"></i> Échec <span class="mega-roll-margin">Marge : ' +
                           final +
-                          "</p></b></div></span>";
+                          "</span></div>";
                       }
                     } else {
                       result_diff =
-                        '<p style="background-color:#A3B6BB; color:white; font-size: 22px; text-align:center; text-shadow: 1px 1px 2px black;">DIFF NC</p></div></span>';
+                        '<div class="mega-roll-diff mega-roll-diff-nc"><i class="fas fa-question-circle"></i> DIFF NC</div>';
                     }
                     r.toMessage({
                       flavor:
@@ -3369,10 +3777,10 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
         {
           title: dataType,
           content:
-            "<div class='card-header'><span>Vous avez " +
+            "<div class='card-header'><span><i class='fas fa-fire' style='color:#e76f51'></i> ARDENCE</span></div>" +
+            "<div style='padding:12px 8px;text-align:center'><span style='font-size:1.8em;font-weight:bold;color:#e76f51'>" +
             this.actor.system.pts_ardence.value +
-            " pts d'ardence</span></div>" +
-            "<br><span class='bouton_texte'>Combien souhaitez-vous en placer ?</span><br><br>",
+            "</span> <span style='opacity:0.7'>pts disponibles</span><br><br><span class='bouton_texte'>Combien souhaitez-vous en placer ?</span></div>",
           buttons: btns_ar,
           //close: () => d.render(true)
           close: function () {
@@ -3444,7 +3852,12 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
               rgardencetotal = ptardence * 2;
               ptardencetotal = ptardence;
               // diag1.render(true);
-              d2.render(true);
+              if (_skipSpe) {
+                bonus = 0;
+                dialogBonus.render(true);
+              } else {
+                d2.render(true);
+              }
             }
           },
         },
@@ -3459,7 +3872,12 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
       if (arda <= 0 && reso > 0) {
         animationJet();
         setTimeout(function () {
-          d2.render(true);
+          if (_skipSpe) {
+            bonus = 0;
+            dialogBonus.render(true);
+          } else {
+            d2.render(true);
+          }
         }, 2000);
       }
       if (reso < 1) {
@@ -3481,12 +3899,12 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
         {
           title: dataType,
           content:
-            "<div class='card-header'><span>Ardence <i class='fas fa-angle-double-right'></i> " +
+            "<div class='card-header'><span><i class='fas fa-fire' style='color:#e76f51'></i> ARDENCE <i class='fas fa-angle-double-right'></i> " +
             contenu +
-            " ?</span></div>" +
-            "<br><span class='bouton_texte'>combien de rangs voulez-vous ajouter au pouvoir " +
+            "</span></div>" +
+            "<div style='padding:12px 8px;text-align:center'><i class='fas fa-podcast' style='font-size:2em;color:#9b59b6;display:block;margin-bottom:8px'></i><span class='bouton_texte'>Combien de rangs voulez-vous ajouter au pouvoir <b>" +
             contenu.toUpperCase() +
-            " ?</span><br><br>",
+            "</b> ?</span></div>",
           buttons: btns_1,
           close: function () {
             if (ardence_pouvoir !== "") {
@@ -3573,8 +3991,8 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
         {
           title: dataType,
           content:
-            "<div class='card-header'><span>Ardence <i class='fas fa-angle-double-right'></i> RÉSONNANCE ?</span></div>" +
-            "<br><span class='bouton_texte'>combien de rangs voulez-vous ajouter au TRAIT RÉSONNANCE ?</span><br><br>",
+            "<div class='card-header'><span><i class='fas fa-fire' style='color:#e76f51'></i> ARDENCE <i class='fas fa-angle-double-right'></i> RÉSONNANCE</span></div>" +
+            "<div style='padding:12px 8px;text-align:center'><i class='fas fa-podcast' style='font-size:2em;color:#9b59b6;display:block;margin-bottom:8px'></i><span class='bouton_texte'>Combien de rangs voulez-vous ajouter au Trait <b>RÉSONNANCE</b> ?</span></div>",
           buttons: btns_2,
           close: function () {
             if (ardence_resonnance !== "") {
@@ -3661,12 +4079,12 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
         {
           title: dataType,
           content:
-            "<div class='card-header'><span>Ardence <i class='fas fa-angle-double-right'></i> " +
+            "<div class='card-header'><span><i class='fas fa-fire' style='color:#e76f51'></i> ARDENCE <i class='fas fa-angle-double-right'></i> " +
             contenu2 +
-            "?</span></div>" +
-            "<br><span class='bouton_texte'>combien de rangs voulez-vous ajouter au TRAIT " +
+            "</span></div>" +
+            "<div style='padding:12px 8px;text-align:center'><i class='fas fa-star' style='font-size:2em;color:#f39c12;display:block;margin-bottom:8px'></i><span class='bouton_texte'>Combien de rangs voulez-vous ajouter au Trait <b>" +
             contenu2.toUpperCase() +
-            " ?</span><br><br>",
+            "</b> ?</span></div>",
           buttons: btns_3,
           close: function () {
             if (ardence_trait !== "") {
@@ -3726,7 +4144,7 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
                           diceArray,
                           results,
                           bonuspool,
-                          `${entete}<div><span><p style=\"background-color:#A3B6BB; color:white; font-size: 22px; text-align:center; text-shadow: 1px 1px 2px black;\">JET INITIAL (DIFF ${diff})</p></div></span>`,
+                          `${entete}<div class="mega-roll-diff"><i class="fas fa-dice-d6"></i> JET INITIAL — DIFF ${diff}</div>`,
                         );
                       }
 
@@ -3744,7 +4162,7 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
                             diceArray,
                             results,
                             bonuspool,
-                            `${entete}<div><span><p style=\"background-color:#A3B6BB; color:white; font-size: 22px; text-align:center; text-shadow: 1px 1px 2px black;\">RELANCE (DIFF ${diff})</p></div></span><br>Vous avez relancé : ${rerolledDie}`,
+                            `${entete}<div class="mega-roll-reroll"><i class="fas fa-sync-alt"></i> RELANCE — DIFF ${diff}</div><div class="mega-roll-reroll-info"><i class="fas fa-redo"></i> Dé relancé : ${rerolledDie}</div>`,
                           );
                         }
                       }
@@ -3767,25 +4185,25 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
                           final = Math.floor(final / 3);
                           result_diff =
                             entete +
-                            '<div><span><p style="background-color:#A3B6BB; color:white; font-size: 22px; text-align:center; text-shadow: 1px 1px 2px black;">DIFF ' +
+                            '<div class="mega-roll-diff"><i class="fas fa-bullseye"></i> DIFF ' +
                             diff +
-                            '</p></div></span><div><span><b><p style="background-color:green; color:white; text-align:center; text-shadow: 1px 1px 2px black; font-size: 16px;";>Reussite - Marge de reussite : ' +
+                            '</div><div class="mega-roll-success"><i class="fas fa-check-circle"></i> Réussite <span class="mega-roll-margin">Marge : ' +
                             final +
-                            "</p></b></div></span>";
+                            "</span></div>";
                         } else {
                           final = Math.ceil(final / 3);
                           result_diff =
                             entete +
-                            '<div><span><p style="background-color:#A3B6BB; color:white; font-size: 22px; text-align:center; text-shadow: 1px 1px 2px black;">DIFF ' +
+                            '<div class="mega-roll-diff"><i class="fas fa-bullseye"></i> DIFF ' +
                             diff +
-                            '</p></div></span><div><span><b><p style="background-color:red; color:white; text-align:center; text-shadow: 1px 1px 2px black; font-size: 16px;";>Echec - Marge d\'echec : ' +
+                            '</div><div class="mega-roll-failure"><i class="fas fa-times-circle"></i> Échec <span class="mega-roll-margin">Marge : ' +
                             final +
-                            "</p></b></div></span>";
+                            "</span></div>";
                         }
                       } else {
                         result_diff =
                           entete +
-                          '<div><span><p style="background-color:#A3B6BB; color:white; font-size: 22px; text-align:center; text-shadow: 1px 1px 2px black;">DIFF NC</p></div></span>';
+                          '<div class="mega-roll-diff mega-roll-diff-nc"><i class="fas fa-question-circle"></i> DIFF NC</div>';
                       }
 
                       await postToChat(
@@ -3808,31 +4226,25 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
 
                     async function chooseDieToReroll(diceArray, results) {
                       return new Promise((resolve) => {
-                        let content = `<br><span class="bouton_texte">Choisissez le dé à relancer ou validez ce jet :</span><br><br>
-							   <center><select id="reroll-select">
-								 <option value="null">Valider le jet</option>`;
+                        let buttons = {
+                          validate: {
+                            label: `<i class="fas fa-check"></i><br><span style="font-size:0.8em">Valider le jet</span>`,
+                            callback: () => resolve(null),
+                          },
+                        };
                         results.forEach((result, index) => {
-                          content += `<option value="${index}">Relancer ${diceArray[index]} (${result})</option>`;
+                          buttons[`die_${index}`] = {
+                            label: `<span style="display:flex;flex-direction:column;align-items:center;gap:2px"><i class="fas fa-dice"></i><span style="font-size:0.85em;opacity:0.85">${diceArray[index]}</span><span style="font-size:1.3em;font-weight:bold">${result}</span></span>`,
+                            callback: () => resolve(index),
+                          };
                         });
-                        content += `</select></center><br>`;
-
                         new Dialog(
                           {
-                            title: "Relance d'un dés",
+                            title: "Relance d'un dé",
                             content:
-                              "<div class='card-header'><span><img src='systems/mega/images/gears.gif' width=30px; height=30px; style='border:none'>Relancer un dé</span></div>" +
-                              content,
-                            buttons: {
-                              ok: {
-                                label: "OK",
-                                callback: (html) => {
-                                  let index = html.find("#reroll-select").val();
-                                  resolve(
-                                    index === "null" ? null : parseInt(index),
-                                  );
-                                },
-                              },
-                            },
+                              "<div class='card-header'><span>Relancer un dé</span></div>" +
+                              `<br><center><span class="bouton_texte">Cliquez sur un dé pour le relancer, ou validez ce jet</span></center><br>`,
+                            buttons: buttons,
                             close: () => resolve(null),
                           },
                           myDialogOptions_relance,
@@ -3944,7 +4356,7 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
                           diceArray,
                           results,
                           bonuspool,
-                          `${entete}<div><span><p style=\"background-color:#A3B6BB; color:white; font-size: 22px; text-align:center; text-shadow: 1px 1px 2px black;\">JET INITIAL (DIFF ${diff})</p></div></span>`,
+                          `${entete}<div class="mega-roll-diff"><i class="fas fa-dice-d6"></i> JET INITIAL — DIFF ${diff}</div>`,
                         );
                       }
 
@@ -3962,7 +4374,7 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
                             diceArray,
                             results,
                             bonuspool,
-                            `${entete}<div><span><p style=\"background-color:#A3B6BB; color:white; font-size: 22px; text-align:center; text-shadow: 1px 1px 2px black;\">RELANCE (DIFF ${diff})</p></div></span><br>Vous avez relancé : ${rerolledDie}`,
+                            `${entete}<div class="mega-roll-reroll"><i class="fas fa-sync-alt"></i> RELANCE — DIFF ${diff}</div><div class="mega-roll-reroll-info"><i class="fas fa-redo"></i> Dé relancé : ${rerolledDie}</div>`,
                           );
                         }
                       }
@@ -3985,25 +4397,25 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
                           final = Math.floor(final / 3);
                           result_diff =
                             entete +
-                            '<div><span><p style="background-color:#A3B6BB; color:white; font-size: 22px; text-align:center; text-shadow: 1px 1px 2px black;">DIFF ' +
+                            '<div class="mega-roll-diff"><i class="fas fa-bullseye"></i> DIFF ' +
                             diff +
-                            '</p></div></span><div><span><b><p style="background-color:green; color:white; text-align:center; text-shadow: 1px 1px 2px black; font-size: 16px;";>Reussite - Marge de reussite : ' +
+                            '</div><div class="mega-roll-success"><i class="fas fa-check-circle"></i> Réussite <span class="mega-roll-margin">Marge : ' +
                             final +
-                            "</p></b></div></span>";
+                            "</span></div>";
                         } else {
                           final = Math.ceil(final / 3);
                           result_diff =
                             entete +
-                            '<div><span><p style="background-color:#A3B6BB; color:white; font-size: 22px; text-align:center; text-shadow: 1px 1px 2px black;">DIFF ' +
+                            '<div class="mega-roll-diff"><i class="fas fa-bullseye"></i> DIFF ' +
                             diff +
-                            '</p></div></span><div><span><b><p style="background-color:red; color:white; text-align:center; text-shadow: 1px 1px 2px black; font-size: 16px;";>Echec - Marge d\'echec : ' +
+                            '</div><div class="mega-roll-failure"><i class="fas fa-times-circle"></i> Échec <span class="mega-roll-margin">Marge : ' +
                             final +
-                            "</p></b></div></span>";
+                            "</span></div>";
                         }
                       } else {
                         result_diff =
                           entete +
-                          '<div><span><p style="background-color:#A3B6BB; color:white; font-size: 22px; text-align:center; text-shadow: 1px 1px 2px black;">DIFF NC</p></div></span>';
+                          '<div class="mega-roll-diff mega-roll-diff-nc"><i class="fas fa-question-circle"></i> DIFF NC</div>';
                       }
 
                       await postToChat(
@@ -4026,31 +4438,25 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
 
                     async function chooseDieToReroll(diceArray, results) {
                       return new Promise((resolve) => {
-                        let content = `<br><span class="bouton_texte">Choisissez le dé à relancer ou validez ce jet :</span><br><br>
-                        <center><select id="reroll-select">
-                        <option value="null">Valider le jet</option>`;
+                        let buttons = {
+                          validate: {
+                            label: `<i class="fas fa-check"></i><br><span style="font-size:0.8em">Valider le jet</span>`,
+                            callback: () => resolve(null),
+                          },
+                        };
                         results.forEach((result, index) => {
-                          content += `<option value="${index}">Relancer ${diceArray[index]} (${result})</option>`;
+                          buttons[`die_${index}`] = {
+                            label: `<span style="display:flex;flex-direction:column;align-items:center;gap:2px"><i class="fas fa-dice"></i><span style="font-size:0.85em;opacity:0.85">${diceArray[index]}</span><span style="font-size:1.3em;font-weight:bold">${result}</span></span>`,
+                            callback: () => resolve(index),
+                          };
                         });
-                        content += `</select></center><br>`;
-
                         new Dialog(
                           {
-                            title: "Relance",
+                            title: "Relance d'un dé",
                             content:
-                              "<div class='card-header'><span><img src='systems/mega/images/gears.gif' width=30px; height=30px; style='border:none'>Relancer un dé</span></div>" +
-                              content,
-                            buttons: {
-                              ok: {
-                                label: "OK",
-                                callback: (html) => {
-                                  let index = html.find("#reroll-select").val();
-                                  resolve(
-                                    index === "null" ? null : parseInt(index),
-                                  );
-                                },
-                              },
-                            },
+                              "<div class='card-header'><span>Relancer un dé</span></div>" +
+                              `<br><center><span class="bouton_texte">Cliquez sur un dé pour le relancer, ou validez ce jet</span></center><br>`,
+                            buttons: buttons,
                             close: () => resolve(null),
                           },
                           myDialogOptions_relance,
@@ -4164,7 +4570,9 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
       let diag4 = new Dialog(
         {
           title: dataType,
-          content: "<div class='card-header'><span>DIFF</span></div>",
+          content:
+            "<div class='card-header'><span><i class='fas fa-bullseye'></i> DIFFICULTÉ</span></div>" +
+            `<div style='padding:12px 8px;text-align:center'><i class='fas fa-bullseye' style='font-size:2em;color:#aaa;display:block;margin-bottom:8px'></i><span class='bouton_texte'>Sélectionnez la <b>DIFF</b> ou <b>NC</b> si elle n'est pas communiquée</span></div>`,
           buttons: generateDiffButtons(4, 27),
           default: "NC",
           close: () =>
@@ -4193,7 +4601,30 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
     });
 
     /******************************* Test Talents *********************/
+    // Clic sur la valeur du talent (dice-badge ou input) → déclenche le même jet que l'intitulé
+    html.find(".tnt-vc .dice-badge, .tnt-vc input.tnt-vi").on("click", (ev) => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      $(ev.currentTarget)
+        .closest("td.tnt-vc")
+        .prev("td.tnt-nc")
+        .find(".talents_rollable")
+        .trigger("click");
+    });
+
     html.find(".talents_rollable").click((ev) => {
+      // Vérification que les domaines sont renseignés (valeur minimale de 4)
+      const _domaines_t = this.actor.system.domaines;
+      const _domainesNonRenseignesT = Object.values(_domaines_t).filter(
+        (d) => (d.value ?? 0) < 4,
+      );
+      if (_domainesNonRenseignesT.length > 0) {
+        const _nomsT = _domainesNonRenseignesT.map((d) => d.label).join(", ");
+        ui.notifications.warn(
+          `Veuillez renseigner les talents avant de lancer un jet. Domaine(s) insuffisant(s) : ${_nomsT}`,
+        );
+        return;
+      }
       let pouvoir;
       let pouvoirPresent = this.actor.system.pouvoirs.pouvoir_psi_2.label;
       let numPouv = 1;
@@ -4210,54 +4641,54 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
       const myDialogOptions = {
         top: 100,
         left: 100,
-        width: 400,
-        height: 200,
+        width: 420,
+        classes: ["dialog", "window-dialog"],
       };
 
       const myDialogOptions_numPouv = {
         top: 100,
         left: 100,
-        width: 400,
-        height: 200,
+        width: 500,
+        classes: ["dialog", "window-dialog"],
       };
 
       const myDialogOptions_test = {
         top: 100,
         left: 100,
-        width: 400,
-        height: 200,
+        width: 420,
+        classes: ["dialog", "window-dialog"],
       };
 
       const myDialogOptions_ardence = {
         top: 100,
         left: 100,
-        width: 380,
-        height: 200,
+        width: 400,
+        classes: ["dialog", "window-dialog"],
       };
 
       const myDialogOptions_traits = {
         top: 100,
         left: 100,
-        width: 920,
-        height: 200,
+        width: 980,
+        classes: ["dialog", "window-dialog"],
       };
       const myDialogOptions_spes = {
         top: 100,
         left: 100,
-        width: 900,
-        height: 200,
+        width: 960,
+        classes: ["dialog", "window-dialog"],
       };
       const myDialogOptions_diff = {
         top: 100,
         left: 100,
-        width: 1000,
-        // height: 200
+        width: 1060,
+        classes: ["dialog", "window-dialog"],
       };
       const myDialogOptions_bonus = {
         top: 100,
         left: 100,
-        width: 500,
-        // height: 200
+        width: 700,
+        classes: ["dialog", "window-dialog"],
       };
       let comp = ev.currentTarget.getAttribute("value");
       var el = document.querySelector(".letters-left");
@@ -4417,38 +4848,27 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
         }
       }
 
-      if (this.actor.system.pts_ardence.value >= 1) {
-        btns_ar[1] = { label: 1, callback: () => (ptardence = 1) };
-      }
-      if (this.actor.system.pts_ardence.value >= 2) {
-        btns_ar[1] = { label: 1, callback: () => (ptardence = 1) };
-        btns_ar[2] = { label: 2, callback: () => (ptardence = 2) };
-      }
-      if (this.actor.system.pts_ardence.value >= 3) {
-        btns_ar[1] = { label: 1, callback: () => (ptardence = 1) };
-        btns_ar[2] = { label: 2, callback: () => (ptardence = 2) };
-        btns_ar[3] = { label: 3, callback: () => (ptardence = 3) };
-      }
-      if (this.actor.system.pts_ardence.value >= 4) {
-        btns_ar[1] = { label: 1, callback: () => (ptardence = 1) };
-        btns_ar[2] = { label: 2, callback: () => (ptardence = 2) };
-        btns_ar[3] = { label: 3, callback: () => (ptardence = 3) };
-        btns_ar[4] = { label: 4, callback: () => (ptardence = 4) };
+      const _fireIcon = `<i class="fas fa-fire" style="color:#e76f51"></i>`;
+      for (let i = 1; i <= this.actor.system.pts_ardence.value; i++) {
+        btns_ar[i] = {
+          label: `${_fireIcon.repeat(i)} ${i}`,
+          callback: () => (ptardence = i),
+        };
       }
       let pts_reso = this.actor.system.pts_resonnance.value;
       let d_ard = new Dialog(
         {
           title: talentName.toUpperCase(),
           content:
-            "<div class='card-header'><span><img src='systems/mega/images/gears.gif' width=30px; height=30px; style='border:none'>ARDENCE</span></div>&nbsp" +
-            "<br><span class='bouton_texte'>Voulez-vous placer des points d'ardence ?</span><br><br>",
+            "<div class='card-header'><span><i class='fas fa-fire' style='color:#e76f51'></i> ARDENCE</span></div>" +
+            "<div style='padding:12px 8px;text-align:center'><i class='fas fa-fire' style='font-size:2em;color:#e76f51;display:block;margin-bottom:8px'></i><span class='bouton_texte'>Voulez-vous placer des <b>points d'ardence</b> ?</span></div>",
           buttons: {
             btn_oui: {
-              label: "NON",
+              label: `<i class="fas fa-times"></i> NON`,
               callback: () => (ardence = 0),
             },
             btn_non: {
-              label: "OUI",
+              label: `<i class="fas fa-fire" style="color:#e76f51"></i> OUI`,
               callback: () => (ardence = 1),
             },
           },
@@ -4459,7 +4879,7 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
               d_ard2.render(true);
             }
             if (ardence === 0) {
-              if (pts_reso !== 0 && typeActor === "MEGA" && pouvoirOK) {
+              if (typeActor === "MEGA" && pouvoirOK) {
                 d0.render(true);
               } else {
                 pouvoir = 0;
@@ -4475,14 +4895,14 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
         {
           title: talentName.toUpperCase(),
           content:
-            "<div class='card-header'><span>Vous avez " +
+            "<div class='card-header'><span><i class='fas fa-fire' style='color:#e76f51'></i> ARDENCE</span></div>" +
+            "<div style='padding:12px 8px;text-align:center'><span style='font-size:1.8em;font-weight:bold;color:#e76f51'>" +
             this.actor.system.pts_ardence.value +
-            " pts d'ardence</span></div>" +
-            "<br><span class='bouton_texte'>Combien souhaitez-vous en placer ?</span><br><br>",
+            "</span> <span style='opacity:0.7'>pts disponibles</span><br><br><span class='bouton_texte'>Combien souhaitez-vous en placer ?</span></div>",
           buttons: btns_ar,
           //close: () => d.render(true)
           close: function () {
-            if (pts_reso !== 0 && pouvoirOK) {
+            if (pouvoirOK) {
               d0.render(true);
             } else {
               pouvoir = 0;
@@ -4497,55 +4917,86 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
         {
           title: talentName.toUpperCase(),
           content:
-            "<div class='card-header'><span><img src='systems/mega/images/gears.gif' width=30px; height=30px; style='border:none'>POUVOIR PSI</span></div>&nbsp" +
-            "<br><span class='bouton_texte'>Quel POUVOIR souhaitez-vous utiliser ?</span><br><br>",
+            "<div class='card-header'><span><i class='fas fa-podcast'></i> POUVOIR PSI</span></div>" +
+            "<div style='padding:12px 8px;text-align:center'><i class='fas fa-podcast' style='font-size:2em;color:#9b59b6;display:block;margin-bottom:8px'></i><span class='bouton_texte'>Quel <b>Pouvoir PSI</b> souhaitez-vous utiliser ?</span></div>",
           buttons: {
             pouvoir1: {
-              label: this.actor.system.pouvoirs.pouvoir_psi_1.label,
+              label:
+                `<i class="fas fa-podcast" style="color:#9b59b6"></i> ` +
+                this.actor.system.pouvoirs.pouvoir_psi_1.label,
               callback: () => (numPouv = 1),
-              // icon: `<i class="fas fa-link"></i>`,
             },
 
             pouvoir2: {
-              label: this.actor.system.pouvoirs.pouvoir_psi_2.label,
+              label:
+                `<i class="fas fa-podcast" style="color:#9b59b6"></i> ` +
+                this.actor.system.pouvoirs.pouvoir_psi_2.label,
               callback: () => (numPouv = 2),
-              // icon: `<i class="fas fa-link"></i>`,
             },
           },
           //close: () => d.render(true)
           close: function () {
-            d2.render(true);
+            if (speOK) {
+              d2.render(true);
+            } else {
+              d3.render(true);
+            }
           },
         },
         myDialogOptions_numPouv,
       );
 
+      const _psiDisabled = pts_reso <= 0;
+      let _stopBtnParticles = null;
+
       let d0 = new Dialog(
         {
           title: talentName.toUpperCase(),
           content:
-            "<div class='card-header'><span><img src='systems/mega/images/gears.gif' width=30px; height=30px; style='border:none'>TEST</span></div>&nbsp" +
-            "<br><span class='bouton_texte'>Quel type de TEST souhaitez-vous réaliser ?</span><br><br>",
+            "<div class='card-header'><span><i class='fas fa-dice-d20'></i> TYPE DE TEST</span></div>" +
+            "<div style='padding:12px 8px;text-align:center'><i class='fas fa-dice-d20' style='font-size:2em;color:#aaa;display:block;margin-bottom:8px'></i><span class='bouton_texte'>Quel <b>type de test</b> souhaitez-vous réaliser ?</span></div>",
           buttons: {
             talent: {
               label:
                 '<span class="bouton_talent"><i class="fas fa-sign-language"></i> Talent</span>',
-              // open: function() { $(this).addClass('yescls') },
-              // icons: { primary: "ui-icon-check", secondary: "ui-icon-circle-check" },
               callback: () => (pouvoir = 0),
             },
             pouvoir: {
-              label:
-                '<span class="bouton_pouvoir"><i class="fas fa-podcast"></i> Pouvoir PSI</span>',
-              callback: () => (pouvoir = 1),
+              label: _psiDisabled
+                ? '<span class="bouton_pouvoir mega-psi-disabled"><i class="fas fa-ban"></i> Plus de Résonance</span>'
+                : '<span class="bouton_pouvoir"><i class="fas fa-podcast" style="color:#9b59b6"></i> Pouvoir PSI</span>',
+              callback: () => {
+                if (_psiDisabled) return; // bloque l'action si plus de résonance
+                pouvoir = 1;
+                flashMagicHalo(html);
+              },
             },
           },
           default: "talent",
-          //close: () => d.render(true)
+          render: (dlgHtml) => {
+            if (_psiDisabled) {
+              const btn = dlgHtml.find('[data-button="pouvoir"]');
+              btn.prop("disabled", true).addClass("mega-psi-btn-disabled");
+            } else {
+              const btn = dlgHtml.find('[data-button="pouvoir"]')[0];
+              if (btn) {
+                btn.classList.add("mega-psi-active");
+                _stopBtnParticles = startButtonParticles(btn);
+              }
+            }
+          },
           close: function () {
+            if (_stopBtnParticles) {
+              _stopBtnParticles();
+              _stopBtnParticles = null;
+            }
             if (pouvoir === 1) {
               if (pouvoirPresent) numPouvoir.render(true);
-              else d2.render(true);
+              else if (speOK) {
+                d2.render(true);
+              } else {
+                d3.render(true);
+              }
             }
             if (pouvoir === 0) {
               d.render(true);
@@ -4569,43 +5020,43 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
         {
           title: talentName.toUpperCase(),
           content:
-            "<div class='card-header'><span><img src='systems/mega/images/gears.gif' width=30px; height=30px; style='border:none'>TRAIT</span></div>&nbsp" +
-            "<br><span class='bouton_texte'>Quel TRAIT voulez-vous utiliser ?</span><br><br>",
+            "<div class='card-header'><span><i class='fas fa-user'></i> TRAIT</span></div>" +
+            "<div style='padding:12px 8px;text-align:center'><span class='bouton_texte'>Quel <b>Trait</b> voulez-vous utiliser ?</span></div>",
           buttons: {
             vivacite: {
-              label: "VIVACITE",
+              label: `<i class="fas fa-bolt"></i> VIVACITE`,
               callback: () => (carac = "vivacite"),
             },
             sens: {
-              label: "SENS",
+              label: `<i class="fas fa-eye"></i> SENS`,
               callback: () => (carac = "sens"),
             },
             adresse: {
-              label: "ADRESSE",
+              label: `<i class="fas fa-hand-paper"></i> ADRESSE`,
               callback: () => (carac = "adresse"),
             },
             reflexion: {
-              label: "REFLEXION",
+              label: `<i class="fas fa-brain"></i> REFLEXION`,
               callback: () => (carac = "reflexion"),
             },
             ardence: {
-              label: "ARDENCE",
+              label: `<i class="fas fa-fire" style="color:#e76f51"></i> ARDENCE`,
               callback: () => (carac = "ardence"),
             },
             force: {
-              label: "FORCE",
+              label: `<i class="fas fa-fist-raised"></i> FORCE`,
               callback: () => (carac = "force"),
             },
             caractere: {
-              label: "CARACTERE",
+              label: `<i class="fas fa-star"></i> CARACTERE`,
               callback: () => (carac = "caractere"),
             },
             resonnance: {
-              label: "RESONNANCE",
+              label: `<i class="fas fa-podcast" style="color:#9b59b6"></i> RESONNANCE`,
               callback: () => (carac = "resonnance"),
             },
             endurance: {
-              label: "ENDURANCE",
+              label: `<i class="fas fa-heart" style="color:#e74c3c"></i> ENDURANCE`,
               callback: () => (carac = "endurance"),
             },
           },
@@ -4628,8 +5079,8 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
         {
           title: talentName.toUpperCase(),
           content:
-            "<div class='card-header'><span><img src='systems/mega/images/gears.gif' width=30px; height=30px; style='border:none'>SPE associee</span></div>&nbsp" +
-            "<br><span class='bouton_texte'>Voulez-vous utiliser une SPE ?</span><br><br>",
+            "<div class='card-header'><span><i class='fas fa-link'></i> SPÉ</span></div>" +
+            "<div style='padding:12px 8px;text-align:center'><i class='fas fa-link' style='font-size:2em;color:#aaa;display:block;margin-bottom:8px'></i><span class='bouton_texte'>Voulez-vous utiliser une <b>SPÉ</b> ?</span></div>",
           buttons: btns,
           default: "non",
           // close: () => d3.render(true)
@@ -4649,9 +5100,11 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
         let buttons = {};
         for (let i = start; i <= end; i++) {
           if (i > 0) {
-            label = i.toString();
+            label = `<span style="color:#4caf50;font-weight:bold">+${i}</span>`;
+          } else if (i < 0) {
+            label = `<span style="color:#f44336;font-weight:bold">${i}</span>`;
           } else {
-            label = i.toString();
+            label = `<b>0</b>`;
           }
           buttons[`b${i}`] = {
             label: label,
@@ -4666,8 +5119,8 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
         {
           title: talentName.toUpperCase(),
           content:
-            "<div class='card-header'><span><img src='systems/mega/images/gears.gif' width=30px; height=30px; style='border:none'>BONUS/MALUS</span></div>&nbsp" +
-            "<br><span class='bouton_texte'>Sélectionnez le BONUS/MALUS à ajouter au pool</span><br><br>",
+            "<div class='card-header'><span><i class='fas fa-plus-minus'></i> BONUS / MALUS</span></div>" +
+            "<div style='padding:12px 8px;text-align:center'><span class='bouton_texte'>Sélectionnez le <b>Bonus/Malus</b> à ajouter au pool</span></div>",
           buttons: bonusButtons,
           default: "b0",
           close: function () {
@@ -4701,8 +5154,9 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
         {
           title: talentName.toUpperCase(),
           content:
-            "<div class='card-header'><span><img src='systems/mega/images/gears.gif' width=30px; height=30px; style='border:none'>DIFF</span></div>&nbsp" +
-            '<br><span class="bouton_texte">Sélectionnez la DIFF ou "NC" si elle n\'est pas communiquée</span><br><br>',
+            "<div class='card-header'><span><i class='fas fa-bullseye'></i> DIFFICULTÉ</span></div>" +
+            `<div style='padding:12px 8px;text-align:center'><i class='fas fa-bullseye' style='font-size:2em;color:#aaa;display:block;margin-bottom:8px'></i><span class='bouton_texte'>Sélectionnez la <b>DIFF</b> ou <b>NC</b> si elle n'est pas communiquée</span></div>`,
+
           buttons: generateDiffButtons(4, 27),
           default: "NC",
           // close: () => this.testComp(ev, carac, bonus, bonuspool, pouvoir,diff,ptardence)
@@ -4726,6 +5180,18 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
     });
 
     html.find(".traits_rollable").click((ev) => {
+      // Vérification que les domaines sont renseignés (valeur minimale de 4)
+      const _domaines_tr = this.actor.system.domaines;
+      const _domainesNonRenseignesTr = Object.values(_domaines_tr).filter(
+        (d) => (d.value ?? 0) < 4,
+      );
+      if (_domainesNonRenseignesTr.length > 0) {
+        const _nomsTr = _domainesNonRenseignesTr.map((d) => d.label).join(", ");
+        ui.notifications.warn(
+          `Veuillez renseigner les talents avant de lancer un jet. Domaine(s) insuffisant(s) : ${_nomsTr}`,
+        );
+        return;
+      }
       let premier_trait = ev.currentTarget.getAttribute("value");
       let comp = ev.currentTarget.getAttribute("value");
       let traitName = this.actor.system.caracs[comp].label;
@@ -4744,75 +5210,64 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
       const myDialogOptions = {
         top: 100,
         left: 100,
-        width: 400,
-        height: 200,
+        width: 420,
+        classes: ["dialog", "window-dialog"],
       };
 
       const myDialogOptions_test = {
         top: 100,
         left: 100,
-        width: 400,
-        height: 200,
+        width: 450,
+        classes: ["dialog", "window-dialog"],
       };
 
       const myDialogOptions_ardence = {
         top: 100,
         left: 100,
-        width: 380,
-        height: 200,
+        width: 400,
+        classes: ["dialog", "window-dialog"],
       };
 
       const myDialogOptions_traits = {
         top: 100,
         left: 100,
-        width: 920,
-        height: 200,
+        width: 980,
+        classes: ["dialog", "window-dialog"],
       };
       const myDialogOptions_spes = {
         top: 100,
         left: 100,
-        width: 900,
-        height: 200,
+        width: 960,
+        classes: ["dialog", "window-dialog"],
       };
       const myDialogOptions_diff = {
         top: 100,
         left: 100,
-        width: 1000,
-        // height: 200
+        width: 1060,
+        classes: ["dialog", "window-dialog"],
       };
       const myDialogOptions_bonus = {
         top: 100,
         left: 100,
-        width: 500,
-        // height: 200
+        width: 700,
+        classes: ["dialog", "window-dialog"],
       };
+      const _fireIcon = `<i class="fas fa-fire" style="color:#e76f51"></i>`;
       animationJet();
-      if (this.actor.system.pts_ardence.value >= 1) {
-        btns_ar[1] = { label: 1, callback: () => (ptardence = 1) };
-      }
-      if (this.actor.system.pts_ardence.value >= 2) {
-        btns_ar[1] = { label: 1, callback: () => (ptardence = 1) };
-        btns_ar[2] = { label: 2, callback: () => (ptardence = 2) };
-      }
-      if (this.actor.system.pts_ardence.value >= 3) {
-        btns_ar[1] = { label: 1, callback: () => (ptardence = 1) };
-        btns_ar[2] = { label: 2, callback: () => (ptardence = 2) };
-        btns_ar[3] = { label: 3, callback: () => (ptardence = 3) };
-      }
-      if (this.actor.system.pts_ardence.value >= 4) {
-        btns_ar[1] = { label: 1, callback: () => (ptardence = 1) };
-        btns_ar[2] = { label: 2, callback: () => (ptardence = 2) };
-        btns_ar[3] = { label: 3, callback: () => (ptardence = 3) };
-        btns_ar[4] = { label: 4, callback: () => (ptardence = 4) };
+      for (let i = 1; i <= this.actor.system.pts_ardence.value; i++) {
+        btns_ar[i] = {
+          label: `${_fireIcon.repeat(i)} ${i}`,
+          callback: () => (ptardence = i),
+        };
       }
       let d_ard2 = new Dialog(
         {
           title: traitName.toUpperCase(),
           content:
-            "<div class='card-header'><span>Vous avez " +
+            "<div class='card-header'><span><i class='fas fa-fire' style='color:#e76f51'></i> ARDENCE</span></div>" +
+            "<div style='padding:12px 8px;text-align:center'><span style='font-size:1.8em;font-weight:bold;color:#e76f51'>" +
             this.actor.system.pts_ardence.value +
-            " pts d'ardence</span></div>" +
-            "<br><span class='bouton_texte'>Combien souhaitez-vous en placer ?</span><br><br>",
+            "</span> <span style='opacity:0.7'>pts disponibles</span><br><br><span class='bouton_texte'>Combien souhaitez-vous en placer ?</span></div>",
           buttons: btns_ar,
           //close: () => d.render(true)
           close: function () {
@@ -4826,15 +5281,15 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
         {
           title: traitName.toUpperCase(),
           content:
-            "<div class='card-header'><span><img src='systems/mega/images/gears.gif' width=30px; height=30px; style='border:none'>ARDENCE</span></div>&nbsp" +
-            "<br><span class='bouton_texte'>Voulez-vous placer des points d'ardence ?</span><br><br>",
+            "<div class='card-header'><span><i class='fas fa-fire' style='color:#e76f51'></i> ARDENCE</span></div>" +
+            "<div style='padding:12px 8px;text-align:center'><i class='fas fa-fire' style='font-size:2em;color:#e76f51;display:block;margin-bottom:8px'></i><span class='bouton_texte'>Voulez-vous placer des <b>points d'ardence</b> ?</span></div>",
           buttons: {
             oui: {
-              label: "NON",
+              label: `<i class="fas fa-times"></i> NON`,
               callback: () => (ardence = 0),
             },
             non: {
-              label: "OUI",
+              label: `<i class="fas fa-fire" style="color:#e76f51"></i> OUI`,
               callback: () => (ardence = 1),
             },
           },
@@ -4856,15 +5311,15 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
         {
           title: traitName.toUpperCase(),
           content:
-            "<div class='card-header'><span><img src='systems/mega/images/gears.gif' width=30px; height=30px; style='border:none'>TYPE DE TEST<span></div>&nbsp" +
-            "<br><span class='bouton_texte'>Quel type de TEST souhaitez-vous réaliser ?</span><br><br>",
+            "<div class='card-header'><span><i class='fas fa-dice-d20'></i> TYPE DE TEST</span></div>" +
+            "<div style='padding:12px 8px;text-align:center'><i class='fas fa-dice-d20' style='font-size:2em;color:#aaa;display:block;margin-bottom:8px'></i><span class='bouton_texte'>Quel <b>type de test</b> souhaitez-vous r\u00e9aliser ?</span></div>",
           buttons: {
             duel: {
-              label: "DUEL",
+              label: `<i class="fas fa-exchange-alt"></i> DUEL`,
               callback: () => (type_test = "duel"),
             },
             trois: {
-              label: "TRAITS + DOMAINE",
+              label: `<i class="fas fa-layer-group"></i> TRAITS + DOMAINE`,
               callback: () => (type_test = "trois"),
             },
           },
@@ -4891,43 +5346,43 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
         {
           title: traitName.toUpperCase(),
           content:
-            "<div class='card-header'><span><img src='systems/mega/images/gears.gif' width=30px; height=30px; style='border:none'>TRAIT N°2<span></div>&nbsp" +
-            "<br><span class='bouton_texte'>Quel TRAIT voulez-vous utiliser ?</span><br><br>",
+            "<div class='card-header'><span><i class='fas fa-user'></i> TRAIT N\u00b02</span></div>" +
+            "<div style='padding:12px 8px;text-align:center'><span class='bouton_texte'>Choisissez le second <b>Trait</b></span></div>",
           buttons: {
             vivacite: {
-              label: "VIVACITE",
+              label: `<i class="fas fa-bolt"></i> VIVACITE`,
               callback: () => (carac = "vivacite"),
             },
             sens: {
-              label: "SENS",
+              label: `<i class="fas fa-eye"></i> SENS`,
               callback: () => (carac = "sens"),
             },
             adresse: {
-              label: "ADRESSE",
+              label: `<i class="fas fa-hand-paper"></i> ADRESSE`,
               callback: () => (carac = "adresse"),
             },
             reflexion: {
-              label: "REFLEXION",
+              label: `<i class="fas fa-brain"></i> REFLEXION`,
               callback: () => (carac = "reflexion"),
             },
             ardence: {
-              label: "ARDENCE",
+              label: `<i class="fas fa-fire" style="color:#e76f51"></i> ARDENCE`,
               callback: () => (carac = "ardence"),
             },
             force: {
-              label: "FORCE",
+              label: `<i class="fas fa-fist-raised"></i> FORCE`,
               callback: () => (carac = "force"),
             },
             caractere: {
-              label: "CARACTERE",
+              label: `<i class="fas fa-star"></i> CARACTERE`,
               callback: () => (carac = "caractere"),
             },
             resonnance: {
-              label: "RESONNANCE",
+              label: `<i class="fas fa-podcast" style="color:#9b59b6"></i> RESONNANCE`,
               callback: () => (carac = "resonnance"),
             },
             endurance: {
-              label: "ENDURANCE",
+              label: `<i class="fas fa-heart" style="color:#e74c3c"></i> ENDURANCE`,
               callback: () => (carac = "endurance"),
             },
           },
@@ -4961,23 +5416,23 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
         {
           title: traitName.toUpperCase(),
           content:
-            "<div class='card-header'><span><img src='systems/mega/images/gears.gif' width=30px; height=30px; style='border:none'>DOMAINE</span></div>&nbsp" +
-            "<br><span class='bouton_texte'>Quel DOMAINE voulez-vous utiliser ?</span><br><br>",
+            "<div class='card-header'><span><i class='fas fa-layer-group'></i> DOMAINE</span></div>" +
+            "<div style='padding:12px 8px;text-align:center'><i class='fas fa-layer-group' style='font-size:2em;color:#aaa;display:block;margin-bottom:8px'></i><span class='bouton_texte'>Quel <b>Domaine</b> voulez-vous utiliser ?</span></div>",
           buttons: {
             COMMUNICATION: {
-              label: "COMMUNICATION",
+              label: `<i class="fas fa-comments"></i> COMMUNICATION`,
               callback: () => (carac2 = "communication"),
             },
             PRATIQUE: {
-              label: "PRATIQUE",
+              label: `<i class="fas fa-tools"></i> PRATIQUE`,
               callback: () => (carac2 = "pratique"),
             },
             CULTUREMILIEU: {
-              label: "CULTURE MILIEUX...",
+              label: `<i class="fas fa-book"></i> CULTURE MILIEUX...`,
               callback: () => (carac2 = "culture_milieux"),
             },
             COMBAT: {
-              label: "COMBAT",
+              label: `<i class="fas fa-fist-raised"></i> COMBAT`,
               callback: () => (carac2 = "combat"),
             },
           },
@@ -4996,9 +5451,11 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
         let label = "";
         for (let i = min; i <= max; i++) {
           if (i > 0) {
-            label = "+" + i.toString();
+            label = `<span style="color:#4caf50;font-weight:bold">+${i}</span>`;
+          } else if (i < 0) {
+            label = `<span style="color:#f44336;font-weight:bold">${i}</span>`;
           } else {
-            label = i.toString();
+            label = `<b>0</b>`;
           }
           buttons[`b${i}`] = {
             label: label,
@@ -5014,8 +5471,8 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
         {
           title: traitName.toUpperCase(),
           content:
-            "<div class='card-header'><span><img src='systems/mega/images/gears.gif' width=30px; height=30px; style='border:none'>BONUS/MALUS</span></div>&nbsp" +
-            "<br><span class='bouton_texte'>Sélectionnez le BONUS/MALUS à ajouter au pool</span><br><br>",
+            "<div class='card-header'><span><i class='fas fa-plus-minus'></i> BONUS / MALUS</span></div>" +
+            "<div style='padding:12px 8px;text-align:center'><span class='bouton_texte'>S\u00e9lectionnez le <b>Bonus/Malus</b> \u00e0 ajouter au pool</span></div>",
           buttons: bonusButtons,
           default: "b0",
           close: function () {
@@ -5049,8 +5506,8 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
         {
           title: traitName.toUpperCase(),
           content:
-            "<div class='card-header'><span><img src='systems/mega/images/gears.gif' width=30px; height=30px; style='border:none'>DIFF</span></div>&nbsp" +
-            '<br><span class="bouton_texte">Sélectionnez la DIFF ou "NC" si elle n\'est pas communiquée</span><br><br>',
+            "<div class='card-header'><span><i class='fas fa-bullseye'></i> DIFFICULT\u00c9</span></div>" +
+            "<div style='padding:12px 8px;text-align:center'><i class='fas fa-bullseye' style='font-size:2em;color:#aaa;display:block;margin-bottom:8px'></i><span class='bouton_texte'>S\u00e9lectionnez la <b>DIFF</b> ou \"NC\" si elle n'est pas communiqu\u00e9e</span></div>",
           buttons: generateDiffButtons(4, 27),
           default: "NC",
           close: () => {
@@ -5084,6 +5541,179 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
   }
 
   //Inventaire par type
+
+  /**
+   * Affiche un dialogue popup avec le tableau des défenses par localisation et par type d'attaque.
+   */
+  _onShowDefenseLocalisation() {
+    const data = this._computeDefenseByLocalisation();
+    const typeKeys = [
+      "choc",
+      "lame",
+      "balle",
+      "feu",
+      "froid",
+      "acide",
+      "rayon",
+    ];
+    const typeConfig = {
+      choc: {
+        label: "Choc",
+        icon: "systems/mega/images/flint-spark.svg",
+        color: "#e67e22",
+        bg: "rgba(230,126,34,0.18)",
+      },
+      lame: {
+        label: "Lame",
+        icon: "systems/mega/images/blade-fall.svg",
+        color: "#b0bec5",
+        bg: "rgba(176,190,197,0.15)",
+      },
+      balle: {
+        label: "Balle",
+        icon: "systems/mega/images/silver-bullet.svg",
+        color: "#2980b9",
+        bg: "rgba(41,128,185,0.18)",
+      },
+      feu: {
+        label: "Feu",
+        icon: "systems/mega/images/fire.svg",
+        color: "#e74c3c",
+        bg: "rgba(231,76,60,0.18)",
+      },
+      froid: {
+        label: "Froid",
+        icon: "systems/mega/images/frozen-orb.svg",
+        color: "#5dade2",
+        bg: "rgba(93,173,226,0.18)",
+      },
+      acide: {
+        label: "Acide",
+        icon: "systems/mega/images/chemical-drop.svg",
+        color: "#2ecc71",
+        bg: "rgba(46,204,113,0.18)",
+      },
+      rayon: {
+        label: "Rayon",
+        icon: "systems/mega/images/ringed-beam.svg",
+        color: "#9b59b6",
+        bg: "rgba(155,89,182,0.18)",
+      },
+    };
+
+    const sys = this.actor.system;
+    const baseDef =
+      (Number(sys.def?.value) || 0) +
+      (Number(sys.def_modif?.value) || 0) +
+      (Number(sys.bonus_armes_def) || 0);
+    const nbProtections = this.actor.items.filter(
+      (i) => i.type === "Protection" && i.system.equipe,
+    ).length;
+
+    let headerCells = `<th style="text-align:left; padding:6px 10px; background:rgba(0,0,0,0.35); color:#ccc; font-size:0.75em; letter-spacing:0.08em; white-space:nowrap;">ZONE</th>`;
+    for (const key of typeKeys) {
+      const t = typeConfig[key];
+      headerCells += `<th style="text-align:center; padding:6px 4px; background:${t.bg}; border-bottom:3px solid ${t.color}; min-width:54px;">
+        <img src="${t.icon}" style="width:22px;height:22px;display:block;margin:0 auto 3px;filter:drop-shadow(0 1px 2px rgba(0,0,0,0.5));" title="${t.label}" />
+        <span style="font-size:0.7em; color:${t.color}; font-weight:bold; letter-spacing:0.04em;">${t.label.toUpperCase()}</span>
+      </th>`;
+    }
+
+    let bodyRows = "";
+    data.forEach((row, idx) => {
+      const rowBg =
+        idx % 2 === 0 ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.1)";
+      let cells = `<td class="loc-zone-cell" data-rowidx="${idx}" style="padding:5px 10px; font-weight:600; font-size:0.85em; background:rgba(0,0,0,0.18); border-right:1px solid rgba(255,255,255,0.07); white-space:nowrap; color:#ddd; transition:background 0.3s,box-shadow 0.3s;">
+        <i class="fas fa-chevron-right" style="font-size:0.55em; margin-right:5px; opacity:0.4; vertical-align:middle;"></i>${row.label}
+      </td>`;
+      for (const key of typeKeys) {
+        const val = row[key];
+        const t = typeConfig[key];
+        const bonus = val - baseDef;
+        let badge;
+        if (bonus > 0) {
+          badge = `<span style="display:inline-block; background:linear-gradient(135deg,${t.color}dd,${t.color}88); color:#fff; border-radius:5px; padding:2px 8px; font-weight:bold; font-size:0.92em; box-shadow:0 1px 4px rgba(0,0,0,0.45); min-width:28px; text-align:center;">${val}<sup style="font-size:0.65em; margin-left:1px; opacity:0.85;">+${bonus}</sup></span>`;
+        } else {
+          badge = `<span style="display:inline-block; background:linear-gradient(135deg,${t.color}dd,${t.color}88); color:#fff; border-radius:5px; padding:2px 8px; font-weight:bold; font-size:0.92em; box-shadow:0 1px 4px rgba(0,0,0,0.45); min-width:28px; text-align:center;">${val}<sup style="font-size:0.65em; margin-left:1px; opacity:0.5;">0</sup></span>`;
+        }
+        cells += `<td class="loc-val-cell" data-rowidx="${idx}" style="text-align:center; padding:4px 3px; background:${rowBg}; transition:background 0.3s,box-shadow 0.3s;">${badge}</td>`;
+      }
+      bodyRows += `<tr data-zone-idx="${idx}">${cells}</tr>`;
+    });
+
+    const content = `
+      <style>
+        @keyframes loc-pulse {
+          0%,100% { box-shadow: inset 0 0 0 2px rgba(255,215,0,0.9); background: rgba(255,215,0,0.18) !important; }
+          50%      { box-shadow: inset 0 0 0 2px #ffd700;             background: rgba(255,215,0,0.32) !important; }
+        }
+        .loc-highlighted { animation: loc-pulse 1.1s ease-in-out infinite !important; }
+        #btn-random-loc { display:inline-flex !important; align-items:center; gap:6px; padding:6px 12px !important;
+          background:linear-gradient(135deg,#c0392b,#8e2417) !important; border:none !important; border-radius:6px !important;
+          color:#fff !important; font-weight:bold; font-size:0.82em !important; cursor:pointer;
+          box-shadow:0 2px 6px rgba(0,0,0,0.5) !important; transition:transform 0.1s,box-shadow 0.1s !important;
+          min-width:unset !important; width:auto !important; }
+        #btn-random-loc:hover { transform:scale(1.06); box-shadow:0 3px 10px rgba(192,57,43,0.7) !important; }
+        #btn-random-loc:active { transform:scale(0.95); }
+        #btn-random-loc .fa-dice-d6 { font-size:1.2em; }
+        @keyframes dice-spin { 0%{transform:rotate(0deg) scale(1.3)} 100%{transform:rotate(360deg) scale(1.3)} }
+        .dice-rolling { animation: dice-spin 0.4s linear; }
+      </style>
+      <div style="font-family:inherit; margin:-4px; padding-bottom:50px;">
+        <div style="background:linear-gradient(135deg,rgba(14,68,114,0.75),rgba(26,111,168,0.5)); padding:12px 16px; margin-bottom:12px; border-radius:4px; display:flex; align-items:center; gap:12px;">
+          <i class="fas fa-person" style="font-size:2em; color:#7ec8f0; text-shadow:0 0 10px rgba(126,200,240,0.6);"></i>
+          <div style="flex:1;">
+            <div style="font-weight:bold; font-size:1.05em; color:#e8f4ff; text-shadow:0 1px 3px rgba(0,0,0,0.5);">${this.actor.name}</div>
+            <div style="font-size:0.78em; color:#acd4ee; margin-top:3px;">
+              <i class="fas fa-shield-halved" style="margin-right:4px;"></i>DEF de base : <strong style="color:#fff; font-size:1.1em;">${baseDef}</strong>
+              &nbsp;&nbsp;<i class="fas fa-vest" style="margin-right:4px;"></i>Protections : <strong style="color:#fff;">${nbProtections}</strong>
+            </div>
+          </div>
+          <div style="display:flex; flex-direction:column; align-items:center; gap:5px;">
+            <button id="btn-random-loc"><i class="fas fa-dice-d6"></i> Zone al&eacute;atoire</button>
+            <span id="random-loc-result" style="font-size:0.75em; color:#fde68a; font-weight:bold; min-height:1.2em; text-align:center; text-shadow:0 0 8px rgba(253,230,138,0.7); letter-spacing:0.04em;"></span>
+          </div>
+        </div>
+        <div style="overflow-x:auto;">
+          <table style="width:100%; border-collapse:collapse; font-size:0.87em;">
+            <thead><tr>${headerCells}</tr></thead>
+            <tbody id="loc-table-body">${bodyRows}</tbody>
+          </table>
+        </div>
+        <div style="margin-top:10px; font-size:0.7em; color:#666; text-align:right; padding-right:2px;">
+          <i class="fas fa-circle-info" style="margin-right:3px;"></i>Les badges colorés indiquent un bonus de protection actif. Le bouton dé tire une zone au hasard.
+        </div>
+      </div>
+    `;
+
+    new Dialog(
+      {
+        title: `Défense par localisation — ${this.actor.name}`,
+        content,
+        buttons: { close: { label: "<i class='fas fa-times'></i> Fermer" } },
+        default: "close",
+        render: (html) => {
+          html.find("#btn-random-loc").on("click", function () {
+            const idx = Math.floor(Math.random() * data.length);
+            // Surbrillance
+            html.find("td.loc-highlighted").removeClass("loc-highlighted");
+            html.find(`td[data-rowidx="${idx}"]`).addClass("loc-highlighted");
+            // Nom de la zone
+            html.find("#random-loc-result").text(`\u27a4 ${data[idx].label}`);
+            // Animation du dé
+            const $icon = $(this).find(".fa-dice-d6");
+            $icon.addClass("dice-rolling");
+            setTimeout(() => $icon.removeClass("dice-rolling"), 420);
+            // Scroll vers la ligne
+            const $row = html.find(`tr[data-zone-idx="${idx}"]`);
+            if ($row.length)
+              $row[0].scrollIntoView({ behavior: "smooth", block: "nearest" });
+          });
+        },
+      },
+      { width: 640, height: "auto", classes: ["window-dialog"] },
+    ).render(true);
+  }
 
   _prepareItems(context) {
     const gear = [];
@@ -5187,12 +5817,14 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
     const myDialogOptions = {
       top: 100,
       left: 100,
+      classes: ["dialog", "talent-info-dialog"],
     };
     const myDialogOptions_ardence = {
       top: 100,
       left: 100,
       width: 600,
       height: 200,
+      classes: ["dialog", "talent-info-dialog"],
     };
     if (ptardence >= 1) {
       btns_1[0] = { label: "Passer", callback: () => (ardence_talent = 0) };
@@ -5229,9 +5861,9 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
           "<div class='card-header'><span>Ardence <i class='fas fa-angle-double-right'></i> " +
           comp +
           " ?</span></div>" +
-          "<br><span class='bouton_texte'>Combien de rangs voulez-vous ajouter au TALENT " +
+          "<br><center><span class='bouton_texte'>Combien de rangs voulez-vous ajouter au <b>Talent " +
           nomComp.toUpperCase() +
-          " ?</span><br><br>",
+          "</b> ?</span><br><br>",
         buttons: btns_1,
         close: function () {
           rgardencetotal = rgardencetotal - ardence_talent;
@@ -5312,9 +5944,9 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
           "<div class='card-header'><span>Ardence <i class='fas fa-angle-double-right'></i> " +
           this.actor.system.talents[comp].domaine +
           " ?</span></div>" +
-          "<br><span class='bouton_texte'>combien de rangs voulez-vous ajouter au DOMAINE " +
+          "<br><center><span class='bouton_texte'>Combien de rangs voulez-vous ajouter au <b>Domaine " +
           nomDomaine.toUpperCase() +
-          " ?</span><br><br>",
+          "</b> ?</span><br><br>",
         buttons: btns_2,
         close: function () {
           rgardencetotal = rgardencetotal - ardence_domaine;
@@ -5370,7 +6002,7 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
         title: nomComp.toUpperCase(),
         content:
           "<div class='card-header'><span>Ardence <i class='fas fa-angle-double-right'></i> Pouvoir PSI ?</span></div>" +
-          "<br><span class='bouton_texte'>combien de rangs voulez-vous ajouter au Pouvoir PSI ?</span><br><br>",
+          "<br><center><span class='bouton_texte'>Combien de rangs voulez-vous ajouter au <b>Pouvoir PSI</b> ?</span><br><br>",
         buttons: btns_3,
         close: function () {
           rgardencetotal = rgardencetotal - ardence_trait;
@@ -5400,7 +6032,7 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
         title: nomComp.toUpperCase(),
         content:
           "<div class='card-header'><span>Ardence <i class='fas fa-angle-double-right'></i> RÉSONNANCE ?</span></div>" +
-          "<br><span class='bouton_texte'>combien de rangs voulez-vous ajouter au TRAIT RÉSONNANCE ?</span><br><br>",
+          "<br><center><span class='bouton_texte'>Combien de rangs voulez-vous ajouter au <b>Trait Résonnance</b> ?</span><br><br>",
         buttons: btns_2,
         close: function () {
           rgardencetotal = rgardencetotal - ardence_domaine;
@@ -5463,7 +6095,7 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
           "<div class='card-header'><span>Ardence <i class='fas fa-angle-double-right'></i> " +
           trait +
           " ?</span></div>" +
-          "<br><span class='bouton_texte'>combien de rangs voulez-vous ajouter au TRAIT " +
+          "<br><center><span class='bouton_texte'>Combien de rangs voulez-vous ajouter au <b>Trait " +
           trait.toUpperCase() +
           " ?</span><br><br>",
         buttons: btns_3,
@@ -5742,13 +6374,21 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
       }
     }
 
+    // Supprimer les termes 1d0 de la formule (valeur à 0)
+    rollFormula = rollFormula
+      .replace(/1d0\s*\+\s*/g, "")
+      .replace(/\s*\+\s*1d0\b/g, "")
+      .trim();
+
     let des = rollFormula.match(/\d+d\d+/g);
     let type_jet = this.actor.system.talents[comp].label;
     if (pouvoir === 1) {
-      this.actor.update({
-        "system.pts_resonnance.value":
-          this.actor.system.pts_resonnance.value - 1,
-      });
+      if (retraitAuto) {
+        this.actor.update({
+          "system.pts_resonnance.value":
+            this.actor.system.pts_resonnance.value - 1,
+        });
+      }
     }
     async function rollDice(diceArray, n, bonuspool, type_jet) {
       let results = await Promise.all(
@@ -5778,7 +6418,7 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
           diceArray,
           results,
           bonuspool,
-          `${entete}<div><span><p style=\"background-color:#A3B6BB; color:white; font-size: 22px; text-align:center; text-shadow: 1px 1px 2px black;\">JET INITIAL (DIFF ${diff})</p></div></span>`,
+          `${entete}<div class="mega-roll-diff"><i class="fas fa-dice-d6"></i> JET INITIAL — DIFF ${diff}</div>`,
         );
       }
 
@@ -5795,7 +6435,7 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
             diceArray,
             results,
             bonuspool,
-            `${entete}<div><span><p style=\"background-color:#A3B6BB; color:white; font-size: 22px; text-align:center; text-shadow: 1px 1px 2px black;\">RELANCE (DIFF ${diff})</p></div></span><br>Vous avez relancé : ${rerolledDie}`,
+            `${entete}<div class="mega-roll-reroll"><i class="fas fa-sync-alt"></i> RELANCE — DIFF ${diff}</div><div class="mega-roll-reroll-info"><i class="fas fa-redo"></i> Dé relancé : ${rerolledDie}</div>`,
           );
         }
       }
@@ -5817,25 +6457,25 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
           final = Math.floor(final / 3);
           result_diff =
             entete +
-            '<div><span><p style="background-color:#A3B6BB; color:white; font-size: 22px; text-align:center; text-shadow: 1px 1px 2px black;">DIFF ' +
+            '<div class="mega-roll-diff"><i class="fas fa-bullseye"></i> DIFF ' +
             diff +
-            '</p></div></span><div><span><b><p style="background-color:green; color:white; text-align:center; text-shadow: 1px 1px 2px black; font-size: 16px;";>Reussite - Marge de reussite : ' +
+            '</div><div class="mega-roll-success"><i class="fas fa-check-circle"></i> Réussite <span class="mega-roll-margin">Marge : ' +
             final +
-            "</p></b></div></span>";
+            "</span></div>";
         } else {
           final = Math.ceil(final / 3);
           result_diff =
             entete +
-            '<div><span><p style="background-color:#A3B6BB; color:white; font-size: 22px; text-align:center; text-shadow: 1px 1px 2px black;">DIFF ' +
+            '<div class="mega-roll-diff"><i class="fas fa-bullseye"></i> DIFF ' +
             diff +
-            '</p></div></span><div><span><b><p style="background-color:red; color:white; text-align:center; text-shadow: 1px 1px 2px black; font-size: 16px;";>Echec - Marge d\'echec : ' +
+            '</div><div class="mega-roll-failure"><i class="fas fa-times-circle"></i> Échec <span class="mega-roll-margin">Marge : ' +
             final +
-            "</p></b></div></span>";
+            "</span></div>";
         }
       } else {
         result_diff =
           entete +
-          '<div><span><p style="background-color:#A3B6BB; color:white; font-size: 22px; text-align:center; text-shadow: 1px 1px 2px black;">DIFF NC</p></div></span>';
+          '<div class="mega-roll-diff mega-roll-diff-nc"><i class="fas fa-question-circle"></i> DIFF NC</div>';
       }
 
       await postToChat(diceArray, results, bonuspool, `${result_diff}`);
@@ -5853,29 +6493,25 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
 
     async function chooseDieToReroll(diceArray, results) {
       return new Promise((resolve) => {
-        let content = `<br><span class="bouton_texte">Choisissez le dé à relancer ou validez ce jet :</span><br><br>
-							   <center><select id="reroll-select">
-								 <option value="null">Valider le jet</option>`;
+        let buttons = {
+          validate: {
+            label: `<i class="fas fa-check"></i><br><span style="font-size:0.8em">Valider le jet</span>`,
+            callback: () => resolve(null),
+          },
+        };
         results.forEach((result, index) => {
-          content += `<option value="${index}">Relancer ${diceArray[index]} (${result})</option>`;
+          buttons[`die_${index}`] = {
+            label: `<span style="display:flex;flex-direction:column;align-items:center;gap:2px"><i class="fas fa-dice"></i><span style="font-size:0.85em;opacity:0.85">${diceArray[index]}</span><span style="font-size:1.3em;font-weight:bold">${result}</span></span>`,
+            callback: () => resolve(index),
+          };
         });
-        content += `</select></center><br>`;
-
         new Dialog(
           {
             title: "RELANCE",
             content:
-              "<div class='card-header'><span><img src='systems/mega/images/gears.gif' width=30px; height=30px; style='border:none'>Relancer un dé</span></div>" +
-              content,
-            buttons: {
-              ok: {
-                label: "OK",
-                callback: (html) => {
-                  let index = html.find("#reroll-select").val();
-                  resolve(index === "null" ? null : parseInt(index));
-                },
-              },
-            },
+              "<div class='card-header'><span>Relancer un dé</span></div>" +
+              `<br><center><span class="bouton_texte">Cliquez sur un dé pour le relancer, ou validez ce jet</span></center><br>`,
+            buttons: buttons,
             close: () => resolve(null),
           },
           myDialogOptions_relance,
@@ -6008,7 +6644,6 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
     combat = Math.max(combat, 1);
 
     mod = parseInt(mod) + parseInt(bonus);
-    console.log("comp : " + comp);
     if (comp == "charge") {
       if (mod !== 0) {
         if (bonuspool !== 0) {
@@ -6110,9 +6745,9 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
           new Sequence()
             .effect()
             .file(effet_arme)
-            .atLocation({
-              x: canvas.tokens.controlled[0].x + offX,
-              y: canvas.tokens.controlled[0].y + offY,
+            .atLocation(canvas.tokens.controlled[0], {
+              offset: { x: offX, y: offY },
+              gridUnits: false,
             })
             .stretchTo(target)
             .repeats(3, 200, 300)
@@ -6142,19 +6777,19 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
         if (result_final >= 0) {
           marge = Math.floor(result_final / 3);
           result_diff =
-            '<p style="background-color:#A3B6BB; color:white; font-size: 22px; text-align:center; text-shadow: 1px 1px 2px black;">DIFF ' +
+            '<div class="mega-roll-diff"><i class="fas fa-bullseye"></i> DIFF ' +
             def_temp +
-            '</p></div></span><div><span><b><p style="background-color:green; color:white; text-align:center; text-shadow: 1px 1px 2px black; font-size: 16px;";>Reussite - Marge de reussite : ' +
+            '</div><div class="mega-roll-success"><i class="fas fa-check-circle"></i> R\u00e9ussite <span class="mega-roll-margin">Marge : ' +
             marge +
-            "</p></b></div></span>";
+            "</span></div>";
         } else {
           marge = Math.ceil(result_final / 3);
           result_diff =
-            '<div><span><b><p style="background-color:#A3B6BB; color:white; font-size: 22px; text-align:center; text-shadow: 1px 1px 2px black;">DIFF ' +
+            '<div class="mega-roll-diff"><i class="fas fa-bullseye"></i> DIFF ' +
             def_temp +
-            '</p></div></span><div><span><b><p style="background-color:red; color:white; text-align:center; text-shadow: 1px 1px 2px black; font-size: 16px;";>Echec - Marge d\'echec : ' +
+            '</div><div class="mega-roll-failure"><i class="fas fa-times-circle"></i> \u00c9chec <span class="mega-roll-margin">Marge : ' +
             marge +
-            "</p></b></div></span>";
+            "</span></div>";
         }
         if (marge === 0 && result_final >= 0) {
           melee_perdue = this.actor.system.talents_combat[comp].av0;
@@ -6189,14 +6824,14 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
 
         function getEffetCoupHtml(effet) {
           const effets = {
-            H: '<span><div class="chat_effet_immediat">Immédiat : HANDICAPER></div></Span>',
-            A: '<span><div class="chat_effet_immediat">Immédiat : ASSOMMER</div></Span>',
-            S: '<span><div class="chat_effet_immediat">Immédiat : SONNER</div></Span>',
-            R: '<span><div class="chat_effet_immediat">Immédiat : RENVERSER</div></Span>',
-            I: '<span><div class="chat_effet_immediat">Immédiat : IMMOBILISER</div></Span>',
-            P: '<span><div class="chat_effet_action">Prochaine action : POSITIONNEMENT</div></Span>',
-            T: '<span><divclass="chat_effet_att">Prochaine attaque : TENIR A DISTANCE</div></Span>',
-            D: '<span><div class="chat_effet_def">Prochaine défense : DÉFAUT DE LA CUIRASSE</div></Span>',
+            H: '<div class="chat_effet_immediat"><i class="fas fa-bolt"></i> Immédiat : HANDICAPER</div>',
+            A: '<div class="chat_effet_immediat"><i class="fas fa-bolt"></i> Immédiat : ASSOMMER</div>',
+            S: '<div class="chat_effet_immediat"><i class="fas fa-bolt"></i> Immédiat : SONNER</div>',
+            R: '<div class="chat_effet_immediat"><i class="fas fa-bolt"></i> Immédiat : RENVERSER</div>',
+            I: '<div class="chat_effet_immediat"><i class="fas fa-bolt"></i> Immédiat : IMMOBILISER</div>',
+            P: '<div class="chat_effet_action"><i class="fas fa-running"></i> Prochaine action : POSITIONNEMENT</div>',
+            T: '<div class="chat_effet_att"><i class="fas fa-bullseye"></i> Prochaine attaque : TENIR A DISTANCE</div>',
+            D: '<div class="chat_effet_def"><i class="fas fa-shield-alt"></i> Prochaine défense : DÉFAUT DE LA CUIRASSE</div>',
           };
           return effets[effet] || "";
         }
@@ -6211,25 +6846,27 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
           if (marge >= 0 && result_final >= 0 && marge == 0) {
             result_diff =
               result_diff +
-              '<p class="result_diff"> ' +
+              '<div class="mega-roll-damage-melee"><i class="fas fa-shield-alt"></i> ' +
               game.user.targets.values().next().value.name +
-              " perd " +
+              " perd <strong>" +
               melee_perdue +
-              " points de melee</p>";
+              "</strong>pt de Mêlée</div>";
           }
-          vie_perdue = calcViePerdue(marge, comp, this.actor);
+          const _dmc2 = calcViePerdue(melee_perdue, comp, this.actor);
+          vie_perdue = _dmc2.vie_perdue;
           result_diff =
             result_diff +
-            '<p class="result_diff"> ' +
+            '<div class="mega-roll-damage-vie"><i class="fas fa-heart"></i> ' +
             game.user.targets.values().next().value.name +
-            " perd " +
+            " perd <strong>" +
             vie_perdue +
-            " points de vie</p>";
+            "</strong>pt de Vie</div>";
           // TODO : enelever l'automatisme pour charge + bagarre
           if (retraitAuto) {
             const updatePromise = safeDocumentUpdate(currentTarget, {
               "system.health.value":
                 currentTarget.system.health.value - vie_perdue,
+              "system.melee_impair": _dmc2.new_melee_impair,
             });
             if (updatePromise) {
               updatePromise.then(() => {
@@ -6282,9 +6919,9 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
             comp +
             " data-melee=" +
             melee_perdue +
-            "> Conso 0Av <br> -" +
+            "><i class='fas fa-coins'></i> <b>0Av</b><br>-" +
             melee_perdue +
-            "pt de Mêlée " +
+            " pt Mêlée " +
             effet_0av_1 +
             " " +
             effet_0av_2 +
@@ -6304,9 +6941,9 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
             comp +
             " data-melee=" +
             melee_perdue_1av +
-            "> Conso 1Av <br> -" +
+            "><i class='fas fa-coins'></i> <b>1Av</b><br>-" +
             melee_perdue_1av +
-            "pt de Mêlée " +
+            " pt Mêlée " +
             effet_1av_1 +
             " " +
             effet_1av_2 +
@@ -6341,9 +6978,9 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
             comp +
             " data-melee=" +
             melee_perdue +
-            "> Conso 0Av <br> -" +
+            "><i class='fas fa-coins'></i> <b>0Av</b><br>-" +
             melee_perdue +
-            "pt de Mêlée " +
+            " pt Mêlée " +
             effet_0av_1 +
             " " +
             effet_0av_2 +
@@ -6363,9 +7000,9 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
             comp +
             " data-melee=" +
             melee_perdue_1av +
-            "> Conso 1Av <br> -" +
+            "><i class='fas fa-coins'></i> <b>1Av</b><br>-" +
             melee_perdue_1av +
-            "pt de Mêlée " +
+            " pt Mêlée " +
             effet_1av_1 +
             " " +
             effet_1av_2 +
@@ -6385,9 +7022,9 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
             comp +
             " data-melee=" +
             melee_perdue_2av +
-            "> Conso 2Av <br> -" +
+            "><i class='fas fa-coins'></i> <b>2Av</b><br>-" +
             melee_perdue_2av +
-            "pt de Mêlée " +
+            " pt Mêlée " +
             effet_2av_1 +
             " " +
             effet_2av_2 +
@@ -6426,9 +7063,9 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
             comp +
             " data-melee=" +
             melee_perdue +
-            "> Conso 0Av <br> -" +
+            "><i class='fas fa-coins'></i> <b>0Av</b><br>-" +
             melee_perdue +
-            "pt de Mêlée " +
+            " pt Mêlée " +
             effet_0av_1 +
             " " +
             effet_0av_2 +
@@ -6448,9 +7085,9 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
             comp +
             " data-melee=" +
             melee_perdue_1av +
-            "> Conso 1Av <br> -" +
+            "><i class='fas fa-coins'></i> <b>1Av</b><br>-" +
             melee_perdue_1av +
-            "pt de Mêlée " +
+            " pt Mêlée " +
             effet_1av_1 +
             " " +
             effet_1av_2 +
@@ -6470,9 +7107,9 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
             comp +
             " data-melee=" +
             melee_perdue_2av +
-            "> Conso 2Av <br> -" +
+            "><i class='fas fa-coins'></i> <b>2Av</b><br>-" +
             melee_perdue_2av +
-            "pt de Mêlée " +
+            " pt Mêlée " +
             effet_2av_1 +
             " " +
             effet_2av_2 +
@@ -6492,9 +7129,9 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
             comp +
             " data-melee=" +
             melee_perdue_3av +
-            "> Conso 3Av <br> -" +
+            "><i class='fas fa-coins'></i> <b>3Av</b><br>-" +
             melee_perdue_3av +
-            "pt de Mêlée " +
+            " pt Mêlée " +
             effet_3av_1 +
             " " +
             effet_3av_2 +
@@ -6511,11 +7148,11 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
             "<div class='card-header'><span> " +
             type_jet +
             "</span></div>" +
-            '<div><span><b><p style="font-size: 18px; text-align:center;";>' +
+            '<div class="mega-roll-attacker"><i class="fas fa-crosshairs"></i> ' +
             canvas.tokens.controlled[0].name +
             " attaque " +
             game.user.targets.values().next().value.name +
-            "</b></p></span></div>" +
+            "</div>" +
             result_diff +
             mention +
             assomme,
@@ -6591,6 +7228,11 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
       if (bonuspool !== 0) {
         rollFormula += ` + ${bonuspool}`;
       }
+      // Supprimer les termes 1d0 de la formule (valeur à 0)
+      rollFormula = rollFormula
+        .replace(/1d0\s*\+\s*/g, "")
+        .replace(/\s*\+\s*1d0\b/g, "")
+        .trim();
       return new Roll(rollFormula);
     }
 
@@ -6627,8 +7269,8 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
           let selectedToken = canvas.tokens.controlled[0];
           let targets = Array.from(game.user.targets);
           const effets_speciaux = effectsState.shouldPlayEffects;
-          let offX = Number(arme[0].system.effet_offX.value);
-          let offY = Number(arme[0].system.effet_offY.value);
+          let offX = Number(arme[0].system.effet_offX?.value ?? 0);
+          let offY = Number(arme[0].system.effet_offY?.value ?? 0);
           for (let target of targets) {
             const distance = canvas.grid
               .measureDistance(selectedToken, target)
@@ -6711,19 +7353,19 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
         if (result_final >= 0) {
           marge = Math.floor(result_final / 3);
           result_diff =
-            '<p style="background-color:#A3B6BB; color:white; font-size: 22px; text-align:center; text-shadow: 1px 1px 2px black;">DIFF ' +
+            '<div class="mega-roll-diff"><i class="fas fa-bullseye"></i> DIFF ' +
             diff +
-            '</p></div></span><div><span><b><p style="background-color:green; color:white; text-align:center; text-shadow: 1px 1px 2px black; font-size: 16px;";>Reussite - Marge de reussite : ' +
+            '</div><div class="mega-roll-success"><i class="fas fa-check-circle"></i> R\u00e9ussite <span class="mega-roll-margin">Marge : ' +
             marge +
-            "</p></b></div></span>";
+            "</span></div>";
         } else {
           marge = Math.ceil(result_final / 3);
           result_diff =
-            '<div><span><b><p style="background-color:#A3B6BB; color:white; font-size: 22px; text-align:center; text-shadow: 1px 1px 2px black;">DIFF ' +
+            '<div class="mega-roll-diff"><i class="fas fa-bullseye"></i> DIFF ' +
             diff +
-            '</p></div></span><div><span><b><p style="background-color:red; color:white; text-align:center; text-shadow: 1px 1px 2px black; font-size: 16px;";>Echec - Marge d\'echec : ' +
+            '</div><div class="mega-roll-failure"><i class="fas fa-times-circle"></i> \u00c9chec <span class="mega-roll-margin">Marge : ' +
             marge +
-            "</p></b></div></span>";
+            "</span></div>";
         }
 
         /**********Points de mêlées perdus + effets ************/
@@ -6749,9 +7391,9 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
 
             if (marge === 0 || marge > 3) {
               if (letale) {
-                result_diff += `<p class="result_diff"> ${
+                result_diff += `<div class="mega-roll-damage-melee"><i class="fas fa-shield-alt"></i> ${
                   game.user.targets.values().next().value.name
-                } perd ${melee_perdue} points de melee</p>`;
+                } perd <strong>${melee_perdue}</strong>pt de Mêlée</div>`;
               }
             }
           }
@@ -6760,14 +7402,14 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
 
           function getEffetCoupHtml(effet) {
             const effets = {
-              H: '<span><div class="chat_effet_immediat">Immédiat : HANDICAPER></div></Span>',
-              A: '<span><div class="chat_effet_immediat">Immédiat : ASSOMMER</div></Span>',
-              S: '<span><div class="chat_effet_immediat">Immédiat : SONNER</div></Span>',
-              R: '<span><div class="chat_effet_immediat">Immédiat : RENVERSER</div></Span>',
-              I: '<span><div class="chat_effet_immediat">Immédiat : IMMOBILISER</div></Span>',
-              P: '<span><div class="chat_effet_action">Prochaine action : POSITIONNEMENT</div></Span>',
-              T: '<span><divclass="chat_effet_att">Prochaine attaque : TENIR A DISTANCE</div></Span>',
-              D: '<span><div class="chat_effet_def">Prochaine défense : DÉFAUT DE LA CUIRASSE</div></Span>',
+              H: '<div class="chat_effet_immediat"><i class="fas fa-bolt"></i> Immédiat : HANDICAPER</div>',
+              A: '<div class="chat_effet_immediat"><i class="fas fa-bolt"></i> Immédiat : ASSOMMER</div>',
+              S: '<div class="chat_effet_immediat"><i class="fas fa-bolt"></i> Immédiat : SONNER</div>',
+              R: '<div class="chat_effet_immediat"><i class="fas fa-bolt"></i> Immédiat : RENVERSER</div>',
+              I: '<div class="chat_effet_immediat"><i class="fas fa-bolt"></i> Immédiat : IMMOBILISER</div>',
+              P: '<div class="chat_effet_action"><i class="fas fa-running"></i> Prochaine action : POSITIONNEMENT</div>',
+              T: '<div class="chat_effet_att"><i class="fas fa-bullseye"></i> Prochaine attaque : TENIR A DISTANCE</div>',
+              D: '<div class="chat_effet_def"><i class="fas fa-shield-alt"></i> Prochaine défense : DÉFAUT DE LA CUIRASSE</div>',
             };
             return effets[effet] || "";
           }
@@ -6785,22 +7427,20 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
               melee_perdue = 0;
             }
             if ((marge == 0 || marge > 3) && result_final >= 0) {
-              if (melee_perdue !== 0) {
-                vie_perdue = calcViePerdue(melee_perdue, comp, this.actor);
-              } else {
-                vie_perdue = 0;
-              }
+              const _dmc3 = calcViePerdue(melee_perdue, comp, this.actor);
+              vie_perdue = _dmc3.vie_perdue;
               result_diff =
                 result_diff +
-                '<p class="result_diff"> ' +
+                '<div class="mega-roll-damage-vie"><i class="fas fa-heart"></i> ' +
                 game.user.targets.values().next().value.name +
-                " perd " +
+                " perd <strong>" +
                 vie_perdue +
-                " points de vie</p>";
+                "</strong> pt de Vie</div>";
               if (retraitAuto) {
                 const updatePromise = safeDocumentUpdate(currentTarget, {
                   "system.health.value":
                     currentTarget.system.health.value - vie_perdue,
+                  "system.melee_impair": _dmc3.new_melee_impair,
                 });
                 if (updatePromise) {
                   updatePromise.then(() => {
@@ -6859,9 +7499,9 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
                 comp +
                 " data-melee=" +
                 melee_perdue +
-                "> Conso 0Av <br> -" +
+                "><i class='fas fa-coins'></i> <b>0Av</b><br>-" +
                 melee_perdue +
-                "pt de Mêlée " +
+                " pt Mêlée " +
                 effet_0av_1 +
                 " " +
                 effet_0av_2 +
@@ -6881,9 +7521,9 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
                 comp +
                 " data-melee=" +
                 melee_perdue_1av +
-                "> Conso 1Av <br> -" +
+                "><i class='fas fa-coins'></i> <b>1Av</b><br>-" +
                 melee_perdue_1av +
-                "pt de Mêlée " +
+                " pt Mêlée " +
                 effet_1av_1 +
                 " " +
                 effet_1av_2 +
@@ -6924,9 +7564,9 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
                 comp +
                 " data-melee=" +
                 melee_perdue +
-                "> Conso 0Av <br> -" +
+                "><i class='fas fa-coins'></i> <b>0Av</b><br>-" +
                 melee_perdue +
-                "pt de Mêlée " +
+                " pt Mêlée " +
                 effet_0av_1 +
                 " " +
                 effet_0av_2 +
@@ -6946,9 +7586,9 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
                 comp +
                 " data-melee=" +
                 melee_perdue_1av +
-                "> Conso 1Av <br> -" +
+                "><i class='fas fa-coins'></i> <b>1Av</b><br>-" +
                 melee_perdue_1av +
-                "pt de Mêlée " +
+                " pt Mêlée " +
                 effet_1av_1 +
                 " " +
                 effet_1av_2 +
@@ -6968,9 +7608,9 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
                 comp +
                 " data-melee=" +
                 melee_perdue_2av +
-                "> Conso 2Av <br> -" +
+                "><i class='fas fa-coins'></i> <b>2Av</b><br>-" +
                 melee_perdue_2av +
-                "pt de Mêlée " +
+                " pt Mêlée " +
                 effet_2av_1 +
                 " " +
                 effet_2av_2 +
@@ -7018,9 +7658,9 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
                 comp +
                 " data-melee=" +
                 melee_perdue +
-                "> Conso 0Av <br> -" +
+                "><i class='fas fa-coins'></i> <b>0Av</b><br>-" +
                 melee_perdue +
-                "pt de Mêlée " +
+                " pt Mêlée " +
                 effet_0av_1 +
                 " " +
                 effet_0av_2 +
@@ -7040,9 +7680,9 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
                 comp +
                 " data-melee=" +
                 melee_perdue_1av +
-                "> Conso 1Av <br> -" +
+                "><i class='fas fa-coins'></i> <b>1Av</b><br>-" +
                 melee_perdue_1av +
-                "pt de Mêlée " +
+                " pt Mêlée " +
                 effet_1av_1 +
                 " " +
                 effet_1av_2 +
@@ -7062,9 +7702,9 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
                 comp +
                 " data-melee=" +
                 melee_perdue_2av +
-                "> Conso 2Av <br> -" +
+                "><i class='fas fa-coins'></i> <b>2Av</b><br>-" +
                 melee_perdue_2av +
-                "pt de Mêlée " +
+                " pt Mêlée " +
                 effet_2av_1 +
                 " " +
                 effet_2av_2 +
@@ -7084,9 +7724,9 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
                 comp +
                 " data-melee=" +
                 melee_perdue_3av +
-                "> Conso 3Av <br> -" +
+                "><i class='fas fa-coins'></i> <b>3Av</b><br>-" +
                 melee_perdue_3av +
-                "pt de Mêlée " +
+                " pt Mêlée " +
                 effet_3av_1 +
                 " " +
                 effet_3av_2 +
@@ -7107,11 +7747,11 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
               "<div class='card-header'><span> " +
               type_jet +
               "</span></div>" +
-              '<div><span><b><p style="font-size: 18px; text-align:center;;";>' +
+              '<div class="mega-roll-attacker"><i class="fas fa-crosshairs"></i> ' +
               Nom_acteur +
               " attaque " +
               nomCible +
-              "</b></p></span></div>" +
+              "</div>" +
               result_diff +
               mention +
               assomme,
@@ -7129,15 +7769,15 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
                 "<div class='card-header'><span>" +
                 type_jet +
                 "</span></div><br>" +
-                '<div><span><b><p style="font-size: 18px; text-align:center;">' +
+                '<div class="mega-roll-attacker"><i class="fas fa-crosshairs"></i> ' +
                 Nom_acteur +
                 " attaque " +
                 nomCible +
-                "</b></p></span></div>" +
+                "</div>" +
                 result_diff +
-                '<p class="result_diff">' +
+                '<div class="result_diff">' +
                 noLetaleMsg +
-                "</p>",
+                "</div>",
               speaker: ChatMessage.getSpeaker({
                 actor: this.actor,
               }),
@@ -7184,12 +7824,14 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
     const myDialogOptions = {
       top: 100,
       left: 100,
+      classes: ["dialog", "window-dialog"],
     };
     const myDialogOptions_ardence = {
       top: 100,
       left: 100,
       width: 600,
       height: 200,
+      classes: ["dialog", "window-dialog"],
     };
     if (retraitAuto) {
       this.actor.update({
@@ -7226,9 +7868,9 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
           "<div class='card-header'><span>Ardence <i class='fas fa-angle-double-right'></i> " +
           comp +
           " ?</span></div>" +
-          "<br><span class='bouton_texte'>combien de rangs voulez-vous ajouter au TRAIT " +
+          "<br><center><span class='bouton_texte'>Combien de rangs voulez-vous ajouter au <b>Trait " +
           comp.toUpperCase() +
-          " ?</span><br><br>",
+          "</b> ?</span><br><br>",
         buttons: btns_1,
         close: function () {
           rgardencetotal = rgardencetotal - ardence_domaine;
@@ -7286,9 +7928,9 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
           "<div class='card-header'><span>Ardence <i class='fas fa-angle-double-right'></i> " +
           this.actor.system.caracs[carac].label +
           "</span></div>" +
-          "<br><span class='bouton_texte'>combien de rangs voulez-vous ajouter au TRAIT " +
+          "<br><center><span class='bouton_texte'>Combien de rangs voulez-vous ajouter au <b>Trait " +
           this.actor.system.caracs[carac].label.toUpperCase() +
-          " ?</span><br><br>",
+          "</b> ?</span><br><br>",
         buttons: btns_2,
         close: function () {
           rgardencetotal = rgardencetotal - ardence_trait1;
@@ -7380,7 +8022,7 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
                     diceArray,
                     results,
                     bonuspool,
-                    `${entete}<div><span><p style=\"background-color:#A3B6BB; color:white; font-size: 22px; text-align:center; text-shadow: 1px 1px 2px black;\">JET INITIAL</p></div></span>`,
+                    `${entete}<div class="mega-roll-diff"><i class="fas fa-dice-d6"></i> JET INITIAL</div>`,
                   );
                 }
 
@@ -7397,7 +8039,7 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
                       diceArray,
                       results,
                       bonuspool,
-                      `${entete}<div><span><p style=\"background-color:#A3B6BB; color:white; font-size: 22px; text-align:center; text-shadow: 1px 1px 2px black;\">RELANCE</p></div></span><br>Vous avez relancé : ${rerolledDie}`,
+                      `${entete}<div class="mega-roll-reroll"><i class="fas fa-sync-alt"></i> RELANCE</div><div class="mega-roll-reroll-info"><i class="fas fa-redo"></i> Dé relancé : ${rerolledDie}</div>`,
                     );
                   }
                 }
@@ -7420,25 +8062,25 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
                     final = Math.floor(final / 3);
                     result_diff =
                       entete +
-                      '<div><span><p style="background-color:#A3B6BB; color:white; font-size: 22px; text-align:center; text-shadow: 1px 1px 2px black;">DIFF ' +
+                      '<div class="mega-roll-diff"><i class="fas fa-bullseye"></i> DIFF ' +
                       diff +
-                      '</p></div></span><div><span><b><p style="background-color:green; color:white; text-align:center; text-shadow: 1px 1px 2px black; font-size: 16px;";>Reussite - Marge de reussite : ' +
+                      '</div><div class="mega-roll-success"><i class="fas fa-check-circle"></i> Réussite <span class="mega-roll-margin">Marge : ' +
                       final +
-                      "</p></b></div></span>";
+                      "</span></div>";
                   } else {
                     final = Math.ceil(final / 3);
                     result_diff =
                       entete +
-                      '<div><span><p style="background-color:#A3B6BB; color:white; font-size: 22px; text-align:center; text-shadow: 1px 1px 2px black;">DIFF ' +
+                      '<div class="mega-roll-diff"><i class="fas fa-bullseye"></i> DIFF ' +
                       diff +
-                      '</p></div></span><div><span><b><p style="background-color:red; color:white; text-align:center; text-shadow: 1px 1px 2px black; font-size: 16px;";>Echec - Marge d\'echec : ' +
+                      '</div><div class="mega-roll-failure"><i class="fas fa-times-circle"></i> Échec <span class="mega-roll-margin">Marge : ' +
                       final +
-                      "</p></b></div></span>";
+                      "</span></div>";
                   }
                 } else {
                   result_diff =
                     entete +
-                    '<div><span><p style="background-color:#A3B6BB; color:white; font-size: 22px; text-align:center; text-shadow: 1px 1px 2px black;">DIFF NC</p></div></span>';
+                    '<div class="mega-roll-diff mega-roll-diff-nc"><i class="fas fa-question-circle"></i> DIFF NC</div>';
                 }
 
                 await postToChat(
@@ -7461,29 +8103,25 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
 
               async function chooseDieToReroll(diceArray, results) {
                 return new Promise((resolve) => {
-                  let content = `<p>Choisissez le dé à relancer :</p>
-						   <center><select id="reroll-select">
-							 <option value="null">Ne pas relancer</option>`;
+                  let buttons = {
+                    validate: {
+                      label: `<i class="fas fa-check"></i><br><span style="font-size:0.8em">Ne pas relancer</span>`,
+                      callback: () => resolve(null),
+                    },
+                  };
                   results.forEach((result, index) => {
-                    content += `<option value="${index}">${diceArray[index]}: ${result}</option>`;
+                    buttons[`die_${index}`] = {
+                      label: `<span style="display:flex;flex-direction:column;align-items:center;gap:2px"><i class="fas fa-dice"></i><span style="font-size:0.85em;opacity:0.85">${diceArray[index]}</span><span style="font-size:1.3em;font-weight:bold">${result}</span></span>`,
+                      callback: () => resolve(index),
+                    };
                   });
-                  content += `</select></center><br>`;
-
                   new Dialog(
                     {
                       title: "RELANCE D'UN DÉ",
                       content:
-                        "<div class='card-header'><span><img src='systems/mega/images/gears.gif' width=30px; height=30px; style='border:none'>Relancer un dé</span></div>" +
-                        content,
-                      buttons: {
-                        ok: {
-                          label: "OK",
-                          callback: (html) => {
-                            let index = html.find("#reroll-select").val();
-                            resolve(index === "null" ? null : parseInt(index));
-                          },
-                        },
-                      },
+                        "<div class='card-header'><span>Relancer un dé</span></div>" +
+                        `<br><center><span class="bouton_texte">Cliquez sur un dé pour le relancer, ou ne pas relancer</span></center><br>`,
+                      buttons: buttons,
                       close: () => resolve(null),
                     },
                     myDialogOptions,
@@ -7493,18 +8131,36 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
 
               async function postToChat(diceArray, rolls, bonuspool, message) {
                 let total = rolls.reduce((sum, roll) => sum + roll.total, 0);
-                let formattedResults = rolls
+                let diceFormula = diceArray.join(" + ");
+                if (bonuspool > 0) diceFormula += " + " + bonuspool;
+                if (bonuspool < 0) diceFormula += " - " + Math.abs(bonuspool);
+                let diceDetails = rolls
                   .map(
-                    (r, index) =>
-                      `<div class="dice-result">${diceArray[index]} : ${r.total}</div>`,
+                    (r, index) => `
+                <section class="tooltip-part">
+                  <div class="dice">
+                    <header class="part-header flexrow">
+                      <span class="part-formula">${diceArray[index]}</span>
+                      <span class="part-total">${r.total}</span>
+                    </header>
+                    <ol class="dice-rolls">
+                      <li class="roll die d${r.dice[0].faces}">${r.total}</li>
+                    </ol>
+                  </div>
+                </section>`,
                   )
                   .join("");
                 let chatData = {
                   user: game.user.id,
                   speaker: ChatMessage.getSpeaker(),
-                  content: `${message}<br>Résultats des dés:<br>${formattedResults}Bonus : ${bonuspool}<br>Total: <b>${
-                    total + bonuspool
-                  }</b>`,
+                  content: `${message}
+                <div class="dice-roll" data-action="expandRoll">
+                  <div class="dice-result">
+                    <div class="dice-formula">${diceFormula}</div>
+                    <div class="dice-tooltip"><div class="wrapper">${diceDetails}</div></div>
+                    <h4 class="dice-total">${total + bonuspool}</h4>
+                  </div>
+                </div>`,
                 };
                 await ChatMessage.create(chatData, {});
               }
@@ -7519,11 +8175,11 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
             } else {
               r1 = new Roll("1d" + de_domaine);
               r1.evaluate().then(() => {
-                game.dice3d?.showForRoll(r1);
+                game.dice3d?.showForRoll(r1, game.user, true);
                 let resultat1 = r1.total;
                 r2 = new Roll("1d" + de_trait1);
                 r2.evaluate().then(() => {
-                  game.dice3d?.showForRoll(r2);
+                  game.dice3d?.showForRoll(r2, game.user, true);
                   let resultat2 = r2.total;
                   let result_diff = "";
                   carac =
@@ -7544,19 +8200,19 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
                       comp +
                       " vs " +
                       carac +
-                      '</span></div><p style="background-color:#A3B6BB; color:white; font-size: 18px; text-align:center; text-shadow: 1px 1px 2px black;">' +
+                      '</span></div><div class="mega-roll-diff"><i class="fas fa-dice-d6"></i> ' +
                       comp +
                       " : " +
                       resultat1 +
-                      '</p><p style="background-color:#A3B6BB; color:white; font-size: 18px; text-align:center; text-shadow: 1px 1px 2px black;">' +
+                      " &nbsp;|&nbsp; " +
                       carac +
                       " : " +
                       resultat2 +
-                      '</p></div></span></span><div><span><b><p style="background-color:green; color:white; text-align:center; text-shadow: 1px 1px 2px black; font-size: 22px;";>' +
+                      '</div><div class="mega-roll-success"><i class="fas fa-check-circle"></i> ' +
                       comp +
-                      '</p></b></div></span><p style="background-color:green; color:white; text-align:center; text-shadow: 1px 1px 2px black; font-size: 16px;";>Marge : ' +
+                      " l'emporte <span class='mega-roll-margin'>Marge : " +
                       marge +
-                      "</p></b></div></span>";
+                      "</span></div>";
                   } else {
                     marge = Math.floor((resultat2 - resultat1) / 3);
                     result_diff =
@@ -7564,19 +8220,19 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
                       comp +
                       " vs " +
                       carac +
-                      '</span></div><p style="background-color:#A3B6BB; color:white; font-size: 18px; text-align:center; text-shadow: 1px 1px 2px black;">' +
+                      '</span></div><div class="mega-roll-diff"><i class="fas fa-dice-d6"></i> ' +
                       comp +
                       " : " +
                       resultat1 +
-                      '</p><p style="background-color:#A3B6BB; color:white; font-size: 18px; text-align:center; text-shadow: 1px 1px 2px black;">' +
+                      " &nbsp;|&nbsp; " +
                       carac +
                       " : " +
                       resultat2 +
-                      '</p></div></span></span><div><span><b><p style="background-color:green; color:white; text-align:center; text-shadow: 1px 1px 2px black; font-size: 22px;";>' +
+                      '</div><div class="mega-roll-failure"><i class="fas fa-times-circle"></i> ' +
                       carac +
-                      '</p></b></div></span><p style="background-color:green; color:white; text-align:center; text-shadow: 1px 1px 2px black; font-size: 16px;";>Marge : ' +
+                      " l'emporte <span class='mega-roll-margin'>Marge : " +
                       marge +
-                      "</p></b></div></span>";
+                      "</span></div>";
                   }
 
                   var chatData = {
@@ -7606,17 +8262,15 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
           "<div class='card-header'><span>Ardence <i class='fas fa-angle-double-right'></i> " +
           label_carac2 +
           "</span></div>" +
-          "<br><span class='bouton_texte'>combien de rangs voulez-vous ajouter au DOMAINE " +
+          "<br><center><span class='bouton_texte'>Combien de rangs voulez-vous ajouter au <b>Domaine " +
           label_carac2.toUpperCase() +
-          " ?</span><br><br>",
+          "</b> ?</span><br><br>",
         buttons: btns_3,
-        close: function () {
+        close: () => {
           rgardencetotal = rgardencetotal - ardence_trait2;
           ptardence = rgardencetotal / 2;
-        },
-        close: () =>
           this.testTrait2(
-            type_test,
+            type_test_1,
             ev,
             carac,
             carac2,
@@ -7627,7 +8281,8 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
             ardence_trait1,
             ardence_trait2,
             ardenceBet,
-          ),
+          );
+        },
       },
       myDialogOptions_ardence,
     );
@@ -7696,43 +8351,42 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
             if (final >= 0) {
               final = Math.floor(final / 3);
               result_diff =
-                '<p style="background-color:#A3B6BB; color:white; font-size: 22px; text-align:center; text-shadow: 1px 1px 2px black;">DIFF ' +
+                '<div class="mega-roll-diff"><i class="fas fa-bullseye"></i> DIFF ' +
                 diff +
-                '</p></div></span><div><span><b><p style="background-color:green; color:white; text-align:center; text-shadow: 1px 1px 2px black; font-size: 16px;";>Reussite - Marge de reussite : ' +
+                '</div><div class="mega-roll-success"><i class="fas fa-check-circle"></i> Réussite <span class="mega-roll-margin">Marge : ' +
                 final +
-                "</p></b></div></span>";
+                "</span></div>";
             } else {
-              marge = Math.ceil(result_final / 3);
+              final = Math.ceil(final / 3);
               result_diff =
-                '<p style="background-color:#A3B6BB; color:white; font-size: 22px; text-align:center; text-shadow: 1px 1px 2px black;">DIFF ' +
+                '<div class="mega-roll-diff"><i class="fas fa-bullseye"></i> DIFF ' +
                 diff +
-                '</p></div></span><div><span><b><p style="background-color:red; color:white; text-align:center; text-shadow: 1px 1px 2px black; font-size: 16px;";>Echec - Marge d\'echec : ' +
+                '</div><div class="mega-roll-failure"><i class="fas fa-times-circle"></i> Échec <span class="mega-roll-margin">Marge : ' +
                 final +
-                "</p></b></div></span>";
+                "</span></div>";
             }
           } else {
             result_diff =
-              '<p style="background-color:#A3B6BB; color:white; font-size: 22px; text-align:center; text-shadow: 1px 1px 2px black;">DIFF NC</p></div></span>';
+              '<div class="mega-roll-diff mega-roll-diff-nc"><i class="fas fa-question-circle"></i> DIFF NC</div>';
           }
+          comp = comp.charAt(0).toUpperCase() + comp.substring(1).toLowerCase();
           r.toMessage({
             flavor:
               "<div class='card-header'><span>" +
               comp +
               "</span></div>" +
-              "<div><span>" +
-              result_diff +
-              "</span></div>",
+              result_diff,
             speaker: ChatMessage.getSpeaker({ actor: this.actor }),
           });
         });
       } else {
         r1 = new Roll("1d" + de_domaine);
         r1.evaluate().then(() => {
-          game.dice3d?.showForRoll(r1);
+          game.dice3d?.showForRoll(r1, game.user, true);
           let resultat1 = r1.total;
           r2 = new Roll("1d" + de_trait1);
           r2.evaluate().then(() => {
-            game.dice3d?.showForRoll(r2);
+            game.dice3d?.showForRoll(r2, game.user, true);
             let resultat2 = r2.total;
             let result_diff = "";
 
@@ -7752,19 +8406,19 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
                 comp +
                 " vs " +
                 carac +
-                '</span></div><p style="background-color:#A3B6BB; color:white; font-size: 18px; text-align:center; text-shadow: 1px 1px 2px black;">' +
+                '</span></div><div class="mega-roll-diff"><i class="fas fa-dice-d6"></i> ' +
                 comp +
                 " : " +
                 resultat1 +
-                '</p><p style="background-color:#A3B6BB; color:white; font-size: 18px; text-align:center; text-shadow: 1px 1px 2px black;">' +
+                " &nbsp;|&nbsp; " +
                 carac +
                 " : " +
                 resultat2 +
-                '</p></div></span></span><div><span><b><p style="background-color:green; color:white; text-align:center; text-shadow: 1px 1px 2px black; font-size: 22px;";>' +
+                '</div><div class="mega-roll-success"><i class="fas fa-check-circle"></i> ' +
                 comp +
-                '</p></b></div></span><p style="background-color:green; color:white; text-align:center; text-shadow: 1px 1px 2px black; font-size: 16px;";>Marge : ' +
+                " l'emporte <span class='mega-roll-margin'>Marge : " +
                 marge +
-                "</p></b></div></span>";
+                "</span></div>";
             } else {
               marge = Math.floor((resultat2 - resultat1) / 3);
               result_diff =
@@ -7772,19 +8426,19 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
                 comp +
                 " vs " +
                 carac +
-                '</span></div><p style="background-color:#A3B6BB; color:white; font-size: 18px; text-align:center; text-shadow: 1px 1px 2px black;">' +
+                '</span></div><div class="mega-roll-diff"><i class="fas fa-dice-d6"></i> ' +
                 comp +
                 " : " +
                 resultat1 +
-                '</p><p style="background-color:#A3B6BB; color:white; font-size: 18px; text-align:center; text-shadow: 1px 1px 2px black;">' +
+                " &nbsp;|&nbsp; " +
                 carac +
                 " : " +
                 resultat2 +
-                '</p></div></span></span><div><span><b><p style="background-color:green; color:white; text-align:center; text-shadow: 1px 1px 2px black; font-size: 22px;";>' +
+                '</div><div class="mega-roll-failure"><i class="fas fa-times-circle"></i> ' +
                 carac +
-                '</p></b></div></span><p style="background-color:green; color:white; text-align:center; text-shadow: 1px 1px 2px black; font-size: 16px;";>Marge : ' +
+                " l'emporte <span class='mega-roll-margin'>Marge : " +
                 marge +
-                "</p></b></div></span>";
+                "</span></div>";
             }
 
             var chatData = {
@@ -7860,7 +8514,7 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
           diceArray,
           results,
           bonuspool,
-          `${entete}<div><span><p style=\"background-color:#A3B6BB; color:white; font-size: 22px; text-align:center; text-shadow: 1px 1px 2px black;\">JET INITIAL (DIFF ${diff})</p></div></span>`,
+          `${entete}<div class="mega-roll-diff"><i class="fas fa-dice-d6"></i> JET INITIAL — DIFF ${diff}</div>`,
         );
       }
 
@@ -7877,7 +8531,7 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
             diceArray,
             results,
             bonuspool,
-            `${entete}<div><span><p style=\"background-color:#A3B6BB; color:white; font-size: 22px; text-align:center; text-shadow: 1px 1px 2px black;\">RELANCE (DIFF ${diff})</p></div></span><br>Vous avez relancé : ${rerolledDie}`,
+            `${entete}<div class="mega-roll-reroll"><i class="fas fa-sync-alt"></i> RELANCE — DIFF ${diff}</div><div class="mega-roll-reroll-info"><i class="fas fa-redo"></i> Dé relancé : ${rerolledDie}</div>`,
           );
         }
       }
@@ -7892,25 +8546,25 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
           final = Math.floor(final / 3);
           result_diff =
             entete +
-            '<div><span><p style="background-color:#A3B6BB; color:white; font-size: 22px; text-align:center; text-shadow: 1px 1px 2px black;">DIFF ' +
+            '<div class="mega-roll-diff"><i class="fas fa-bullseye"></i> DIFF ' +
             diff +
-            '</p></div></span><div><span><b><p style="background-color:green; color:white; text-align:center; text-shadow: 1px 1px 2px black; font-size: 16px;";>Reussite - Marge de reussite : ' +
+            '</div><div class="mega-roll-success"><i class="fas fa-check-circle"></i> Réussite <span class="mega-roll-margin">Marge : ' +
             final +
-            "</p></b></div></span>";
+            "</span></div>";
         } else {
           final = Math.ceil(final / 3);
           result_diff =
             entete +
-            '<div><span><p style="background-color:#A3B6BB; color:white; font-size: 22px; text-align:center; text-shadow: 1px 1px 2px black;">DIFF ' +
+            '<div class="mega-roll-diff"><i class="fas fa-bullseye"></i> DIFF ' +
             diff +
-            '</p></div></span><div><span><b><p style="background-color:red; color:white; text-align:center; text-shadow: 1px 1px 2px black; font-size: 16px;";>Echec - Marge d\'echec : ' +
+            '</div><div class="mega-roll-failure"><i class="fas fa-times-circle"></i> Échec <span class="mega-roll-margin">Marge : ' +
             final +
-            "</p></b></div></span>";
+            "</span></div>";
         }
       } else {
         result_diff =
           entete +
-          '<div><span><p style="background-color:#A3B6BB; color:white; font-size: 22px; text-align:center; text-shadow: 1px 1px 2px black;">DIFF NC</p></div></span>';
+          '<div class="mega-roll-diff mega-roll-diff-nc"><i class="fas fa-question-circle"></i> DIFF NC</div>';
       }
 
       await postToChat(diceArray, results, bonuspool, `${result_diff}`);
@@ -7928,29 +8582,25 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
 
     async function chooseDieToReroll(diceArray, results) {
       return new Promise((resolve) => {
-        let content = `<p>Choisissez le dé à relancer :</p>
-						   <center><select id="reroll-select">
-							 <option value="null">Ne pas relancer</option>`;
+        let buttons = {
+          validate: {
+            label: `<i class="fas fa-check"></i><br><span style="font-size:0.8em">Ne pas relancer</span>`,
+            callback: () => resolve(null),
+          },
+        };
         results.forEach((result, index) => {
-          content += `<option value="${index}">${diceArray[index]}: ${result}</option>`;
+          buttons[`die_${index}`] = {
+            label: `<span style="display:flex;flex-direction:column;align-items:center;gap:2px"><i class="fas fa-dice"></i><span style="font-size:0.85em;opacity:0.85">${diceArray[index]}</span><span style="font-size:1.3em;font-weight:bold">${result}</span></span>`,
+            callback: () => resolve(index),
+          };
         });
-        content += `</select></center><br>`;
-
         new Dialog(
           {
             title: "RELANCE D'UN DÉ",
             content:
-              "<div class='card-header'><span><img src='systems/mega/images/gears.gif' width=30px; height=30px; style='border:none'>Relancer un dé</span></div>" +
-              content,
-            buttons: {
-              ok: {
-                label: "OK",
-                callback: (html) => {
-                  let index = html.find("#reroll-select").val();
-                  resolve(index === "null" ? null : parseInt(index));
-                },
-              },
-            },
+              "<div class='card-header'><span>Relancer un dé</span></div>" +
+              `<br><center><span class="bouton_texte">Cliquez sur un dé pour le relancer, ou ne pas relancer</span></center><br>`,
+            buttons: buttons,
             close: () => resolve(null),
           },
           myDialogOptions,
@@ -8068,23 +8718,23 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
           if (final >= 0) {
             final = Math.floor(final / 3);
             result_diff =
-              '<p style="background-color:#A3B6BB; color:white; font-size: 22px; text-align:center; text-shadow: 1px 1px 2px black;">DIFF ' +
+              '<div class="mega-roll-diff"><i class="fas fa-bullseye"></i> DIFF ' +
               diff +
-              '</p></div></span><div><span><b><p style="background-color:green; color:white; text-align:center; text-shadow: 1px 1px 2px black; font-size: 16px;";>Reussite - Marge de reussite : ' +
+              '</div><div class="mega-roll-success"><i class="fas fa-check-circle"></i> Réussite <span class="mega-roll-margin">Marge : ' +
               final +
-              "</p></b></div></span>";
+              "</span></div>";
           } else {
             final = Math.ceil(final / 3);
             result_diff =
-              '<p style="background-color:#A3B6BB; color:white; font-size: 22px; text-align:center; text-shadow: 1px 1px 2px black;">DIFF ' +
+              '<div class="mega-roll-diff"><i class="fas fa-bullseye"></i> DIFF ' +
               diff +
-              '</p></div></span><div><span><b><p style="background-color:red; color:white; text-align:center; text-shadow: 1px 1px 2px black; font-size: 16px;";>Echec - Marge d\'echec : ' +
+              '</div><div class="mega-roll-failure"><i class="fas fa-times-circle"></i> Échec <span class="mega-roll-margin">Marge : ' +
               final +
-              "</p></b></div></span>";
+              "</span></div>";
           }
         } else {
           result_diff =
-            '<p style="background-color:#A3B6BB; color:white; font-size: 22px; text-align:center; text-shadow: 1px 1px 2px black;">DIFF NC</p></div></span>';
+            '<div class="mega-roll-diff mega-roll-diff-nc"><i class="fas fa-question-circle"></i> DIFF NC</div>';
         }
 
         r.toMessage({
@@ -8130,6 +8780,18 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
   }
 
   /**
+   * Met à jour les classes CSS de l'étoile de resonance selon les valeurs actuelles
+   * @param {jQuery} html
+   */
+  _updateSphereStarClasses(html) {
+    const s1 = this.actor.system.sphere?.value || "";
+    const s2 = this.actor.system.sphere2?.value || "";
+    html.find(".sphere-pt").removeClass("sphere-s1 sphere-s2");
+    if (s1) html.find(`.sphere-pt[data-sphere="${s1}"]`).addClass("sphere-s1");
+    if (s2) html.find(`.sphere-pt[data-sphere="${s2}"]`).addClass("sphere-s2");
+  }
+
+  /**
    * Handle clicking on side tab buttons
    * @param {Event} event
    * @private
@@ -8146,6 +8808,9 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
 
     // Use the parent class tab switching functionality
     this._tabs[0].activate(tab);
+
+    // Auto-resize when entering/leaving combat tab
+    this._handleCombatTabResize(tab);
   }
 
   /**
@@ -8154,11 +8819,394 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
    * @private
    */
   _initializeActiveSideTab(html) {
+    // Stoppe toute animation et tout observateur en cours
+    if (this._heightAnimFrame) {
+      cancelAnimationFrame(this._heightAnimFrame);
+      this._heightAnimFrame = null;
+    }
+    this._stopTabResizeObserver();
+
     const activeTab = this._tabs[0].active;
     const activeButton = html.find(`[data-tab="${activeTab}"]`);
     if (activeButton.length) {
       activeButton.addClass("active");
     }
+
+    // Si la fiche s'ouvre directement sur un onglet à ajustement auto
+    if (
+      activeTab === "combat" ||
+      activeTab === "items" ||
+      activeTab === "description" ||
+      activeTab === "attributes"
+    ) {
+      // Conserver la hauteur de référence à travers les re-renders successifs
+      if (!this._preExpansionHeight) {
+        this._preExpansionHeight = this.position.height;
+      }
+      const startObserving = () => {
+        const scrollEl = this._getTabScrollContainer();
+        if (!scrollEl) return;
+        this._startTabResizeObserver(scrollEl);
+      };
+      if (activeTab === "items") {
+        setTimeout(startObserving, 200);
+      } else {
+        requestAnimationFrame(startObserving);
+      }
+    } else {
+      // Sur un onglet non-auto, réinitialiser la référence
+      this._preExpansionHeight = null;
+    }
+  }
+
+  /**
+   * Gère l'expansion automatique de la fiche sur l'onglet combat.
+   * @param {string} tab  - identifiant de l'onglet activé
+   * @private
+   */
+  _handleCombatTabResize(tab) {
+    if (
+      tab === "combat" ||
+      tab === "items" ||
+      tab === "description" ||
+      tab === "attributes"
+    ) {
+      if (!this._preExpansionHeight) {
+        this._preExpansionHeight = this.position.height;
+      }
+      this._stopTabResizeObserver();
+      const startObserving = () => {
+        const scrollEl = this._getTabScrollContainer();
+        if (!scrollEl) return;
+        this._startTabResizeObserver(scrollEl);
+      };
+      if (tab === "items") {
+        setTimeout(startObserving, 200);
+      } else {
+        requestAnimationFrame(startObserving);
+      }
+    } else {
+      this._stopTabResizeObserver();
+      if (
+        this._preExpansionHeight &&
+        this._preExpansionHeight !== this.position.height
+      ) {
+        const targetH = this._preExpansionHeight;
+        this._preExpansionHeight = null;
+        this._animateSheetHeight(this.position.height, targetH);
+      } else {
+        this._preExpansionHeight = null;
+      }
+    }
+  }
+
+  /**
+   * Démarre un ResizeObserver sur `scrollEl` qui ajuste la hauteur de fenêtre
+   * en temps réel dès que le contenu change de taille.
+   * @param {HTMLElement} scrollEl
+   * @private
+   */
+  _startTabResizeObserver(scrollEl) {
+    this._stopTabResizeObserver();
+    // Ajustement immédiat dès le démarrage
+    const adjust = () => {
+      const targetH = this._getContentTargetHeight();
+      if (targetH === null || Math.abs(targetH - this.position.height) <= 4)
+        return;
+      this._animateSheetHeight(this.position.height, targetH);
+    };
+    adjust();
+    this._tabResizeObserver = new ResizeObserver(() => {
+      // Débouncer : on attend la fin du redimensionnement pour ne pas
+      // animer à chaque pixel de changement
+      if (this._tabResizeDebounce) clearTimeout(this._tabResizeDebounce);
+      this._tabResizeDebounce = setTimeout(() => {
+        this._tabResizeDebounce = null;
+        const targetH = this._getContentTargetHeight();
+        if (targetH === null || Math.abs(targetH - this.position.height) <= 4)
+          return;
+        // _animateSheetHeight annule toujours l'animation en cours avant d'en démarrer une nouvelle
+        this._animateSheetHeight(this.position.height, targetH);
+      }, 80);
+    });
+    // Observer l'élément scrollable lui-même
+    this._tabResizeObserver.observe(scrollEl);
+    // Observer aussi les enfants directs pour capturer ajouts/suppressions
+    for (const child of scrollEl.children) {
+      this._tabResizeObserver.observe(child);
+    }
+  }
+
+  /**
+   * Calcule la hauteur de fenêtre exacte pour afficher tout le contenu
+   * de l'onglet actif sans ascenseur, quelle que soit la contrainte CSS.
+   * - Pour .inv-bandeau (height:100%) : libère temporairement la contrainte
+   *   pour mesurer la hauteur naturelle du contenu.
+   * - Pour les autres onglets (.tab.active sans height fixe) : scrollHeight direct.
+   * @returns {number|null}
+   * @private
+   */
+  _getContentTargetHeight() {
+    const tabEl = this.element.find(".tab.active")[0];
+    if (!tabEl) return null;
+    const invEl = tabEl.querySelector(".inv-bandeau, .item-bandeau");
+    if (invEl) {
+      // .inv-bandeau a height:100% → son scrollHeight égale toujours clientHeight
+      // quand le contenu est plus petit. On libère une frame pour obtenir
+      // la vraie hauteur du contenu.
+      const prev = invEl.style.height;
+      invEl.style.height = "auto";
+      const h = invEl.scrollHeight + 172;
+      invEl.style.height = prev;
+      return h;
+    }
+    // Pour les autres onglets (combat) : .tab.active n'a pas de height CSS,
+    // son scrollHeight reflète exactement la hauteur naturelle du contenu.
+    return tabEl.scrollHeight + 172;
+  }
+
+  /**
+   * Arrête et nettoie le ResizeObserver d'ajustement d'onglet.
+   * @private
+   */
+  _stopTabResizeObserver() {
+    if (this._tabResizeDebounce) {
+      clearTimeout(this._tabResizeDebounce);
+      this._tabResizeDebounce = null;
+    }
+    if (this._tabResizeObserver) {
+      this._tabResizeObserver.disconnect();
+      this._tabResizeObserver = null;
+    }
+  }
+
+  /**
+   * Retourne l'élément scrollable de l'onglet actif :
+   * - .inv-bandeau / .item-bandeau si l'onglet gère son propre scroll (ex: items)
+   * - sinon .sheet-body
+   * @returns {HTMLElement|null}
+   * @private
+   */
+  _getTabScrollContainer() {
+    const descInner = this.element.find(
+      ".tab.active .desc-bandeau, .tab.active .biography-tab-frame",
+    )[0];
+    if (descInner) return descInner;
+    const attrInner = this.element.find(".tab.active .bandeau_attributs")[0];
+    if (attrInner) return attrInner;
+    const inner = this.element.find(
+      ".tab.active .inv-bandeau, .tab.active .item-bandeau",
+    )[0];
+    if (inner) return inner;
+    return this.element.find(".sheet-body")[0] || null;
+  }
+
+  /**
+   * Anime la hauteur de la fenêtre de `fromH` à `toH` pixels (ease-in-out, 300 ms).
+   * @param {number} fromH
+   * @param {number} toH
+   * @private
+   */
+  _animateSheetHeight(fromH, toH) {
+    if (this._heightAnimFrame) {
+      cancelAnimationFrame(this._heightAnimFrame);
+      this._heightAnimFrame = null;
+    }
+    const DURATION = 300;
+    const start = performance.now();
+    const animate = (now) => {
+      const t = Math.min((now - start) / DURATION, 1);
+      const ease = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+      this.setPosition({ height: Math.round(fromH + (toH - fromH) * ease) });
+      if (t < 1) {
+        this._heightAnimFrame = requestAnimationFrame(animate);
+      } else {
+        this._heightAnimFrame = null;
+      }
+    };
+    this._heightAnimFrame = requestAnimationFrame(animate);
+  }
+
+  // Méthode pour afficher les détails d'un pouvoir avec TabbedDialog
+  _showPouvoirDetails(pouvoirType) {
+    const myDialogOptions = {
+      resizable: true,
+      initial_tab: "tab1",
+      width: 690,
+      height: 910,
+      top: 10,
+      left: 10,
+      classes: ["window-dialog"],
+    };
+
+    let numItem = 0;
+    let titre;
+    let grade = 0;
+    let itemsPouvoir = this.actor.items.filter((i) => i.type === "Pouvoir");
+
+    const getPouvoirData = (pouvoir) => {
+      return {
+        numItem: this.actor.system.pouvoirs[pouvoir].num_item,
+        grade: this.actor.system.pouvoirs[pouvoir].grade,
+        titre: this.actor.system.pouvoirs[pouvoir].label,
+      };
+    };
+
+    // Mapper les types de pouvoir
+    let mappedPouvoirType = pouvoirType;
+    if (pouvoirType === "pouvoir_psi") {
+      mappedPouvoirType = "pouvoir_psi_1";
+    } else if (pouvoirType === "pouvoir_psi2") {
+      mappedPouvoirType = "pouvoir_psi_2";
+    }
+
+    ({ numItem, grade, titre } = getPouvoirData(mappedPouvoirType));
+
+    if (!itemsPouvoir[numItem]) {
+      ui.notifications.error(`Pouvoir non trouvé dans l'inventaire`);
+      return;
+    }
+
+    // Classes CSS pour les cartes de grade (actif / inactif / grade actuel)
+    let grade_classes = Array(12).fill("spd-grade-card inactive");
+    for (let i = 0; i < grade; i++) {
+      grade_classes[i] = "spd-grade-card active";
+    }
+    if (grade > 0 && grade <= 12) {
+      grade_classes[grade - 1] = "spd-grade-card active current";
+    }
+
+    const getDescription = (pouvoir) => {
+      const sys = itemsPouvoir[numItem].system[pouvoir];
+      const gradeKeys = [
+        "grade1",
+        "grade2",
+        "grade3",
+        "grade4",
+        "grade5",
+        "grade6",
+        "grade7",
+        "grade8",
+        "grade9",
+        "grade10",
+        "grade11",
+        "grade12",
+      ];
+      const cardsHtml = gradeKeys
+        .map(
+          (key, i) =>
+            `<div class="${grade_classes[i]}">` +
+            `<span class="spd-grade-badge">Grade ${i + 1}</span>` +
+            `<div class="spd-grade-text">${sys[key]}</div>` +
+            `</div>`,
+        )
+        .join("");
+      return (
+        `<div class="spd-description">${sys.description}</div>` +
+        `<div class="spd-grades-grid">${cardsHtml}</div>`
+      );
+    };
+
+    let description = `<div class="spd-general-content">${itemsPouvoir[numItem].system.description}</div>`;
+    let description1 = getDescription("pouvoir1");
+    let description2 = getDescription("pouvoir2");
+    let description3 = getDescription("pouvoir3");
+    let description4 = getDescription("pouvoir4");
+    let description_aide = `<div class="spd-aide-content">${itemsPouvoir[numItem].system.aide.description}</div>`;
+    let numTab = itemsPouvoir[numItem].system.nb_onglets;
+    let icon = itemsPouvoir[numItem].system.icon;
+    let itemImg = itemsPouvoir[numItem].img;
+    let icon1 = itemsPouvoir[numItem].system.pouvoir1.icon;
+    let icon2 = itemsPouvoir[numItem].system.pouvoir2.icon;
+    let icon3 = itemsPouvoir[numItem].system.pouvoir3.icon;
+    let icon4 = itemsPouvoir[numItem].system.pouvoir4.icon;
+    let icon_aide = itemsPouvoir[numItem].system.aide.icon;
+    let tab_gen = itemsPouvoir[numItem].system.label;
+    let tab1 = itemsPouvoir[numItem].system.pouvoir1.label;
+    let tab2 = itemsPouvoir[numItem].system.pouvoir2.label;
+    let tab3 = itemsPouvoir[numItem].system.pouvoir3.label;
+    let tab4 = itemsPouvoir[numItem].system.pouvoir4.label;
+    let tab_aide = itemsPouvoir[numItem].system.aide.label;
+    let aide = itemsPouvoir[numItem].system.aide_active;
+
+    let tabs = [];
+    tabs.push({ title: tab_gen, content: description, icon: icon });
+    if (numTab >= 1) {
+      tabs.push({ title: tab1, content: description1, icon: icon1 });
+    }
+    if (numTab >= 2) {
+      tabs.push({ title: tab2, content: description2, icon: icon2 });
+    }
+    if (numTab >= 3) {
+      tabs.push({ title: tab3, content: description3, icon: icon3 });
+    }
+    if (numTab >= 4) {
+      tabs.push({ title: tab4, content: description4, icon: icon4 });
+    }
+    if (aide)
+      tabs.push({
+        title: tab_aide,
+        content: description_aide,
+        icon: icon_aide,
+      });
+
+    // Construction de l'en-tête selon le type de pouvoir
+    const _gradeStars = (g) =>
+      `<span style="color:inherit;font-size:13px;letter-spacing:2px;">${"★".repeat(Math.min(g, 12))}${"☆".repeat(Math.max(0, 12 - g))}</span>`;
+
+    let headerHtml = "";
+    // Icône et libellé spécifiques au type de pouvoir
+    let pouvoirIcon, pouvoirIconClass, pouvoirTypeLabel;
+    if (pouvoirType === "pouvoir_transit") {
+      pouvoirIconClass = "fas fa-door-open";
+      pouvoirTypeLabel = "Pouvoir de Transit";
+    } else if (pouvoirType === "pouvoir_transfert") {
+      pouvoirIconClass = "fas fa-exchange-alt";
+      pouvoirTypeLabel = "Pouvoir de Transfert";
+    } else {
+      pouvoirIconClass = "fas fa-brain";
+      pouvoirTypeLabel =
+        pouvoirType === "pouvoir_psi2" ? "Pouvoir Psi 2" : "Pouvoir Psi 1";
+    }
+
+    // Entête plate verte harmonisée avec la pouvoir-sheet, sans border-radius, qui touche la barre d'onglets
+    headerHtml =
+      `<div style="background:linear-gradient(135deg,rgba(6,28,14,0.98) 0%,rgba(16,58,30,0.95) 100%);border-radius:0;padding:14px 18px 12px;margin-bottom:0;display:flex;align-items:center;gap:16px;border-left:4px solid rgba(130,224,170,0.85);border-bottom:1px solid rgba(130,224,170,0.25);">` +
+      `<div class="spd-orb-wrap">` +
+      `<span class="spd-orb">` +
+      `<img class="spd-portrait" src="${itemImg}" alt="${titre}" />` +
+      `<div class="spd-orb-ring"></div>` +
+      `<div class="spd-orb-glow"></div>` +
+      `</span>` +
+      `</div>` +
+      `<div style="flex:1;">` +
+      `<div style="font-size:15px;font-weight:bold;letter-spacing:0.5px;color:#e0ffe8;margin-bottom:5px;">${titre}</div>` +
+      `<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">` +
+      `<span style="background:rgba(130,224,170,0.20);color:rgba(150,230,185,1);font-size:10.5px;padding:2px 10px;border-radius:10px;border:1px solid rgba(130,224,170,0.38);font-weight:bold;">` +
+      `<i class="fas fa-layer-group" style="margin-right:4px;font-size:9px;"></i>Grade&nbsp;<strong>${grade}</strong></span>` +
+      `<span style="color:rgba(130,224,170,0.85);">${_gradeStars(grade)}</span>` +
+      `<span style="background:rgba(14,55,28,0.65);color:rgba(150,230,185,0.90);font-size:10px;padding:2px 9px;border-radius:10px;border:1px solid rgba(82,180,120,0.35);">` +
+      `<i class="${pouvoirIconClass}" style="margin-right:3px;font-size:9px;"></i>${pouvoirTypeLabel}</span>` +
+      `</div></div></div>`;
+
+    // Utilisation de tabs dans la création de la boîte de dialogue
+    let tab = new TabbedDialog(
+      {
+        title: titre,
+        header: headerHtml,
+        footer: "",
+        tabs: tabs,
+        buttons: {},
+        default: "two",
+        render: (html) =>
+          console.log("Register interactivity in the rendered dialog"),
+        close: (html) =>
+          console.log("This always is logged no matter which option is chosen"),
+      },
+      myDialogOptions,
+    );
+
+    tab.render(true);
   }
 }
 
@@ -8315,19 +9363,16 @@ function calcMeleePerdue(marge, comp, act) {
 }
 
 function calcViePerdue(melee_perdue, comp, act) {
-  const retraitAuto = game.settings.get("mega", "retraitAuto");
-  let currentTarget = Array.from(game.user.targets)[0].actor;
-  let vie_perdue = Math.floor(melee_perdue / 2); //si melee est impaire, vie_perdue est la partie entière de la division par 2
-  if (retraitAuto) {
-    safeDocumentUpdate(currentTarget, {
-      "system.health.value": currentTarget.system.health.value - vie_perdue,
-    })?.then(() => {
-      safeDocumentUpdate(currentTarget, {
-        "system.power.value": currentTarget.system.power.value - melee_perdue,
-      });
-    });
-  }
-  return vie_perdue;
+  // Calcul pur – la mise à jour est faite par le code appelant
+  let currentTarget = Array.from(game.user.targets)[0]?.actor;
+  if (!currentTarget) return { vie_perdue: 0, new_melee_impair: 0 };
+  const melee_impair = Number(currentTarget.system.melee_impair ?? 0);
+  if (melee_perdue === 0)
+    return { vie_perdue: 0, new_melee_impair: melee_impair };
+  const total = melee_perdue + melee_impair;
+  const vie_perdue = Math.floor(total / 2); // 2 pts mêlée cumulés = 1 pt vie
+  const new_melee_impair = total % 2; // reste 0 ou 1 pour le prochain coup
+  return { vie_perdue, new_melee_impair };
 }
 
 function calc_coup1(marge, comp, act) {

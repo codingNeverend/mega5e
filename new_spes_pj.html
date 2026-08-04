@@ -1,0 +1,68 @@
+﻿<div class="spe-outer">
+<div class="spe-side-label"><span>SPÉS</span></div>
+<datalist id="spes"></datalist>
+<table class="spe-table">
+<tbody>
+<tr class="spe-row" data-spe-idx="1" data-spe-val="{{system.spe1.value}}">
+<td class="spe-num">1</td>
+<td class="spe-name">{{#unless system.verouille}}<input class="spes_edit autoselect" list="spes" name="system.spe1.value" value="{{system.spe1.value}}" placeholder="Sélectionnez une SPÉ"/>{{else}}<span class="tooltip_spe spe-tsp" value="spe1|{{system.spe1.value}}">{{system.spe1.value}}{{#ifequal system.spe1.value ""}}{{else}}<span class="tooltiptext_r"><b>{{system.spe1.value}}</b><br>{{system.spe1.description}}</span>{{/ifequal}}</span>{{/unless}}</td>
+<td class="spe-rg">+<input {{#if system.verouille}}disabled="disabled" {{/if}} class="comb spe-rgi" type="text" name="system.rg_spe_1.value" value="{{system.rg_spe_1.value}}" data-dtype="Number"/>&nbsp;Rg</td>
+<td class="spe-add-cell"><button class="spe-add-btn" type="button" title="Ajouter une spé">+</button></td>
+</tr>
+<tr class="spe-row" data-spe-idx="2" data-spe-val="{{system.spe2.value}}" style="display:none">
+<td class="spe-num">2</td>
+<td class="spe-name">{{#unless system.verouille}}<input class="spes_edit autoselect" list="spes" name="system.spe2.value" value="{{system.spe2.value}}" placeholder="Sélectionnez une SPÉ"/>{{else}}<span class="tooltip_spe spe-tsp" value="spe2|{{system.spe2.value}}">{{system.spe2.value}}{{#ifequal system.spe2.value ""}}{{else}}<span class="tooltiptext_r"><b>{{system.spe2.value}}</b><br>{{system.spe2.description}}</span>{{/ifequal}}</span>{{/unless}}</td>
+<td class="spe-rg">+<input {{#if system.verouille}}disabled="disabled" {{/if}} class="comb spe-rgi" type="text" name="system.rg_spe_2.value" value="{{system.rg_spe_2.value}}" data-dtype="Number"/>&nbsp;Rg</td>
+<td class="spe-add-cell"><button class="spe-add-btn" type="button" title="Ajouter une spé">+</button></td>
+</tr>
+<tr class="spe-row" data-spe-idx="3" data-spe-val="{{system.spe3.value}}" style="display:none">
+<td class="spe-num">3</td>
+<td class="spe-name">{{#unless system.verouille}}<input class="spes_edit autoselect" list="spes" name="system.spe3.value" value="{{system.spe3.value}}" placeholder="Sélectionnez une SPÉ"/>{{else}}<span class="tooltip_spe spe-tsp" value="spe3|{{system.spe3.value}}">{{system.spe3.value}}{{#ifequal system.spe3.value ""}}{{else}}<span class="tooltiptext_r"><b>{{system.spe3.value}}</b><br>{{system.spe3.description}}</span>{{/ifequal}}</span>{{/unless}}</td>
+<td class="spe-rg">+<input {{#if system.verouille}}disabled="disabled" {{/if}} class="comb spe-rgi" type="text" name="system.rg_spe_3.value" value="{{system.rg_spe_3.value}}" data-dtype="Number"/>&nbsp;Rg</td>
+<td class="spe-add-cell"><button class="spe-add-btn" type="button" title="Ajouter une spé">+</button></td>
+</tr>
+<tr class="spe-row" data-spe-idx="4" data-spe-val="{{system.spe4.value}}" style="display:none">
+<td class="spe-num">4</td>
+<td class="spe-name">{{#unless system.verouille}}<input class="spes_edit autoselect" list="spes" name="system.spe4.value" value="{{system.spe4.value}}" placeholder="Sélectionnez une SPÉ"/>{{else}}<span class="tooltip_spe spe-tsp" value="spe4|{{system.spe4.value}}">{{system.spe4.value}}{{#ifequal system.spe4.value ""}}{{else}}<span class="tooltiptext_r"><b>{{system.spe4.value}}</b><br>{{system.spe4.description}}</span>{{/ifequal}}</span>{{/unless}}</td>
+<td class="spe-rg">+<input {{#if system.verouille}}disabled="disabled" {{/if}} class="comb spe-rgi" type="text" name="system.rg_spe_4.value" value="{{system.rg_spe_4.value}}" data-dtype="Number"/>&nbsp;Rg</td>
+<td class="spe-add-cell"><button class="spe-add-btn" type="button" title="Ajouter une spé">+</button></td>
+</tr>
+<tr class="spe-row" data-spe-idx="5" data-spe-val="{{system.spe5.value}}" style="display:none">
+<td class="spe-num">5</td>
+<td class="spe-name">{{#unless system.verouille}}<input class="spes_edit autoselect" list="spes" name="system.spe5.value" value="{{system.spe5.value}}" placeholder="Sélectionnez une SPÉ"/>{{else}}<span class="tooltip_spe spe-tsp" value="spe5|{{system.spe5.value}}">{{system.spe5.value}}</span>{{/unless}}</td>
+<td class="spe-rg">+<input {{#if system.verouille}}disabled="disabled" {{/if}} class="comb spe-rgi" type="text" name="system.rg_spe_5.value" value="{{system.rg_spe_5.value}}" data-dtype="Number"/>&nbsp;Rg</td>
+<td class="spe-add-cell"><button class="spe-add-btn" type="button" title="Ajouter une spé">+</button></td>
+</tr>
+<tr class="spe-row" data-spe-idx="6" data-spe-val="{{system.spe6.value}}" style="display:none">
+<td class="spe-num">6</td>
+<td class="spe-name">{{#unless system.verouille}}<input class="spes_edit autoselect" list="spes" name="system.spe6.value" value="{{system.spe6.value}}" placeholder="Sélectionnez une SPÉ"/>{{else}}<span class="tooltip_spe spe-tsp" value="spe6|{{system.spe6.value}}">{{system.spe6.value}}</span>{{/unless}}</td>
+<td class="spe-rg">+<input {{#if system.verouille}}disabled="disabled" {{/if}} class="comb spe-rgi" type="text" name="system.rg_spe_6.value" value="{{system.rg_spe_6.value}}" data-dtype="Number"/>&nbsp;Rg</td>
+<td class="spe-add-cell"><button class="spe-add-btn" type="button" title="Ajouter une spé">+</button></td>
+</tr>
+<tr class="spe-row" data-spe-idx="7" data-spe-val="{{system.spe7.value}}" style="display:none">
+<td class="spe-num">7</td>
+<td class="spe-name">{{#unless system.verouille}}<input class="spes_edit autoselect" list="spes" name="system.spe7.value" value="{{system.spe7.value}}" placeholder="Sélectionnez une SPÉ"/>{{else}}<span class="tooltip_spe spe-tsp" value="spe7|{{system.spe7.value}}">{{system.spe7.value}}</span>{{/unless}}</td>
+<td class="spe-rg">+<input {{#if system.verouille}}disabled="disabled" {{/if}} class="comb spe-rgi" type="text" name="system.rg_spe_7.value" value="{{system.rg_spe_7.value}}" data-dtype="Number"/>&nbsp;Rg</td>
+<td class="spe-add-cell"><button class="spe-add-btn" type="button" title="Ajouter une spé">+</button></td>
+</tr>
+<tr class="spe-row" data-spe-idx="8" data-spe-val="{{system.spe8.value}}" style="display:none">
+<td class="spe-num">8</td>
+<td class="spe-name">{{#unless system.verouille}}<input class="spes_edit autoselect" list="spes" name="system.spe8.value" value="{{system.spe8.value}}" placeholder="Sélectionnez une SPÉ"/>{{else}}<span class="tooltip_spe spe-tsp" value="spe8|{{system.spe8.value}}">{{system.spe8.value}}</span>{{/unless}}</td>
+<td class="spe-rg">+<input {{#if system.verouille}}disabled="disabled" {{/if}} class="comb spe-rgi" type="text" name="system.rg_spe_8.value" value="{{system.rg_spe_8.value}}" data-dtype="Number"/>&nbsp;Rg</td>
+<td class="spe-add-cell"><button class="spe-add-btn" type="button" title="Ajouter une spé">+</button></td>
+</tr>
+<tr class="spe-row" data-spe-idx="9" data-spe-val="{{system.spe9.value}}" style="display:none">
+<td class="spe-num">9</td>
+<td class="spe-name">{{#unless system.verouille}}<input class="spes_edit autoselect" list="spes" name="system.spe9.value" value="{{system.spe9.value}}" placeholder="Sélectionnez une SPÉ"/>{{else}}<span class="tooltip_spe spe-tsp" value="spe9|{{system.spe9.value}}">{{system.spe9.value}}</span>{{/unless}}</td>
+<td class="spe-rg">+<input {{#if system.verouille}}disabled="disabled" {{/if}} class="comb spe-rgi" type="text" name="system.rg_spe_9.value" value="{{system.rg_spe_9.value}}" data-dtype="Number"/>&nbsp;Rg</td>
+<td class="spe-add-cell"><button class="spe-add-btn" type="button" title="Ajouter une spé">+</button></td>
+</tr>
+<tr class="spe-row" data-spe-idx="10" data-spe-val="{{system.spe10.value}}" style="display:none">
+<td class="spe-num">10</td>
+<td class="spe-name">{{#unless system.verouille}}<input class="spes_edit autoselect" list="spes" name="system.spe10.value" value="{{system.spe10.value}}" placeholder="Sélectionnez une SPÉ"/>{{else}}<span class="tooltip_spe spe-tsp" value="spe10|{{system.spe10.value}}">{{system.spe10.value}}</span>{{/unless}}</td>
+<td class="spe-rg">+<input {{#if system.verouille}}disabled="disabled" {{/if}} class="comb spe-rgi" type="text" name="system.rg_spe_10.value" value="{{system.rg_spe_10.value}}" data-dtype="Number"/>&nbsp;Rg</td>
+<td class="spe-add-cell"></td>
+</tr>
+</tbody>
+</table>
+</div>

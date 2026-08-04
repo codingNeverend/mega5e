@@ -56,6 +56,61 @@ export class Protection_Sheet extends foundry.appv1.sheets.ItemSheet {
   activateListeners(html) {
     super.activateListeners(html);
 
+    // Navigation entre onglets à la molette de la souris
+    html[0].addEventListener(
+      "wheel",
+      (event) => {
+        const tabItems = html.find(".side-tabs .side-tab-item");
+        if (!tabItems.length) return;
+        const tabs = tabItems.map((_, el) => el.dataset.tab).get();
+        const activeTab = this._tabs[0].active;
+        const currentIndex = tabs.indexOf(activeTab);
+        if (currentIndex === -1) return;
+        // Molette vers le haut (deltaY < 0) → onglet précédent, vers le bas → onglet suivant
+        const direction = event.deltaY < 0 ? -1 : 1;
+        const newIndex = (currentIndex + direction + tabs.length) % tabs.length;
+        const newTab = tabs[newIndex];
+        // Mettre à jour la classe active sur les boutons
+        tabItems.removeClass("active");
+        tabItems.filter(`[data-tab="${newTab}"]`).addClass("active");
+        this._tabs[0].activate(newTab);
+      },
+      { passive: true },
+    );
+
+    // Gestion des blocs collapsibles avec persistence localStorage
+    const _collapseKey = `mega-collapse-${this.item.id}`;
+    const _collapseStates = JSON.parse(
+      localStorage.getItem(_collapseKey) || "{}",
+    );
+    html.find(".weapon-feature-card").each(function (index) {
+      const key = `card-${index}`;
+      const $card = $(this);
+      const $content = $card.find(".card-content");
+      $content.css("transition", "none");
+      if (key in _collapseStates) {
+        if (_collapseStates[key]) {
+          $card.addClass("collapsed");
+        } else {
+          $card.removeClass("collapsed");
+        }
+      }
+      requestAnimationFrame(() =>
+        requestAnimationFrame(() => $content.css("transition", "")),
+      );
+    });
+    html.find(".collapsible-header").on("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      const card = $(this).closest(".weapon-feature-card");
+      card.toggleClass("collapsed");
+      const states = {};
+      html.find(".weapon-feature-card").each(function (idx) {
+        states[`card-${idx}`] = $(this).hasClass("collapsed");
+      });
+      localStorage.setItem(_collapseKey, JSON.stringify(states));
+    });
+
     // Everything below here is only needed if the sheet is editable
     if (!this.options.editable) return;
 

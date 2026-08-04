@@ -1,4 +1,4 @@
-/* -------------------------------------------- */
+﻿/* -------------------------------------------- */
 /*  Module imports                              */
 /* -------------------------------------------- */
 
@@ -206,6 +206,14 @@ Hooks.once("init", async function () {
     }
   });
 
+  Handlebars.registerHelper("add", function (v1, v2) {
+    return (parseInt(v1) || 0) + (parseInt(v2) || 0);
+  });
+
+  Handlebars.registerHelper("range", function (n) {
+    return Array.from({ length: parseInt(n) || 0 }, (_, i) => i + 1);
+  });
+
   game.settings.register("mega", "courtMetrage", {
     name: "Mode Court Métrage",
     hint: "Si coché, la liste des talents est simplifiée.",
@@ -225,13 +233,14 @@ Hooks.once("init", async function () {
   // });
 
   const isSequencerLoaded = game.modules.get("sequencer")?.active ?? false;
+  const isFXMasterLoaded = game.modules.get("fxmaster")?.active ?? false;
 
   game.settings.register("mega", "effets_speciaux", {
     name: "Jouer les effets spéciaux",
-    hint: "Si coché, les effets optionnels de combat seront appliqués. Pour fonctionner, le module Sequencer doit être chargé et actif.",
+    hint: "Si coché, les effets optionnels de combat seront appliqués. Pour fonctionner, les modules Sequencer et Gambit's FX Master doivent être chargés et actifs.",
     scope: "world",
     config: true,
-    default: isSequencerLoaded,
+    default: isSequencerLoaded && isFXMasterLoaded,
     type: Boolean,
     onChange: (value) => {
       if (value) {
@@ -338,110 +347,110 @@ Hooks.once("init", async function () {
     },
   );
 
-  ColorPicker.register(
-    "mega",
-    "TableTraitColor",
-    {
-      name: "Couleur de fond de la table de Traits",
-      scope: "client",
-      config: true,
-      default: "#FFA02053",
-    },
-    {
-      format: "hexa",
-      alphaChannel: true,
-    },
-  );
+  // ColorPicker.register(
+  //   "mega",
+  //   "TableTraitColor",
+  //   {
+  //     name: "Couleur de fond de la table de Traits",
+  //     scope: "client",
+  //     config: true,
+  //     default: "#FFA02053",
+  //   },
+  //   {
+  //     format: "hexa",
+  //     alphaChannel: true,
+  //   },
+  // );
 
-  ColorPicker.register(
-    "mega",
-    "TableTalentColor",
-    {
-      name: "Couleur de fond de la table de Talents",
-      scope: "client",
-      config: true,
-      default: "#FFA02053",
-    },
-    {
-      format: "hexa",
-      alphaChannel: true,
-    },
-  );
+  // ColorPicker.register(
+  //   "mega",
+  //   "TableTalentColor",
+  //   {
+  //     name: "Couleur de fond de la table de Talents",
+  //     scope: "client",
+  //     config: true,
+  //     default: "#FFA02053",
+  //   },
+  //   {
+  //     format: "hexa",
+  //     alphaChannel: true,
+  //   },
+  // );
 
-  ColorPicker.register(
-    "mega",
-    "TablePouvoirColor",
-    {
-      name: "Couleur de fond de la table de Pouvoirs",
-      scope: "client",
-      config: true,
-      default: "#33FF3B44",
-    },
-    {
-      format: "hexa",
-      alphaChannel: true,
-    },
-  );
+  // ColorPicker.register(
+  //   "mega",
+  //   "TablePouvoirColor",
+  //   {
+  //     name: "Couleur de fond de la table de Pouvoirs",
+  //     scope: "client",
+  //     config: true,
+  //     default: "#33FF3B44",
+  //   },
+  //   {
+  //     format: "hexa",
+  //     alphaChannel: true,
+  //   },
+  // );
 
-  ColorPicker.register(
-    "mega",
-    "TableSpesColor",
-    {
-      name: "Couleur de fond de la table de Spes",
-      scope: "client",
-      config: true,
-      default: "#FFE38544",
-    },
-    {
-      format: "hexa",
-      alphaChannel: true,
-    },
-  );
+  // ColorPicker.register(
+  //   "mega",
+  //   "TableSpesColor",
+  //   {
+  //     name: "Couleur de fond de la table de Spes",
+  //     scope: "client",
+  //     config: true,
+  //     default: "#FFE38544",
+  //   },
+  //   {
+  //     format: "hexa",
+  //     alphaChannel: true,
+  //   },
+  // );
 
-  ColorPicker.register(
-    "mega",
-    "TableCombatColor",
-    {
-      name: "Couleur de fond de la table de Combat",
-      scope: "client",
-      config: true,
-      default: "#FF641444",
-    },
-    {
-      format: "hexa",
-      alphaChannel: true,
-    },
-  );
+  // ColorPicker.register(
+  //   "mega",
+  //   "TableCombatColor",
+  //   {
+  //     name: "Couleur de fond de la table de Combat",
+  //     scope: "client",
+  //     config: true,
+  //     default: "#FF641444",
+  //   },
+  //   {
+  //     format: "hexa",
+  //     alphaChannel: true,
+  //   },
+  // );
 
-  ColorPicker.register(
-    "mega",
-    "TableProtectionColor",
-    {
-      name: "Couleur de fond de la table des Protections",
-      scope: "client",
-      config: true,
-      default: "#FF552944",
-    },
-    {
-      format: "hexa",
-      alphaChannel: true,
-    },
-  );
+  // ColorPicker.register(
+  //   "mega",
+  //   "TableProtectionColor",
+  //   {
+  //     name: "Couleur de fond de la table des Protections",
+  //     scope: "client",
+  //     config: true,
+  //     default: "#FF552944",
+  //   },
+  //   {
+  //     format: "hexa",
+  //     alphaChannel: true,
+  //   },
+  // );
 
-  ColorPicker.register(
-    "mega",
-    "InventoryColor",
-    {
-      name: "Couleur de fond de l'inventaire",
-      scope: "client",
-      config: true,
-      default: "#63221040",
-    },
-    {
-      format: "hexa",
-      alphaChannel: true,
-    },
-  );
+  // ColorPicker.register(
+  //   "mega",
+  //   "InventoryColor",
+  //   {
+  //     name: "Couleur de fond de l'inventaire",
+  //     scope: "client",
+  //     config: true,
+  //     default: "#63221040",
+  //   },
+  //   {
+  //     format: "hexa",
+  //     alphaChannel: true,
+  //   },
+  // );
 
   game.settings.register("mega", "Corners", {
     name: "Coins arrondis",
@@ -473,18 +482,15 @@ Hooks.once("init", async function () {
     let melee_perdue = $(this).data("melee");
     let comp = $(this).data("comp");
     let marge = $(this).data("marge");
-    let temp_vie_perdue = melee_perdue % 2;
-    let vie_perdue = Math.floor(melee_perdue / 2);
     let currentTarget = Array.from(game.user.targets)[0].actor;
+    // Calcul cumulatif : on accumule les pts de mêlée impairs entre les coups
+    const melee_impair = Number(currentTarget.system.melee_impair ?? 0);
+    const total_melee = melee_perdue + melee_impair;
+    let vie_perdue = Math.floor(total_melee / 2);
+    const new_melee_impair = total_melee % 2;
     let spe6 = currentTarget.system.spes.rg_spe6.value;
     let result_diff =
       "<div class='card-header'><span> " + type_jet + "</span></div> ";
-    if (temp_vie_perdue === 1 && vie_perdue !== 0) {
-      vie_perdue = vie_perdue;
-    }
-    if (temp_vie_perdue === 1 && vie_perdue === 0) {
-      vie_perdue = 1;
-    }
     const retraitAuto = game.settings.get("mega", "retraitAuto");
 
     if (retraitAuto) {
@@ -494,6 +500,7 @@ Hooks.once("init", async function () {
           .documentUpdate(currentTarget, {
             "system.health.value":
               currentTarget.system.health.value - vie_perdue,
+            "system.melee_impair": new_melee_impair,
           })
           .then(() => {
             megaAPI.documentUpdate(currentTarget, {
@@ -510,17 +517,16 @@ Hooks.once("init", async function () {
 
     result_diff =
       result_diff +
-      '<p class="result_diff">' +
-      // '<i class="fab fa-battle-net"></i> ' +
+      '<div class="mega-roll-damage-melee"><i class="fas fa-shield-alt"></i> ' +
       game.user.targets.values().next().value.name +
-      " perd " +
+      " perd <strong>" +
       melee_perdue +
-      ' points de mêlée</p><p class="result_diff">' +
-      // '<i class="far fa-heart"></i> ' +
+      "</strong>pt de Mêlée</div>" +
+      '<div class="mega-roll-damage-vie"><i class="fas fa-heart"></i> ' +
       game.user.targets.values().next().value.name +
-      " perd " +
+      " perd <strong>" +
       vie_perdue +
-      " points de vie</p>";
+      "</strong>pt de Vie</div>";
 
     switch (effet_0av_1) {
       case "H":
@@ -638,7 +644,6 @@ Hooks.once("init", async function () {
       speaker: ChatMessage.getSpeaker(),
       content: result_diff,
       author: game.user.id,
-      type: CONST.CHAT_MESSAGE_STYLES.OTHER,
     };
     ChatMessage.create(chatData, {});
   });
@@ -768,45 +773,37 @@ async function createDefaultScene() {
 }
 
 Hooks.once("ready", async () => {
-  const IMG_PATH = foundry.utils.getRoute("systems/mega/images/logo.png");
-  const LOGO_ID = "mega-logo";
-  const STYLE_ID = "mega-logo-style";
-
-  // Cleanup
-  document.getElementById(LOGO_ID)?.remove();
-  document.getElementById(STYLE_ID)?.remove();
-
-  // Creation
-  const a = document.createElement("a");
-  a.id = LOGO_ID;
-  a.href = "#";
-  a.ariaLabel = "Accueil";
-
-  const img = document.createElement("img");
-  img.src = IMG_PATH;
-  img.alt = "Mega";
-  a.appendChild(img);
-
-  document.body.appendChild(a);
-
-  // Styles
-  const style = document.createElement("style");
-  style.id = STYLE_ID;
-  style.textContent = `
-    #${LOGO_ID} {
-      position: absolute;
-      top: 40px;           /* hauteur par rapport au haut de l’écran */
-      left: 50%;           /* centre horizontalement */
-      transform: translateX(-50%); /* offset by half for true centering */
-      z-index: 1000;
-    }
-    #${LOGO_ID} img {
-      height: 60px;
-      width: auto;
-      display: block;
-    }
-  `;
-  document.head.appendChild(style);
+  // const IMG_PATH = foundry.utils.getRoute("systems/mega/images/logo.png");
+  // const LOGO_ID = "mega-logo";
+  // const STYLE_ID = "mega-logo-style";
+  // document.getElementById(LOGO_ID)?.remove();
+  // document.getElementById(STYLE_ID)?.remove();
+  // const a = document.createElement("a");
+  // a.id = LOGO_ID;
+  // a.href = "#";
+  // a.ariaLabel = "Accueil";
+  // const img = document.createElement("img");
+  // img.src = IMG_PATH;
+  // img.alt = "Mega";
+  // a.appendChild(img);
+  // document.body.appendChild(a);
+  // const style = document.createElement("style");
+  // style.id = STYLE_ID;
+  // style.textContent = `
+  //   #${LOGO_ID} {
+  //     position: absolute;
+  //     top: 40px;           /* hauteur par rapport au haut de l’écran */
+  //     left: 50%;           /* centre horizontalement */
+  //     transform: translateX(-50%); /* offset by half for true centering */
+  //     z-index: 1000;
+  //   }
+  //   #${LOGO_ID} img {
+  //     height: 60px;
+  //     width: auto;
+  //     display: block;
+  //   }
+  // `;
+  // document.head.appendChild(style);
 });
 
 // Hook pour afficher le message de bienvenue après les messages de FoundryVTT
@@ -840,34 +837,80 @@ Hooks.on("createItem", (item, options, userId) => {
 
 Hooks.on("createActor", (actor, options, userId) => {
   if (userId === game.user.id && actor.type === "PJ") {
-    // Create and display the dialog box
-    options.renderSheet = false;
-    let d = new Dialog({
-      title: "Nouveau PJ créé",
-      content: `
-        <p><b>${actor.name}</b> a été créé. Sélectionnez son type :</p>
-        <center><select id="typeActor">
-          <option value="MEGA">MEGA</option>
-          <option value="Contact">Contact</option>
-        </select><br><br>
-      `,
-      buttons: {
-        ok: {
-          label: "OK",
-          callback: (html) => {
-            let typeActor = html.find("#typeActor").val();
-            actor.update({ "system.type_acteur": typeActor });
-            // actor.sheet.render(true);
+    // On attend que la fiche se rende en premier, puis on affiche le dialog par-dessus
+    setTimeout(() => {
+      // Ferme la fiche si elle est déjà visible
+      if (actor.sheet.rendered) actor.sheet.close({ force: true });
+
+      let d = new Dialog(
+        {
+          title: "Nouveau Personnage",
+          content: `
+          <div class="mcpj-body">
+            <div class="mcpj-banner">
+              <span class="mcpj-banner-sub">Configuration du profil</span>
+            </div>
+            <div class="mcpj-content">
+              <div class="mcpj-intro">
+                <i class="fas fa-user-astronaut"></i>
+                <span><strong>${actor.name}</strong> a été créé. Configurez son profil :</span>
+              </div>
+              <div class="mcpj-subtitle"><span>Profil</span></div>
+              <div class="mcpj-field">
+                <div class="mcpj-field-icon"><i class="fas fa-id-badge"></i></div>
+                <div class="mcpj-field-label">Type</div>
+                <div class="mcpj-radio-group">
+                  <label class="mcpj-radio-btn"><input type="radio" name="typeActor" value="MEGA" checked><span>MEGA</span></label>
+                  <label class="mcpj-radio-btn"><input type="radio" name="typeActor" value="Contact"><span>Contact</span></label>
+                </div>
+              </div>
+              <div class="mcpj-field">
+                <div class="mcpj-field-icon"><i class="fas fa-venus-mars"></i></div>
+                <div class="mcpj-field-label">Sexe</div>
+                <div class="mcpj-radio-group">
+                  <label class="mcpj-radio-btn"><input type="radio" name="sexeActor" value=""><span>—</span></label>
+                  <label class="mcpj-radio-btn"><input type="radio" name="sexeActor" value="Masculin" checked><span>Masculin</span></label>
+                  <label class="mcpj-radio-btn"><input type="radio" name="sexeActor" value="Féminin"><span>Féminin</span></label>
+                  <label class="mcpj-radio-btn"><input type="radio" name="sexeActor" value="Autre"><span>Autre</span></label>
+                </div>
+              </div>
+            </div>
+          </div>
+          `,
+          buttons: {
+            ok: {
+              icon: '<i class="fas fa-check-circle"></i>',
+              label: "Confirmer",
+              callback: (html) => {
+                let typeActor = html
+                  .find('input[name="typeActor"]:checked')
+                  .val();
+                let sexeActor =
+                  html.find('input[name="sexeActor"]:checked').val() ?? "";
+                const updateData = {
+                  "system.type_acteur": typeActor,
+                  "system.sexe": sexeActor,
+                };
+                if (sexeActor === "Féminin") {
+                  updateData["system.biography"] =
+                    actor.system.biography.replace(
+                      "silouhettePJH.png",
+                      "silouhettePJF.png",
+                    );
+                }
+                actor.update(updateData).then(() => actor.sheet.render(true));
+              },
+            },
           },
+          default: "ok",
         },
-      },
-      default: "ok",
-      render: (html) => {
-        // Apply high z-index to the dialog box
-        html.closest(".dialog").css("z-index", 9999);
-      },
-    });
-    d.render(true);
+        {
+          width: 380,
+          classes: ["mega-create-pj-dialog", "window-dialog"],
+        },
+      );
+      d.render(true);
+    }, 200);
   }
 });
 
@@ -898,173 +941,45 @@ Hooks.once("ready", () => {
   // Surcharger la méthode createDialog
   Actor.createDialog = function (data = {}, options = {}) {
     return new Promise((resolve, reject) => {
-      // Notre dialog personnalisé
       const dialog = new Dialog(
         {
-          title: "Créer un Acteur",
+          title: "Création d'un personnage",
           content: `
-          <style>
-            .mega-actor-creation {
-              padding: 25px;
-              text-align: center;
-              font-family: "Signika", sans-serif;
-            }
-            .mega-actor-creation input[type="text"] {
-              width: 100%;
-              margin-bottom: 25px;
-              padding: 12px;
-              border: 2px solid #ddd;
-              border-radius: 8px;
-              font-size: 24px;
-              text-align: center;
-              background: #f8f9fa;
-              transition: all 0.3s ease;
-            }
-            .mega-actor-creation input[type="text"]:focus {
-              outline: none;
-              border-color: var(--accent-color);
-              background: #fff;
-              box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
-            }
-            .mega-radio-group {
-              display: flex;
-              justify-content: center;
-              gap: 40px;
-              margin: 30px 0;
-            }
-            .mega-radio-option {
-              display: flex;
-              flex-direction: column;
-              align-items: center;
-              cursor: pointer;
-              padding: 20px;
-              border: 3px solid #e9ecef;
-              border-radius: 12px;
-              background: #f8f9fa;
-              transition: all 0.3s ease;
-              min-width: 140px;
-            }
-            .mega-radio-option:hover {
-              background: rgba(0, 123, 255, 0.1);
-              border-color: var(--accent-color);
-              transform: translateY(-2px);
-              box-shadow: 0 4px 12px rgba(0,123,255,0.15);
-            }
-            .mega-radio-option.selected {
-              background: rgba(0, 123, 255, 0.15);
-              border-color: var(--accent-color);
-              box-shadow: 0 4px 12px rgba(0,123,255,0.2);
-            }
-            .mega-radio-option input[type="radio"] {
-              margin-bottom: 12px;
-              width: 20px;
-              height: 20px;
-              appearance: none;
-              -webkit-appearance: none;
-              border: 2px solid #ddd;
-              border-radius: 50%;
-              background: #fff;
-              transition: all 0.3s ease;
-              cursor: pointer;
-            }
-            .mega-radio-option input[type="radio"]:checked {
-              background: #000;
-              border-color: #000;
-              box-shadow: inset 0 0 0 3px #fff;
-            }
-            .mega-radio-option input[type="radio"]:hover {
-              border-color: var(--accent-color);
-            }
-            .mega-radio-option label {
-              font-weight: 600;
-              color: #495057;
-              cursor: pointer;
-              font-size: 14px;
-              text-align: center;
-            }
-            .mega-radio-option.selected label {
-              color: #000;
-            }
-            /* Styles pour les boutons de dialog personnalisés */
-            .mega-actor-dialog .dialog-buttons {
-              display: flex;
-              justify-content: center;
-              gap: 15px;
-              padding: 16px;
-              background: #f8f9fa;
-              border-top: 1px solid #dee2e6;
-            }
-            .mega-actor-dialog .dialog-button {
-              padding: 12px 16px;
-              border: none;
-              border-radius: 8px;
-              font-weight: 600;
-              font-size: 14px;
-              cursor: pointer;
-              transition: all 0.3s ease;
-              min-width: 120px;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              gap: 8px;
-              text-transform: uppercase;
-              letter-spacing: 0.5px;
-              box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            }
-            .mega-actor-dialog .dialog-button:hover {
-              transform: translateY(-1px);
-              box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-            }
-            .mega-actor-dialog .dialog-button[data-button="create"] {
-              /*background: linear-gradient(135deg, #28a745, #20c997);*/
-              background: linear-gradient(135deg, var(--accent-color), var(--opacity-color));
-              color: white;
-              // border: 2px solid #28a745;
-              border: var(--accent-color);
-            }
-            .mega-actor-dialog .dialog-button[data-button="create"]:hover {
-              background: linear-gradient(135deg, var(--accent-color), var(--opacity-color));
-              color: #000;
-              // border-color: #1e7e34;
-              border: var(--accent-color);
-            }
-            .mega-actor-dialog .dialog-button[data-button="cancel"] {
-              background: linear-gradient(135deg, #6c757d, #495057);
-              color: white;
-              border: 2px solid #6c757d;
-            }
-            .mega-actor-dialog .dialog-button[data-button="cancel"]:hover {
-              background: linear-gradient(135deg, #5a6268, #343a40);
-              border-color: #545b62;
-            }
-            .mega-actor-dialog .dialog-button i {
-              font-size: 16px;
-            }
-          </style>
-          <div class="mega-actor-creation">
-            <input type="text" id="mega-actor-name" placeholder="Nom du personnage" autofocus />
-            
-            <div class="mega-radio-group">
-              <div class="mega-radio-option selected" data-type="PJ">
-                <input type="radio" id="mega-type-pj" name="mega-actor-type" value="PJ" checked />
-                <label for="mega-type-pj">Personnage<br>Joueur</label>
+          <div class="mcd-body">
+            <div class="mcd-banner">
+              <span class="mcd-banner-title">Nouveau Personnage</span>
+            </div>
+
+            <div class="mcd-content">
+              <div class="mcd-name-wrap">
+                <i class="fas fa-pen"></i>
+                <input type="text" id="mcd-actor-name" placeholder="Nom du personnage…" autocomplete="off" />
               </div>
-              
-              <div class="mega-radio-option" data-type="PNJ">
-                <input type="radio" id="mega-type-pnj" name="mega-actor-type" value="PNJ" />
-                <label for="mega-type-pnj">Personnage<br>Non-Joueur</label>
+
+              <div class="mcd-type-label"><i class="fas fa-sitemap"></i>&nbsp; Type d'acteur</div>
+              <div class="mcd-type-grid">
+                <div class="mcd-type-card selected" data-type="PJ">
+                  <input type="radio" name="mcd-actor-type" value="PJ" checked />
+                  <div class="mcd-card-label">Personnage<br>Joueur</div>
+                  <i class="fas fa-check mcd-card-check"></i>
+                </div>
+                <div class="mcd-type-card" data-type="PNJ">
+                  <input type="radio" name="mcd-actor-type" value="PNJ" />
+                  <div class="mcd-card-label">Personnage<br>Non-Joueur</div>
+                  <i class="fas fa-check mcd-card-check"></i>
+                </div>
               </div>
             </div>
           </div>
-        `,
+          `,
           buttons: {
             create: {
-              icon: '<i class="fas fa-check"></i>',
+              icon: '<i class="fas fa-plus-circle"></i>',
               label: "Créer",
               callback: async (html) => {
-                const name = html.find("#mega-actor-name").val().trim();
+                const name = html.find("#mcd-actor-name").val().trim();
                 const type = html
-                  .find('input[name="mega-actor-type"]:checked')
+                  .find('input[name="mcd-actor-type"]:checked')
                   .val();
 
                 if (!name) {
@@ -1074,22 +989,15 @@ Hooks.once("ready", () => {
                   return;
                 }
 
-                // Préparer les données pour la création
                 const createData = foundry.utils.mergeObject(
-                  {
-                    name: name,
-                    type: type,
-                    system: {},
-                  },
+                  { name, type, system: {} },
                   data,
                 );
 
                 try {
                   const actor = await Actor.create(createData, options);
                   resolve(actor);
-                  if (actor) {
-                    actor.sheet.render(true);
-                  }
+                  if (actor) actor.sheet.render(true);
                 } catch (error) {
                   reject(error);
                 }
@@ -1103,37 +1011,26 @@ Hooks.once("ready", () => {
           },
           default: "create",
           render: (html) => {
-            // Gestion interactive des boutons radio
-            html.find(".mega-radio-option").on("click", function () {
-              const $this = $(this);
-              const radioInput = $this.find('input[type="radio"]');
-
-              // Décocher tous les autres
-              html.find(".mega-radio-option").removeClass("selected");
-              html.find('input[type="radio"]').prop("checked", false);
-
-              // Cocher celui-ci
-              $this.addClass("selected");
-              radioInput.prop("checked", true);
+            html.find(".mcd-type-card").on("click", function () {
+              const $card = $(this);
+              html.find(".mcd-type-card").removeClass("selected");
+              html.find('input[name="mcd-actor-type"]').prop("checked", false);
+              $card.addClass("selected");
+              $card.find('input[type="radio"]').prop("checked", true);
             });
 
-            // Création avec Entrée
-            html.find("#mega-actor-name").on("keypress", function (e) {
+            html.find("#mcd-actor-name").on("keypress", function (e) {
               if (e.which === 13) {
                 html.find('.dialog-button[data-button="create"]').click();
               }
             });
 
-            // Auto-focus sur le champ nom
-            setTimeout(() => {
-              html.find("#mega-actor-name").focus();
-            }, 100);
+            setTimeout(() => html.find("#mcd-actor-name").focus(), 100);
           },
         },
         {
-          width: 450,
-          height: 440,
-          classes: ["mega-actor-dialog"],
+          width: 420,
+          classes: ["mega-actor-dialog", "window-dialog"],
         },
       );
 
@@ -1146,222 +1043,95 @@ Hooks.once("ready", () => {
 
   Item.createDialog = function (data = {}, options = {}) {
     return new Promise((resolve, reject) => {
-      // Types d'items MEGA
       const itemTypes = [
-        { key: "Objet", label: "Objet", icon: "fas fa-cube" },
-        { key: "Arme de tir", label: "Arme de Tir", icon: "fas fa-crosshairs" },
+        {
+          key: "Objet",
+          label: "Objet",
+          icon: "fas fa-cube",
+          img: "mhc.png",
+        },
+        {
+          key: "Arme de tir",
+          label: "Arme de Tir",
+          icon: "fas fa-crosshairs",
+          img: "solaris.png",
+        },
         {
           key: "Arme courte",
           label: "Arme Courte",
           icon: "fas fa-knife-kitchen",
+          img: "stylet.png",
         },
         {
           key: "Arme de lancer",
           label: "Arme de Lancer",
           icon: "fas fa-bullseye",
+          img: "shuriken.png",
         },
         {
           key: "Arme longue",
           label: "Arme Longue",
           icon: "fas fa-sword",
+          img: "epee_longue.png",
         },
-        { key: "Protection", label: "Protection", icon: "fas fa-shield-alt" },
+        {
+          key: "Protection",
+          label: "Protection",
+          icon: "fas fa-shield-alt",
+          img: "scaphandre H.png",
+        },
         {
           key: "Attaque spéciale",
           label: "Attaque Spéciale",
           icon: "fas fa-fist-raised",
+          img: "griffes.png",
         },
-        { key: "Pouvoir", label: "Pouvoir", icon: "fas fa-magic" },
+        {
+          key: "Pouvoir",
+          label: "Pouvoir",
+          icon: "fas fa-magic",
+          img: "medium.png",
+        },
       ];
 
-      // Notre dialog personnalisé pour les items
       const dialog = new Dialog(
         {
-          title: "Créer un Objet",
+          title: "Création d'Objet",
           content: `
-          <style>
-            .mega-item-creation {
-              padding: 25px;
-              text-align: center;
-              font-family: "Signika", sans-serif;
-            }
-            .mega-item-creation input[type="text"] {
-              width: 100%;
-              margin-bottom: 25px;
-              padding: 12px;
-              border: 2px solid #ddd;
-              border-radius: 8px;
-              font-size: 24px;
-              text-align: center;
-              background: #f8f9fa;
-              transition: all 0.3s ease;
-            }
-            .mega-item-creation input[type="text"]:focus {
-              outline: none;
-              border-color: var(--accent-color);
-              background: #fff;
-              box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
-            }
-            .mega-item-types {
-              display: grid;
-              grid-template-columns: repeat(2, 1fr);
-              gap: 12px;
-              margin: 20px 0;
-              max-height: 300px;
-              overflow-y: auto;
-              padding: 10px;
-              border: 1px solid #dee2e6;
-              border-radius: 8px;
-              background: #f8f9fa;
-            }
-            .mega-item-option {
-              display: flex;
-              align-items: center;
-              cursor: pointer;
-              padding: 12px;
-              border: 2px solid #e9ecef;
-              border-radius: 8px;
-              background: #fff;
-              transition: all 0.3s ease;
-              min-height: 50px;
-            }
-            .mega-item-option:hover {
-              background: var(--opacity-color);
-              border-color: var(--accent-color);
-              transform: translateY(-1px);
-              box-shadow: 0 2px 8px rgba(0,123,255,0.15);
-            }
-            .mega-item-option.selected {
-              background: var(--opacity-color);
-              border-color: var(--accent-color);
-              box-shadow: 0 2px 8px rgba(0,123,255,0.2);
-              color:#000;
-            }
-            .mega-item-option input[type="radio"] {
-              width: 16px;
-              height: 16px;
-              margin-right: 10px;
-              appearance: none;
-              -webkit-appearance: none;
-              border: 2px solid #ddd;
-              border-radius: 50%;
-              background: #fff;
-              transition: all 0.3s ease;
-              cursor: pointer;
-            }
-            .mega-item-option input[type="radio"]:checked {
-              background: #000;
-              border-color: #000;
-              box-shadow: inset 0 0 0 2px #fff;
-            }
-            .mega-item-option input[type="radio"]:hover {
-              border-color: var(--accent-color);
-            }
-            .mega-item-option .item-content {
-              flex: 1;
-              text-align: left;
-            }
-            .mega-item-option .item-icon {
-              margin-right: 8px;
-              color: #6c757d;
-              font-size: 18px;
-            }
-            .mega-item-option.selected .item-icon {
-              color: #000;
-            }
-            .mega-item-option .item-label {
-              font-weight: 600;
-              color: #495057;
-              font-size: 14px;
-            }
-            .mega-item-option.selected .item-label {
-              color: #000;
-            }
-            /* Styles pour les boutons personnalisés - copiés de la création d'acteur */
-            .mega-item-dialog .dialog-buttons {
-              display: flex;
-              justify-content: center;
-              gap: 15px;
-              padding: 20px;
-              background: #f8f9fa;
-              border-top: 1px solid #dee2e6;
-            }
-            .mega-item-dialog .dialog-button {
-              padding: 12px 24px;
-              border: none;
-              border-radius: 8px;
-              font-weight: 600;
-              font-size: 14px;
-              cursor: pointer;
-              transition: all 0.3s ease;
-              min-width: 120px;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              gap: 8px;
-              text-transform: uppercase;
-              letter-spacing: 0.5px;
-              box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            }
-            .mega-item-dialog .dialog-button:hover {
-              transform: translateY(-1px);
-              box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-            }
-            .mega-item-dialog .dialog-button[data-button="create"] {
-              // background: linear-gradient(135deg, #28a745, #20c997);
-              background: linear-gradient(135deg, var(--accent-color), var(--opacity-color));
-              color: white;
-              // border: 2px solid #28a745;
-              border: var(--accent-color);
-            }
-            .mega-item-dialog .dialog-button[data-button="create"]:hover {
-              // background: linear-gradient(135deg, #218838, #17a085);
-              background: var(--accent-color);
-              // border-color: #1e7e34;
-              border: var(--accent-color);
-              color: #000;  
-            }
-            .mega-item-dialog .dialog-button[data-button="cancel"] {
-              background: linear-gradient(135deg, #6c757d, #495057);
-              color: white;
-              border: 2px solid #6c757d;
-            }
-            .mega-item-dialog .dialog-button[data-button="cancel"]:hover {
-              background: linear-gradient(135deg, #5a6268, #343a40);
-              border-color: #545b62;
-            }
-            .mega-item-dialog .dialog-button i {
-              font-size: 16px;
-            }
-          </style>
-          <div class="mega-item-creation">
-            <input type="text" id="mega-item-name" placeholder="Nom de l'objet" autofocus />
-            
-            <div class="mega-item-types">
-              ${itemTypes
-                .map(
-                  (item, index) => `
-                <div class="mega-item-option ${index === 0 ? "selected" : ""}" data-type="${item.key}">
-                  <input type="radio" id="mega-type-${index}" name="mega-item-type" value="${item.key}" ${index === 0 ? "checked" : ""} />
-                  <i class="${item.icon} item-icon"></i>
-                  <div class="item-content">
-                    <div class="item-label">${item.label}</div>
+          <div class="micd-body">
+            <div class="micd-banner"><span class="micd-banner-title">Nouvel Objet</span></div>
+            <div class="micd-content">
+              <div class="micd-name-wrap">
+                <i class="fas fa-pen"></i>
+                <input type="text" id="micd-item-name" placeholder="Nom de l'objet…" autocomplete="off" />
+              </div>
+
+              <div class="micd-type-label"><i class="fas fa-layer-group"></i>&nbsp; TYPE D'OBJET</div>
+              <div class="micd-type-grid">
+                ${itemTypes
+                  .map(
+                    (item, index) => `
+                  <div class="micd-type-card ${index === 0 ? "selected" : ""}" data-type="${item.key}"
+                       style="background-image: url('systems/mega/images/${item.img}')">
+                    <input type="radio" name="micd-item-type" value="${item.key}" ${index === 0 ? "checked" : ""} />
+                    <div class="micd-card-label">${item.label}</div>
+                    <i class="fas fa-check micd-card-check"></i>
                   </div>
-                </div>
-              `,
-                )
-                .join("")}
+                `,
+                  )
+                  .join("")}
+              </div>
             </div>
           </div>
-        `,
+          `,
           buttons: {
             create: {
-              icon: '<i class="fas fa-check"></i>',
+              icon: '<i class="fas fa-plus-circle"></i>',
               label: "Créer",
               callback: async (html) => {
-                const name = html.find("#mega-item-name").val().trim();
+                const name = html.find("#micd-item-name").val().trim();
                 const type = html
-                  .find('input[name="mega-item-type"]:checked')
+                  .find('input[name="micd-item-type"]:checked')
                   .val();
 
                 if (!name) {
@@ -1369,22 +1139,15 @@ Hooks.once("ready", () => {
                   return;
                 }
 
-                // Préparer les données pour la création
                 const createData = foundry.utils.mergeObject(
-                  {
-                    name: name,
-                    type: type,
-                    system: {},
-                  },
+                  { name, type, system: {} },
                   data,
                 );
 
                 try {
                   const item = await Item.create(createData, options);
                   resolve(item);
-                  if (item) {
-                    item.sheet.render(true);
-                  }
+                  if (item) item.sheet.render(true);
                 } catch (error) {
                   reject(error);
                 }
@@ -1398,37 +1161,26 @@ Hooks.once("ready", () => {
           },
           default: "create",
           render: (html) => {
-            // Gestion interactive des options d'items
-            html.find(".mega-item-option").on("click", function () {
-              const $this = $(this);
-              const radioInput = $this.find('input[type="radio"]');
-
-              // Décocher tous les autres
-              html.find(".mega-item-option").removeClass("selected");
-              html.find('input[type="radio"]').prop("checked", false);
-
-              // Cocher celui-ci
-              $this.addClass("selected");
-              radioInput.prop("checked", true);
+            html.find(".micd-type-card").on("click", function () {
+              const $card = $(this);
+              html.find(".micd-type-card").removeClass("selected");
+              html.find('input[name="micd-item-type"]').prop("checked", false);
+              $card.addClass("selected");
+              $card.find('input[type="radio"]').prop("checked", true);
             });
 
-            // Création avec Entrée
-            html.find("#mega-item-name").on("keypress", function (e) {
+            html.find("#micd-item-name").on("keypress", function (e) {
               if (e.which === 13) {
                 html.find('.dialog-button[data-button="create"]').click();
               }
             });
 
-            // Auto-focus sur le champ nom
-            setTimeout(() => {
-              html.find("#mega-item-name").focus();
-            }, 100);
+            setTimeout(() => html.find("#micd-item-name").focus(), 100);
           },
         },
         {
-          width: 500,
-          height: 580,
-          classes: ["mega-item-dialog"],
+          width: 490,
+          classes: ["mega-item-dialog", "window-dialog"],
         },
       );
 
@@ -1465,35 +1217,35 @@ function ApplySettings() {
     "--opacity-color",
     adjustColor(game.settings.get("mega", "AccentColor"), 10, 0.4),
   );
-  root.style.setProperty(
-    "--table-traits",
-    game.settings.get("mega", "TableTraitColor"),
-  );
-  root.style.setProperty(
-    "--table-talents",
-    game.settings.get("mega", "TableTalentColor"),
-  );
+  // root.style.setProperty(
+  //   "--table-traits",
+  //   game.settings.get("mega", "TableTraitColor"),
+  // );
+  // root.style.setProperty(
+  //   "--table-talents",
+  //   game.settings.get("mega", "TableTalentColor"),
+  // );
 
-  root.style.setProperty(
-    "--table-pouvoirs",
-    game.settings.get("mega", "TablePouvoirColor"),
-  );
-  root.style.setProperty(
-    "--table-spes",
-    game.settings.get("mega", "TableSpesColor"),
-  );
-  root.style.setProperty(
-    "--table-combat",
-    game.settings.get("mega", "TableCombatColor"),
-  );
-  root.style.setProperty(
-    "--table-protections",
-    game.settings.get("mega", "TableProtectionColor"),
-  );
-  root.style.setProperty(
-    "--table-inventaire",
-    game.settings.get("mega", "InventoryColor"),
-  );
+  // root.style.setProperty(
+  //   "--table-pouvoirs",
+  //   game.settings.get("mega", "TablePouvoirColor"),
+  // );
+  // root.style.setProperty(
+  //   "--table-spes",
+  //   game.settings.get("mega", "TableSpesColor"),
+  // );
+  // root.style.setProperty(
+  //   "--table-combat",
+  //   game.settings.get("mega", "TableCombatColor"),
+  // );
+  // root.style.setProperty(
+  //   "--table-protections",
+  //   game.settings.get("mega", "TableProtectionColor"),
+  // );
+  // root.style.setProperty(
+  //   "--table-inventaire",
+  //   game.settings.get("mega", "InventoryColor"),
+  // );
   root.style.setProperty(
     "--opacity-clear-color",
     adjustColor(game.settings.get("mega", "AccentColor"), 20, 0.2),
@@ -1778,25 +1530,51 @@ function SetBlur(blurLevel) {
 
 async function checkSequencer() {
   const sequencerModule = game.modules.get("sequencer");
+  const fxmasterModule = game.modules.get("fxmaster");
+
+  // Construire la liste des problèmes détectés
+  const missing = [];
+  const inactive = [];
+
   if (!sequencerModule) {
+    missing.push("Sequencer");
+  } else if (!sequencerModule.active) {
+    inactive.push("sequencer");
+  }
+
+  if (!fxmasterModule) {
+    missing.push("Gambit's FX Master");
+  } else if (!fxmasterModule.active) {
+    inactive.push("fxmaster");
+  }
+
+  // Si des modules sont manquants, afficher une erreur et désactiver l'option
+  if (missing.length > 0) {
     ui.notifications.error(
-      "Pour que les effets spéciaux fonctionnent, il vous faut installer le module Sequencer",
+      `Pour que les effets spéciaux fonctionnent, il vous faut installer : ${missing.join(", ")}.`,
     );
     game.settings.set("mega", "effets_speciaux", false);
-  } else if (!sequencerModule.active) {
+    return;
+  }
+
+  // Si des modules sont installés mais inactifs, proposer de les activer
+  if (inactive.length > 0) {
+    const names = inactive
+      .map((id) => (id === "sequencer" ? "Sequencer" : "Gambit's FX Master"))
+      .join(" et ");
     new Dialog({
-      title: "Activer Sequencer",
-      content:
-        "<p>Pour que les effets spéciaux fonctionnent, il vous faut activer le module Sequencer. Voulez-vous l'activer ?</p>",
+      title: "Activer les modules requis",
+      content: `<p>Pour que les effets spéciaux fonctionnent, il vous faut activer : <strong>${names}</strong>. Voulez-vous les activer ?</p>`,
       buttons: {
         yes: {
           label: "Oui",
           callback: async () => {
-            await game.settings.set("core", "moduleConfiguration", {
-              ...game.settings.get("core", "moduleConfiguration"),
-              sequencer: true,
-            });
-            ui.notifications.info("Le module Sequencer a été activé.");
+            const config = game.settings.get("core", "moduleConfiguration");
+            for (const id of inactive) {
+              config[id] = true;
+            }
+            await game.settings.set("core", "moduleConfiguration", config);
+            ui.notifications.info(`${names} ont été activés.`);
             game.settings.set("mega", "effets_speciaux", true);
             location.reload();
           },
@@ -1812,72 +1590,6 @@ async function checkSequencer() {
     }).render(true);
   }
 }
-
-Hooks.on("getActorSheetHeaderButtons", (app, buttons) => {
-  // Bouton de verrouillage
-  buttons.unshift({
-    class: "my-button",
-    icon:
-      app.object.system.verouille === 1 ? "fas fa-lock" : "fas fa-lock-open",
-    label: "Verrouillage",
-    onclick: async () => {
-      const actor = app.object;
-      const currentValue = actor.system.verouille;
-      const newValue = currentValue === 1 ? 0 : 1;
-      await actor.update({ "system.verouille": newValue });
-      ui.notifications.info(
-        `La fiche est maintenant ${
-          newValue === 1 ? "vérouillée" : "dévérouillée"
-        } !`,
-      );
-
-      // Update button icon
-      setTimeout(() => {
-        const button = document.querySelector(".my-button i");
-        if (button) {
-          button.className =
-            newValue === 1 ? "fas fa-lock" : "fas fa-lock-open";
-        }
-      }, 100);
-    },
-  });
-
-  // Reduction button (only for "contact" type sheets)
-  if (app.object.type === "PNJ") {
-    buttons.unshift({
-      class: "reduce-button",
-      icon:
-        app.object.system.reduit === 1 ? "fas fa-maximize" : "fas fa-minimize",
-      label: "Type acteur",
-      onclick: async () => {
-        const actor = app.object;
-        const currentValue = actor.system.reduit;
-        const newValue = currentValue === 1 ? 0 : 1;
-        await actor.update({ "system.reduit": newValue });
-        ui.notifications.info(
-          `La fiche est en mode ${
-            newValue === 1 ? "comparse/figurant" : "acteur"
-          } !`,
-        );
-
-        // Update button icon
-        setTimeout(() => {
-          const button = document.querySelector(".reduce-button i");
-          if (button) {
-            button.className =
-              newValue === 1 ? "fas fa-maximize" : "fas fa-minimize";
-          }
-        }, 100);
-
-        // Changer la taille de la fiche
-        app.setPosition({
-          width: newValue === 1 ? 860 : 898,
-          height: newValue === 1 ? 568 : 715,
-        });
-      },
-    });
-  }
-});
 
 Hooks.on("renderGamePause", (app, html) => {
   // html is the <figure id="pause" ...> element
@@ -1905,29 +1617,25 @@ Hooks.on("renderSettingsConfig", (app, html, data) => {
     'div[data-setting="mega.effets_speciaux"] .hint',
   );
   hintElement.html(
-    "Si coché, les effets optionnels de combat seront appliqués. Pour fonctionner, le module <b>Sequencer</b> doit être chargé et actif.",
+    "Si coché, les effets optionnels de combat seront appliqués. Pour fonctionner, les modules <b>Sequencer</b> et <b>Gambit's FX Master</b> doivent être chargés et actifs.",
   );
 
   // Trouver UNIQUEMENT les paramètres MEGA spécifiques
   let megaSettings = $();
 
-  // Chercher chaque paramètre MEGA individuellement pour éviter tout conflit
   const megaSettingNames = [
-    // Paramètres généraux en premier
     "mega.courtMetrage",
     "mega.effets_speciaux",
     "mega.retraitAuto",
-    // Interface en second
     "mega.AccentColor",
-    "mega.TableTraitColor",
-    "mega.TableTalentColor",
-    "mega.TablePouvoirColor",
-    "mega.TableSpesColor",
-    "mega.TableCombatColor",
-    "mega.TableProtectionColor",
-    "mega.InventoryColor",
+    // "mega.TableTraitColor",
+    // "mega.TableTalentColor",
+    // "mega.TablePouvoirColor",
+    // "mega.TableSpesColor",
+    // "mega.TableCombatColor",
+    // "mega.TableProtectionColor",
+    // "mega.InventoryColor",
     "mega.Corners",
-    // Combat en dernier
     "mega.bagarre_video_path",
     "mega.bagarre_son_path",
     "mega.charge_video_path",
@@ -1949,289 +1657,335 @@ Hooks.on("renderSettingsConfig", (app, html, data) => {
   });
 
   if (megaSettings.length > 0) {
-    // Ajouter le logo MEGA en haut de la page de configuration
     const $form = megaSettings.first().closest("form");
-    const $existingLogo = $form.find(".mega-logo-header");
 
-    if ($existingLogo.length === 0) {
-      const $logoHeader = $(`
-        <div class="mega-logo-header" style="text-align: center; margin: 20px 0 30px 0; padding: 20px; background: linear-gradient(135deg, rgba(255,215,0,0.1) 0%, rgba(218,165,32,0.05) 100%); border: 2px solid rgba(218,165,32,0.3); border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-          <img src="systems/mega/images/logo.png" alt="MEGA Logo" style="max-height: 80px; max-width: 300px; margin-bottom: 10px;">
-          <h2 style="margin: 10px 0 0 0; color: #2c3e50; font-size: 24px; font-weight: bold; text-shadow: 1px 1px 2px rgba(255,255,255,0.8);font-family: 'Mega', sans-serif;">Configuration du Système MEGA</h2>
-        </div>
-      `);
+    // ── Helpers ──────────────────────────────────────────────────────────
 
-      // Insérer le logo avant le premier paramètre MEGA
-      megaSettings.first().before($logoHeader);
+    // Styler un form-group avec la couleur accentuée de la section
+    function styleFormGroup($fg, accentColor) {
+      $fg.css({
+        padding: "5px 0",
+        border: "none",
+        background: "transparent",
+        margin: "2px 0",
+      });
+      $fg.find("label").css({
+        color: accentColor,
+        "font-weight": "bold",
+        "font-size": "11px",
+        "text-transform": "uppercase",
+        "letter-spacing": "0.6px",
+        "padding-left": "6px",
+        "border-left": `3px solid ${accentColor}`,
+      });
+      $fg.find(".hint, p.hint").css({
+        "font-style": "italic",
+        "font-size": "11px",
+        color: "#888",
+        "margin-top": "2px",
+        "padding-left": "9px",
+        background: "transparent",
+        border: "none",
+        "border-radius": "0",
+      });
     }
 
-    // Traiter chaque paramètre MEGA individuellement
+    // Construire un bloc outer + side-label vertical coloré + body
+    function buildSection(title, gradient, bodyBg, accentColor, items) {
+      const r = "var(--corner-radius, 8px)";
+      const $outer = $(
+        `<div class="mega-settings-outer" style="display:flex; flex-direction:row; align-items:stretch; margin:8px 4px; box-shadow:rgba(0,0,0,0.12) 0px 1px 3px, rgba(0,0,0,0.24) 0px 1px 2px;"></div>`,
+      );
+      const $sideLabel = $(
+        `<div class="mega-section-side-label" style="display:flex; align-items:center; justify-content:center; writing-mode:vertical-rl; text-orientation:mixed; transform:rotate(180deg); background:${gradient}; color:#fff; font-weight:bold; font-size:9px; letter-spacing:3px; padding:10px 4px; min-width:20px; user-select:none; text-transform:uppercase; flex-shrink:0; border-radius:${r} 0 0 ${r};"></div>`,
+      );
+      $sideLabel.text(title);
+      const $body = $(
+        `<div class="mega-section-body" style="flex:1; background:${bodyBg}; padding:8px 12px 6px 10px; border-radius:0 ${r} ${r} 0;"></div>`,
+      );
+      items.forEach(function ($item) {
+        styleFormGroup($item, accentColor);
+        $body.append($item);
+      });
+      $outer.append($sideLabel).append($body);
+      return $outer;
+    }
+
+    // Construire un sous-groupe dans la section Médias
+    function buildSubGroup(
+      title,
+      gradient,
+      bodyBg,
+      accentColor,
+      items,
+      isLast,
+    ) {
+      const $sg = $(
+        `<div class="mega-subgroup-outer" style="display:flex; flex-direction:row; align-items:stretch;${isLast ? "" : " border-bottom:1px solid rgba(0,0,0,0.07);"}"></div>`,
+      );
+      const $sgLabel = $(
+        `<div class="mega-subgroup-label" style="display:flex; align-items:center; justify-content:center; writing-mode:vertical-rl; text-orientation:mixed; transform:rotate(180deg); background:${gradient}; color:#fff; font-weight:bold; font-size:8px; letter-spacing:2px; padding:7px 3px; min-width:16px; user-select:none; text-transform:uppercase; flex-shrink:0;">${title}</div>`,
+      );
+      const $sgBody = $(
+        `<div class="mega-subgroup-body" style="flex:1; background:${bodyBg}; padding:6px 10px;"></div>`,
+      );
+      items.forEach(function ($item) {
+        styleFormGroup($item, accentColor);
+        $sgBody.append($item);
+      });
+      $sg.append($sgLabel).append($sgBody);
+      return $sg;
+    }
+
+    // ── Classer les settings par groupe ──────────────────────────────────
+    const groups = {
+      general: [],
+      interface: [],
+      bagarre: [],
+      charge: [],
+      pouvoir: [],
+    };
+
     megaSettings.each(function () {
-      const $setting = $(this);
-      const $input = $setting.find("input, range-picker");
-      const settingKey = $input.attr("name");
-
-      // Vérifier que c'est bien un paramètre MEGA
-      if (settingKey && settingKey.startsWith("mega.")) {
-        // Ajouter des classes spécifiques
-        $setting.addClass("mega-setting-item");
-        $setting.attr("data-setting-key", settingKey.replace("mega.", ""));
-
-        // Déterminer le type de groupe pour ce paramètre
-        const isGeneralGroup =
-          settingKey === "mega.courtMetrage" ||
-          settingKey === "mega.effets_speciaux" ||
-          settingKey === "mega.retraitAuto";
-        const isInterfaceGroup =
-          settingKey.includes("Color") || settingKey === "mega.Corners";
-
-        // Appliquer les styles individuels SEULEMENT pour les groupes combat (bagarre, charge, pouvoir)
-        if (!isGeneralGroup && !isInterfaceGroup) {
-          $setting.css({
-            background:
-              "linear-gradient(135deg, rgba(255,215,0,0.1) 0%, rgba(218,165,32,0.05) 100%)",
-            border: "2px solid rgba(218,165,32,0.3)",
-            "border-radius": "8px",
-            padding: "15px",
-            margin: "10px 0",
-            "box-shadow": "0 2px 8px rgba(0,0,0,0.1)",
-            transition: "all 0.3s ease",
-          });
-
-          // Couleurs spécifiques selon le type de paramètre
-          if (settingKey.includes("bagarre")) {
-            $setting.addClass("mega-bagarre-setting");
-            $setting.css("border-left", "5px solid #dc3545");
-          } else if (settingKey.includes("charge")) {
-            $setting.addClass("mega-charge-setting");
-            $setting.css("border-left", "5px solid #fd7e14");
-          } else if (settingKey.includes("pouvoir")) {
-            $setting.addClass("mega-pouvoir-setting");
-            $setting.css("border-left", "5px solid #6f42c1");
-          }
-        } else {
-          // Pour les groupes general et interface, appliquer un style simple
-          $setting.css({
-            padding: "8px",
-            margin: "5px 0",
-            background: "transparent",
-            border: "none",
-          });
-        }
-
-        // Améliorer l'apparence des labels
-        const $label = $setting.find("label");
-        if ($label.length > 0) {
-          $label.css({
-            "font-weight": "bold",
-            color: "#2c3e50",
-            "text-shadow": "1px 1px 2px rgba(255,255,255,0.8)",
-            "font-size": "14px",
-          });
-        }
-
-        // Améliorer l'apparence des descriptions
-        const $hint = $setting.find(".hint");
-        if ($hint.length > 0) {
-          $hint.css({
-            "font-style": "italic",
-            color: "#6c757d",
-            "font-size": "12px",
-            "margin-top": "5px",
-            padding: "5px",
-            background: "rgba(255,255,255,0.5)",
-            "border-radius": "4px",
-            "border-left": "3px solid #17a2b8",
-          });
-        }
+      const $s = $(this);
+      const key = $s.find("input, range-picker").attr("name");
+      if (!key || !key.startsWith("mega.")) return;
+      if (
+        [
+          "mega.courtMetrage",
+          "mega.effets_speciaux",
+          "mega.retraitAuto",
+        ].includes(key)
+      ) {
+        groups.general.push($s);
+      } else if (key.includes("Color") || key === "mega.Corners") {
+        groups.interface.push($s);
+      } else if (key.includes("bagarre")) {
+        groups.bagarre.push($s);
+      } else if (key.includes("charge")) {
+        groups.charge.push($s);
+      } else if (key.includes("pouvoir")) {
+        groups.pouvoir.push($s);
       }
     });
 
-    // Créer des séparateurs visuels entre les groupes de paramètres
-    let currentGroup = "";
-    let currentSubGroup = "";
-    let mediaContainerCreated = false;
+    // ── Ajouter boutons parcourir/aperçu aux champs media ────────────────
+    const mediaGroups = [
+      ...groups.bagarre,
+      ...groups.charge,
+      ...groups.pouvoir,
+    ];
+    const btnStyle =
+      "display:inline-flex; align-items:center; justify-content:center; width:26px; height:26px; border:1px solid rgba(0,0,0,0.25); border-radius:4px; background:rgba(255,255,255,0.1); cursor:pointer; color:inherit; padding:0; flex-shrink:0;";
+    mediaGroups.forEach(function ($fg) {
+      const $input = $fg.find("input[type='text']");
+      if (!$input.length) return;
+      const settingKey = $input.attr("name") || "";
+      const isVideo = settingKey.includes("_video_path");
+      const isAudio = settingKey.includes("_son_path");
+      if (!isVideo && !isAudio) return;
 
-    megaSettings.each(function () {
-      const $setting = $(this);
-      const $input = $setting.find("input, range-picker");
-      const settingKey = $input.attr("name");
-      let newGroup = "";
-      let newSubGroup = "";
+      // Wrapper flex autour de l'input
+      const $wrapper = $(
+        '<div style="display:flex; gap:4px; align-items:center; flex:1;"></div>',
+      );
+      $input.css({ flex: "1", "min-width": "0" });
+      $input.after($wrapper);
+      $wrapper.append($input);
 
-      if (settingKey && settingKey.startsWith("mega.")) {
-        // Groupes organisés par fonction
-        if (
-          settingKey === "mega.courtMetrage" ||
-          settingKey === "mega.effets_speciaux" ||
-          settingKey === "mega.retraitAuto"
-        ) {
-          newGroup = "general";
-        } else if (
-          settingKey.includes("Color") ||
-          settingKey === "mega.Corners"
-        ) {
-          newGroup = "interface";
-        } else if (
-          settingKey.includes("bagarre") ||
-          settingKey.includes("charge") ||
-          settingKey.includes("pouvoir")
-        ) {
-          newGroup = "medias";
-          if (settingKey.includes("bagarre")) {
-            newSubGroup = "bagarre";
-          } else if (settingKey.includes("charge")) {
-            newSubGroup = "charge";
-          } else if (settingKey.includes("pouvoir")) {
-            newSubGroup = "pouvoir";
+      if (isVideo) {
+        const $browseBtn = $(
+          `<button type="button" title="Parcourir les fichiers vidéo" style="${btnStyle}"><i class="fas fa-folder-open"></i></button>`,
+        );
+        const $previewBtn = $(
+          `<button type="button" title="Aperçu de la vidéo" style="${btnStyle}"><i class="fas fa-eye"></i></button>`,
+        );
+        $wrapper.append($browseBtn).append($previewBtn);
+
+        $browseBtn.on("click", function (ev) {
+          ev.preventDefault();
+          new FilePicker({
+            type: "video",
+            current: $input.val() || "",
+            callback: (path) => {
+              $input.val(path);
+            },
+          }).browse();
+        });
+
+        $previewBtn.on("click", async function (ev) {
+          ev.preventDefault();
+          const chemin = $input.val();
+          if (!chemin || chemin.trim() === "") {
+            ui.notifications.warn("Aucun fichier vidéo configuré.");
+            return;
           }
-        }
-
-        // Créer le groupe principal Médias si on entre dans la section médias
-        if (newGroup === "medias" && !mediaContainerCreated) {
-          const mediaSeparator = $(`
-            <div class="mega-group-separator" style="margin: 25px 0 15px 0; padding: 0; border: none;">
-              <h3 class="mega-group-title" style="font-size: 18px; font-weight: bold; color: #2c3e50; text-align: center; margin: 0; padding: 12px 20px; background: linear-gradient(90deg, rgba(218,165,32,0.1) 0%, rgba(218,165,32,0.3) 50%, rgba(218,165,32,0.1) 100%); border: 2px solid rgba(218,165,32,0.4); border-radius: 25px; text-shadow: 1px 1px 2px rgba(255,255,255,0.8);">Médias</h3>
-            </div>
-          `);
-
-          const mediaContainer = $(`
-            <div class="mega-medias-container" style="background: linear-gradient(135deg, rgba(255,215,0,0.1) 0%, rgba(218,165,32,0.05) 100%); border: 2px solid rgba(218,165,32,0.3); border-radius: 12px; padding: 15px; margin: 10px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-            </div>
-          `);
-
-          $setting.before(mediaSeparator);
-          $setting.before(mediaContainer);
-          mediaContainerCreated = true;
-        }
-
-        if (newGroup && newGroup !== currentGroup) {
-          let groupTitle = "";
-          switch (newGroup) {
-            case "general":
-              groupTitle = "Paramètres Généraux";
-              break;
-            case "interface":
-              groupTitle = "Interface";
-              break;
-          }
-
-          // Créer le séparateur de titre seulement pour general et interface
-          if (newGroup === "general" || newGroup === "interface") {
-            const separator = $(`
-              <div class="mega-group-separator" style="margin: 25px 0 15px 0; padding: 0; border: none;">
-                <h3 class="mega-group-title" style="font-size: 18px; font-weight: bold; color: #2c3e50; text-align: center; margin: 0; padding: 12px 20px; background: linear-gradient(90deg, rgba(218,165,32,0.1) 0%, rgba(218,165,32,0.3) 50%, rgba(218,165,32,0.1) 100%); border: 2px solid rgba(218,165,32,0.4); border-radius: 25px; text-shadow: 1px 1px 2px rgba(255,255,255,0.8);">${groupTitle}</h3>
-              </div>
-            `);
-
-            const groupContainer = $(
-              `<div class="mega-group-container" style="background: linear-gradient(135deg, rgba(255,215,0,0.1) 0%, rgba(218,165,32,0.05) 100%); border: 2px solid rgba(218,165,32,0.3); border-radius: 12px; padding: 15px; margin: 10px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">`,
+          try {
+            const response = await fetch(chemin, { method: "HEAD" });
+            if (response.ok) {
+              new Dialog(
+                {
+                  title: "Aperçu de l'effet vidéo",
+                  content: `<div style="text-align:center;"><video width="400" controls autoplay><source src="${chemin}" type="video/webm"><source src="${chemin}" type="video/mp4">Votre navigateur ne supporte pas la lecture vidéo.</video></div>`,
+                  buttons: { close: { label: "Fermer", callback: () => {} } },
+                  default: "close",
+                },
+                { width: 460, height: 320, resizable: true },
+              ).render(true);
+            } else {
+              ui.notifications.warn(
+                "Le fichier vidéo spécifié n'est pas valide ou n'existe pas.",
+              );
+            }
+          } catch (e) {
+            ui.notifications.warn(
+              "Le fichier vidéo spécifié n'est pas valide ou n'existe pas.",
             );
-            $setting.before(separator);
-            $setting.before(groupContainer);
-            groupContainer.append($setting);
           }
+        });
+      } else {
+        // Audio
+        const $browseBtn = $(
+          `<button type="button" title="Parcourir les fichiers audio" style="${btnStyle}"><i class="fas fa-folder-open"></i></button>`,
+        );
+        const $playBtn = $(
+          `<button type="button" title="Écouter le son" style="${btnStyle}"><i class="fas fa-play"></i></button>`,
+        );
+        $wrapper.append($browseBtn).append($playBtn);
 
-          currentGroup = newGroup;
-        }
+        $browseBtn.on("click", function (ev) {
+          ev.preventDefault();
+          new FilePicker({
+            type: "audio",
+            current: $input.val() || "",
+            callback: (path) => {
+              $input.val(path);
+            },
+          }).browse();
+        });
 
-        // Gérer les sous-groupes dans Médias
-        if (
-          newGroup === "medias" &&
-          newSubGroup &&
-          newSubGroup !== currentSubGroup
-        ) {
-          let subGroupTitle = "";
-          switch (newSubGroup) {
-            case "bagarre":
-              subGroupTitle = "Bagarre";
-              break;
-            case "charge":
-              subGroupTitle = "Charge";
-              break;
-            case "pouvoir":
-              subGroupTitle = "Pouvoirs Psychiques";
-              break;
+        $playBtn.on("click", async function (ev) {
+          ev.preventDefault();
+          const chemin = $input.val();
+          if (!chemin || chemin.trim() === "") {
+            ui.notifications.warn("Aucun fichier audio configuré.");
+            return;
           }
-
-          // Créer le sous-séparateur
-          const subSeparator = $(`
-            <div class="mega-subgroup-separator" style="margin: 15px 0 10px 0; padding: 0; border: none;">
-              <h4 class="mega-subgroup-title" style="font-size: 16px; font-weight: bold; color: #2c3e50; text-align: left; margin: 0; padding: 8px 15px; background: rgba(218,165,32,0.2); border-left: 4px solid rgba(218,165,32,0.6); border-radius: 8px; text-shadow: 1px 1px 2px rgba(255,255,255,0.8);">${subGroupTitle}</h4>
-            </div>
-          `);
-
-          // Ajouter le sous-séparateur dans le conteneur médias
-          const $mediaContainer = $setting
-            .prevAll(".mega-medias-container")
-            .first();
-          if ($mediaContainer.length > 0) {
-            $mediaContainer.append(subSeparator);
+          try {
+            const response = await fetch(chemin, { method: "HEAD" });
+            if (response.ok) {
+              foundry.audio.AudioHelper.play(
+                { src: chemin, volume: 1, autoplay: true, loop: false },
+                true,
+              );
+            } else {
+              ui.notifications.warn(
+                "Le fichier audio spécifié n'est pas valide ou n'existe pas.",
+              );
+            }
+          } catch (e) {
+            ui.notifications.warn(
+              "Le fichier audio spécifié n'est pas valide ou n'existe pas.",
+            );
           }
-
-          currentSubGroup = newSubGroup;
-        }
-
-        // Ajouter les paramètres aux bons conteneurs
-        if (newGroup === "general" || newGroup === "interface") {
-          const $container = $setting.prevAll(".mega-group-container").first();
-          if ($container.length > 0) {
-            $container.append($setting);
-          }
-        } else if (newGroup === "medias") {
-          const $mediaContainer = $setting
-            .prevAll(".mega-medias-container")
-            .first();
-          if ($mediaContainer.length > 0) {
-            $mediaContainer.append($setting);
-          }
-        }
+        });
       }
     });
 
-    // Réorganiser l'ordre : Interface après Paramètres Généraux, puis Médias
-    if (megaSettings.length > 0) {
-      const $form = megaSettings.first().closest("form");
-      if ($form.length > 0) {
-        const $generalSeparator = $form
-          .find(".mega-group-separator")
-          .filter(function () {
-            return $(this).text().includes("Paramètres Généraux");
-          });
-        const $generalContainer = $generalSeparator.next(
-          ".mega-group-container",
-        );
+    // ── Détacher tous les settings & nettoyer les anciens éléments ───────
+    const $placeholder = $(
+      '<div class="mega-settings-placeholder" style="display:none;"></div>',
+    );
+    megaSettings.first().before($placeholder);
+    megaSettings.each(function () {
+      $(this).detach();
+    });
+    $form
+      .find(
+        ".mega-settings-outer, .mega-logo-header, .mega-group-separator, .mega-group-container, .mega-medias-container, .mega-subgroup-outer",
+      )
+      .remove();
 
-        const $interfaceSeparator = $form
-          .find(".mega-group-separator")
-          .filter(function () {
-            return $(this).text().includes("Interface");
-          });
-        const $interfaceContainer = $interfaceSeparator.next(
-          ".mega-group-container",
-        );
+    // ── Logo ─────────────────────────────────────────────────────────────
+    const $logoHeader = $(
+      `<div class="mega-logo-header" style="text-align:center; margin:0 4px 10px 4px; padding:14px 20px 12px; background:linear-gradient(135deg, rgba(255,215,0,0.1) 0%, rgba(218,165,32,0.06) 100%); border:2px solid rgba(218,165,32,0.3); border-radius:var(--corner-radius,8px); box-shadow:0 4px 12px rgba(0,0,0,0.1);">
+        <img src="systems/mega/images/logo.png" alt="MEGA" style="max-height:60px; max-width:260px; display:block; margin:0 auto 8px;">
+        <div style="color:#c8891a; font-size:15px; font-weight:bold; letter-spacing:3px; text-transform:uppercase; font-family:'Mega',sans-serif; text-shadow:1px 1px 3px rgba(0,0,0,0.25);">Configuration du Système</div>
+      </div>`,
+    );
 
-        const $mediasSeparator = $form
-          .find(".mega-group-separator")
-          .filter(function () {
-            return $(this).text().includes("Médias");
-          });
-        const $mediasContainer = $mediasSeparator.next(
-          ".mega-medias-container",
-        );
+    // ── Construire les sections ───────────────────────────────────────────
+    const $sectionGeneral = buildSection(
+      "Paramètres Généraux",
+      "linear-gradient(180deg, #1c58a1 0%, #1f78d8 100%)",
+      "rgba(28,88,161,0.05)",
+      "#1562b8",
+      groups.general,
+    );
 
-        // Ordre souhaité : Général, Interface, puis Médias
-        if ($generalContainer.length > 0 && $interfaceSeparator.length > 0) {
-          $generalContainer.after($interfaceSeparator);
-          $interfaceSeparator.after($interfaceContainer);
-        }
+    const $sectionInterface = buildSection(
+      "Interface",
+      "linear-gradient(180deg, #a06010 0%, #c8891a 100%)",
+      "rgba(160,96,16,0.05)",
+      "#a06010",
+      groups.interface,
+    );
 
-        if ($interfaceContainer.length > 0 && $mediasSeparator.length > 0) {
-          $interfaceContainer.after($mediasSeparator);
-          $mediasSeparator.after($mediasContainer);
-        }
-      }
+    // Section Médias : side-label violet + 3 sous-groupes
+    const $mediasOuter = $(
+      `<div class="mega-settings-outer" style="display:flex; flex-direction:row; align-items:stretch; margin:8px 4px; box-shadow:rgba(0,0,0,0.12) 0px 1px 3px, rgba(0,0,0,0.24) 0px 1px 2px;"></div>`,
+    );
+    const $mediasLabel = $(
+      `<div class="mega-section-side-label" style="display:flex; align-items:center; justify-content:center; writing-mode:vertical-rl; text-orientation:mixed; transform:rotate(180deg); background:linear-gradient(180deg, #5b21b6 0%, #7c3aed 100%); color:#fff; font-weight:bold; font-size:9px; letter-spacing:3px; padding:10px 4px; min-width:20px; user-select:none; text-transform:uppercase; flex-shrink:0; border-radius:var(--corner-radius,8px) 0 0 var(--corner-radius,8px);">Médias</div>`,
+    );
+    const $mediasBody = $(
+      `<div class="mega-section-body" style="flex:1; background:rgba(91,33,182,0.04); padding:0; border-radius:0 var(--corner-radius,8px) var(--corner-radius,8px) 0;"></div>`,
+    );
+
+    if (groups.bagarre.length > 0) {
+      $mediasBody.append(
+        buildSubGroup(
+          "Bagarre",
+          "linear-gradient(180deg, #a01e1e 0%, #5a0a0a 100%)",
+          "rgba(160,30,30,0.04)",
+          "#a01e1e",
+          groups.bagarre,
+          groups.charge.length === 0 && groups.pouvoir.length === 0,
+        ),
+      );
     }
+    if (groups.charge.length > 0) {
+      $mediasBody.append(
+        buildSubGroup(
+          "Charge",
+          "linear-gradient(180deg, #c05010 0%, #8a3400 100%)",
+          "rgba(192,80,16,0.04)",
+          "#b04010",
+          groups.charge,
+          groups.pouvoir.length === 0,
+        ),
+      );
+    }
+    if (groups.pouvoir.length > 0) {
+      $mediasBody.append(
+        buildSubGroup(
+          "Pouvoirs",
+          "linear-gradient(180deg, #2e7d4f 0%, #1a4d30 100%)",
+          "rgba(46,125,79,0.04)",
+          "#2e7d4f",
+          groups.pouvoir,
+          true,
+        ),
+      );
+    }
+    $mediasOuter.append($mediasLabel).append($mediasBody);
+
+    // ── Insérer dans le DOM (logo → général → interface → médias) ────────
+    $placeholder.after($logoHeader);
+    $logoHeader.after($sectionGeneral);
+    $sectionGeneral.after($sectionInterface);
+    $sectionInterface.after($mediasOuter);
+    $placeholder.remove();
   }
 });
 

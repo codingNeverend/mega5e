@@ -5,7 +5,7 @@
 export class MegaItemSheet extends foundry.appv1.sheets.ItemSheet {
   /** @override */
   static get defaultOptions() {
-    return mergeObject(super.defaultOptions, {
+    return foundry.utils.mergeObject(super.defaultOptions, {
       classes: ["mega", "sheet", "item"],
       template: "systems/mega/templates/item-sheet.html",
       width: 549,
