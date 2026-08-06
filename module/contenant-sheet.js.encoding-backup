@@ -445,7 +445,7 @@ export class SimpleContenantSheet extends foundry.appv1.sheets.ActorSheet {
     let diag_pouv = new Dialog({
       title: "ARDENCE",
       content:
-        "<div class='card-header'><span>Ardence->Résonnance ?</span></div>",
+        "<div class='card-header'><span>Ardence->R�sonnance ?</span></div>",
       buttons: btns_2,
       close: function () {
         rgardencetotal = rgardencetotal - ardence_domaine;

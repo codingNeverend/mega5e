@@ -236,29 +236,32 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
       this.actor.update({ "system.melee_impair": 0 });
     });
 
-    // Navigation entre onglets à la molette de la souris
-    html[0].addEventListener(
-      "wheel",
-      (event) => {
-        const tabItems = html.find(".side-tabs .side-tab-item");
-        if (!tabItems.length) return;
-        const tabs = tabItems.map((_, el) => el.dataset.tab).get();
-        const activeTab = this._tabs[0].active;
-        const currentIndex = tabs.indexOf(activeTab);
-        if (currentIndex === -1) return;
-        // Molette vers le haut (deltaY < 0) → onglet précédent, vers le bas → onglet suivant
-        const direction = event.deltaY < 0 ? -1 : 1;
-        const newIndex = (currentIndex + direction + tabs.length) % tabs.length;
-        const newTab = tabs[newIndex];
-        // Mettre à jour la classe active sur les boutons
-        tabItems.removeClass("active");
-        tabItems.filter(`[data-tab="${newTab}"]`).addClass("active");
-        this._tabs[0].activate(newTab);
-        // Déclencher l'ajustement de hauteur pour le nouvel onglet
-        this._handleCombatTabResize(newTab);
-      },
-      { passive: true },
-    );
+    // Navigation entre onglets à la molette de la souris (optionnelle via réglage client)
+    if (game.settings.get("mega", "sheetWheelTabs")) {
+      html[0].addEventListener(
+        "wheel",
+        (event) => {
+          const tabItems = html.find(".side-tabs .side-tab-item");
+          if (!tabItems.length) return;
+          const tabs = tabItems.map((_, el) => el.dataset.tab).get();
+          const activeTab = this._tabs[0].active;
+          const currentIndex = tabs.indexOf(activeTab);
+          if (currentIndex === -1) return;
+          // Molette vers le haut (deltaY < 0) → onglet précédent, vers le bas → onglet suivant
+          const direction = event.deltaY < 0 ? -1 : 1;
+          const newIndex =
+            (currentIndex + direction + tabs.length) % tabs.length;
+          const newTab = tabs[newIndex];
+          // Mettre à jour la classe active sur les boutons
+          tabItems.removeClass("active");
+          tabItems.filter(`[data-tab="${newTab}"]`).addClass("active");
+          this._tabs[0].activate(newTab);
+          // Déclencher l'ajustement de hauteur pour le nouvel onglet
+          this._handleCombatTabResize(newTab);
+        },
+        { passive: true },
+      );
+    }
 
     // Forcer la couleur blanche sur les valeurs de domaines
     html.find("input.tnt-di").each(function () {
@@ -7271,10 +7274,37 @@ export class MegaActorSheet extends foundry.appv1.sheets.ActorSheet {
           const effets_speciaux = effectsState.shouldPlayEffects;
           let offX = Number(arme[0].system.effet_offX?.value ?? 0);
           let offY = Number(arme[0].system.effet_offY?.value ?? 0);
+
+          const getTokenDistance = (sourceToken, targetToken) => {
+            const grid = canvas?.grid;
+            if (!grid || !sourceToken || !targetToken) return 0;
+
+            const sourceCenter = sourceToken.center;
+            const targetCenter = targetToken.center;
+
+            // Foundry v12/v13: API de mesure par chemin
+            if (typeof grid.measurePath === "function") {
+              const measured = grid.measurePath([sourceCenter, targetCenter]);
+              if (Number.isFinite(measured?.distance)) return measured.distance;
+            }
+
+            // Anciennes versions: API de mesure directe
+            if (typeof grid.measureDistance === "function") {
+              const measured = grid.measureDistance(sourceToken, targetToken);
+              if (Number.isFinite(measured)) return measured;
+            }
+
+            // Fallback géométrique en unités de grille
+            const size = canvas?.dimensions?.size || 1;
+            const distancePerGrid = canvas?.dimensions?.distance || 1;
+            const dx = targetCenter.x - sourceCenter.x;
+            const dy = targetCenter.y - sourceCenter.y;
+            const cells = Math.hypot(dx, dy) / size;
+            return cells * distancePerGrid;
+          };
+
           for (let target of targets) {
-            const distance = canvas.grid
-              .measureDistance(selectedToken, target)
-              .toFixed(1);
+            const distance = getTokenDistance(selectedToken, target).toFixed(1);
             if (game.modules.get("sequencer")?.active && effets_speciaux) {
               new Sequence()
                 .effect()

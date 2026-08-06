@@ -266,6 +266,15 @@ Hooks.once("init", async function () {
     default: false,
   });
 
+  game.settings.register("mega", "sheetWheelTabs", {
+    name: "Navigation des onglets à la molette",
+    hint: "Si coché, la molette de la souris permet de changer d'onglet sur les fiches PJ et PNJ.",
+    scope: "client",
+    config: true,
+    type: Boolean,
+    default: true,
+  });
+
   // Paramètres pour les effets vidéo et sonores de bagarre
   game.settings.register("mega", "bagarre_video_path", {
     name: "Vidéo associée",
@@ -1627,6 +1636,7 @@ Hooks.on("renderSettingsConfig", (app, html, data) => {
     "mega.courtMetrage",
     "mega.effets_speciaux",
     "mega.retraitAuto",
+    "mega.sheetWheelTabs",
     "mega.AccentColor",
     // "mega.TableTraitColor",
     // "mega.TableTalentColor",
@@ -1755,6 +1765,7 @@ Hooks.on("renderSettingsConfig", (app, html, data) => {
           "mega.courtMetrage",
           "mega.effets_speciaux",
           "mega.retraitAuto",
+          "mega.sheetWheelTabs",
         ].includes(key)
       ) {
         groups.general.push($s);

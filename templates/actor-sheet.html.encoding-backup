@@ -28,7 +28,7 @@
 							class="img hf-portrait-img{{#if system.combat_modif.value}} hf-combat{{/if}}" />
 					</span>
 				</div>
-				{{!-- Identité : Nom + Voie/Sphère --}}
+				{{!-- Identit� : Nom + Voie/Sph�re --}}
 				<div class="hf-identity">
 					<div class="hf-name">
 						<span class="charname">
@@ -36,7 +36,7 @@
 								value="{{actor.name}}" placeholder="Nom" />
 						</span>
 						<span class="verouille hf-lock-btn" value="{{system.verouille}}"
-							title="Verrouiller / Déverrouiller la fiche">
+							title="Verrouiller / D�verrouiller la fiche">
 							{{#if system.verouille}}<i class="fas fa-lock"></i>{{else}}<i
 								class="fas fa-lock-open"></i>{{/if}}
 						</span>
@@ -53,7 +53,7 @@
 								<option value="Conceptech">
 								<option value="Escorteur">
 								<option value="Fouineur">
-								<option value="Médian">
+								<option value="M�dian">
 								<option value="Ethnoranger">
 								<option value="Patrouilleur">
 								<option value="Sensit">
@@ -77,20 +77,20 @@
 							<i class="fas fa-briefcase hf-meta-icon"></i>
 							{{#unless system.verouille}}
 							<input class="autoselect" list="voie_pj2" type="text" id="choix_voie"
-								name="system.voie.value" value="{{system.voie.value}}" placeholder="Métier">
+								name="system.voie.value" value="{{system.voie.value}}" placeholder="M�tier">
 							<datalist id="voie_pj2">
 								<option value="Soignant">
 								<option value="Homme d'affaire">
 								<option value="Chauffeur, pilote">
-								<option value="Ecclésiastique">
+								<option value="Eccl�siastique">
 								<option value="Clerc, notaire">
-								<option value="Intendant, connétable">
+								<option value="Intendant, conn�table">
 								<option value="Artisan">
 								<option value="Moine guerrier">
 								<option value="Chevalier">
 								<option value="Artiste">
 								<option value="Militaire, milicien, policier">
-								<option value="Agent de sécurité, garde du corps">
+								<option value="Agent de s�curit�, garde du corps">
 								<option value="Infiltrateur">
 							</datalist>
 							{{else}}
@@ -110,7 +110,7 @@
 						{{/ifequal}}
 					</div>
 				</div>
-				{{!-- Ressources : VIE et MÊLÉE --}}
+				{{!-- Ressources : VIE et M�L�E --}}
 				<div class="hf-resources">
 					<div class="modern-health-triangle" title="Points de Vie">
 						<div class="triangle-icon health-icon">
@@ -120,9 +120,7 @@
 						<div class="resource-values">
 							<input type="text" class="modern-resource-input health-current" name="system.health.value"
 								value="{{system.health.value}}" data-dtype="Number" {{#ifinferior system.health.value
-								5}}style="color: #e74c3c; font-weight: bold;" {{/ifinferior}} />{{#if
-							system.melee_impair}}<span class="melee-impair-indicator"
-								title="Point de m&ecirc;l&eacute;e impair accumul&eacute; : prochain pt m&ecirc;l&eacute;e = 1 PV">&frac12;</span>{{/if}}
+								5}}style="color: #e74c3c; font-weight: bold;" {{/ifinferior}} />{{#if system.melee_impair}}<span class="melee-impair-indicator" title="Point de m&ecirc;l&eacute;e impair accumul&eacute; : prochain pt m&ecirc;l&eacute;e = 1 PV">&frac12;</span>{{/if}}
 							<span class="resource-separator">/</span>
 							<input class="modern-resource-input health-max" {{#if system.verouille}}disabled="disabled"
 								{{/if}} type="text" name="system.health.max" value="{{system.health.max}}"
@@ -130,7 +128,7 @@
 						</div>
 						<div class="resource-label">VIE</div>
 					</div>
-					<div class="modern-melee-triangle" title="Points de MÊLÉE">
+					<div class="modern-melee-triangle" title="Points de M�L�E">
 						<div class="triangle-icon melee-icon">
 							<i class="fas fa-sword"
 								style="color: {{#ifinferior system.power.value 5}}#e74c3c{{else}}#3498db{{/ifinferior}};"></i>
@@ -144,7 +142,7 @@
 								{{/if}} class="modern-resource-input melee-max" value="{{system.power.max}}"
 								data-dtype="Number" />
 						</div>
-						<div class="resource-label">MÊLÉE</div>
+						<div class="resource-label">M�L�E</div>
 					</div>
 				</div>
 			</div>
@@ -160,9 +158,9 @@
 				<div class="desc-bandeau">
 					<div class="desc-top-row">
 						<div class="desc-col-main">
-							{{!-- Panel Identité --}}
+							{{!-- Panel Identit� --}}
 							<div class="desc-panel-outer desc-panel-outer--stretch">
-								<div class="desc-panel-label desc-panel-label--identite">IDENTITÉ</div>
+								<div class="desc-panel-label desc-panel-label--identite">IDENTIT�</div>
 								<div class="desc-panel">
 									<div class="desc-panel-body">
 										<div class="desc-fields-grid">
@@ -175,15 +173,15 @@
 											</div>
 											<div class="desc-field">
 												<label class="desc-field-label"><i class="fas fa-seedling"></i> Attitude
-													/ Vécu</label>
+													/ V�cu</label>
 												<input {{#if system.verouille}}disabled="disabled" {{/if}} type="text"
 													class="desc-field-input" name="system.vecu" value="{{system.vecu}}"
-													placeholder="Origines, attitude générale" />
+													placeholder="Origines, attitude g�n�rale" />
 											</div>
 										</div>
 										<div class="desc-fields-grid desc-fields-grid--4col">
 											<div class="desc-field">
-												<label class="desc-field-label"><i class="fas fa-id-card"></i> Identité
+												<label class="desc-field-label"><i class="fas fa-id-card"></i> Identit�
 													provisoire</label>
 												<input {{#if system.verouille}}disabled="disabled" {{/if}} type="text"
 													class="desc-field-input" name="system.identite_provisoire"
@@ -192,7 +190,7 @@
 											</div>
 											<div class="desc-field">
 												<label class="desc-field-label"><i class="fas fa-birthday-cake"></i>
-													Âge</label>
+													�ge</label>
 												<input {{#if system.verouille}}disabled="disabled" {{/if}} type="text"
 													class="desc-field-input" name="system.age" value="{{system.age}}"
 													placeholder="30 ans" />
@@ -222,10 +220,10 @@
 											</div>
 											<div class="desc-field">
 												<label class="desc-field-label"><i class="fas fa-comments"></i> Langues
-													parlées</label>
+													parl�es</label>
 												<input {{#if system.verouille}}disabled="disabled" {{/if}} type="text"
 													class="desc-field-input" name="system.langues"
-													value="{{system.langues}}" placeholder="Ex : Français, Anglais" />
+													value="{{system.langues}}" placeholder="Ex : Fran�ais, Anglais" />
 											</div>
 										</div>
 									</div>
@@ -234,7 +232,7 @@
 						</div>
 						<div class="desc-col-sphere">
 							<div class="desc-panel-outer desc-panel-outer--stretch">
-								<div class="desc-panel-label desc-panel-label--sphere">SPHÈRE</div>
+								<div class="desc-panel-label desc-panel-label--sphere">SPH�RE</div>
 								<div class="desc-panel desc-panel--sphere">
 									<div class="desc-panel-body desc-panel-body--sphere">
 										<aside class="desc-sphere-col{{#if system.verouille}} sphere-locked{{/if}}">
@@ -444,14 +442,14 @@
 										<label class="desc-field-label"><i class="fas fa-star"></i> Motivation</label>
 										<textarea {{#if system.verouille}}disabled="disabled" {{/if}}
 											class="desc-field-textarea" name="system.motivation"
-											placeholder="Ce qui pousse le personnage à agir">{{system.motivation}}</textarea>
+											placeholder="Ce qui pousse le personnage � agir">{{system.motivation}}</textarea>
 									</div>
 									<div class="desc-field desc-field--objectifs">
 										<label class="desc-field-label"><i class="fas fa-bullseye"></i>
 											Objectifs</label>
 										<textarea {{#if system.verouille}}disabled="disabled" {{/if}}
 											class="desc-field-textarea" name="system.objectifs"
-											placeholder="Buts à court et long terme">{{system.objectifs}}</textarea>
+											placeholder="Buts � court et long terme">{{system.objectifs}}</textarea>
 									</div>
 									<div class="desc-field desc-field--pulsions">
 										<label class="desc-field-label"><i class="fas fa-fire"></i> Pulsions /
@@ -471,7 +469,7 @@
 											Hobby(s)</label>
 										<input {{#if system.verouille}}disabled="disabled" {{/if}} type="text"
 											class="desc-field-input" name="system.hobbys" value="{{system.hobbys}}"
-											placeholder="Loisirs, centres d'intérêt" />
+											placeholder="Loisirs, centres d'int�r�t" />
 									</div>
 									<div class="desc-field desc-field--jokers">
 										<label class="desc-field-label"><i class="fas fa-magic"></i> Jokers &amp;
@@ -486,7 +484,7 @@
 					</div>
 					{{!-- Panel XP --}}
 					<div class="desc-panel-outer desc-xp-panel">
-						<div class="desc-panel-label desc-panel-label--xp">EXPÉRIENCE</div>
+						<div class="desc-panel-label desc-panel-label--xp">EXP�RIENCE</div>
 						<div class="desc-panel">
 							<div class="desc-panel-body desc-xp-body">
 								{{#if system.verouille}}
@@ -496,7 +494,7 @@
 								</div>
 								{{else}}
 								<div class="xp-edit-wrap">
-									<label class="xp-edit-label"><i class="fas fa-star"></i> Points d'expérience
+									<label class="xp-edit-label"><i class="fas fa-star"></i> Points d'exp�rience
 										(XP)</label>
 									<input type="number" class="xp-edit-input" name="system.experience.value"
 										value="{{system.experience.value}}" data-dtype="Number" min="0" />
@@ -584,7 +582,7 @@
 														<span
 															class="item-equipe-toggle{{#if item.system.equipe}} equipe-active{{/if}}"
 															data-item-id="{{item._id}}" data-item-type="{{item.type}}"
-															title="{{#if item.system.equipe}}Retirer de l'onglet combat{{else}}Ajouter à l'onglet combat{{/if}}">
+															title="{{#if item.system.equipe}}Retirer de l'onglet combat{{else}}Ajouter � l'onglet combat{{/if}}">
 															<i class="fa-solid fa-hand-fist"></i>
 														</span>
 													</div>
@@ -619,7 +617,7 @@
 														<span
 															class="item-equipe-toggle{{#if item.system.equipe}} equipe-active{{/if}}"
 															data-item-id="{{item._id}}" data-item-type="{{item.type}}"
-															title="{{#if item.system.equipe}}Retirer de l'onglet combat{{else}}Ajouter à l'onglet combat{{/if}}">
+															title="{{#if item.system.equipe}}Retirer de l'onglet combat{{else}}Ajouter � l'onglet combat{{/if}}">
 															<i class="fa-solid fa-hand-fist"></i>
 														</span>
 													</div>
@@ -654,7 +652,7 @@
 														<span
 															class="item-equipe-toggle{{#if item.system.equipe}} equipe-active{{/if}}"
 															data-item-id="{{item._id}}" data-item-type="{{item.type}}"
-															title="{{#if item.system.equipe}}Retirer de l'onglet combat{{else}}Ajouter à l'onglet combat{{/if}}">
+															title="{{#if item.system.equipe}}Retirer de l'onglet combat{{else}}Ajouter � l'onglet combat{{/if}}">
 															<i class="fa-solid fa-hand-fist"></i>
 														</span>
 													</div>
@@ -689,7 +687,7 @@
 														<span
 															class="item-equipe-toggle{{#if item.system.equipe}} equipe-active{{/if}}"
 															data-item-id="{{item._id}}" data-item-type="{{item.type}}"
-															title="{{#if item.system.equipe}}Retirer de l'onglet combat{{else}}Ajouter à l'onglet combat{{/if}}">
+															title="{{#if item.system.equipe}}Retirer de l'onglet combat{{else}}Ajouter � l'onglet combat{{/if}}">
 															<i class="fa-solid fa-hand-fist"></i>
 														</span>
 													</div>
@@ -703,7 +701,7 @@
 									{{#if actor.melee}}
 									<div class="weapon-feature-card collapsed">
 										<h4 class="feature-title collapsible-header">
-											<i class="fas fa-fist-raised"></i> Attaques Spéciales
+											<i class="fas fa-fist-raised"></i> Attaques Sp�ciales
 											({{actor.melee.length}})
 											<i class="fas fa-chevron-down collapse-icon"></i>
 										</h4>
@@ -725,7 +723,7 @@
 														<span
 															class="item-equipe-toggle{{#if item.system.equipe}} equipe-active{{/if}}"
 															data-item-id="{{item._id}}" data-item-type="{{item.type}}"
-															title="{{#if item.system.equipe}}Retirer de l'onglet combat{{else}}Ajouter à l'onglet combat{{/if}}">
+															title="{{#if item.system.equipe}}Retirer de l'onglet combat{{else}}Ajouter � l'onglet combat{{/if}}">
 															<i class="fa-solid fa-hand-fist"></i>
 														</span>
 													</div>
@@ -769,7 +767,7 @@
 																class="item-equipe-toggle{{#if item.system.equipe}} equipe-active{{/if}}"
 																data-item-id="{{item._id}}"
 																data-item-type="{{item.type}}"
-																title="{{#if item.system.equipe}}Retirer de l'onglet combat{{else}}Ajouter à l'onglet combat (activer){{/if}}">
+																title="{{#if item.system.equipe}}Retirer de l'onglet combat{{else}}Ajouter � l'onglet combat (activer){{/if}}">
 																<i class="fa-solid fa-shield-halved"></i>
 															</span>
 														</div>
@@ -836,7 +834,7 @@
 							<div class="section-header">
 								<h3 class="masquer"
 									style="text-align:center; color: var(--text-dark, #333); font-size: 16px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px;"
-									value="vie">Récupération des points de Vie</h3>
+									value="vie">R�cup�ration des points de Vie</h3>
 							</div>
 							{{#if system.masquer_pv}}
 							<div class="weapon-stats-grid"
@@ -858,7 +856,7 @@
 								</div>
 
 								<div class="stat-item" style="min-height: auto; justify-content: flex-start;">
-									<div class="stat-label">Sans activité intense</div>
+									<div class="stat-label">Sans activit� intense</div>
 									<div class="stat-value"
 										style="height: auto; flex-direction: column; gap: 6px; padding-top: 4px;">
 										<span class="stat-display"
@@ -884,7 +882,7 @@
 							<div class="section-header">
 								<h3 class="masquer"
 									style="text-align:center; color: var(--text-dark, #333); font-size: 16px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px;"
-									value="ardence">Récupération des points d'Ardence</h3>
+									value="ardence">R�cup�ration des points d'Ardence</h3>
 							</div>
 							{{#if system.masquer_ardence}}
 							<div
@@ -906,7 +904,7 @@
 									style="display: flex; align-items: center; padding-top: 20px;">
 									<i class="fas fa-arrow-right" style="color: #e67e22; font-size: 16px;"></i>
 								</div>{{/if}}<div class="stat-item" style="min-height: auto;">
-									<div class="stat-label">2ème</div>
+									<div class="stat-label">2�me</div>
 									<div class="stat-value"
 										style="height: auto; flex-direction: column; gap: 4px; padding-top: 4px;">
 										<span class="stat-display"
@@ -922,7 +920,7 @@
 									style="display: flex; align-items: center; padding-top: 20px;">
 									<i class="fas fa-arrow-right" style="color: #e67e22; font-size: 16px;"></i>
 								</div>{{/if}}<div class="stat-item" style="min-height: auto;">
-									<div class="stat-label">3ème</div>
+									<div class="stat-label">3�me</div>
 									<div class="stat-value"
 										style="height: auto; flex-direction: column; gap: 4px; padding-top: 4px;">
 										<span class="stat-display"
@@ -938,7 +936,7 @@
 									style="display: flex; align-items: center; padding-top: 20px;">
 									<i class="fas fa-arrow-right" style="color: #e67e22; font-size: 16px;"></i>
 								</div>{{/if}}<div class="stat-item" style="min-height: auto;">
-									<div class="stat-label">4ème</div>
+									<div class="stat-label">4�me</div>
 									<div class="stat-value"
 										style="height: auto; flex-direction: column; gap: 4px; padding-top: 4px;">
 										<span class="stat-display"
@@ -954,7 +952,7 @@
 									style="display: flex; align-items: center; padding-top: 20px;">
 									<i class="fas fa-arrow-right" style="color: #e67e22; font-size: 16px;"></i>
 								</div>{{/if}}<div class="stat-item" style="min-height: auto;">
-									<div class="stat-label">5ème</div>
+									<div class="stat-label">5�me</div>
 									<div class="stat-value"
 										style="height: auto; flex-direction: column; gap: 4px; padding-top: 4px;">
 										<span class="stat-display"
@@ -970,7 +968,7 @@
 									style="display: flex; align-items: center; padding-top: 20px;">
 									<i class="fas fa-arrow-right" style="color: #e67e22; font-size: 16px;"></i>
 								</div>{{/if}}<div class="stat-item" style="min-height: auto;">
-									<div class="stat-label">6ème</div>
+									<div class="stat-label">6�me</div>
 									<div class="stat-value"
 										style="height: auto; flex-direction: column; gap: 4px; padding-top: 4px;">
 										<span class="stat-display"
@@ -986,7 +984,7 @@
 									style="display: flex; align-items: center; padding-top: 20px;">
 									<i class="fas fa-arrow-right" style="color: #e67e22; font-size: 16px;"></i>
 								</div>{{/if}}<div class="stat-item" style="min-height: auto;">
-									<div class="stat-label">7ème</div>
+									<div class="stat-label">7�me</div>
 									<div class="stat-value"
 										style="height: auto; flex-direction: column; gap: 4px; padding-top: 4px;">
 										<span class="stat-display"
@@ -1002,7 +1000,7 @@
 									style="display: flex; align-items: center; padding-top: 20px;">
 									<i class="fas fa-arrow-right" style="color: #e67e22; font-size: 16px;"></i>
 								</div>{{/if}}<div class="stat-item" style="min-height: auto;">
-									<div class="stat-label">8ème</div>
+									<div class="stat-label">8�me</div>
 									<div class="stat-value"
 										style="height: auto; flex-direction: column; gap: 4px; padding-top: 4px;">
 										<span class="stat-display"
@@ -1018,7 +1016,7 @@
 									style="display: flex; align-items: center; padding-top: 20px;">
 									<i class="fas fa-arrow-right" style="color: #e67e22; font-size: 16px;"></i>
 								</div>{{/if}}<div class="stat-item" style="min-height: auto;">
-									<div class="stat-label">9ème</div>
+									<div class="stat-label">9�me</div>
 									<div class="stat-value"
 										style="height: auto; flex-direction: column; gap: 4px; padding-top: 4px;">
 										<span class="stat-display"
@@ -1034,7 +1032,7 @@
 									style="display: flex; align-items: center; padding-top: 20px;">
 									<i class="fas fa-arrow-right" style="color: #e67e22; font-size: 16px;"></i>
 								</div>{{/if}}<div class="stat-item" style="min-height: auto;">
-									<div class="stat-label">10ème</div>
+									<div class="stat-label">10�me</div>
 									<div class="stat-value"
 										style="height: auto; flex-direction: column; gap: 4px; padding-top: 4px;">
 										<span class="stat-display"
@@ -1054,7 +1052,7 @@
 							<div class="section-header">
 								<h3 class="masquer"
 									style="text-align:center; color: var(--text-dark, #333); font-size: 16px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px;"
-									value="resonnance">Récupération des points de Résonnance</h3>
+									value="resonnance">R�cup�ration des points de R�sonnance</h3>
 							</div>
 							{{#if system.masquer_resonnance}}
 							<div
@@ -1076,7 +1074,7 @@
 									style="display: flex; align-items: center; padding-top: 20px;">
 									<i class="fas fa-arrow-right" style="color: #9b59b6; font-size: 16px;"></i>
 								</div>{{/if}}<div class="stat-item" style="min-height: auto;">
-									<div class="stat-label">2ème</div>
+									<div class="stat-label">2�me</div>
 									<div class="stat-value"
 										style="height: auto; flex-direction: column; gap: 4px; padding-top: 4px;">
 										<span class="stat-display"
@@ -1092,7 +1090,7 @@
 									style="display: flex; align-items: center; padding-top: 20px;">
 									<i class="fas fa-arrow-right" style="color: #9b59b6; font-size: 16px;"></i>
 								</div>{{/if}}<div class="stat-item" style="min-height: auto;">
-									<div class="stat-label">3ème</div>
+									<div class="stat-label">3�me</div>
 									<div class="stat-value"
 										style="height: auto; flex-direction: column; gap: 4px; padding-top: 4px;">
 										<span class="stat-display"
@@ -1108,7 +1106,7 @@
 									style="display: flex; align-items: center; padding-top: 20px;">
 									<i class="fas fa-arrow-right" style="color: #9b59b6; font-size: 16px;"></i>
 								</div>{{/if}}<div class="stat-item" style="min-height: auto;">
-									<div class="stat-label">4ème</div>
+									<div class="stat-label">4�me</div>
 									<div class="stat-value"
 										style="height: auto; flex-direction: column; gap: 4px; padding-top: 4px;">
 										<span class="stat-display"
@@ -1124,7 +1122,7 @@
 									style="display: flex; align-items: center; padding-top: 20px;">
 									<i class="fas fa-arrow-right" style="color: #9b59b6; font-size: 16px;"></i>
 								</div>{{/if}}<div class="stat-item" style="min-height: auto;">
-									<div class="stat-label">5ème</div>
+									<div class="stat-label">5�me</div>
 									<div class="stat-value"
 										style="height: auto; flex-direction: column; gap: 4px; padding-top: 4px;">
 										<span class="stat-display"
@@ -1140,7 +1138,7 @@
 									style="display: flex; align-items: center; padding-top: 20px;">
 									<i class="fas fa-arrow-right" style="color: #9b59b6; font-size: 16px;"></i>
 								</div>{{/if}}<div class="stat-item" style="min-height: auto;">
-									<div class="stat-label">6ème</div>
+									<div class="stat-label">6�me</div>
 									<div class="stat-value"
 										style="height: auto; flex-direction: column; gap: 4px; padding-top: 4px;">
 										<span class="stat-display"
@@ -1156,7 +1154,7 @@
 									style="display: flex; align-items: center; padding-top: 20px;">
 									<i class="fas fa-arrow-right" style="color: #9b59b6; font-size: 16px;"></i>
 								</div>{{/if}}<div class="stat-item" style="min-height: auto;">
-									<div class="stat-label">7ème</div>
+									<div class="stat-label">7�me</div>
 									<div class="stat-value"
 										style="height: auto; flex-direction: column; gap: 4px; padding-top: 4px;">
 										<span class="stat-display"
@@ -1172,7 +1170,7 @@
 									style="display: flex; align-items: center; padding-top: 20px;">
 									<i class="fas fa-arrow-right" style="color: #9b59b6; font-size: 16px;"></i>
 								</div>{{/if}}<div class="stat-item" style="min-height: auto;">
-									<div class="stat-label">8ème</div>
+									<div class="stat-label">8�me</div>
 									<div class="stat-value"
 										style="height: auto; flex-direction: column; gap: 4px; padding-top: 4px;">
 										<span class="stat-display"
@@ -1188,7 +1186,7 @@
 									style="display: flex; align-items: center; padding-top: 20px;">
 									<i class="fas fa-arrow-right" style="color: #9b59b6; font-size: 16px;"></i>
 								</div>{{/if}}<div class="stat-item" style="min-height: auto;">
-									<div class="stat-label">9ème</div>
+									<div class="stat-label">9�me</div>
 									<div class="stat-value"
 										style="height: auto; flex-direction: column; gap: 4px; padding-top: 4px;">
 										<span class="stat-display"
@@ -1204,7 +1202,7 @@
 									style="display: flex; align-items: center; padding-top: 20px;">
 									<i class="fas fa-arrow-right" style="color: #9b59b6; font-size: 16px;"></i>
 								</div>{{/if}}<div class="stat-item" style="min-height: auto;">
-									<div class="stat-label">10ème</div>
+									<div class="stat-label">10�me</div>
 									<div class="stat-value"
 										style="height: auto; flex-direction: column; gap: 4px; padding-top: 4px;">
 										<span class="stat-display"
@@ -1223,7 +1221,7 @@
 								system.recup_resonnance_8.value}}{{#unless system.recup_resonnance_9.value}}{{#unless
 								system.recup_resonnance_10.value}}
 								<div style="text-align: center; color: #666; font-style: italic; padding: 20px;">
-									Aucun point de Résonnance configuré
+									Aucun point de R�sonnance configur�
 								</div>
 								{{/unless}}{{/unless}}{{/unless}}{{/unless}}{{/unless}}{{/unless}}{{/unless}}{{/unless}}{{/unless}}{{/unless}}
 							</div>
@@ -1234,13 +1232,13 @@
 							<div class="section-header">
 								<h3 class="masquer"
 									style="text-align:center; color: var(--text-dark, #333); font-size: 16px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px;"
-									value="melee">Récupération des points de Mêlée</h3>
+									value="melee">R�cup�ration des points de M�l�e</h3>
 							</div>
 							{{#if system.masquer_melee}}
 							<div
 								style="display: flex; justify-content: center; align-items: center; margin: 0 auto; width: 100%; min-height: 60px;">
 								<div class="stat-item" style="min-height: auto;">
-									<div class="stat-label">Récupération</div>
+									<div class="stat-label">R�cup�ration</div>
 									<div class="stat-value"
 										style="height: auto; flex-direction: column; gap: 8px; padding: 8px;">
 										<span class="stat-display"
@@ -1254,7 +1252,7 @@
 						</div>
 						<div class="weapon-feature-card advantages-card collapsed">
 							<h4 class="feature-title collapsible-header">
-								<i class="fas fa-plus-circle"></i> Paramétrer la Charge
+								<i class="fas fa-plus-circle"></i> Param�trer la Charge
 								<i class="fas fa-chevron-down collapse-icon"></i>
 							</h4>
 							<div class="card-content">
@@ -1262,7 +1260,7 @@
 									<div class="advantage-column">
 										<div class="advantage-header">Av0</div>
 										<div class="advantage-field">
-											<label>Points de Mêlée</label>
+											<label>Points de M�l�e</label>
 											<input {{#unless GM}}readonly="readonly" {{/unless}}
 												class="modern-input advantage-input" type="text"
 												name="system.talents_combat.charge.av0"
@@ -1276,14 +1274,14 @@
 												value="{{system.talents_combat.charge.effet_ac_0_1}}" />
 										</div>
 										<div class="advantage-field">
-											<label>2ème Effet</label>
+											<label>2�me Effet</label>
 											<input {{#unless GM}}readonly="readonly" {{/unless}}
 												class="modern-input effect-input" type="text"
 												name="system.talents_combat.charge.effet_ac_0_2"
 												value="{{system.talents_combat.charge.effet_ac_0_2}}" />
 										</div>
 										<div class="advantage-field">
-											<label>3ème Effet</label>
+											<label>3�me Effet</label>
 											<input {{#unless GM}}readonly="readonly" {{/unless}}
 												class="modern-input effect-input" type="text"
 												name="system.talents_combat.charge.effet_ac_0_3"
@@ -1293,7 +1291,7 @@
 									<div class="advantage-column">
 										<div class="advantage-header">Av1</div>
 										<div class="advantage-field">
-											<label>Points de Mêlée</label>
+											<label>Points de M�l�e</label>
 											<input {{#unless GM}}readonly="readonly" {{/unless}}
 												class="modern-input advantage-input" type="text"
 												name="system.talents_combat.charge.av1"
@@ -1307,14 +1305,14 @@
 												value="{{system.talents_combat.charge.effet_ac_1_1}}" />
 										</div>
 										<div class="advantage-field">
-											<label>2ème Effet</label>
+											<label>2�me Effet</label>
 											<input {{#unless GM}}readonly="readonly" {{/unless}}
 												class="modern-input effect-input" type="text"
 												name="system.talents_combat.charge.effet_ac_1_2"
 												value="{{system.talents_combat.charge.effet_ac_1_2}}" />
 										</div>
 										<div class="advantage-field">
-											<label>3ème Effet</label>
+											<label>3�me Effet</label>
 											<input {{#unless GM}}readonly="readonly" {{/unless}}
 												class="modern-input effect-input" type="text"
 												name="system.talents_combat.charge.effet_ac_1_3"
@@ -1324,7 +1322,7 @@
 									<div class="advantage-column">
 										<div class="advantage-header">Av2</div>
 										<div class="advantage-field">
-											<label>Points de Mêlée</label>
+											<label>Points de M�l�e</label>
 											<input {{#unless GM}}readonly="readonly" {{/unless}}
 												class="modern-input advantage-input" type="text"
 												name="system.talents_combat.charge.av2"
@@ -1338,14 +1336,14 @@
 												value="{{system.talents_combat.charge.effet_ac_2_1}}" />
 										</div>
 										<div class="advantage-field">
-											<label>2ème Effet</label>
+											<label>2�me Effet</label>
 											<input {{#unless GM}}readonly="readonly" {{/unless}}
 												class="modern-input effect-input" type="text"
 												name="system.talents_combat.charge.effet_ac_2_2"
 												value="{{system.talents_combat.charge.effet_ac_2_2}}" />
 										</div>
 										<div class="advantage-field">
-											<label>3ème Effet</label>
+											<label>3�me Effet</label>
 											<input {{#unless GM}}readonly="readonly" {{/unless}}
 												class="modern-input effect-input" type="text"
 												name="system.talents_combat.charge.effet_ac_2_3"
@@ -1355,7 +1353,7 @@
 									<div class="advantage-column">
 										<div class="advantage-header">Av3</div>
 										<div class="advantage-field">
-											<label>Points de Mêlée</label>
+											<label>Points de M�l�e</label>
 											<input {{#unless GM}}readonly="readonly" {{/unless}}
 												class="modern-input advantage-input" type="text"
 												name="system.talents_combat.charge.av3"
@@ -1369,14 +1367,14 @@
 												value="{{system.talents_combat.charge.effet_ac_3_1}}" />
 										</div>
 										<div class="advantage-field">
-											<label>2ème Effet</label>
+											<label>2�me Effet</label>
 											<input {{#unless GM}}readonly="readonly" {{/unless}}
 												class="modern-input effect-input" type="text"
 												name="system.talents_combat.charge.effet_ac_3_2"
 												value="{{system.talents_combat.charge.effet_ac_3_2}}" />
 										</div>
 										<div class="advantage-field">
-											<label>3ème Effet</label>
+											<label>3�me Effet</label>
 											<input {{#unless GM}}readonly="readonly" {{/unless}}
 												class="modern-input effect-input" type="text"
 												name="system.talents_combat.charge.effet_ac_3_3"
@@ -1386,7 +1384,7 @@
 									<div class="advantage-column">
 										<div class="advantage-header">Av4</div>
 										<div class="advantage-field">
-											<label>Points de Mêlée</label>
+											<label>Points de M�l�e</label>
 											<input {{#unless GM}}readonly="readonly" {{/unless}}
 												class="modern-input advantage-input" type="text"
 												name="system.talents_combat.charge.av4"
@@ -1400,14 +1398,14 @@
 												value="{{system.talents_combat.charge.effet_ac_4_1}}" />
 										</div>
 										<div class="advantage-field">
-											<label>2ème Effet</label>
+											<label>2�me Effet</label>
 											<input {{#unless GM}}readonly="readonly" {{/unless}}
 												class="modern-input effect-input" type="text"
 												name="system.talents_combat.charge.effet_ac_4_2"
 												value="{{system.talents_combat.charge.effet_ac_4_2}}" />
 										</div>
 										<div class="advantage-field">
-											<label>3ème Effet</label>
+											<label>3�me Effet</label>
 											<input {{#unless GM}}readonly="readonly" {{/unless}}
 												class="modern-input effect-input" type="text"
 												name="system.talents_combat.charge.effet_ac_4_3"
@@ -1417,13 +1415,13 @@
 								</div>
 								<div style="margin-top: 10px; font-size: 10px; color: #666; text-align: center;">
 									H=HANDICAPER, A=ASSOMMER, S=SONNER, R=RENVERSER, I=IMMOBILISER, P=POSITIONNEMENT,
-									T=TENIR A DISTANCE, D=DÉFAUT DE LA CUIRASSE
+									T=TENIR A DISTANCE, D=D�FAUT DE LA CUIRASSE
 								</div>
 							</div>
 						</div>
 						<div class="weapon-feature-card advantages-card collapsed">
 							<h4 class="feature-title collapsible-header">
-								<i class="fas fa-plus-circle"></i> Paramétrer la Bagarre
+								<i class="fas fa-plus-circle"></i> Param�trer la Bagarre
 								<i class="fas fa-chevron-down collapse-icon"></i>
 							</h4>
 							<div class="card-content">
@@ -1431,7 +1429,7 @@
 									<div class="advantage-column">
 										<div class="advantage-header">Av0</div>
 										<div class="advantage-field">
-											<label>Points de Mêlée</label>
+											<label>Points de M�l�e</label>
 											<input {{#unless GM}}readonly="readonly" {{/unless}}
 												class="modern-input advantage-input" type="text"
 												name="system.talents_combat.mainsnues.av0"
@@ -1445,14 +1443,14 @@
 												value="{{system.talents_combat.mainsnues.effet_ac_0_1}}" />
 										</div>
 										<div class="advantage-field">
-											<label>2ème Effet</label>
+											<label>2�me Effet</label>
 											<input {{#unless GM}}readonly="readonly" {{/unless}}
 												class="modern-input effect-input" type="text"
 												name="system.talents_combat.mainsnues.effet_ac_0_2"
 												value="{{system.talents_combat.mainsnues.effet_ac_0_2}}" />
 										</div>
 										<div class="advantage-field">
-											<label>3ème Effet</label>
+											<label>3�me Effet</label>
 											<input {{#unless GM}}readonly="readonly" {{/unless}}
 												class="modern-input effect-input" type="text"
 												name="system.talents_combat.mainsnues.effet_ac_0_3"
@@ -1462,7 +1460,7 @@
 									<div class="advantage-column">
 										<div class="advantage-header">Av1</div>
 										<div class="advantage-field">
-											<label>Points de Mêlée</label>
+											<label>Points de M�l�e</label>
 											<input {{#unless GM}}readonly="readonly" {{/unless}}
 												class="modern-input advantage-input" type="text"
 												name="system.talents_combat.mainsnues.av1"
@@ -1476,14 +1474,14 @@
 												value="{{system.talents_combat.mainsnues.effet_ac_1_1}}" />
 										</div>
 										<div class="advantage-field">
-											<label>2ème Effet</label>
+											<label>2�me Effet</label>
 											<input {{#unless GM}}readonly="readonly" {{/unless}}
 												class="modern-input effect-input" type="text"
 												name="system.talents_combat.mainsnues.effet_ac_1_2"
 												value="{{system.talents_combat.mainsnues.effet_ac_1_2}}" />
 										</div>
 										<div class="advantage-field">
-											<label>3ème Effet</label>
+											<label>3�me Effet</label>
 											<input {{#unless GM}}readonly="readonly" {{/unless}}
 												class="modern-input effect-input" type="text"
 												name="system.talents_combat.mainsnues.effet_ac_1_3"
@@ -1493,7 +1491,7 @@
 									<div class="advantage-column">
 										<div class="advantage-header">Av2</div>
 										<div class="advantage-field">
-											<label>Points de Mêlée</label>
+											<label>Points de M�l�e</label>
 											<input {{#unless GM}}readonly="readonly" {{/unless}}
 												class="modern-input advantage-input" type="text"
 												name="system.talents_combat.mainsnues.av2"
@@ -1507,14 +1505,14 @@
 												value="{{system.talents_combat.mainsnues.effet_ac_2_1}}" />
 										</div>
 										<div class="advantage-field">
-											<label>2ème Effet</label>
+											<label>2�me Effet</label>
 											<input {{#unless GM}}readonly="readonly" {{/unless}}
 												class="modern-input effect-input" type="text"
 												name="system.talents_combat.mainsnues.effet_ac_2_2"
 												value="{{system.talents_combat.mainsnues.effet_ac_2_2}}" />
 										</div>
 										<div class="advantage-field">
-											<label>3ème Effet</label>
+											<label>3�me Effet</label>
 											<input {{#unless GM}}readonly="readonly" {{/unless}}
 												class="modern-input effect-input" type="text"
 												name="system.talents_combat.mainsnues.effet_ac_2_3"
@@ -1524,7 +1522,7 @@
 									<div class="advantage-column">
 										<div class="advantage-header">Av3</div>
 										<div class="advantage-field">
-											<label>Points de Mêlée</label>
+											<label>Points de M�l�e</label>
 											<input {{#unless GM}}readonly="readonly" {{/unless}}
 												class="modern-input advantage-input" type="text"
 												name="system.talents_combat.mainsnues.av3"
@@ -1538,14 +1536,14 @@
 												value="{{system.talents_combat.mainsnues.effet_ac_3_1}}" />
 										</div>
 										<div class="advantage-field">
-											<label>2ème Effet</label>
+											<label>2�me Effet</label>
 											<input {{#unless GM}}readonly="readonly" {{/unless}}
 												class="modern-input effect-input" type="text"
 												name="system.talents_combat.mainsnues.effet_ac_3_2"
 												value="{{system.talents_combat.mainsnues.effet_ac_3_2}}" />
 										</div>
 										<div class="advantage-field">
-											<label>3ème Effet</label>
+											<label>3�me Effet</label>
 											<input {{#unless GM}}readonly="readonly" {{/unless}}
 												class="modern-input effect-input" type="text"
 												name="system.talents_combat.mainsnues.effet_ac_3_3"
@@ -1555,7 +1553,7 @@
 									<div class="advantage-column">
 										<div class="advantage-header">Av4</div>
 										<div class="advantage-field">
-											<label>Points de Mêlée</label>
+											<label>Points de M�l�e</label>
 											<input {{#unless GM}}readonly="readonly" {{/unless}}
 												class="modern-input advantage-input" type="text"
 												name="system.talents_combat.mainsnues.av4"
@@ -1569,14 +1567,14 @@
 												value="{{system.talents_combat.mainsnues.effet_ac_4_1}}" />
 										</div>
 										<div class="advantage-field">
-											<label>2ème Effet</label>
+											<label>2�me Effet</label>
 											<input {{#unless GM}}readonly="readonly" {{/unless}}
 												class="modern-input effect-input" type="text"
 												name="system.talents_combat.mainsnues.effet_ac_4_2"
 												value="{{system.talents_combat.mainsnues.effet_ac_4_2}}" />
 										</div>
 										<div class="advantage-field">
-											<label>3ème Effet</label>
+											<label>3�me Effet</label>
 											<input {{#unless GM}}readonly="readonly" {{/unless}}
 												class="modern-input effect-input" type="text"
 												name="system.talents_combat.mainsnues.effet_ac_4_3"
@@ -1586,7 +1584,7 @@
 								</div>
 								<div style="margin-top: 10px; font-size: 10px; color: #666; text-align: center;">
 									H=HANDICAPER, A=ASSOMMER, S=SONNER, R=RENVERSER, I=IMMOBILISER, P=POSITIONNEMENT,
-									T=TENIR A DISTANCE, D=DÉFAUT DE LA CUIRASSE
+									T=TENIR A DISTANCE, D=D�FAUT DE LA CUIRASSE
 								</div>
 							</div>
 						</div>
@@ -1800,7 +1798,7 @@
 						</div>
 						{{#or system.talents_combat.mainsnues1.label system.combat_large}}
 						<div class="comb-cat-outer">
-							<div class="comb-cat-side-label"><span>Attaques spés</span></div>
+							<div class="comb-cat-side-label"><span>Attaques sp�s</span></div>
 							<table class="comb-cat-body">
 								<tbody>
 									<tr
@@ -2372,273 +2370,271 @@
 					</span>
 					<div style="{{#if system.bonus_armes_def}}width:550px{{else}}width:430px{{/if}}">
 						<div class="defense-combat-block">
-							<table class="protections" style="width:100%;border-collapse:separate;border-spacing:0;">
-								<!-- Ligne Base DEF -->
-								<tr
-									style="background:linear-gradient(135deg, #14538c 0%, #2980b9 100%);position:relative;">
-									<td colspan="9" style="text-align:center;padding:6px 16px;">
-										<span class="masquer_combat"
-											style="position:absolute;top:6px;right:8px;cursor:pointer;opacity:0.6;font-size:0.9em;"><i
-												class="fa fa-expand" aria-hidden="true"></i></span>
-										<div
-											style="display:flex;align-items:center;flex-wrap:nowrap;gap:8px;justify-content:center;">
-											<div style="display:flex;flex-direction:column;align-items:center;gap:5px;">
-												<span
-													style="color:#7ec8f0;font-size:0.85em;text-transform:uppercase;letter-spacing:0.08em;"><i
-														class="fas fa-shield-halved" style="margin-right:3px;"></i>Base
-													DEF</span>
-												<span
-													style="display:inline-block;background:linear-gradient(135deg,#1a4f6eee,#0d3248cc);color:#c0e8ff;border-radius:20px;padding:5px 16px;font-weight:bold;font-size:1.12em;box-shadow:0 2px 8px rgba(0,0,0,0.55);border:1.5px solid rgba(91,168,212,0.55);">Niv.
-													{{system.def.value}}</span>
-											</div>
-											<span style="color:rgba(91,168,212,0.45);font-size:1.15em;"><i
-													class="fas fa-plus"></i></span>
-											<div style="display:flex;flex-direction:column;align-items:center;gap:5px;">
-												<span
-													style="font-size:0.85em;color:#7ec8f0;text-transform:uppercase;letter-spacing:0.08em;"><i
-														class="fas fa-sliders" style="margin-right:3px;"></i>Bonus /
-													Malus</span>
-												{{#if system.def_modif.value}}<span
-													style="display:inline-flex;align-items:center;background:rgba(220,50,50,0.22);border:1.5px solid rgba(220,80,80,0.75);border-radius:20px;padding:4px 14px;"><input
-														class="comb def-modif-input" type="text"
-														name="system.def_modif.value" value="{{system.def_modif.value}}"
-														data-dtype="Number"
-														style="background:transparent;border:none;color:#c0e8ff !important;font-weight:bold;font-size:1.12em;text-align:center;width:36px;outline:none;" /></span>{{else}}<span
-													style="display:inline-flex;align-items:center;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);border-radius:20px;padding:4px 14px;"><input
-														class="comb def-modif-input" type="text"
-														name="system.def_modif.value" value="{{system.def_modif.value}}"
-														data-dtype="Number"
-														style="background:transparent;border:none;color:#c0e8ff !important;font-weight:bold;font-size:1.12em;text-align:center;width:36px;outline:none;" /></span>{{/if}}
-											</div>
-											{{#if system.bonus_armes_def}}
-											<span style="color:rgba(91,168,212,0.45);font-size:1.15em;"><i
-													class="fas fa-plus"></i></span>
-											<div style="display:flex;flex-direction:column;align-items:center;gap:5px;">
-												<span
-													style="font-size:0.85em;color:#f0c060;text-transform:uppercase;letter-spacing:0.08em;"><i
-														class="fas fa-swords" style="margin-right:3px;"></i>Bonus
-													Armes</span>
-												<span
-													style="display:inline-block;background:linear-gradient(135deg,#5c3d00ee,#3d2700cc);color:#ffd580;border-radius:20px;padding:5px 16px;font-weight:bold;font-size:1.12em;box-shadow:0 2px 8px rgba(0,0,0,0.55);border:1.5px solid rgba(200,160,40,0.55);">{{system.bonus_armes_def}}</span>
-											</div>
-											{{/if}}
-											<span style="color:rgba(91,168,212,0.45);font-size:1.15em;"><i
-													class="fas fa-plus"></i></span>
-											<div style="display:flex;flex-direction:column;align-items:center;gap:5px;">
-												<span
-													style="font-size:0.85em;color:#7ec8f0;text-transform:uppercase;letter-spacing:0.08em;"><i
-														class="fas fa-vest" style="margin-right:3px;"></i>DEF
-													Protections</span>
-												<span
-													style="display:inline-block;background:linear-gradient(135deg,#1a4f6eee,#0d3248cc);color:#c0e8ff;border-radius:20px;padding:5px 16px;font-weight:bold;font-size:1.12em;box-shadow:0 2px 8px rgba(0,0,0,0.55);border:1.5px solid rgba(91,168,212,0.45);">{{def_prot_total}}</span>
-											</div>
+						<table class="protections" style="width:100%;border-collapse:separate;border-spacing:0;">
+							<!-- Ligne Base DEF -->
+							<tr style="background:linear-gradient(135deg, #14538c 0%, #2980b9 100%);position:relative;">
+								<td colspan="9" style="text-align:center;padding:6px 16px;">
+									<span class="masquer_combat"
+										style="position:absolute;top:6px;right:8px;cursor:pointer;opacity:0.6;font-size:0.9em;"><i
+											class="fa fa-expand" aria-hidden="true"></i></span>
+									<div
+										style="display:flex;align-items:center;flex-wrap:nowrap;gap:8px;justify-content:center;">
+										<div style="display:flex;flex-direction:column;align-items:center;gap:5px;">
 											<span
-												style="color:#5ba8d4;font-size:1.5em;font-weight:bold;line-height:1;">=</span>
-											<div style="display:flex;flex-direction:column;align-items:center;gap:5px;">
-												<span
-													style="font-size:0.85em;color:#7ec8f0;text-transform:uppercase;letter-spacing:0.08em;"><i
-														class="fas fa-shield-check" style="margin-right:3px;"></i>Total
-													DEF</span>
-												<span
-													style="display:inline-block;background:linear-gradient(135deg,#1a5f84ee,#0e3d5acc);color:#d0f0ff;border-radius:20px;padding:6px 22px;font-weight:bold;font-size:1.2em;box-shadow:0 3px 12px rgba(0,0,0,0.6);border:1.5px solid rgba(91,168,212,0.65);letter-spacing:0.05em;">Niv.
-													{{add (add (add system.def.value system.def_modif.value)
-													def_prot_total) system.bonus_armes_def}}</span>
-												<span class="toggle_prot_rows"
-													title="Afficher/masquer les lignes de protection"
-													style="display:block;text-align:center;cursor:pointer;margin-top:3px;line-height:1;"><i
-														class="fas {{#if system.prot_def_masquee}}fa-chevron-down{{else}}fa-chevron-up{{/if}}"
-														style="color:#7ec8f0;font-size:0.85em;opacity:0.85;"></i></span>
-											</div>
+												style="color:#7ec8f0;font-size:0.85em;text-transform:uppercase;letter-spacing:0.08em;"><i
+													class="fas fa-shield-halved" style="margin-right:3px;"></i>Base
+												DEF</span>
+											<span
+												style="display:inline-block;background:linear-gradient(135deg,#1a4f6eee,#0d3248cc);color:#c0e8ff;border-radius:20px;padding:5px 16px;font-weight:bold;font-size:1.12em;box-shadow:0 2px 8px rgba(0,0,0,0.55);border:1.5px solid rgba(91,168,212,0.55);">Niv.
+												{{system.def.value}}</span>
 										</div>
-									</td>
-								</tr>
-								{{#unless (courtMetrage)}}
-								{{#unless system.prot_def_masquee}}
-								<!-- En-tête icônes protection -->
-								<tr>
-									<td colspan="2"
-										style="text-align:right;background:rgba(0,0,0,0.35);border-top:2px solid rgba(255,255,255,0.15);border-bottom:1px solid rgba(255,255,255,0.08);padding:4px 8px;">
+										<span style="color:rgba(91,168,212,0.45);font-size:1.15em;"><i
+												class="fas fa-plus"></i></span>
+										<div style="display:flex;flex-direction:column;align-items:center;gap:5px;">
+											<span
+												style="font-size:0.85em;color:#7ec8f0;text-transform:uppercase;letter-spacing:0.08em;"><i
+													class="fas fa-sliders" style="margin-right:3px;"></i>Bonus /
+												Malus</span>
+											{{#if system.def_modif.value}}<span
+												style="display:inline-flex;align-items:center;background:rgba(220,50,50,0.22);border:1.5px solid rgba(220,80,80,0.75);border-radius:20px;padding:4px 14px;"><input
+													class="comb def-modif-input" type="text"
+													name="system.def_modif.value" value="{{system.def_modif.value}}"
+													data-dtype="Number"
+													style="background:transparent;border:none;color:#c0e8ff !important;font-weight:bold;font-size:1.12em;text-align:center;width:36px;outline:none;" /></span>{{else}}<span
+												style="display:inline-flex;align-items:center;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);border-radius:20px;padding:4px 14px;"><input
+													class="comb def-modif-input" type="text"
+													name="system.def_modif.value" value="{{system.def_modif.value}}"
+													data-dtype="Number"
+													style="background:transparent;border:none;color:#c0e8ff !important;font-weight:bold;font-size:1.12em;text-align:center;width:36px;outline:none;" /></span>{{/if}}
+										</div>
+										{{#if system.bonus_armes_def}}
+										<span style="color:rgba(91,168,212,0.45);font-size:1.15em;"><i
+												class="fas fa-plus"></i></span>
+										<div style="display:flex;flex-direction:column;align-items:center;gap:5px;">
+											<span
+												style="font-size:0.85em;color:#f0c060;text-transform:uppercase;letter-spacing:0.08em;"><i
+													class="fas fa-swords" style="margin-right:3px;"></i>Bonus
+												Armes</span>
+											<span
+												style="display:inline-block;background:linear-gradient(135deg,#5c3d00ee,#3d2700cc);color:#ffd580;border-radius:20px;padding:5px 16px;font-weight:bold;font-size:1.12em;box-shadow:0 2px 8px rgba(0,0,0,0.55);border:1.5px solid rgba(200,160,40,0.55);">{{system.bonus_armes_def}}</span>
+										</div>
+										{{/if}}
+										<span style="color:rgba(91,168,212,0.45);font-size:1.15em;"><i
+												class="fas fa-plus"></i></span>
+										<div style="display:flex;flex-direction:column;align-items:center;gap:5px;">
+											<span
+												style="font-size:0.85em;color:#7ec8f0;text-transform:uppercase;letter-spacing:0.08em;"><i
+													class="fas fa-vest" style="margin-right:3px;"></i>DEF
+												Protections</span>
+											<span
+												style="display:inline-block;background:linear-gradient(135deg,#1a4f6eee,#0d3248cc);color:#c0e8ff;border-radius:20px;padding:5px 16px;font-weight:bold;font-size:1.12em;box-shadow:0 2px 8px rgba(0,0,0,0.55);border:1.5px solid rgba(91,168,212,0.45);">{{def_prot_total}}</span>
+										</div>
 										<span
-											style="color:#c8d8e8;font-size:0.75em;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;"><i
-												class="fas fa-vest"
-												style="margin-right:5px;color:#7ec8f0;"></i>Protection</span>
-									</td>
-									<td
-										style="text-align:center;padding:4px 2px;background:rgba(230,126,34,0.22);border-top:2px solid rgba(255,255,255,0.15);border-bottom:1px solid rgba(255,255,255,0.08);">
-										<img src="systems/mega/images/flint-spark.svg"
-											style="width:18px;height:18px;display:block;margin:0 auto 2px;filter:drop-shadow(0 1px 3px rgba(0,0,0,0.7));" /><span
-											style="font-size:0.68em;color:#111;font-weight:bold;letter-spacing:0.05em;">CHOC</span>
-									</td>
-									<td
-										style="text-align:center;padding:4px 2px;background:rgba(176,190,197,0.18);border-top:2px solid rgba(255,255,255,0.15);border-bottom:1px solid rgba(255,255,255,0.08);">
-										<img src="systems/mega/images/blade-fall.svg"
-											style="width:18px;height:18px;display:block;margin:0 auto 2px;filter:drop-shadow(0 1px 3px rgba(0,0,0,0.7));" /><span
-											style="font-size:0.68em;color:#111;font-weight:bold;letter-spacing:0.05em;">LAME</span>
-									</td>
-									<td
-										style="text-align:center;padding:4px 2px;background:rgba(41,128,185,0.22);border-top:2px solid rgba(255,255,255,0.15);border-bottom:1px solid rgba(255,255,255,0.08);">
-										<img src="systems/mega/images/silver-bullet.svg"
-											style="width:18px;height:18px;display:block;margin:0 auto 2px;filter:drop-shadow(0 1px 3px rgba(0,0,0,0.7));" /><span
-											style="font-size:0.68em;color:#111;font-weight:bold;letter-spacing:0.05em;">BALLE</span>
-									</td>
-									<td
-										style="text-align:center;padding:4px 2px;background:rgba(231,76,60,0.22);border-top:2px solid rgba(255,255,255,0.15);border-bottom:1px solid rgba(255,255,255,0.08);">
-										<img src="systems/mega/images/fire.svg"
-											style="width:18px;height:18px;display:block;margin:0 auto 2px;filter:drop-shadow(0 1px 3px rgba(0,0,0,0.7));" /><span
-											style="font-size:0.68em;color:#111;font-weight:bold;letter-spacing:0.05em;">FEU</span>
-									</td>
-									<td
-										style="text-align:center;padding:4px 2px;background:rgba(93,173,226,0.22);border-top:2px solid rgba(255,255,255,0.15);border-bottom:1px solid rgba(255,255,255,0.08);">
-										<img src="systems/mega/images/frozen-orb.svg"
-											style="width:18px;height:18px;display:block;margin:0 auto 2px;filter:drop-shadow(0 1px 3px rgba(0,0,0,0.7));" /><span
-											style="font-size:0.68em;color:#111;font-weight:bold;letter-spacing:0.05em;">FROID</span>
-									</td>
-									<td
-										style="text-align:center;padding:4px 2px;background:rgba(46,204,113,0.22);border-top:2px solid rgba(255,255,255,0.15);border-bottom:1px solid rgba(255,255,255,0.08);">
-										<img src="systems/mega/images/chemical-drop.svg"
-											style="width:18px;height:18px;display:block;margin:0 auto 2px;filter:drop-shadow(0 1px 3px rgba(0,0,0,0.7));" /><span
-											style="font-size:0.68em;color:#111;font-weight:bold;letter-spacing:0.05em;">ACIDE</span>
-									</td>
-									<td
-										style="text-align:center;padding:4px 2px;background:rgba(155,89,182,0.22);border-top:2px solid rgba(255,255,255,0.15);border-bottom:1px solid rgba(255,255,255,0.08);">
-										<img src="systems/mega/images/ringed-beam.svg"
-											style="width:18px;height:18px;display:block;margin:0 auto 2px;filter:drop-shadow(0 1px 3px rgba(0,0,0,0.7));" /><span
-											style="font-size:0.68em;color:#111;font-weight:bold;letter-spacing:0.05em;">RAYON</span>
-									</td>
-								</tr>
-								<!-- DEF réelle -->
-								<tr>
-									<td colspan="2"
-										style="text-align:right;background:rgba(0,0,0,0.35);border-bottom:2px solid rgba(255,255,255,0.15);padding:4px 8px;">
-										<span style="color:#e8f4ff;font-size:0.8em;font-weight:700;"><i
-												class="fas fa-shield-halved"
-												style="margin-right:5px;color:#7ec8f0;"></i>DEF
-											réelle</span><button type="button" class="btn-defense-localisation"
-											title="Voir la défense par localisation" style="margin-left:4px;"><i
-												class="fas fa-person"></i></button>
-									</td>
-									<td
-										style="text-align:center;background:rgba(230,126,34,0.12);border-bottom:2px solid rgba(255,255,255,0.15);padding:4px 2px;">
-										{{{protect_choc_badge}}}</td>
-									<td
-										style="text-align:center;background:rgba(176,190,197,0.10);border-bottom:2px solid rgba(255,255,255,0.15);padding:4px 2px;">
-										{{{protect_lame_badge}}}</td>
-									<td
-										style="text-align:center;background:rgba(41,128,185,0.12);border-bottom:2px solid rgba(255,255,255,0.15);padding:4px 2px;">
-										{{{protect_balle_badge}}}</td>
-									<td
-										style="text-align:center;background:rgba(231,76,60,0.12);border-bottom:2px solid rgba(255,255,255,0.15);padding:4px 2px;">
-										{{{protect_feu_badge}}}</td>
-									<td
-										style="text-align:center;background:rgba(93,173,226,0.12);border-bottom:2px solid rgba(255,255,255,0.15);padding:4px 2px;">
-										{{{protect_froid_badge}}}</td>
-									<td
-										style="text-align:center;background:rgba(46,204,113,0.12);border-bottom:2px solid rgba(255,255,255,0.15);padding:4px 2px;">
-										{{{protect_acide_badge}}}</td>
-									<td
-										style="text-align:center;background:rgba(155,89,182,0.12);border-bottom:2px solid rgba(255,255,255,0.15);padding:4px 2px;">
-										{{{protect_rayon_badge}}}</td>
-								</tr>
+											style="color:#5ba8d4;font-size:1.5em;font-weight:bold;line-height:1;">=</span>
+										<div style="display:flex;flex-direction:column;align-items:center;gap:5px;">
+											<span
+												style="font-size:0.85em;color:#7ec8f0;text-transform:uppercase;letter-spacing:0.08em;"><i
+													class="fas fa-shield-check" style="margin-right:3px;"></i>Total
+												DEF</span>
+											<span
+												style="display:inline-block;background:linear-gradient(135deg,#1a5f84ee,#0e3d5acc);color:#d0f0ff;border-radius:20px;padding:6px 22px;font-weight:bold;font-size:1.2em;box-shadow:0 3px 12px rgba(0,0,0,0.6);border:1.5px solid rgba(91,168,212,0.65);letter-spacing:0.05em;">Niv.
+												{{add (add (add system.def.value system.def_modif.value)
+												def_prot_total) system.bonus_armes_def}}</span>
+											<span class="toggle_prot_rows"
+												title="Afficher/masquer les lignes de protection"
+												style="display:block;text-align:center;cursor:pointer;margin-top:3px;line-height:1;"><i
+													class="fas {{#if system.prot_def_masquee}}fa-chevron-down{{else}}fa-chevron-up{{/if}}"
+													style="color:#7ec8f0;font-size:0.85em;opacity:0.85;"></i></span>
+										</div>
+									</div>
+								</td>
+							</tr>
+							{{#unless (courtMetrage)}}
+							{{#unless system.prot_def_masquee}}
+							<!-- En-t�te ic�nes protection -->
+							<tr>
+								<td colspan="2"
+									style="text-align:right;background:rgba(0,0,0,0.35);border-top:2px solid rgba(255,255,255,0.15);border-bottom:1px solid rgba(255,255,255,0.08);padding:4px 8px;">
+									<span
+										style="color:#c8d8e8;font-size:0.75em;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;"><i
+											class="fas fa-vest"
+											style="margin-right:5px;color:#7ec8f0;"></i>Protection</span>
+								</td>
+								<td
+									style="text-align:center;padding:4px 2px;background:rgba(230,126,34,0.22);border-top:2px solid rgba(255,255,255,0.15);border-bottom:1px solid rgba(255,255,255,0.08);">
+									<img src="systems/mega/images/flint-spark.svg"
+										style="width:18px;height:18px;display:block;margin:0 auto 2px;filter:drop-shadow(0 1px 3px rgba(0,0,0,0.7));" /><span
+										style="font-size:0.68em;color:#111;font-weight:bold;letter-spacing:0.05em;">CHOC</span>
+								</td>
+								<td
+									style="text-align:center;padding:4px 2px;background:rgba(176,190,197,0.18);border-top:2px solid rgba(255,255,255,0.15);border-bottom:1px solid rgba(255,255,255,0.08);">
+									<img src="systems/mega/images/blade-fall.svg"
+										style="width:18px;height:18px;display:block;margin:0 auto 2px;filter:drop-shadow(0 1px 3px rgba(0,0,0,0.7));" /><span
+										style="font-size:0.68em;color:#111;font-weight:bold;letter-spacing:0.05em;">LAME</span>
+								</td>
+								<td
+									style="text-align:center;padding:4px 2px;background:rgba(41,128,185,0.22);border-top:2px solid rgba(255,255,255,0.15);border-bottom:1px solid rgba(255,255,255,0.08);">
+									<img src="systems/mega/images/silver-bullet.svg"
+										style="width:18px;height:18px;display:block;margin:0 auto 2px;filter:drop-shadow(0 1px 3px rgba(0,0,0,0.7));" /><span
+										style="font-size:0.68em;color:#111;font-weight:bold;letter-spacing:0.05em;">BALLE</span>
+								</td>
+								<td
+									style="text-align:center;padding:4px 2px;background:rgba(231,76,60,0.22);border-top:2px solid rgba(255,255,255,0.15);border-bottom:1px solid rgba(255,255,255,0.08);">
+									<img src="systems/mega/images/fire.svg"
+										style="width:18px;height:18px;display:block;margin:0 auto 2px;filter:drop-shadow(0 1px 3px rgba(0,0,0,0.7));" /><span
+										style="font-size:0.68em;color:#111;font-weight:bold;letter-spacing:0.05em;">FEU</span>
+								</td>
+								<td
+									style="text-align:center;padding:4px 2px;background:rgba(93,173,226,0.22);border-top:2px solid rgba(255,255,255,0.15);border-bottom:1px solid rgba(255,255,255,0.08);">
+									<img src="systems/mega/images/frozen-orb.svg"
+										style="width:18px;height:18px;display:block;margin:0 auto 2px;filter:drop-shadow(0 1px 3px rgba(0,0,0,0.7));" /><span
+										style="font-size:0.68em;color:#111;font-weight:bold;letter-spacing:0.05em;">FROID</span>
+								</td>
+								<td
+									style="text-align:center;padding:4px 2px;background:rgba(46,204,113,0.22);border-top:2px solid rgba(255,255,255,0.15);border-bottom:1px solid rgba(255,255,255,0.08);">
+									<img src="systems/mega/images/chemical-drop.svg"
+										style="width:18px;height:18px;display:block;margin:0 auto 2px;filter:drop-shadow(0 1px 3px rgba(0,0,0,0.7));" /><span
+										style="font-size:0.68em;color:#111;font-weight:bold;letter-spacing:0.05em;">ACIDE</span>
+								</td>
+								<td
+									style="text-align:center;padding:4px 2px;background:rgba(155,89,182,0.22);border-top:2px solid rgba(255,255,255,0.15);border-bottom:1px solid rgba(255,255,255,0.08);">
+									<img src="systems/mega/images/ringed-beam.svg"
+										style="width:18px;height:18px;display:block;margin:0 auto 2px;filter:drop-shadow(0 1px 3px rgba(0,0,0,0.7));" /><span
+										style="font-size:0.68em;color:#111;font-weight:bold;letter-spacing:0.05em;">RAYON</span>
+								</td>
+							</tr>
+							<!-- DEF r�elle -->
+							<tr>
+								<td colspan="2"
+									style="text-align:right;background:rgba(0,0,0,0.35);border-bottom:2px solid rgba(255,255,255,0.15);padding:4px 8px;">
+									<span style="color:#e8f4ff;font-size:0.8em;font-weight:700;"><i
+											class="fas fa-shield-halved" style="margin-right:5px;color:#7ec8f0;"></i>DEF
+										r�elle</span><button type="button" class="btn-defense-localisation"
+										title="Voir la d�fense par localisation" style="margin-left:4px;"><i
+											class="fas fa-person"></i></button>
+								</td>
+								<td
+									style="text-align:center;background:rgba(230,126,34,0.12);border-bottom:2px solid rgba(255,255,255,0.15);padding:4px 2px;">
+									{{{protect_choc_badge}}}</td>
+								<td
+									style="text-align:center;background:rgba(176,190,197,0.10);border-bottom:2px solid rgba(255,255,255,0.15);padding:4px 2px;">
+									{{{protect_lame_badge}}}</td>
+								<td
+									style="text-align:center;background:rgba(41,128,185,0.12);border-bottom:2px solid rgba(255,255,255,0.15);padding:4px 2px;">
+									{{{protect_balle_badge}}}</td>
+								<td
+									style="text-align:center;background:rgba(231,76,60,0.12);border-bottom:2px solid rgba(255,255,255,0.15);padding:4px 2px;">
+									{{{protect_feu_badge}}}</td>
+								<td
+									style="text-align:center;background:rgba(93,173,226,0.12);border-bottom:2px solid rgba(255,255,255,0.15);padding:4px 2px;">
+									{{{protect_froid_badge}}}</td>
+								<td
+									style="text-align:center;background:rgba(46,204,113,0.12);border-bottom:2px solid rgba(255,255,255,0.15);padding:4px 2px;">
+									{{{protect_acide_badge}}}</td>
+								<td
+									style="text-align:center;background:rgba(155,89,182,0.12);border-bottom:2px solid rgba(255,255,255,0.15);padding:4px 2px;">
+									{{{protect_rayon_badge}}}</td>
+							</tr>
+							{{/unless}}
+							<!-- D�tail protections �quip�es -->
+							{{#if system.protections.p1.label}}<tr class="protection-combat-row"
+								style="cursor:context-menu;" title="Clic droit pour ouvrir la fiche"
+								data-item-id="{{system.protections.p1.itemId}}">
+								<td align="left" colspan="{{#if system.prot_def_masquee}}9{{else}}2{{/if}}">{{#if
+									system.protections.p1.label}}<span class="tech-badge tech-badge-armor" {{#if
+										system.protections.p1.img}}style="--badge-img-url: url('{{system.protections.p1.img}}')"
+										{{/if}}>{{system.protections.p1.label}}</span>{{/if}}{{#if
+									system.prot_def_masquee}}{{#if system.protections.p1.def}}<span
+										style="display:inline-flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1a4f6e,#0d3248);color:#c0e8ff;border-radius:50%;min-width:22px;height:22px;font-weight:bold;font-size:0.82em;box-shadow:0 1px 4px rgba(0,0,0,0.55);border:1px solid rgba(91,168,212,0.5);margin-left:5px;vertical-align:middle;padding:0 3px;">{{system.protections.p1.def}}</span>{{/if}}{{/if}}
+								</td>
+								{{#unless system.prot_def_masquee}}
+								<td>{{system.protections.p1.def_chocs}}</td>
+								<td>{{system.protections.p1.def_lame}}</td>
+								<td>{{system.protections.p1.def_balle}}</td>
+								<td>{{system.protections.p1.def_feu}}</td>
+								<td>{{system.protections.p1.def_froid}}</td>
+								<td>{{system.protections.p1.def_acide}}</td>
+								<td>{{system.protections.p1.def_rayon}}</td>
 								{{/unless}}
-								<!-- Détail protections équipées -->
-								{{#if system.protections.p1.label}}<tr class="protection-combat-row"
-									style="cursor:context-menu;" title="Clic droit pour ouvrir la fiche"
-									data-item-id="{{system.protections.p1.itemId}}">
-									<td align="left" colspan="{{#if system.prot_def_masquee}}9{{else}}2{{/if}}">{{#if
-										system.protections.p1.label}}<span class="tech-badge tech-badge-armor" {{#if
-											system.protections.p1.img}}style="--badge-img-url: url('{{system.protections.p1.img}}')"
-											{{/if}}>{{system.protections.p1.label}}</span>{{/if}}{{#if
-										system.prot_def_masquee}}{{#if system.protections.p1.def}}<span
-											style="display:inline-flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1a4f6e,#0d3248);color:#c0e8ff;border-radius:50%;min-width:22px;height:22px;font-weight:bold;font-size:0.82em;box-shadow:0 1px 4px rgba(0,0,0,0.55);border:1px solid rgba(91,168,212,0.5);margin-left:5px;vertical-align:middle;padding:0 3px;">{{system.protections.p1.def}}</span>{{/if}}{{/if}}
-									</td>
-									{{#unless system.prot_def_masquee}}
-									<td>{{system.protections.p1.def_chocs}}</td>
-									<td>{{system.protections.p1.def_lame}}</td>
-									<td>{{system.protections.p1.def_balle}}</td>
-									<td>{{system.protections.p1.def_feu}}</td>
-									<td>{{system.protections.p1.def_froid}}</td>
-									<td>{{system.protections.p1.def_acide}}</td>
-									<td>{{system.protections.p1.def_rayon}}</td>
-									{{/unless}}
-								</tr>{{/if}}
-								{{#if system.protections.p2.label}}<tr class="protection-combat-row"
-									style="cursor:context-menu;" title="Clic droit pour ouvrir la fiche"
-									data-item-id="{{system.protections.p2.itemId}}">
-									<td align="left" colspan="{{#if system.prot_def_masquee}}9{{else}}2{{/if}}">{{#if
-										system.protections.p2.label}}<span class="tech-badge tech-badge-armor" {{#if
-											system.protections.p2.img}}style="--badge-img-url: url('{{system.protections.p2.img}}')"
-											{{/if}}>{{system.protections.p2.label}}</span>{{/if}}{{#if
-										system.prot_def_masquee}}{{#if system.protections.p2.def}}<span
-											style="display:inline-flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1a4f6e,#0d3248);color:#c0e8ff;border-radius:50%;min-width:22px;height:22px;font-weight:bold;font-size:0.82em;box-shadow:0 1px 4px rgba(0,0,0,0.55);border:1px solid rgba(91,168,212,0.5);margin-left:5px;vertical-align:middle;padding:0 3px;">{{system.protections.p2.def}}</span>{{/if}}{{/if}}
-									</td>
-									{{#unless system.prot_def_masquee}}
-									<td>{{system.protections.p2.def_chocs}}</td>
-									<td>{{system.protections.p2.def_lame}}</td>
-									<td>{{system.protections.p2.def_balle}}</td>
-									<td>{{system.protections.p2.def_feu}}</td>
-									<td>{{system.protections.p2.def_froid}}</td>
-									<td>{{system.protections.p2.def_acide}}</td>
-									<td>{{system.protections.p2.def_rayon}}</td>
-									{{/unless}}
-								</tr>{{/if}}
-								{{#if system.protections.p3.label}}<tr class="protection-combat-row"
-									style="cursor:context-menu;" title="Clic droit pour ouvrir la fiche"
-									data-item-id="{{system.protections.p3.itemId}}">
-									<td align="left" colspan="{{#if system.prot_def_masquee}}9{{else}}2{{/if}}">{{#if
-										system.protections.p3.label}}<span class="tech-badge tech-badge-armor" {{#if
-											system.protections.p3.img}}style="--badge-img-url: url('{{system.protections.p3.img}}')"
-											{{/if}}>{{system.protections.p3.label}}</span>{{/if}}{{#if
-										system.prot_def_masquee}}{{#if system.protections.p3.def}}<span
-											style="display:inline-flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1a4f6e,#0d3248);color:#c0e8ff;border-radius:50%;min-width:22px;height:22px;font-weight:bold;font-size:0.82em;box-shadow:0 1px 4px rgba(0,0,0,0.55);border:1px solid rgba(91,168,212,0.5);margin-left:5px;vertical-align:middle;padding:0 3px;">{{system.protections.p3.def}}</span>{{/if}}{{/if}}
-									</td>
-									{{#unless system.prot_def_masquee}}
-									<td>{{system.protections.p3.def_chocs}}</td>
-									<td>{{system.protections.p3.def_lame}}</td>
-									<td>{{system.protections.p3.def_balle}}</td>
-									<td>{{system.protections.p3.def_feu}}</td>
-									<td>{{system.protections.p3.def_froid}}</td>
-									<td>{{system.protections.p3.def_acide}}</td>
-									<td>{{system.protections.p3.def_rayon}}</td>
-									{{/unless}}
-								</tr>{{/if}}
+							</tr>{{/if}}
+							{{#if system.protections.p2.label}}<tr class="protection-combat-row"
+								style="cursor:context-menu;" title="Clic droit pour ouvrir la fiche"
+								data-item-id="{{system.protections.p2.itemId}}">
+								<td align="left" colspan="{{#if system.prot_def_masquee}}9{{else}}2{{/if}}">{{#if
+									system.protections.p2.label}}<span class="tech-badge tech-badge-armor" {{#if
+										system.protections.p2.img}}style="--badge-img-url: url('{{system.protections.p2.img}}')"
+										{{/if}}>{{system.protections.p2.label}}</span>{{/if}}{{#if
+									system.prot_def_masquee}}{{#if system.protections.p2.def}}<span
+										style="display:inline-flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1a4f6e,#0d3248);color:#c0e8ff;border-radius:50%;min-width:22px;height:22px;font-weight:bold;font-size:0.82em;box-shadow:0 1px 4px rgba(0,0,0,0.55);border:1px solid rgba(91,168,212,0.5);margin-left:5px;vertical-align:middle;padding:0 3px;">{{system.protections.p2.def}}</span>{{/if}}{{/if}}
+								</td>
+								{{#unless system.prot_def_masquee}}
+								<td>{{system.protections.p2.def_chocs}}</td>
+								<td>{{system.protections.p2.def_lame}}</td>
+								<td>{{system.protections.p2.def_balle}}</td>
+								<td>{{system.protections.p2.def_feu}}</td>
+								<td>{{system.protections.p2.def_froid}}</td>
+								<td>{{system.protections.p2.def_acide}}</td>
+								<td>{{system.protections.p2.def_rayon}}</td>
 								{{/unless}}
-							</table>
-						</div>
+							</tr>{{/if}}
+							{{#if system.protections.p3.label}}<tr class="protection-combat-row"
+								style="cursor:context-menu;" title="Clic droit pour ouvrir la fiche"
+								data-item-id="{{system.protections.p3.itemId}}">
+								<td align="left" colspan="{{#if system.prot_def_masquee}}9{{else}}2{{/if}}">{{#if
+									system.protections.p3.label}}<span class="tech-badge tech-badge-armor" {{#if
+										system.protections.p3.img}}style="--badge-img-url: url('{{system.protections.p3.img}}')"
+										{{/if}}>{{system.protections.p3.label}}</span>{{/if}}{{#if
+									system.prot_def_masquee}}{{#if system.protections.p3.def}}<span
+										style="display:inline-flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1a4f6e,#0d3248);color:#c0e8ff;border-radius:50%;min-width:22px;height:22px;font-weight:bold;font-size:0.82em;box-shadow:0 1px 4px rgba(0,0,0,0.55);border:1px solid rgba(91,168,212,0.5);margin-left:5px;vertical-align:middle;padding:0 3px;">{{system.protections.p3.def}}</span>{{/if}}{{/if}}
+								</td>
+								{{#unless system.prot_def_masquee}}
+								<td>{{system.protections.p3.def_chocs}}</td>
+								<td>{{system.protections.p3.def_lame}}</td>
+								<td>{{system.protections.p3.def_balle}}</td>
+								<td>{{system.protections.p3.def_feu}}</td>
+								<td>{{system.protections.p3.def_froid}}</td>
+								<td>{{system.protections.p3.def_acide}}</td>
+								<td>{{system.protections.p3.def_rayon}}</td>
+								{{/unless}}
+							</tr>{{/if}}
+							{{/unless}}
+						</table>
+					</div>
 						<div class="sequence"
 							style="width:100%;box-sizing:border-box;background:rgba(224, 179, 31, 0.25);border:1px solid rgba(255,255,255,0.12);border-radius:6px;padding:7px 10px;font-size:0.82em;line-height:1.45;">
 							<div
 								style="font-size:0.9em;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color: rgba(104, 17, 17, 0.55);border-bottom:1px solid rgba(255,255,255,0.72);margin-bottom:5px;padding-bottom:3px;">
-								<i class="fas fa-sword" style="margin-right:4px;"></i>Séquence de combat
+								<i class="fas fa-sword" style="margin-right:4px;"></i>S�quence de combat
 							</div>
 							<div style="display:flex;gap:10px;flex-wrap:wrap;">
 								<div style="flex:0 0 auto;">
 									<span
 										style="font-size:12px;font-weight:700;color: rgba(104, 17, 17, 0.55);">Initiative</span>
 									?
-									début de
-									combat&nbsp;| déjà en position : <strong>+2 Init</strong>
+									d�but de
+									combat&nbsp;| d�j� en position : <strong>+2 Init</strong>
 								</div>
 								<div style="flex:1 1 260px;text-align:left;">
 									<span style="font-size:12px;font-weight:700;color: rgba(104, 17, 17, 0.55);">Un
 										round = une action</span><br>
 									- Attaque normale (arme en main)<br>
-									- Déplacer 1-2 pas + attaque normale <strong>-4Rg</strong><br>
-									- Dégainer + attaque normale <strong>-4Rg</strong><br>
+									- D�placer 1-2 pas + attaque normale <strong>-4Rg</strong><br>
+									- D�gainer + attaque normale <strong>-4Rg</strong><br>
 									- Charge 3-4m ligne droite, attaque en force <strong>+2Rg</strong><br>
 									- Esquiver pour rompre l'engagement<br>
-									- Autre action cohérente (~6-8s)
+									- Autre action coh�rente (�6-8s)
 									</ul>
 								</div>
 								<div style="flex:0 0 auto;">
 									<span
 										style="font-size:12px;font-weight:700;color: rgba(104, 17, 17, 0.55);">Avantage</span>
 									? <strong>+2Rg</strong>
-									proch. ATT &nbsp;ou&nbsp; <strong>+1</strong> proch. DÉF
+									proch. ATT &nbsp;ou&nbsp; <strong>+1</strong> proch. D�F
 								</div>
 								<div style="flex:1 1 260px;text-align:left;">
 									<span style="font-size:12px;font-weight:700;color: rgba(104, 17, 17, 0.55);">
 										H Handicaper, A Assommer, S Sonner, R Renverser, I Immobiliser, V Vitesse P
-										Positionnement, T Tenir à distance, D Défaut de la
+										Positionnement, T Tenir � distance, D D�faut de la
 										cuirasse<span class="info_effets_speciaux" value="">&nbsp<img class="icon_info"
 												src="systems/mega/images/info.svg"></span>
 								</div>
@@ -2840,7 +2836,7 @@
 								</div>
 								<div class="traits-p-footer">
 									<div class="traits-p-footer-label traits-p-footer-label--esprit">ESPRIT</div>
-									<div class="traits-p-footer-label traits-p-footer-label--eveil">ÉVEIL</div>
+									<div class="traits-p-footer-label traits-p-footer-label--eveil">�VEIL</div>
 									<div class="traits-p-footer-label traits-p-footer-label--corps">CORPS</div>
 								</div>
 							</div>
@@ -2851,7 +2847,7 @@
 							<table class="pou-table">
 								<tbody>
 									<tr class="pou-sub-header pou-sub-resonants">
-										<td colspan="3">RÉSONANTS</td>
+										<td colspan="3">R�SONANTS</td>
 									</tr>
 									<tr class="pou-row">
 										<td class="pou-name">{{#if system.pouvoirs.pouvoir_psi_1.label}}<span
@@ -2861,13 +2857,13 @@
 													system.sphere.value "Vivant"}}<span
 														style="color:#a1a1a1">CHAKRAS</span>{{/ifequal}}{{#ifequal
 													system.sphere.value "Relations"}}<span
-														style="color:gray">TÉLÉPATHIE</span>{{/ifequal}}{{#ifequal
-													system.sphere.value "Invisible"}}<span style="color:gray">PRÉSENCE
+														style="color:gray">T�L�PATHIE</span>{{/ifequal}}{{#ifequal
+													system.sphere.value "Invisible"}}<span style="color:gray">PR�SENCE
 														D'ESPRIT</span>{{/ifequal}}{{#ifequal system.sphere.value
 													"Logique"}}<span style="color:gray">FLUX DE
 														NEXUS</span>{{/ifequal}}{{#ifequal system.sphere.value
-													"Matière"}}<span
-														style="color:gray">TÉLÉKINÉSIE</span>{{/ifequal}}{{/if}}</b></span>
+													"Mati�re"}}<span
+														style="color:gray">T�L�KIN�SIE</span>{{/ifequal}}{{/if}}</b></span>
 										</td>
 										<td class="pou-grade-lbl">{{#if system.verouille}}<span
 												class="dice-badge pouvoir_psi"
@@ -2893,13 +2889,13 @@
 													system.sphere2.value "Vivant"}}<span
 														style="color:#a1a1a1">CHAKRAS</span>{{/ifequal}}{{#ifequal
 													system.sphere2.value "Relations"}}<span
-														style="color:gray">TÉLÉPATHIE</span>{{/ifequal}}{{#ifequal
-													system.sphere2.value "Invisible"}}<span style="color:gray">PRÉSENCE
+														style="color:gray">T�L�PATHIE</span>{{/ifequal}}{{#ifequal
+													system.sphere2.value "Invisible"}}<span style="color:gray">PR�SENCE
 														D'ESPRIT</span>{{/ifequal}}{{#ifequal system.sphere2.value
 													"Logique"}}<span style="color:gray">FLUX DE
 														NEXUS</span>{{/ifequal}}{{#ifequal system.sphere2.value
-													"Matière"}}<span
-														style="color:gray">TÉLÉKINÉSIE</span>{{/ifequal}}{{/if}}</b></span>
+													"Mati�re"}}<span
+														style="color:gray">T�L�KIN�SIE</span>{{/ifequal}}{{/if}}</b></span>
 										</td>
 										<td class="pou-grade-lbl">{{#if system.verouille}}<span
 												class="dice-badge pouvoir_psi"
@@ -2978,7 +2974,7 @@
 						{{/ifequal}}
 						{{#unless (courtMetrage)}}
 						<div class="spe-outer">
-							<div class="spe-side-label"><span>SPÉS</span></div>
+							<div class="spe-side-label"><span>SP�S</span></div>
 							<datalist id="spes"></datalist>
 							<table class="spe-table">
 								<tbody>
@@ -2988,7 +2984,7 @@
 											<div class="spe-nr">{{#unless system.verouille}}<input
 													class="spes_edit autoselect" list="spes" name="system.spe1.value"
 													value="{{system.spe1.value}}"
-													placeholder="Sélectionnez une SPÉ" />{{else}}<span
+													placeholder="S�lectionnez une SP�" />{{else}}<span
 													class="tooltip_spe spe-tsp"
 													value="spe1|{{system.spe1.value}}">{{system.spe1.value}}{{#ifequal
 													system.spe1.value ""}}{{else}}<span
@@ -3001,7 +2997,7 @@
 												value="{{system.rg_spe_1.value}}" data-dtype="Number" />&nbsp;Rg{{/if}}
 										</td>
 										<td class="spe-add-cell"><button class="spe-add-btn" type="button"
-												title="Ajouter une spé">+</button></td>
+												title="Ajouter une sp�">+</button></td>
 									</tr>
 									<tr class="spe-row" data-spe-idx="2" data-spe-val="{{system.spe2.value}}"
 										style="display:none">
@@ -3010,7 +3006,7 @@
 											<div class="spe-nr">{{#unless system.verouille}}<input
 													class="spes_edit autoselect" list="spes" name="system.spe2.value"
 													value="{{system.spe2.value}}"
-													placeholder="Sélectionnez une SPÉ" />{{else}}<span
+													placeholder="S�lectionnez une SP�" />{{else}}<span
 													class="tooltip_spe spe-tsp"
 													value="spe2|{{system.spe2.value}}">{{system.spe2.value}}{{#ifequal
 													system.spe2.value ""}}{{else}}<span
@@ -3023,7 +3019,7 @@
 												value="{{system.rg_spe_2.value}}" data-dtype="Number" />&nbsp;Rg{{/if}}
 										</td>
 										<td class="spe-add-cell"><button class="spe-add-btn" type="button"
-												title="Ajouter une spé">+</button></td>
+												title="Ajouter une sp�">+</button></td>
 									</tr>
 									<tr class="spe-row" data-spe-idx="3" data-spe-val="{{system.spe3.value}}"
 										style="display:none">
@@ -3032,7 +3028,7 @@
 											<div class="spe-nr">{{#unless system.verouille}}<input
 													class="spes_edit autoselect" list="spes" name="system.spe3.value"
 													value="{{system.spe3.value}}"
-													placeholder="Sélectionnez une SPÉ" />{{else}}<span
+													placeholder="S�lectionnez une SP�" />{{else}}<span
 													class="tooltip_spe spe-tsp"
 													value="spe3|{{system.spe3.value}}">{{system.spe3.value}}{{#ifequal
 													system.spe3.value ""}}{{else}}<span
@@ -3045,7 +3041,7 @@
 												value="{{system.rg_spe_3.value}}" data-dtype="Number" />&nbsp;Rg{{/if}}
 										</td>
 										<td class="spe-add-cell"><button class="spe-add-btn" type="button"
-												title="Ajouter une spé">+</button></td>
+												title="Ajouter une sp�">+</button></td>
 									</tr>
 									<tr class="spe-row" data-spe-idx="4" data-spe-val="{{system.spe4.value}}"
 										style="display:none">
@@ -3054,7 +3050,7 @@
 											<div class="spe-nr">{{#unless system.verouille}}<input
 													class="spes_edit autoselect" list="spes" name="system.spe4.value"
 													value="{{system.spe4.value}}"
-													placeholder="Sélectionnez une SPÉ" />{{else}}<span
+													placeholder="S�lectionnez une SP�" />{{else}}<span
 													class="tooltip_spe spe-tsp"
 													value="spe4|{{system.spe4.value}}">{{system.spe4.value}}{{#ifequal
 													system.spe4.value ""}}{{else}}<span
@@ -3067,7 +3063,7 @@
 												value="{{system.rg_spe_4.value}}" data-dtype="Number" />&nbsp;Rg{{/if}}
 										</td>
 										<td class="spe-add-cell"><button class="spe-add-btn" type="button"
-												title="Ajouter une spé">+</button></td>
+												title="Ajouter une sp�">+</button></td>
 									</tr>
 									<tr class="spe-row" data-spe-idx="5" data-spe-val="{{system.spe5.value}}"
 										style="display:none">
@@ -3076,7 +3072,7 @@
 											<div class="spe-nr">{{#unless system.verouille}}<input
 													class="spes_edit autoselect" list="spes" name="system.spe5.value"
 													value="{{system.spe5.value}}"
-													placeholder="Sélectionnez une SPÉ" />{{else}}<span
+													placeholder="S�lectionnez une SP�" />{{else}}<span
 													class="tooltip_spe spe-tsp"
 													value="spe5|{{system.spe5.value}}">{{system.spe5.value}}</span><span
 													class="spe-dots"></span>{{/unless}}</div>
@@ -3087,7 +3083,7 @@
 												value="{{system.rg_spe_5.value}}" data-dtype="Number" />&nbsp;Rg{{/if}}
 										</td>
 										<td class="spe-add-cell"><button class="spe-add-btn" type="button"
-												title="Ajouter une spé">+</button></td>
+												title="Ajouter une sp�">+</button></td>
 									</tr>
 									<tr class="spe-row" data-spe-idx="6" data-spe-val="{{system.spe6.value}}"
 										style="display:none">
@@ -3096,7 +3092,7 @@
 											<div class="spe-nr">{{#unless system.verouille}}<input
 													class="spes_edit autoselect" list="spes" name="system.spe6.value"
 													value="{{system.spe6.value}}"
-													placeholder="Sélectionnez une SPÉ" />{{else}}<span
+													placeholder="S�lectionnez une SP�" />{{else}}<span
 													class="tooltip_spe spe-tsp"
 													value="spe6|{{system.spe6.value}}">{{system.spe6.value}}</span><span
 													class="spe-dots"></span>{{/unless}}</div>
@@ -3107,7 +3103,7 @@
 												value="{{system.rg_spe_6.value}}" data-dtype="Number" />&nbsp;Rg{{/if}}
 										</td>
 										<td class="spe-add-cell"><button class="spe-add-btn" type="button"
-												title="Ajouter une spé">+</button></td>
+												title="Ajouter une sp�">+</button></td>
 									</tr>
 									<tr class="spe-row" data-spe-idx="7" data-spe-val="{{system.spe7.value}}"
 										style="display:none">
@@ -3116,7 +3112,7 @@
 											<div class="spe-nr">{{#unless system.verouille}}<input
 													class="spes_edit autoselect" list="spes" name="system.spe7.value"
 													value="{{system.spe7.value}}"
-													placeholder="Sélectionnez une SPÉ" />{{else}}<span
+													placeholder="S�lectionnez une SP�" />{{else}}<span
 													class="tooltip_spe spe-tsp"
 													value="spe7|{{system.spe7.value}}">{{system.spe7.value}}</span><span
 													class="spe-dots"></span>{{/unless}}</div>
@@ -3127,7 +3123,7 @@
 												value="{{system.rg_spe_7.value}}" data-dtype="Number" />&nbsp;Rg{{/if}}
 										</td>
 										<td class="spe-add-cell"><button class="spe-add-btn" type="button"
-												title="Ajouter une spé">+</button></td>
+												title="Ajouter une sp�">+</button></td>
 									</tr>
 									<tr class="spe-row" data-spe-idx="8" data-spe-val="{{system.spe8.value}}"
 										style="display:none">
@@ -3136,7 +3132,7 @@
 											<div class="spe-nr">{{#unless system.verouille}}<input
 													class="spes_edit autoselect" list="spes" name="system.spe8.value"
 													value="{{system.spe8.value}}"
-													placeholder="Sélectionnez une SPÉ" />{{else}}<span
+													placeholder="S�lectionnez une SP�" />{{else}}<span
 													class="tooltip_spe spe-tsp"
 													value="spe8|{{system.spe8.value}}">{{system.spe8.value}}</span><span
 													class="spe-dots"></span>{{/unless}}</div>
@@ -3147,7 +3143,7 @@
 												value="{{system.rg_spe_8.value}}" data-dtype="Number" />&nbsp;Rg{{/if}}
 										</td>
 										<td class="spe-add-cell"><button class="spe-add-btn" type="button"
-												title="Ajouter une spé">+</button></td>
+												title="Ajouter une sp�">+</button></td>
 									</tr>
 									<tr class="spe-row" data-spe-idx="9" data-spe-val="{{system.spe9.value}}"
 										style="display:none">
@@ -3156,7 +3152,7 @@
 											<div class="spe-nr">{{#unless system.verouille}}<input
 													class="spes_edit autoselect" list="spes" name="system.spe9.value"
 													value="{{system.spe9.value}}"
-													placeholder="Sélectionnez une SPÉ" />{{else}}<span
+													placeholder="S�lectionnez une SP�" />{{else}}<span
 													class="tooltip_spe spe-tsp"
 													value="spe9|{{system.spe9.value}}">{{system.spe9.value}}</span><span
 													class="spe-dots"></span>{{/unless}}</div>
@@ -3167,7 +3163,7 @@
 												value="{{system.rg_spe_9.value}}" data-dtype="Number" />&nbsp;Rg{{/if}}
 										</td>
 										<td class="spe-add-cell"><button class="spe-add-btn" type="button"
-												title="Ajouter une spé">+</button></td>
+												title="Ajouter une sp�">+</button></td>
 									</tr>
 									<tr class="spe-row" data-spe-idx="10" data-spe-val="{{system.spe10.value}}"
 										style="display:none">
@@ -3176,7 +3172,7 @@
 											<div class="spe-nr">{{#unless system.verouille}}<input
 													class="spes_edit autoselect" list="spes" name="system.spe10.value"
 													value="{{system.spe10.value}}"
-													placeholder="Sélectionnez une SPÉ" />{{else}}<span
+													placeholder="S�lectionnez une SP�" />{{else}}<span
 													class="tooltip_spe spe-tsp"
 													value="spe10|{{system.spe10.value}}">{{system.spe10.value}}</span><span
 													class="spe-dots"></span>{{/unless}}</div>
@@ -3280,7 +3276,7 @@
 									</tr>
 								</thead>
 								<tbody>
-									<!-- ===== INTERPRÉTER | OBSERVER | HABITÉS ===== -->
+									<!-- ===== INTERPR�TER | OBSERVER | HABIT�S ===== -->
 									<tr class="tnt-gr">
 										<td class="tnt-nc">
 											<div class="tnt-nr">
@@ -3486,7 +3482,7 @@
 										</td>
 									</tr>
 									{{/unless}}
-									<!-- ===== PARAÎTRE | FURTIVITÉ | SAUVAGES ===== -->
+									<!-- ===== PARA�TRE | FURTIVIT� | SAUVAGES ===== -->
 									<tr class="tnt-gr">
 										<td class="tnt-nc">
 											<div class="tnt-nr">

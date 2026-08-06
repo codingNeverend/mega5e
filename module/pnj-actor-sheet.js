@@ -193,29 +193,32 @@ export class MegaPNJActorSheet extends foundry.appv1.sheets.ActorSheet {
       this.actor.update({ "system.melee_impair": 0 });
     });
 
-    // Navigation entre onglets à la molette de la souris
-    html[0].addEventListener(
-      "wheel",
-      (event) => {
-        const tabItems = html.find(".side-tabs .side-tab-item");
-        if (!tabItems.length) return;
-        const tabs = tabItems.map((_, el) => el.dataset.tab).get();
-        const activeTab = this._tabs[0].active;
-        const currentIndex = tabs.indexOf(activeTab);
-        if (currentIndex === -1) return;
-        // Molette vers le haut (deltaY < 0) → onglet précédent, vers le bas → onglet suivant
-        const direction = event.deltaY < 0 ? -1 : 1;
-        const newIndex = (currentIndex + direction + tabs.length) % tabs.length;
-        const newTab = tabs[newIndex];
-        // Mettre à jour la classe active sur les boutons
-        tabItems.removeClass("active");
-        tabItems.filter(`[data-tab="${newTab}"]`).addClass("active");
-        this._tabs[0].activate(newTab);
-        // Déclencher l'ajustement de hauteur pour le nouvel onglet
-        this._handleCombatTabResize(newTab);
-      },
-      { passive: true },
-    );
+    // Navigation entre onglets à la molette de la souris (optionnelle via réglage client)
+    if (game.settings.get("mega", "sheetWheelTabs")) {
+      html[0].addEventListener(
+        "wheel",
+        (event) => {
+          const tabItems = html.find(".side-tabs .side-tab-item");
+          if (!tabItems.length) return;
+          const tabs = tabItems.map((_, el) => el.dataset.tab).get();
+          const activeTab = this._tabs[0].active;
+          const currentIndex = tabs.indexOf(activeTab);
+          if (currentIndex === -1) return;
+          // Molette vers le haut (deltaY < 0) → onglet précédent, vers le bas → onglet suivant
+          const direction = event.deltaY < 0 ? -1 : 1;
+          const newIndex =
+            (currentIndex + direction + tabs.length) % tabs.length;
+          const newTab = tabs[newIndex];
+          // Mettre à jour la classe active sur les boutons
+          tabItems.removeClass("active");
+          tabItems.filter(`[data-tab="${newTab}"]`).addClass("active");
+          this._tabs[0].activate(newTab);
+          // Déclencher l'ajustement de hauteur pour le nouvel onglet
+          this._handleCombatTabResize(newTab);
+        },
+        { passive: true },
+      );
+    }
 
     // Forcer la couleur blanche sur les valeurs de domaines
     html.find("input.tnt-di").css("color", "#ffffff");
